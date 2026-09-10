@@ -3,13 +3,13 @@ import React from "react";
 import { Controller, FieldValues } from "react-hook-form";
 import { Col, Form } from "react-bootstrap";
 
-import InputDTO, { default_containerClass } from "Layouts/Form/types/Input";
+import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
 
 function InputCheckbox<T extends FieldValues>({
     fieldName,
     methods: { control },
     label,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     return (

@@ -3,15 +3,15 @@ import React from "react";
 import { FieldValues } from "react-hook-form";
 import { Form } from "react-bootstrap";
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
 function InputSwitch<T extends FieldValues>({
     fieldName,
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     return (

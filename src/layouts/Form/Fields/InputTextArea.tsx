@@ -2,15 +2,15 @@
 import { FieldValues } from "react-hook-form";
 import { Form } from "react-bootstrap";
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
 function InputTextArea<T extends FieldValues>({
     fieldName,
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     maxLength,
     ...colProps
 }: InputDTO<T>) {
@@ -26,8 +26,8 @@ function InputTextArea<T extends FieldValues>({
                     {...field}
                     as="textarea"
                     maxLength={maxLength}
-                    placeholder={config.placeholder || "Digite seu texto"}
-                    className={`form-control ${config.className}`}
+                    placeholder={placeholder || "Digite seu texto"}
+                    className={`form-control ${config?.className}`}
                 />
             )}
         />

@@ -2,8 +2,8 @@
 import { FieldValues } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
 type CurrencyType = 'BRL' | 'USD' | 'EUR';
 
@@ -42,7 +42,7 @@ function InputMoney<T extends FieldValues>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     currency = 'BRL',
     ...colProps
 }: InputMoneyProps<T>) {

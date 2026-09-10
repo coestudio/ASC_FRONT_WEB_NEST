@@ -3,7 +3,7 @@ import React from "react";
 import { Controller, FieldValues } from "react-hook-form";
 import { Col, Form } from "react-bootstrap";
 
-import InputDTO, { default_containerClass } from "Layouts/Form/types/Input";
+import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
 
 interface InputProps<T extends FieldValues> extends InputDTO<T> {
     element: (
@@ -17,7 +17,7 @@ function Input<T extends FieldValues>({
     methods: { control },
     label,
     placeholder,
-    config,
+    config = {},
     element,
     ...colProps
 }: InputProps<T>) {

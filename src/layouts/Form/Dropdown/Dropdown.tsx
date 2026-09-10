@@ -3,9 +3,9 @@ import React from "react";
 import { FieldValues } from "react-hook-form";
 import { ColProps } from "react-bootstrap";
 
-import Input from "Layouts/Form/Fields/Input";
+import Input from "layouts/Form/Fields/Input";
 
-import DropdownBaseDTO from "Layouts/Form/types/Select";
+import DropdownBaseDTO from "layouts/Form/types/Select";
 
 export interface DrodownPops<T extends FieldValues = FieldValues> extends DropdownBaseDTO<T>, ColProps {
     withAllOption?: boolean;

@@ -4,8 +4,8 @@ import { Controller, FieldValues } from "react-hook-form";
 import { Col, Form, InputGroup, Spinner } from "react-bootstrap";
 import { IMaskInput } from 'react-imask';
 
-import InputDTO, { default_containerClass } from "Layouts/Form/types/Input";
-import { cepInfo, CepData } from "Layouts/Form/Services/Viacep";
+import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
+import { cepInfo, CepData } from "layouts/Form/Services/Viacep";
 
 type UpdateFields = {
     city?: string;
@@ -26,7 +26,7 @@ function InputCEP<T extends FieldValues>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     updateFields = {},
     onLoading = () => {},
     onLoaded = () => {},

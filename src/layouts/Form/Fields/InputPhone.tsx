@@ -3,15 +3,15 @@ import { FieldValues } from "react-hook-form";
 
 import { IMaskInput } from 'react-imask';
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
 function InputPhone<T extends FieldValues>({
     fieldName,
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     return (

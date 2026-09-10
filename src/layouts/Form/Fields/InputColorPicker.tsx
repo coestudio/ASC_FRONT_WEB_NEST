@@ -3,8 +3,8 @@ import React from "react";
 import { FieldValues } from "react-hook-form";
 import { Form, InputGroup } from "react-bootstrap";
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
 const HEX_COLOR_REGEX = /^#[0-9A-Fa-f]{6}$/;
 const DEFAULT_COLOR = "#000000";
@@ -14,7 +14,7 @@ function InputColorPicker<T extends FieldValues>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     return (

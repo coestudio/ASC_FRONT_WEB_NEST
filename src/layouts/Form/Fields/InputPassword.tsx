@@ -2,12 +2,12 @@
 import React from "react";
 import { ControllerRenderProps, FieldValues, Path } from "react-hook-form";
 import { Form, InputGroup, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Controller } from "react-hook-form";
 
 import classNames from 'classnames';
 
-import InputDTO, { default_containerClass } from "Layouts/Form/types/Input";
+import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
 
 interface InputPasswordProps<T extends FieldValues> extends InputDTO<T> {
     recurses?: {
@@ -26,7 +26,7 @@ function InputPassword<T extends FieldValues>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     recurses,
     ...colProps
 }: InputPasswordProps<T>) {
@@ -40,14 +40,14 @@ function InputPassword<T extends FieldValues>({
                         <div className="d-flex justify-content-between align-items-center">
                             <Form.Label className="mb-0">{label ||config.label || "Senha"}</Form.Label>
                             {recurses?.forgotPassword?.show ? (
-                                <Link 
+                                <Link
                                     className="text-muted"
-                                    to={
-                                        `/forget-password${recurses.forgotPassword.email 
-                                            ? `?email=${recurses.forgotPassword.email}` 
+                                    href={
+                                        `/forget-password${recurses.forgotPassword.email
+                                            ? `?email=${recurses.forgotPassword.email}`
                                             : ''
                                         }`
-                                    } 
+                                    }
                                 >
                                     <small>{recurses.forgotPassword.label || "Esqueceu a senha?"}</small>
                                 </Link>
@@ -73,8 +73,8 @@ function InputPassword<T extends FieldValues>({
     );
 }
 
-function Field<T extends FieldValues>({ 
-    field, config, recurses, placeholder 
+function Field<T extends FieldValues>({
+    field, config = {}, recurses, placeholder
 }: {
     field: ControllerRenderProps<T, Path<T>>;
     config: InputDTO<T>['config'];
