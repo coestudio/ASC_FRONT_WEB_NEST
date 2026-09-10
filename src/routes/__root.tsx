@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { QueryClient } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -6,26 +6,31 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import appCss from "../styles/globals/index.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { isAuthedFn, fetchMeFn } from "@/lib/auth-fns";
+import { profileMeQueryOptions } from "@/lib/queries/profile";
+
+const DESCRIPTION = "Sistema interno de gestão para laboratório, indústria, porto e transbordo.";
+const PREVIEW_IMAGE = "/share.jpg";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
+    <div className="d-flex min-vh-100 align-items-center justify-content-center bg-body px-4">
+      <div className="text-center" style={{ maxWidth: "28rem" }}>
+        <h1 className="display-1 fw-bold text-body">404</h1>
+        <h2 className="mt-4 fs-5 fw-semibold text-body">Page not found</h2>
+        <p className="mt-2 small text-body-secondary">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
+        <div className="mt-5">
+          <Link to="/" className="btn btn-primary btn-sm">
             Go home
           </Link>
         </div>
@@ -34,36 +39,33 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportLovableError(error instanceof Error ? error : new Error(String(error)), {
+      boundary: "tanstack_root_error_component",
+    });
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+    <div className="d-flex min-vh-100 align-items-center justify-content-center bg-body px-4">
+      <div className="text-center" style={{ maxWidth: "28rem" }}>
+        <h1 className="fs-5 fw-semibold text-body">This page didn't load</h1>
+        <p className="mt-2 small text-body-secondary">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-5 d-flex flex-wrap justify-content-center gap-2">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="btn btn-primary btn-sm"
           >
             Try again
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
+          <a href="/" className="btn btn-outline-secondary btn-sm">
             Go home
           </a>
         </div>
@@ -73,23 +75,34 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // Guard barato (só checa o cookie no servidor) — disponibilizado no contexto
+  // para as rotas filhas (ver _dashboard.tsx).
+  beforeLoad: async () => ({ authed: await isAuthedFn() }),
+
+  // Semeia o cache do React Query com a identidade do usuário. No SSR busca
+  // server→Core com o cookie (fetchMeFn); o client re-hidrata sem refetch.
+  loader: async ({ context }) => {
+    if (!context.authed) return;
+    const user = await fetchMeFn();
+    if (user) context.queryClient.setQueryData(profileMeQueryOptions().queryKey, user);
+  },
+
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Alex Stewart Agriculture" },
-      {
-        name: "description",
-        content: "Inspeção, amostragem e análise de produtos agrícolas com padrão internacional.",
-      },
-      { name: "author", content: "Alex Stewart Agriculture" },
-      { property: "og:title", content: "Alex Stewart Agriculture" },
-      {
-        property: "og:description",
-        content: "Inspeção, amostragem e análise de produtos agrícolas com padrão internacional.",
-      },
+      { name: "robots", content: "noindex" },
+      { title: "ASC - Alex Stewart Core" },
+      { name: "description", content: DESCRIPTION },
+      { name: "author", content: "Alex Stewart Core" },
+      { property: "og:title", content: "ASC - Alex Stewart Core" },
+      { property: "og:description", content: DESCRIPTION },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: PREVIEW_IMAGE },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "ASC - Alex Stewart Core" },
+      { name: "twitter:description", content: DESCRIPTION },
+      { name: "twitter:image", content: PREVIEW_IMAGE },
     ],
     links: [
       {
@@ -102,8 +115,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { id: "favicon", rel: "icon", href: "/favicons/asa.ico", type: "image/x-icon" },
     ],
+    scripts: [{ children: "" }],
   }),
 
   shellComponent: RootShell,
@@ -114,7 +128,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -127,12 +141,13 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
-
+  // O QueryClientProvider é provido por setupRouterSsrQueryIntegration
+  // (wrapQueryClient) em src/router.tsx.
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-    </QueryClientProvider>
+      <ToastContainer position="top-right" autoClose={4000} theme="colored" />
+    </>
   );
 }

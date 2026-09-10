@@ -1,2 +1,1 @@
-
-export const default_containerClass = "mb-1"
+export const default_containerClass = "mb-1";

@@ -9,11 +9,7 @@
 // arquivo usa hooks do React.
 
 import { useEffect, useSyncExternalStore } from "react";
-import {
-  THEME_STORAGE_KEY,
-  THEME_COOKIE_NAME,
-  type ThemeMode,
-} from "./color-modes";
+import { THEME_STORAGE_KEY, THEME_COOKIE_NAME, type ThemeMode } from "./color-modes";
 
 const listeners = new Set<() => void>();
 
@@ -31,9 +27,7 @@ function subscribe(listener: () => void) {
 }
 
 function getSnapshot(): ThemeMode {
-  return (
-    (localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null) ?? "light"
-  );
+  return (localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null) ?? "light";
 }
 
 function getServerSnapshot(): ThemeMode {

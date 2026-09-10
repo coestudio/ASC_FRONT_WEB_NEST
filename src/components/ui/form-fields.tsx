@@ -119,12 +119,7 @@ type FormCheckGroupProps = {
   className?: string;
 };
 
-export function FormCheckGroup({
-  label,
-  options,
-  onChange,
-  className,
-}: FormCheckGroupProps) {
+export function FormCheckGroup({ label, options, onChange, className }: FormCheckGroupProps) {
   return (
     <div className={className ?? ""}>
       <span
@@ -165,12 +160,7 @@ type FormSwitchProps = {
   className?: string;
 };
 
-export function FormSwitch({
-  label,
-  checked,
-  onChange,
-  className,
-}: FormSwitchProps) {
+export function FormSwitch({ label, checked, onChange, className }: FormSwitchProps) {
   return (
     <div className={className ?? ""}>
       <span

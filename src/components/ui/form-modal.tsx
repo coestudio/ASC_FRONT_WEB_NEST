@@ -25,13 +25,7 @@ export function FormModal({
   onSubmit,
 }: FormModalProps) {
   return (
-    <Modal
-      show={show}
-      onHide={onHide}
-      size={size}
-      centered
-      scrollable
-    >
+    <Modal show={show} onHide={onHide} size={size} centered scrollable>
       <Form
         onSubmit={(e) => {
           e.preventDefault();

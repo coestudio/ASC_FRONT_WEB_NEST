@@ -57,17 +57,41 @@ export function DataTable<T>({
   function renderSortIcon(field: string) {
     if (sortField !== field) {
       return (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ms-1 opacity-25">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className="ms-1 opacity-25"
+        >
           <path d="M12 5v14M5 12l7-7 7 7" />
         </svg>
       );
     }
     return sortDirection === "asc" ? (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ms-1">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="ms-1"
+      >
         <path d="M12 5v14M5 12l7-7 7 7" />
       </svg>
     ) : (
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ms-1">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="ms-1"
+      >
         <path d="M12 5v14M5 12l7-7 7 7" />
       </svg>
     );
@@ -103,7 +127,11 @@ export function DataTable<T>({
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={columns.length + (rowActions ? 1 : 0)} className="text-center py-4" style={{ color: "var(--bs-secondary)" }}>
+              <td
+                colSpan={columns.length + (rowActions ? 1 : 0)}
+                className="text-center py-4"
+                style={{ color: "var(--bs-secondary)" }}
+              >
                 Nenhum registro encontrado.
               </td>
             </tr>
@@ -116,7 +144,9 @@ export function DataTable<T>({
               >
                 {columns.map((col) => (
                   <td key={col.key} className={col.className}>
-                    {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? "")}
+                    {col.render
+                      ? col.render(row)
+                      : String((row as Record<string, unknown>)[col.key] ?? "")}
                   </td>
                 ))}
                 {rowActions && (
@@ -133,10 +163,7 @@ export function DataTable<T>({
       {totalPages > 1 && onPageChange && (
         <div className="d-flex justify-content-center">
           <Pagination className="mb-0">
-            <Pagination.Prev
-              disabled={page <= 0}
-              onClick={() => onPageChange(page - 1)}
-            />
+            <Pagination.Prev disabled={page <= 0} onClick={() => onPageChange(page - 1)} />
             {Array.from({ length: totalPages }, (_, i) => i)
               .filter((i) => {
                 if (totalPages <= 7) return true;
@@ -162,7 +189,7 @@ export function DataTable<T>({
                   >
                     {item + 1}
                   </Pagination.Item>
-                )
+                ),
               )}
             <Pagination.Next
               disabled={page >= totalPages - 1}

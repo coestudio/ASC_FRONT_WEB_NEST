@@ -2,7 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import WhatsAppButton from "@/components/WhatsAppButton";
+
 import { LanguageProvider } from "@/i18n";
 
 export const Route = createFileRoute("/_site")({
@@ -12,10 +12,9 @@ export const Route = createFileRoute("/_site")({
 function SiteLayout() {
   return (
     <LanguageProvider>
-      <div className="min-h-screen bg-background">
-        <WhatsAppButton />
+      <div className="min-vh-100 bg-body">
         <SiteHeader />
-        <main className="pt-26">
+        <main style={{ paddingTop: "6.5rem" }}>
           <Outlet />
         </main>
         <SiteFooter />

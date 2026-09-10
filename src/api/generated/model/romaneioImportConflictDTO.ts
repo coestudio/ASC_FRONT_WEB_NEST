@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioDTO } from './romaneioDTO';
-import type { RomaneioImportRowDTO } from './romaneioImportRowDTO';
+import type { RomaneioDTO } from "./romaneioDTO";
+import type { RomaneioImportRowDTO } from "./romaneioImportRowDTO";
 
 export interface RomaneioImportConflictDTO {
   current?: RomaneioDTO;

@@ -14,6 +14,7 @@
       "components/*": ["./src/components/*"],
       "config/*": ["./src/config/*"],
       "data/*": ["./src/data/*"],
+      "global/*": ["./src/global/*"],
       "helpers/*": ["./src/helpers/*"],
       "hooks/*": ["./src/hooks/*"],
       "i18n/*": ["./src/i18n/*"],

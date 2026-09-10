@@ -33,75 +33,69 @@ type TextFieldProps = {
   onBlur?: FocusEventHandler<HTMLInputElement>;
 };
 
-export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  function TextField(
-    {
-      name,
-      label,
-      type = "text",
-      autoComplete,
-      placeholder,
-      required,
-      minLength,
-      maxLength,
-      className,
-      labelClassName,
-      icon: Icon,
-      isInvalid,
-      feedback,
-      defaultValue,
-      inputMode,
-      onChange,
-      onBlur,
-    },
-    ref
-  ) {
-    const controlId = useId();
+export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
+  {
+    name,
+    label,
+    type = "text",
+    autoComplete,
+    placeholder,
+    required,
+    minLength,
+    maxLength,
+    className,
+    labelClassName,
+    icon: Icon,
+    isInvalid,
+    feedback,
+    defaultValue,
+    inputMode,
+    onChange,
+    onBlur,
+  },
+  ref,
+) {
+  const controlId = useId();
 
-    const control = (
-      <Form.Control
-        ref={ref}
-        type={type}
-        name={name}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-        required={required}
-        minLength={minLength}
-        maxLength={maxLength}
-        isInvalid={isInvalid}
-        defaultValue={defaultValue}
-        inputMode={inputMode}
-        onChange={onChange}
-        onBlur={onBlur}
-      />
-    );
+  const control = (
+    <Form.Control
+      ref={ref}
+      type={type}
+      name={name}
+      autoComplete={autoComplete}
+      placeholder={placeholder}
+      required={required}
+      minLength={minLength}
+      maxLength={maxLength}
+      isInvalid={isInvalid}
+      defaultValue={defaultValue}
+      inputMode={inputMode}
+      onChange={onChange}
+      onBlur={onBlur}
+    />
+  );
 
-    return (
-      <Form.Group className={className ?? "mb-3"} controlId={controlId}>
-        <Form.Label className={labelClassName}>{label}</Form.Label>
-        {Icon ? (
-          <InputGroup hasValidation>
-            <InputGroup.Text>
-              <Icon />
-            </InputGroup.Text>
-            {control}
-            {isInvalid && feedback && (
-              <Form.Control.Feedback type="invalid">
-                {feedback}
-              </Form.Control.Feedback>
-            )}
-          </InputGroup>
-        ) : (
-          <>
-            {control}
-            {isInvalid && feedback && (
-              <Form.Control.Feedback type="invalid">
-                {feedback}
-              </Form.Control.Feedback>
-            )}
-          </>
-        )}
-      </Form.Group>
-    );
-  }
-);
+  return (
+    <Form.Group className={className ?? "mb-3"} controlId={controlId}>
+      <Form.Label className={labelClassName}>{label}</Form.Label>
+      {Icon ? (
+        <InputGroup hasValidation>
+          <InputGroup.Text>
+            <Icon />
+          </InputGroup.Text>
+          {control}
+          {isInvalid && feedback && (
+            <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
+          )}
+        </InputGroup>
+      ) : (
+        <>
+          {control}
+          {isInvalid && feedback && (
+            <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
+          )}
+        </>
+      )}
+    </Form.Group>
+  );
+});

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { HarborDTO } from './harborDTO';
+import type { HarborDTO } from "./harborDTO";
 
 export interface PagedDTOOfHarborDTO {
   items: HarborDTO[];

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ClientDTO } from './clientDTO';
+import type { ClientDTO } from "./clientDTO";
 
 export interface PagedDTOOfClientDTO {
   items: ClientDTO[];

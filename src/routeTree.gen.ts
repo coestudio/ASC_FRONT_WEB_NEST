@@ -9,60 +9,205 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as SiteRouteImport } from './routes/_site'
+import { Route as SystemRouteImport } from './routes/_system'
+import { Route as AuthRouteRouteImport } from './routes/auth/route'
+import { Route as DashboardInternalRouteImport } from './routes/_dashboard/_internal'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
+import { Route as SystemNotFoundRouteImport } from './routes/_system/not-found'
+import { Route as ApiCoreRouteImport } from './routes/api/core'
+import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard/dashboard/index'
 import { Route as AuthForgotPasswordIndexRouteImport } from './routes/auth/forgot-password/index'
+import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
+import { Route as AuthLogoutIndexRouteImport } from './routes/auth/logout/index'
+import { Route as DashboardInternalLaboratoryIndexRouteImport } from './routes/_dashboard/_internal/laboratory/index'
 
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/_dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
   getParentRoute: () => rootRouteImport,
+} as any)
+const SystemRoute = SystemRouteImport.update({
+  id: '/_system',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardInternalRoute = DashboardInternalRouteImport.update({
+  id: '/_internal',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const SiteIndexRoute = SiteIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SiteRoute,
 } as any)
-const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
-  id: '/auth/forgot-password/',
-  path: '/auth/forgot-password/',
+const SystemNotFoundRoute = SystemNotFoundRouteImport.update({
+  id: '/not-found',
+  path: '/not-found',
+  getParentRoute: () => SystemRoute,
+} as any)
+const ApiCoreRoute = ApiCoreRouteImport.update({
+  id: '/api/core',
+  path: '/api/core',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
+  id: '/forgot-password/',
+  path: '/forgot-password/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthLogoutIndexRoute = AuthLogoutIndexRouteImport.update({
+  id: '/logout/',
+  path: '/logout/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const DashboardInternalLaboratoryIndexRoute =
+  DashboardInternalLaboratoryIndexRouteImport.update({
+    id: '/laboratory/',
+    path: '/laboratory/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
+  '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof SiteIndexRoute
+  '/not-found': typeof SystemNotFoundRoute
+  '/api/core': typeof ApiCoreRoute
+  '/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
+  '/auth/login/': typeof AuthLoginIndexRoute
+  '/auth/logout/': typeof AuthLogoutIndexRoute
+  '/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
 }
 export interface FileRoutesByTo {
+  '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof SiteIndexRoute
+  '/not-found': typeof SystemNotFoundRoute
+  '/api/core': typeof ApiCoreRoute
+  '/dashboard': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
+  '/auth/login': typeof AuthLoginIndexRoute
+  '/auth/logout': typeof AuthLogoutIndexRoute
+  '/laboratory': typeof DashboardInternalLaboratoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/_dashboard': typeof DashboardRouteWithChildren
   '/_site': typeof SiteRouteWithChildren
+  '/_system': typeof SystemRouteWithChildren
+  '/_dashboard/_internal': typeof DashboardInternalRouteWithChildren
+  '/_system/not-found': typeof SystemNotFoundRoute
+  '/api/core': typeof ApiCoreRoute
   '/_site/': typeof SiteIndexRoute
+  '/_dashboard/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
+  '/auth/login/': typeof AuthLoginIndexRoute
+  '/auth/logout/': typeof AuthLogoutIndexRoute
+  '/_dashboard/_internal/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/forgot-password/'
+  fullPaths:
+    | '/auth'
+    | '/'
+    | '/not-found'
+    | '/api/core'
+    | '/dashboard/'
+    | '/auth/forgot-password/'
+    | '/auth/login/'
+    | '/auth/logout/'
+    | '/laboratory/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/forgot-password'
-  id: '__root__' | '/_site' | '/_site/' | '/auth/forgot-password/'
+  to:
+    | '/auth'
+    | '/'
+    | '/not-found'
+    | '/api/core'
+    | '/dashboard'
+    | '/auth/forgot-password'
+    | '/auth/login'
+    | '/auth/logout'
+    | '/laboratory'
+  id:
+    | '__root__'
+    | '/auth'
+    | '/_dashboard'
+    | '/_site'
+    | '/_system'
+    | '/_dashboard/_internal'
+    | '/_system/not-found'
+    | '/api/core'
+    | '/_site/'
+    | '/_dashboard/dashboard/'
+    | '/auth/forgot-password/'
+    | '/auth/login/'
+    | '/auth/logout/'
+    | '/_dashboard/_internal/laboratory/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
+  DashboardRoute: typeof DashboardRouteWithChildren
   SiteRoute: typeof SiteRouteWithChildren
-  AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
+  SystemRoute: typeof SystemRouteWithChildren
+  ApiCoreRoute: typeof ApiCoreRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_site': {
       id: '/_site'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof SiteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_system': {
+      id: '/_system'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof SystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard/_internal': {
+      id: '/_dashboard/_internal'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardInternalRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/_site/': {
       id: '/_site/'
@@ -71,15 +216,98 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SiteIndexRouteImport
       parentRoute: typeof SiteRoute
     }
+    '/_system/not-found': {
+      id: '/_system/not-found'
+      path: '/not-found'
+      fullPath: '/not-found'
+      preLoaderRoute: typeof SystemNotFoundRouteImport
+      parentRoute: typeof SystemRoute
+    }
+    '/api/core': {
+      id: '/api/core'
+      path: '/api/core'
+      fullPath: '/api/core'
+      preLoaderRoute: typeof ApiCoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard/dashboard/': {
+      id: '/_dashboard/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardDashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/auth/forgot-password/': {
       id: '/auth/forgot-password/'
-      path: '/auth/forgot-password'
+      path: '/forgot-password'
       fullPath: '/auth/forgot-password/'
       preLoaderRoute: typeof AuthForgotPasswordIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/login/': {
+      id: '/auth/login/'
+      path: '/login'
+      fullPath: '/auth/login/'
+      preLoaderRoute: typeof AuthLoginIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/logout/': {
+      id: '/auth/logout/'
+      path: '/logout'
+      fullPath: '/auth/logout/'
+      preLoaderRoute: typeof AuthLogoutIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_dashboard/_internal/laboratory/': {
+      id: '/_dashboard/_internal/laboratory/'
+      path: '/laboratory'
+      fullPath: '/laboratory/'
+      preLoaderRoute: typeof DashboardInternalLaboratoryIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
     }
   }
 }
+
+interface AuthRouteRouteChildren {
+  AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
+  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
+  AuthLogoutIndexRoute: typeof AuthLogoutIndexRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
+  AuthLoginIndexRoute: AuthLoginIndexRoute,
+  AuthLogoutIndexRoute: AuthLogoutIndexRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
+interface DashboardInternalRouteChildren {
+  DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
+}
+
+const DashboardInternalRouteChildren: DashboardInternalRouteChildren = {
+  DashboardInternalLaboratoryIndexRoute: DashboardInternalLaboratoryIndexRoute,
+}
+
+const DashboardInternalRouteWithChildren =
+  DashboardInternalRoute._addFileChildren(DashboardInternalRouteChildren)
+
+interface DashboardRouteChildren {
+  DashboardInternalRoute: typeof DashboardInternalRouteWithChildren
+  DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardInternalRoute: DashboardInternalRouteWithChildren,
+  DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 interface SiteRouteChildren {
   SiteIndexRoute: typeof SiteIndexRoute
@@ -91,9 +319,23 @@ const SiteRouteChildren: SiteRouteChildren = {
 
 const SiteRouteWithChildren = SiteRoute._addFileChildren(SiteRouteChildren)
 
+interface SystemRouteChildren {
+  SystemNotFoundRoute: typeof SystemNotFoundRoute
+}
+
+const SystemRouteChildren: SystemRouteChildren = {
+  SystemNotFoundRoute: SystemNotFoundRoute,
+}
+
+const SystemRouteWithChildren =
+  SystemRoute._addFileChildren(SystemRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
+  AuthRouteRoute: AuthRouteRouteWithChildren,
+  DashboardRoute: DashboardRouteWithChildren,
   SiteRoute: SiteRouteWithChildren,
-  AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
+  SystemRoute: SystemRouteWithChildren,
+  ApiCoreRoute: ApiCoreRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

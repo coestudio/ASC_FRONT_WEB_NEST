@@ -4,53 +4,59 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from 'zod';
-
+import * as zod from "zod";
 
 export const GetApiClientClientIdCollaboratorParams = zod.object({
-  "clientId": zod.uuid()
-})
+  clientId: zod.uuid(),
+});
 
 export const GetApiClientClientIdCollaboratorResponseItem = zod.object({
-  "clientId": zod.uuid(),
-  "userId": zod.uuid(),
-  "user": zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-export const GetApiClientClientIdCollaboratorResponse = zod.array(GetApiClientClientIdCollaboratorResponseItem)
+  clientId: zod.uuid(),
+  userId: zod.uuid(),
+  user: zod.object({
+    userName: zod.string(),
+    profile: zod.object({
+      fullName: zod.string().optional(),
+      document: zod.string().nullish(),
+      email: zod.string().nullish(),
+      phone: zod.string().nullish(),
+      birthDate: zod.iso.date().nullish(),
+      avatarFile: zod
+        .union([
+          zod.null(),
+          zod.object({
+            name: zod.string().optional(),
+            extension: zod.string().optional(),
+            url: zod.string().optional(),
+            contentType: zod.string().nullish(),
+            id: zod.uuid(),
+            createdAt: zod.iso.datetime({ offset: true }),
+            updatedAt: zod.iso.datetime({ offset: true }),
+          }),
+        ])
+        .optional(),
+      firstName: zod.string().optional(),
+      lastName: zod.string().optional(),
+    }),
+    isActive: zod.boolean(),
+    isAdmin: zod.boolean(),
+    type: zod.int(),
+    roles: zod.array(zod.int()),
+    id: zod.uuid(),
+    createdAt: zod.iso.datetime({ offset: true }),
+    updatedAt: zod.iso.datetime({ offset: true }),
+  }),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
+export const GetApiClientClientIdCollaboratorResponse = zod.array(
+  GetApiClientClientIdCollaboratorResponseItem,
+);
 
 export const PostApiClientClientIdCollaboratorParams = zod.object({
-  "clientId": zod.uuid()
-})
+  clientId: zod.uuid(),
+});
 
 export const postApiClientClientIdCollaboratorBodyProfileFullNameMin = 3;
 export const postApiClientClientIdCollaboratorBodyProfileFullNameMax = 150;
@@ -66,100 +72,121 @@ export const postApiClientClientIdCollaboratorBodyProfilePhoneMax = 20;
 
 export const postApiClientClientIdCollaboratorBodyUserNameMax = 150;
 
-
-
 export const PostApiClientClientIdCollaboratorBody = zod.object({
-  "profile": zod.object({
-  "fullName": zod.string().min(postApiClientClientIdCollaboratorBodyProfileFullNameMin).max(postApiClientClientIdCollaboratorBodyProfileFullNameMax),
-  "document": zod.string().min(postApiClientClientIdCollaboratorBodyProfileDocumentMin).max(postApiClientClientIdCollaboratorBodyProfileDocumentMax).nullish(),
-  "email": zod.string().min(postApiClientClientIdCollaboratorBodyProfileEmailMin).max(postApiClientClientIdCollaboratorBodyProfileEmailMax),
-  "phone": zod.string().min(postApiClientClientIdCollaboratorBodyProfilePhoneMin).max(postApiClientClientIdCollaboratorBodyProfilePhoneMax).nullish(),
-  "birthDate": zod.iso.date().nullish()
-}),
-  "userName": zod.string().max(postApiClientClientIdCollaboratorBodyUserNameMax)
-})
+  profile: zod.object({
+    fullName: zod
+      .string()
+      .min(postApiClientClientIdCollaboratorBodyProfileFullNameMin)
+      .max(postApiClientClientIdCollaboratorBodyProfileFullNameMax),
+    document: zod
+      .string()
+      .min(postApiClientClientIdCollaboratorBodyProfileDocumentMin)
+      .max(postApiClientClientIdCollaboratorBodyProfileDocumentMax)
+      .nullish(),
+    email: zod
+      .string()
+      .min(postApiClientClientIdCollaboratorBodyProfileEmailMin)
+      .max(postApiClientClientIdCollaboratorBodyProfileEmailMax),
+    phone: zod
+      .string()
+      .min(postApiClientClientIdCollaboratorBodyProfilePhoneMin)
+      .max(postApiClientClientIdCollaboratorBodyProfilePhoneMax)
+      .nullish(),
+    birthDate: zod.iso.date().nullish(),
+  }),
+  userName: zod.string().max(postApiClientClientIdCollaboratorBodyUserNameMax),
+});
 
 export const PostApiClientClientIdCollaboratorResponse = zod.object({
-  "clientId": zod.uuid(),
-  "userId": zod.uuid(),
-  "user": zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  clientId: zod.uuid(),
+  userId: zod.uuid(),
+  user: zod.object({
+    userName: zod.string(),
+    profile: zod.object({
+      fullName: zod.string().optional(),
+      document: zod.string().nullish(),
+      email: zod.string().nullish(),
+      phone: zod.string().nullish(),
+      birthDate: zod.iso.date().nullish(),
+      avatarFile: zod
+        .union([
+          zod.null(),
+          zod.object({
+            name: zod.string().optional(),
+            extension: zod.string().optional(),
+            url: zod.string().optional(),
+            contentType: zod.string().nullish(),
+            id: zod.uuid(),
+            createdAt: zod.iso.datetime({ offset: true }),
+            updatedAt: zod.iso.datetime({ offset: true }),
+          }),
+        ])
+        .optional(),
+      firstName: zod.string().optional(),
+      lastName: zod.string().optional(),
+    }),
+    isActive: zod.boolean(),
+    isAdmin: zod.boolean(),
+    type: zod.int(),
+    roles: zod.array(zod.int()),
+    id: zod.uuid(),
+    createdAt: zod.iso.datetime({ offset: true }),
+    updatedAt: zod.iso.datetime({ offset: true }),
+  }),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const GetApiClientClientIdCollaboratorIdParams = zod.object({
-  "clientId": zod.uuid(),
-  "id": zod.uuid()
-})
+  clientId: zod.uuid(),
+  id: zod.uuid(),
+});
 
 export const GetApiClientClientIdCollaboratorIdResponse = zod.object({
-  "clientId": zod.uuid(),
-  "userId": zod.uuid(),
-  "user": zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  clientId: zod.uuid(),
+  userId: zod.uuid(),
+  user: zod.object({
+    userName: zod.string(),
+    profile: zod.object({
+      fullName: zod.string().optional(),
+      document: zod.string().nullish(),
+      email: zod.string().nullish(),
+      phone: zod.string().nullish(),
+      birthDate: zod.iso.date().nullish(),
+      avatarFile: zod
+        .union([
+          zod.null(),
+          zod.object({
+            name: zod.string().optional(),
+            extension: zod.string().optional(),
+            url: zod.string().optional(),
+            contentType: zod.string().nullish(),
+            id: zod.uuid(),
+            createdAt: zod.iso.datetime({ offset: true }),
+            updatedAt: zod.iso.datetime({ offset: true }),
+          }),
+        ])
+        .optional(),
+      firstName: zod.string().optional(),
+      lastName: zod.string().optional(),
+    }),
+    isActive: zod.boolean(),
+    isAdmin: zod.boolean(),
+    type: zod.int(),
+    roles: zod.array(zod.int()),
+    id: zod.uuid(),
+    createdAt: zod.iso.datetime({ offset: true }),
+    updatedAt: zod.iso.datetime({ offset: true }),
+  }),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const DeleteApiClientClientIdCollaboratorIdParams = zod.object({
-  "clientId": zod.uuid(),
-  "id": zod.uuid()
-})
+  clientId: zod.uuid(),
+  id: zod.uuid(),
+});
 
-export const DeleteApiClientClientIdCollaboratorIdResponse = zod.unknown()
-
+export const DeleteApiClientClientIdCollaboratorIdResponse = zod.unknown();

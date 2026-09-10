@@ -38,7 +38,9 @@ async function main() {
   }
 
   if (!stored) {
-    console.log(`${tag} ${Y}⚠ sem snapshot local do contrato — rode ${B}just map${R}${Y} para gerar os schemas.${R}`);
+    console.log(
+      `${tag} ${Y}⚠ sem snapshot local do contrato — rode ${B}just map${R}${Y} para gerar os schemas.${R}`,
+    );
     done();
   }
 
@@ -46,7 +48,9 @@ async function main() {
     const live = hashSpec(await fetchSpec(url));
 
     if (live === stored.hash) {
-      console.log(`${tag} ${G}✓ contrato em dia${R} ${D}(v${stored.version}, ${stored.pulledAt})${R}`);
+      console.log(
+        `${tag} ${G}✓ contrato em dia${R} ${D}(v${stored.version}, ${stored.pulledAt})${R}`,
+      );
     } else {
       console.log(
         `${tag} ${Y}${B}⚠ o contrato de API MUDOU${R}${Y} desde o último ${B}just map${R}${Y} — ` +
@@ -57,7 +61,9 @@ async function main() {
       console.log(`${tag}   ${D}→ rode ${R}${B}just map${R}${D} para regenerar.${R}`);
     }
   } catch (err) {
-    console.log(`${tag} ${D}· não foi possível verificar (${(err as Error).message}) — seguindo.${R}`);
+    console.log(
+      `${tag} ${D}· não foi possível verificar (${(err as Error).message}) — seguindo.${R}`,
+    );
   }
 
   done();

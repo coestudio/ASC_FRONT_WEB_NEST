@@ -3,11 +3,7 @@
 import { SunFill, MoonStarsFill } from "react-bootstrap-icons";
 import { Button } from "@/components/ui/button";
 import type { ThemeMode } from "@/styles/globals/color-modes";
-import {
-  useThemeMode,
-  setThemeMode,
-  useSyncThemeToDocument,
-} from "@/styles/globals/theme-store";
+import { useThemeMode, setThemeMode, useSyncThemeToDocument } from "@/styles/globals/theme-store";
 
 const ORDER: ThemeMode[] = ["light", "dark"];
 

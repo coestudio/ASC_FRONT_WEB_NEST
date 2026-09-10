@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoPhotoSlot } from './cargoPhotoSlot';
+import type { CargoPhotoSlot } from "./cargoPhotoSlot";
 
 export type PostApiOperationOperationIdCargoIdPhotosBody = {
   file?: Blob | File;
