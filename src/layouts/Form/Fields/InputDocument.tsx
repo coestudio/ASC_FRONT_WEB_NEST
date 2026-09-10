@@ -2,9 +2,9 @@
 import { FieldValues } from "react-hook-form";
 import { IMaskInput } from 'react-imask';
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
-import { isValidDocument } from "Layouts/Form/Helpers/Validate";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
+import { isValidDocument } from "layouts/Form/Helpers/Validate";
 
 const masks = [
     { mask: '000.000.000-00' },
@@ -16,7 +16,7 @@ function InputDocument<T extends FieldValues>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     // Adiciona validação customizada

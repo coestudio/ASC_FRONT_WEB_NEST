@@ -2,17 +2,17 @@
 import { FieldValues } from "react-hook-form";
 import { IMaskInput } from 'react-imask';
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
-import { isValidCPF } from "Layouts/Form/Helpers/Validate";
+import { isValidCPF } from "layouts/Form/Helpers/Validate";
 
 function InputCPF<T extends FieldValues>({
     fieldName,
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     // Adiciona validação customizada

@@ -3,8 +3,8 @@ import { FieldValues } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
 const toDateTimeObj = (value: string | Date | null): Date | null => {
     if (value instanceof Date) return value;
@@ -20,7 +20,7 @@ function InputDateTime<T extends FieldValues>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     return (

@@ -13,6 +13,11 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      "prettier/prettier": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

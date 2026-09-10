@@ -10,7 +10,10 @@
     "build": "next build",
     "prestart": "npm run check:api",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "check": "tsc --noEmit",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -23,8 +26,12 @@
     "react": "19.2.8",
     "react-bootstrap": "^2.10.10",
     "react-bootstrap-icons": "^1.11.6",
+    "react-datepicker": "^9.1.0",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.87.0",
+    "react-imask": "^7.6.1",
+    "react-number-format": "^5.4.5",
+    "react-select": "^5.10.2",
     "react-toastify": "^11.1.0",
     "resolver": "^0.1.12",
     "zod": "^4.6.1"

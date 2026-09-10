@@ -2,9 +2,9 @@
 import React, { useLayoutEffect } from "react";
 import { FieldValues } from "react-hook-form";
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
-import TriSwitch, { TriSwitchEdge } from "Layouts/Form/Fields/TriSwitch";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
+import TriSwitch, { TriSwitchEdge } from "layouts/Form/Fields/TriSwitch";
 
 export type { TriSwitchEdge };
 
@@ -21,7 +21,7 @@ function InputSwitchTri<T extends FieldValues, V = unknown>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     left,
     right,
     centerLabel,

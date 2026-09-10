@@ -3,8 +3,8 @@ import { FieldValues } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import InputDTO from "Layouts/Form/types/Input";
-import Input from "Layouts/Form/Fields/Input";
+import InputDTO from "layouts/Form/types/Input";
+import Input from "layouts/Form/Fields/Input";
 
 const toTimeObj = (value: string | Date | null): Date | null => {
     if (value instanceof Date) return value;
@@ -25,7 +25,7 @@ function InputTime<T extends FieldValues>({
     methods,
     label,
     placeholder,
-    config,
+    config = {},
     ...colProps
 }: InputDTO<T>) {
     return (
@@ -47,10 +47,10 @@ function InputTime<T extends FieldValues>({
                         timeIntervals={5}
                         timeCaption="Hora"
                         dateFormat="HH:mm"
-                        placeholderText={config.placeholder || "HH:MM"}
+                        placeholderText={placeholder || "HH:MM"}
                         autoComplete="off"
                         locale="pt-BR"
-                        className="form-control w-100"
+                        className={`form-control w-100 ${config?.className}`}
                         wrapperClassName="w-100"
                     />
                     <i

@@ -137,6 +137,11 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   async (error) => {
+    // Se a requisição foi cancelada propositalmente (ex: navegação, desmonte de componente, React Query abort), ignora e não exibe toast.
+    if (axios.isCancel(error) || error?.code === "ERR_CANCELED" || error?.name === "CanceledError") {
+      return Promise.reject(error);
+    }
+
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
 
