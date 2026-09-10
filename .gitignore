@@ -48,3 +48,4 @@ yarn-error.log*
 *.tsbuildinfo
 .DS
 src/vite-env.d.ts
+.env.prod.json
