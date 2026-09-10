@@ -8,17 +8,17 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from '../routes/__root'
-import { Route as SiteRouteImport } from '../routes/_site'
-import { Route as SiteIndexRouteImport } from '../routes/_site/index'
-import { Route as SiteContatoRouteImport } from '../routes/_site/contato'
-import { Route as SiteDuvidasRouteImport } from '../routes/_site/duvidas'
-import { Route as SiteGaleriasRouteImport } from '../routes/_site/galerias'
-import { Route as SiteHomeRouteImport } from '../routes/_site/home'
-import { Route as SitePoliticasIndexRouteImport } from '../routes/_site/politicas/index'
-import { Route as SitePoliticasSlugRouteImport } from '../routes/_site/politicas/$slug'
-import { Route as SiteServicosIndexRouteImport } from '../routes/_site/servicos/index'
-import { Route as SiteServicosSlugRouteImport } from '../routes/_site/servicos/$slug'
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SiteRouteImport } from './routes/_site'
+import { Route as SiteIndexRouteImport } from './routes/_site/index'
+import { Route as SiteContatoRouteImport } from './routes/_site/contato'
+import { Route as SiteDuvidasRouteImport } from './routes/_site/duvidas'
+import { Route as SiteGaleriasRouteImport } from './routes/_site/galerias'
+import { Route as SiteHomeRouteImport } from './routes/_site/home'
+import { Route as SitePoliticasIndexRouteImport } from './routes/_site/politicas/index'
+import { Route as SitePoliticasSlugRouteImport } from './routes/_site/politicas/$slug'
+import { Route as SiteServicosIndexRouteImport } from './routes/_site/servicos/index'
+import { Route as SiteServicosSlugRouteImport } from './routes/_site/servicos/$slug'
 
 const SiteRoute = SiteRouteImport.update({
   id: '/_site',
@@ -253,3 +253,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

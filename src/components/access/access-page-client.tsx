@@ -330,9 +330,10 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
           style={{
             border: "1px solid var(--bs-border-color)",
             borderRadius: "0.75rem",
+            overflow: "hidden",
           }}
         >
-          <div className="table-responsive" style={{ minHeight: "160px" }}>
+          <div className="table-responsive">
             <Table hover className="align-middle mb-0">
               <thead>
                 <tr>
@@ -381,9 +382,8 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          user.isActive ? "text-bg-success" : "text-bg-secondary"
-                        }`}
+                        className={`badge ${user.isActive ? "text-bg-success" : "text-bg-secondary"
+                          }`}
                       >
                         {user.isActive ? t.active : t.inactive}
                       </span>
@@ -405,14 +405,6 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
                           onClick={() => setResettingUser(user)}
                         >
                           <Key aria-hidden />
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-outline-danger btn-sm"
-                          title="Excluir"
-                          onClick={() => setDeletingUser(user)}
-                        >
-                          <Trash aria-hidden />
                         </button>
                         <Dropdown align="end" className="d-inline-block">
                           <Dropdown.Toggle
@@ -551,9 +543,8 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
 
                 <div className="mt-auto pt-2 d-flex align-items-center justify-content-between">
                   <span
-                    className={`badge ${
-                      user.isActive ? "text-bg-success" : "text-bg-secondary"
-                    }`}
+                    className={`badge ${user.isActive ? "text-bg-success" : "text-bg-secondary"
+                      }`}
                   >
                     {user.isActive ? t.active : t.inactive}
                   </span>
