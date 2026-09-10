@@ -1,27 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button, Dropdown, Form, Spinner, Table } from "react-bootstrap";
+import { useMemo, useState } from "react";
+import { Button, Dropdown, Form, InputGroup, Spinner, Table } from "react-bootstrap";
+import {
+  ShieldLock,
+  PlusLg,
+  Pencil,
+  Key,
+  Trash,
+  ThreeDotsVertical,
+  Envelope,
+  Telephone,
+  CardText,
+  CalendarDate,
+  Inbox,
+  Search,
+} from "react-bootstrap-icons";
 import { toast } from "react-toastify";
-import {
-  useGetApiUser,
-  usePostApiUser,
-  usePutApiUserId,
-  useDeleteApiUserId,
-  usePostApiUserIdResetPassword,
-  usePatchApiUserIdActivate,
-  usePatchApiUserIdDeactivate,
-  getGetApiUserQueryKey,
-} from "@/api/generated/endpoints/user/user";
-import {
-  apiRequest,
-} from "@/api/mutator";
-import type {
-  UserDTO,
-  GetApiUserParams,
-} from "@/api/generated/model";
-import { PageHeader } from "@/components/ui/page-header";
+import { useGetApiUser } from "@/api/generated/endpoints/user/user";
+import { apiRequest } from "@/api/mutator";
+import type { UserDTO, GetApiUserParams } from "@/api/generated/model";
 import { FormModal } from "@/components/ui/form-modal";
+import { ViewToggle } from "@/components/ui/view-toggle";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { useResponsiveViewMode } from "@/lib/view-mode";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 type AccessPageClientProps = {
@@ -59,14 +61,30 @@ function getInitials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+function formatDate(dateStr?: string | null): string {
+  if (!dateStr) return "—";
+  try {
+    const d = new Date(dateStr.includes("T") ? dateStr : `${dateStr}T00:00:00`);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString("pt-BR");
+  } catch {
+    return dateStr;
+  }
+}
+
 export function AccessPageClient({ dict }: AccessPageClientProps) {
   const t = dict.access;
+  const { viewMode, setViewMode, isMobile } = useResponsiveViewMode();
 
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<UserDTO | null>(null);
   const [form, setForm] = useState<UserFormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
+
+  // Modais de confirmação
+  const [deletingUser, setDeletingUser] = useState<UserDTO | null>(null);
+  const [resettingUser, setResettingUser] = useState<UserDTO | null>(null);
 
   const params: GetApiUserParams = useMemo(
     () => ({
@@ -77,7 +95,6 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
   );
 
   const { data, isLoading, refetch } = useGetApiUser(params);
-
   const users = data?.items ?? [];
 
   const filtered = useMemo(() => {
@@ -91,39 +108,31 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
     });
   }, [users, search]);
 
-  useEffect(() => {
-    if (showForm) {
-      if (editing) {
-        setForm({
-          userName: editing.userName ?? "",
-          fullName: editing.profile?.fullName ?? "",
-          document: editing.profile?.document ?? "",
-          email: editing.profile?.email ?? "",
-          phone: editing.profile?.phone ?? "",
-          birthDate: editing.profile?.birthDate ?? "",
-          roles: (editing as unknown as { roles?: string[] }).roles ?? [],
-          isAdmin: editing.isAdmin ?? false,
-        });
-      } else {
-        setForm(EMPTY_FORM);
-      }
-    }
-  }, [showForm, editing]);
-
-  const set = (patch: Partial<UserFormState>) =>
-    setForm((f) => ({ ...f, ...patch }));
+  const setFormField = (patch: Partial<UserFormState>) =>
+    setForm((prev) => ({ ...prev, ...patch }));
 
   function openNew() {
     setEditing(null);
+    setForm(EMPTY_FORM);
     setShowForm(true);
   }
 
   function openEdit(user: UserDTO) {
     setEditing(user);
+    setForm({
+      userName: user.userName ?? "",
+      fullName: user.profile?.fullName ?? "",
+      document: user.profile?.document ?? "",
+      email: user.profile?.email ?? "",
+      phone: user.profile?.phone ?? "",
+      birthDate: user.profile?.birthDate ? user.profile.birthDate.split("T")[0] : "",
+      roles: (user as unknown as { roles?: string[] }).roles ?? [],
+      isAdmin: user.isAdmin ?? false,
+    });
     setShowForm(true);
   }
 
-  function handleClose() {
+  function handleCloseForm() {
     setShowForm(false);
     setEditing(null);
     setForm(EMPTY_FORM);
@@ -170,20 +179,19 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
         });
         toast.success("Usuário criado com sucesso.");
       }
-      setShowForm(false);
-      setEditing(null);
-      setForm(EMPTY_FORM);
+      handleCloseForm();
       refetch();
     } catch (err) {
       console.error("Falha ao salvar usuário:", err);
-      // Toast já tratado pelo interceptor
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function handleDelete(user: UserDTO) {
-    if (!confirm("Tem certeza que deseja excluir este usuário?")) return;
+  async function handleConfirmDelete() {
+    if (!deletingUser) return;
+    const user = deletingUser;
+    setDeletingUser(null);
 
     try {
       await apiRequest({
@@ -192,18 +200,15 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
       });
       toast.success("Usuário excluído com sucesso.");
       refetch();
-    } catch {
-      // Toast já tratado pelo interceptor
+    } catch (err) {
+      console.error("Erro ao excluir usuário:", err);
     }
   }
 
-  async function handleResetPassword(user: UserDTO) {
-    if (
-      !confirm(
-        `Tem certeza que deseja resetar a senha de ${user.profile?.fullName || "este usuário"}?`
-      )
-    )
-      return;
+  async function handleConfirmResetPassword() {
+    if (!resettingUser) return;
+    const user = resettingUser;
+    setResettingUser(null);
 
     try {
       const result = await apiRequest<{ message?: string }>({
@@ -211,8 +216,8 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
         method: "POST",
       });
       toast.success(result?.message || "Senha resetada com sucesso.");
-    } catch {
-      // Toast já tratado pelo interceptor
+    } catch (err) {
+      console.error("Erro ao resetar senha:", err);
     }
   }
 
@@ -232,13 +237,14 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
         toast.success("Usuário ativado.");
       }
       refetch();
-    } catch {
-      // Toast já tratado pelo interceptor
+    } catch (err) {
+      console.error("Erro ao alterar status:", err);
     }
   }
 
   return (
     <>
+      {/* Cabeçalho da página */}
       <section className="mb-4">
         <div
           className="text-uppercase fw-semibold mb-1"
@@ -251,56 +257,49 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
           {t.section}
         </div>
         <h1 className="h4 fw-semibold mt-1 mb-1 d-flex align-items-center gap-2">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
+          <ShieldLock aria-hidden />
           {t.title}
         </h1>
-        <p
-          className="small mb-0"
-          style={{ color: "var(--bs-secondary)" }}
-        >
+        <p className="small mb-0" style={{ color: "var(--bs-secondary)" }}>
           {t.description}
         </p>
       </section>
 
-      <div className="d-flex align-items-center gap-2 mb-4">
-        <Form.Control
-          placeholder={t.searchPlaceholder}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-grow-1"
-        />
-        <Button
-          variant="success"
-          className="d-flex align-items-center gap-1 text-nowrap flex-shrink-0"
-          onClick={openNew}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
+      {/* Barra de Ações: Busca + ViewToggle + Novo Usuário */}
+      <div className="d-flex flex-column flex-md-row gap-3 mb-4 align-items-stretch align-items-md-center">
+        <div className="flex-grow-1">
+          <InputGroup>
+            <InputGroup.Text
+              style={{
+                backgroundColor: "transparent",
+                borderColor: "var(--bs-border-color)",
+                color: "var(--bs-secondary)",
+              }}
+            >
+              <Search aria-hidden />
+            </InputGroup.Text>
+            <Form.Control
+              type="text"
+              placeholder={t.searchPlaceholder}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </InputGroup>
+        </div>
+        <div className="d-flex gap-2 align-items-center justify-content-end flex-shrink-0">
+          <ViewToggle value={viewMode} onChange={setViewMode} hidden={isMobile} />
+          <Button
+            variant="success"
+            className="d-flex align-items-center justify-content-center gap-1 text-nowrap flex-grow-1 flex-md-grow-0"
+            onClick={openNew}
           >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          {t.newUser}
-        </Button>
+            <PlusLg aria-hidden />
+            {t.newUser}
+          </Button>
+        </div>
       </div>
 
+      {/* Conteúdo: Loading / Vazio / Tabela (List) / Cards */}
       {isLoading ? (
         <div
           className="p-5 text-center"
@@ -322,45 +321,33 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
             color: "var(--bs-secondary)",
           }}
         >
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="mb-3 d-block mx-auto"
-            style={{ opacity: 0.4 }}
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
+          <Inbox className="display-6 mb-3 d-block mx-auto opacity-50" />
           <p className="mb-0">{t.emptyState}</p>
         </div>
-      ) : (
+      ) : viewMode === "list" ? (
+        /* Visualização em TABELA (React Bootstrap Table) */
         <div
           style={{
             border: "1px solid var(--bs-border-color)",
             borderRadius: "0.75rem",
-            overflow: "hidden",
           }}
         >
-          <div className="table-responsive">
+          <div className="table-responsive" style={{ minHeight: "160px" }}>
             <Table hover className="align-middle mb-0">
               <thead>
                 <tr>
                   <th>{t.colName}</th>
                   <th>{t.colUsername}</th>
                   <th>{t.colEmail}</th>
-                  <th className="d-none d-md-table-cell">{t.colProfile}</th>
+                  <th>Telefone</th>
+                  <th>Documento</th>
                   <th>{t.colStatus}</th>
-                  <th className="text-end">{t.colType}</th>
+                  <th className="text-end">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((user) => (
-                  <tr key={user.id} style={{ cursor: "pointer" }} onClick={() => openEdit(user)}>
+                  <tr key={user.id}>
                     <td className="fw-semibold">
                       <div className="d-flex align-items-center gap-2">
                         <div
@@ -369,7 +356,7 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
                             width: 32,
                             height: 32,
                             backgroundColor: "var(--bs-success)",
-                            color: "#fff",
+                            color: "var(--sidebar-active-fg)",
                             fontSize: "0.75rem",
                             fontWeight: 700,
                             flexShrink: 0,
@@ -377,17 +364,20 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
                         >
                           {getInitials(user.profile?.fullName ?? "")}
                         </div>
-                        {user.profile?.fullName ?? "-"}
+                        <span>{user.profile?.fullName ?? "—"}</span>
                       </div>
                     </td>
                     <td style={{ color: "var(--bs-secondary)" }}>
                       @{user.userName || "?"}
                     </td>
                     <td style={{ color: "var(--bs-secondary)" }}>
-                      {user.profile?.email || "\u2014"}
+                      {user.profile?.email || "—"}
                     </td>
-                    <td className="d-none d-md-table-cell" style={{ color: "var(--bs-secondary)" }}>
-                      {user.isAdmin ? t.admin : t.internal}
+                    <td style={{ color: "var(--bs-secondary)" }}>
+                      {user.profile?.phone || "—"}
+                    </td>
+                    <td style={{ color: "var(--bs-secondary)" }}>
+                      {user.profile?.document || "—"}
                     </td>
                     <td>
                       <span
@@ -398,44 +388,64 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
                         {user.isActive ? t.active : t.inactive}
                       </span>
                     </td>
-                    <td className="text-end" onClick={(e) => e.stopPropagation()}>
-                      <Dropdown align="end">
-                        <Dropdown.Toggle
-                          variant="ghost"
-                          size="sm"
-                          className="btn btn-sm"
+                    <td className="text-end">
+                      <div className="d-inline-flex align-items-center gap-1">
+                        <button
+                          type="button"
+                          className="btn btn-outline-success btn-sm"
+                          title="Editar"
+                          onClick={() => openEdit(user)}
                         >
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
+                          <Pencil aria-hidden />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline-success btn-sm"
+                          title="Resetar senha"
+                          onClick={() => setResettingUser(user)}
+                        >
+                          <Key aria-hidden />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          title="Excluir"
+                          onClick={() => setDeletingUser(user)}
+                        >
+                          <Trash aria-hidden />
+                        </button>
+                        <Dropdown align="end" className="d-inline-block">
+                          <Dropdown.Toggle
+                            variant="outline-success"
+                            size="sm"
+                            className="btn btn-sm"
+                            title="Mais opções"
                           >
-                            <circle cx="12" cy="5" r="1" />
-                            <circle cx="12" cy="12" r="1" />
-                            <circle cx="12" cy="19" r="1" />
-                          </svg>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => openEdit(user)}>
-                            {t.editUser}
-                          </Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleResetPassword(user)}>
-                            Resetar senha
-                          </Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleToggleActive(user)}>
-                            {user.isActive ? t.inactive : t.active}
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            className="text-danger"
-                            onClick={() => handleDelete(user)}
-                          >
-                            Excluir
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
+                            <ThreeDotsVertical aria-hidden />
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu>
+                            <Dropdown.Item onClick={() => openEdit(user)}>
+                              <Pencil className="me-2" aria-hidden />
+                              {t.editUser}
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={() => setResettingUser(user)}>
+                              <Key className="me-2" aria-hidden />
+                              Resetar senha
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={() => handleToggleActive(user)}>
+                              {user.isActive ? t.inactive : t.active}
+                            </Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item
+                              className="text-danger"
+                              onClick={() => setDeletingUser(user)}
+                            >
+                              <Trash className="me-2" aria-hidden />
+                              Excluir
+                            </Dropdown.Item>
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -443,15 +453,133 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
             </Table>
           </div>
         </div>
+      ) : (
+        /* Visualização em CARDS (Grid) */
+        <div className="row g-3">
+          {filtered.map((user) => (
+            <div key={user.id} className="col-12 col-md-6 col-xl-4">
+              <div
+                className="h-100 d-flex flex-column gap-3 p-3"
+                style={{
+                  border: "1px solid var(--bs-border-color)",
+                  borderRadius: "0.75rem",
+                  backgroundColor: "var(--bs-body-bg)",
+                }}
+              >
+                <div className="d-flex justify-content-between align-items-start gap-2">
+                  <div className="d-flex align-items-center gap-3">
+                    <div
+                      className="d-inline-flex align-items-center justify-content-center rounded-circle"
+                      style={{
+                        width: 40,
+                        height: 40,
+                        backgroundColor: "var(--bs-success)",
+                        color: "var(--sidebar-active-fg)",
+                        fontSize: "0.875rem",
+                        fontWeight: 700,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {getInitials(user.profile?.fullName || "")}
+                    </div>
+                    <div>
+                      <h3 className="h6 fw-semibold mb-0">
+                        {user.profile?.fullName || "—"}
+                      </h3>
+                      <div
+                        className="small"
+                        style={{ color: "var(--bs-secondary)" }}
+                      >
+                        @{user.userName || "?"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <Dropdown align="end">
+                    <Dropdown.Toggle
+                      variant="outline-success"
+                      size="sm"
+                      className="btn btn-sm"
+                    >
+                      <ThreeDotsVertical aria-hidden />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => openEdit(user)}>
+                        <Pencil className="me-2" aria-hidden />
+                        {t.editUser}
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => setResettingUser(user)}>
+                        <Key className="me-2" aria-hidden />
+                        Resetar senha
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => handleToggleActive(user)}>
+                        {user.isActive ? t.inactive : t.active}
+                      </Dropdown.Item>
+                      <Dropdown.Divider />
+                      <Dropdown.Item
+                        className="text-danger"
+                        onClick={() => setDeletingUser(user)}
+                      >
+                        <Trash className="me-2" aria-hidden />
+                        Excluir
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+
+                <ul
+                  className="list-unstyled small mb-0 d-grid gap-1"
+                  style={{ color: "var(--bs-secondary)" }}
+                >
+                  <li className="d-flex align-items-center gap-2">
+                    <Envelope aria-hidden />
+                    <span>{user.profile?.email || "—"}</span>
+                  </li>
+                  <li className="d-flex align-items-center gap-2">
+                    <Telephone aria-hidden />
+                    <span>{user.profile?.phone || "—"}</span>
+                  </li>
+                  <li className="d-flex align-items-center gap-2">
+                    <CardText aria-hidden />
+                    <span>{user.profile?.document || "—"}</span>
+                  </li>
+                  <li className="d-flex align-items-center gap-2">
+                    <CalendarDate aria-hidden />
+                    <span>{formatDate(user.profile?.birthDate)}</span>
+                  </li>
+                </ul>
+
+                <div className="mt-auto pt-2 d-flex align-items-center justify-content-between">
+                  <span
+                    className={`badge ${
+                      user.isActive ? "text-bg-success" : "text-bg-secondary"
+                    }`}
+                  >
+                    {user.isActive ? t.active : t.inactive}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-outline-success btn-sm"
+                    onClick={() => openEdit(user)}
+                  >
+                    <Pencil className="me-1" aria-hidden />
+                    {t.editUser}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
+      {/* Modal de Formulário (Criar / Editar) */}
       <FormModal
         show={showForm}
-        onHide={handleClose}
+        onHide={handleCloseForm}
         title={editing?.id ? t.editUser : t.newUser}
         footer={
           <>
-            <Button variant="outline-secondary" onClick={handleClose}>
+            <Button variant="outline-secondary" onClick={handleCloseForm}>
               {t.form.cancel}
             </Button>
             <Button
@@ -473,60 +601,74 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
       >
         <div className="row g-3">
           <div className="col-12 col-md-6">
-            <Form.Label className="small fw-semibold">{t.form.username}</Form.Label>
+            <Form.Label className="small fw-semibold">
+              {t.form.username}
+            </Form.Label>
             <Form.Control
               value={form.userName}
-              onChange={(e) => set({ userName: e.target.value })}
-              placeholder="Nome de usuario"
+              onChange={(e) => setFormField({ userName: e.target.value })}
+              placeholder="Nome de usuário"
               disabled={!!editing?.id}
               required
             />
           </div>
           <div className="col-12 col-md-6">
-            <Form.Label className="small fw-semibold">{t.form.fullName}</Form.Label>
+            <Form.Label className="small fw-semibold">
+              {t.form.fullName}
+            </Form.Label>
             <Form.Control
               value={form.fullName}
-              onChange={(e) => set({ fullName: e.target.value })}
+              onChange={(e) => setFormField({ fullName: e.target.value })}
               placeholder="Nome completo"
               required
             />
           </div>
           <div className="col-12 col-md-6">
-            <Form.Label className="small fw-semibold">{t.form.document}</Form.Label>
+            <Form.Label className="small fw-semibold">
+              {t.form.document}
+            </Form.Label>
             <Form.Control
               value={form.document}
-              onChange={(e) => set({ document: e.target.value })}
+              onChange={(e) => setFormField({ document: e.target.value })}
               placeholder="000.000.000-00"
             />
           </div>
           <div className="col-12 col-md-6">
-            <Form.Label className="small fw-semibold">{t.form.email}</Form.Label>
+            <Form.Label className="small fw-semibold">
+              {t.form.email}
+            </Form.Label>
             <Form.Control
               type="email"
               value={form.email}
-              onChange={(e) => set({ email: e.target.value })}
+              onChange={(e) => setFormField({ email: e.target.value })}
               placeholder="nome@empresa.com"
               required
             />
           </div>
           <div className="col-12 col-md-6">
-            <Form.Label className="small fw-semibold">{t.form.phone}</Form.Label>
+            <Form.Label className="small fw-semibold">
+              {t.form.phone}
+            </Form.Label>
             <Form.Control
               value={form.phone}
-              onChange={(e) => set({ phone: e.target.value })}
+              onChange={(e) => setFormField({ phone: e.target.value })}
               placeholder="(00) 00000-0000"
             />
           </div>
           <div className="col-12 col-md-6">
-            <Form.Label className="small fw-semibold">{t.form.birthDate}</Form.Label>
+            <Form.Label className="small fw-semibold">
+              {t.form.birthDate}
+            </Form.Label>
             <Form.Control
               type="date"
               value={form.birthDate}
-              onChange={(e) => set({ birthDate: e.target.value })}
+              onChange={(e) => setFormField({ birthDate: e.target.value })}
             />
           </div>
           <div className="col-12 col-md-8">
-            <Form.Label className="small fw-semibold">{t.form.roles}</Form.Label>
+            <Form.Label className="small fw-semibold">
+              {t.form.roles}
+            </Form.Label>
             <div className="d-flex flex-wrap gap-3">
               {USER_ROLES.map((role) => (
                 <Form.Check
@@ -537,7 +679,7 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
                   checked={form.roles.includes(role)}
                   onChange={(e) => {
                     const current = form.roles;
-                    set({
+                    setFormField({
                       roles: e.target.checked
                         ? [...current, role]
                         : current.filter((r) => r !== role),
@@ -553,11 +695,35 @@ export function AccessPageClient({ dict }: AccessPageClientProps) {
               id="user-admin"
               label={t.form.isAdmin}
               checked={form.isAdmin}
-              onChange={(e) => set({ isAdmin: e.target.checked })}
+              onChange={(e) => setFormField({ isAdmin: e.target.checked })}
             />
           </div>
         </div>
       </FormModal>
+
+      {/* Modal de Confirmação de Exclusão */}
+      <ConfirmationModal
+        show={!!deletingUser}
+        title="Excluir Usuário"
+        message={`Tem certeza que deseja excluir o usuário ${deletingUser?.profile?.fullName || deletingUser?.userName || ""}?`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        confirmVariant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeletingUser(null)}
+      />
+
+      {/* Modal de Confirmação de Reset de Senha */}
+      <ConfirmationModal
+        show={!!resettingUser}
+        title="Resetar Senha"
+        message={`Tem certeza que deseja resetar a senha de ${resettingUser?.profile?.fullName || resettingUser?.userName || ""}?`}
+        confirmText="Resetar Senha"
+        cancelText="Cancelar"
+        confirmVariant="warning"
+        onConfirm={handleConfirmResetPassword}
+        onCancel={() => setResettingUser(null)}
+      />
     </>
   );
 }

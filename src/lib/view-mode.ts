@@ -5,11 +5,13 @@
 // preferências de UI persistidas no cliente — não Zustand).
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 export const VIEW_MODE_STORAGE_KEY = "viewMode";
 
 export type ViewMode = "cards" | "list";
+
+const MOBILE_BREAKPOINT_PX = 767.98;
 
 const listeners = new Set<() => void>();
 
@@ -28,12 +30,12 @@ function subscribe(listener: () => void) {
 
 function getSnapshot(): ViewMode {
   return (
-    (localStorage.getItem(VIEW_MODE_STORAGE_KEY) as ViewMode | null) ?? "cards"
+    (localStorage.getItem(VIEW_MODE_STORAGE_KEY) as ViewMode | null) ?? "list"
   );
 }
 
 function getServerSnapshot(): ViewMode {
-  return "cards";
+  return "list";
 }
 
 export function setViewMode(mode: ViewMode) {
@@ -43,4 +45,37 @@ export function setViewMode(mode: ViewMode) {
 
 export function useViewMode(): ViewMode {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
+/** Detecta tela pequena (<768px) onde cards são ideais e a tabela não cabe. */
+export function useIsMobile(breakpointPx: number = MOBILE_BREAKPOINT_PX): boolean {
+  const query = `(max-width: ${breakpointPx}px)`;
+  const [isMobile, setIsMobile] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia(query);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    setIsMobile(mql.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, [query]);
+
+  return isMobile;
+}
+
+/** Retorna o modo de visualização resolvido (força "cards" no mobile) e o estado isMobile. */
+export function useResponsiveViewMode() {
+  const preferredMode = useViewMode();
+  const isMobile = useIsMobile();
+  const currentMode: ViewMode = isMobile ? "cards" : preferredMode;
+
+  return {
+    viewMode: currentMode,
+    preferredMode,
+    setViewMode,
+    isMobile,
+  };
 }

@@ -25,20 +25,8 @@
   --bs-link-color: var(--bs-primary);
   --bs-link-color-rgb: var(--bs-primary-rgb);
   --bs-border-radius: 0.5rem;
-  /* Texto sobre um pill preenchido com --bs-primary/success (item ativo do
-     sidebar) — verde claro do tema light é escuro o bastante pra branco
-     ter contraste. */
+  /* Tokens do AppShell (sidebar do menu logado) — tema claro */
   --sidebar-active-fg: #ffffff;
-}
-
-/*
- * Tokens do AppShell (sidebar do menu logado). A sidebar acompanha o tema:
- * clara no light, escura no dark.
- *
- * Estado ativo (header de seção com filho ativo / sub-item ativo): pill
- * sólido preenchido com --bs-primary (verde de marca ASA) + texto branco.
- */
-[data-bs-theme="light"] {
   --sidebar-bg: #ffffff;
   --sidebar-fg: #1e293b;
   --sidebar-fg-muted: #64748b;
@@ -63,23 +51,11 @@
   --bs-info-rgb: 34, 211, 238;
   --bs-link-color: var(--bs-primary);
   --bs-link-color-rgb: var(--bs-primary-rgb);
-  /* No tema escuro --bs-success é um verde mais claro/saturado — texto
-     escuro tem mais contraste que branco sobre esse tom preenchido. */
+  /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
   --sidebar-active-fg: #0d2114;
   --sidebar-bg: #1a2029;
   --sidebar-fg: #e8ecf3;
   --sidebar-fg-muted: #8b96ab;
   --sidebar-hover: rgba(255, 255, 255, 0.08);
   --sidebar-border: rgba(255, 255, 255, 0.1);
-}
-
-/*
- * Sidebar fallback — evita flash antes do data-bs-theme ser avaliado.
- */
-:root {
-  --sidebar-bg: #ffffff;
-  --sidebar-fg: #1e293b;
-  --sidebar-fg-muted: #64748b;
-  --sidebar-hover: rgba(0, 0, 0, 0.05);
-  --sidebar-border: rgba(0, 0, 0, 0.08);
 }

@@ -233,9 +233,7 @@
   height: 2.25rem;
   border-radius: 50%;
   background-color: var(--bs-success);
-  /* --on-brand do Portal pro tema escuro (asa.css) — texto legível sobre o
-     verde de marca. */
-  color: #0d2114;
+  color: var(--sidebar-active-fg);
   display: flex;
   align-items: center;
   justify-content: center;
