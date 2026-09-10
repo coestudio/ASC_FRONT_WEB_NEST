@@ -8,6 +8,7 @@
     "dev": "next dev",
     "prebuild": "npm run check:api",
     "build": "next build",
+    "build:azure": "vite build && bun scripts/patch-nitro-azure-swa.mjs",
     "prestart": "npm run check:api",
     "start": "next start",
     "lint": "eslint .",
@@ -37,6 +38,7 @@
     "zod": "^4.6.1"
   },
   "devDependencies": {
+    "@lovable.dev/vite-tanstack-config": "^2.21.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
