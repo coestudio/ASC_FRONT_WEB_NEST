@@ -18,6 +18,7 @@
 /.output
 /.nitro
 /.tanstack
+/.wrangler
 
 # production
 /build
