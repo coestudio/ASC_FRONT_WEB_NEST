@@ -1,7 +1,7 @@
 {
-  "source": "http://localhost:5766/api/openapi/v1.json",
+  "source": "https://asc-api.alexstewart.com.br/api/openapi/v1.json",
   "openapi": "3.1.1",
   "version": "1.0.0",
-  "hash": "sha256:a912c9067839f759dbc16ea073bf4e4d0e52fab0f2f852694ddbc69c40bb14a1",
-  "pulledAt": "2026-09-10T16:56:38.805Z"
+  "hash": "sha256:c83a8198a37a0d6895e074713a42ad43a97b05ff2e6496d218b76a53ca237102",
+  "pulledAt": "2026-09-10T17:20:54.716Z"
 }
