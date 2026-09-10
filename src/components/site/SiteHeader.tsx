@@ -1,4 +1,4 @@
-// STUB — header real do site ainda não migrado do Next.js anterior.
+// STUB — header real do site ainda não migrado.
 import { Link } from "@tanstack/react-router";
 
 export function SiteHeader() {

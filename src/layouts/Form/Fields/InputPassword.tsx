@@ -2,7 +2,6 @@
 import React from "react";
 import { ControllerRenderProps, FieldValues, Path } from "react-hook-form";
 import { Form, InputGroup, Col } from "react-bootstrap";
-import Link from "next/link";
 import { Controller } from "react-hook-form";
 
 import classNames from 'classnames';
@@ -40,7 +39,7 @@ function InputPassword<T extends FieldValues>({
                         <div className="d-flex justify-content-between align-items-center">
                             <Form.Label className="mb-0">{label ||config.label || "Senha"}</Form.Label>
                             {recurses?.forgotPassword?.show ? (
-                                <Link
+                                <a
                                     className="text-muted"
                                     href={
                                         `/forget-password${recurses.forgotPassword.email
@@ -50,7 +49,7 @@ function InputPassword<T extends FieldValues>({
                                     }
                                 >
                                     <small>{recurses.forgotPassword.label || "Esqueceu a senha?"}</small>
-                                </Link>
+                                </a>
                             ) : null}
                         </div>
                         <Field

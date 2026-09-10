@@ -78,10 +78,14 @@
 - API handler: `src/Api/handlerResponse.ts`
 
 ## Tech Stack
-- Next.js 16.3.4 (Turbopack)
+- TanStack Start (TanStack Router + Query) sobre Vite, SSR via Nitro
 - React-Bootstrap + Bootstrap 5.3
 - TanStack Query
 - Orval (API hooks gerados)
-- next-auth v5 (JWT)
+- Auth: **pendente** (next-auth removido na migração; ver TODO em src/api/mutator.ts)
 - react-toastify
 - TypeScript
+
+> NOTA: este arquivo tem trechos escritos quando o projeto ainda era Next.js
+> (App Router, Server Actions, `src/app`, NextAuth, `src/proxy.ts`). Essas
+> partes são histórico — o alvo atual é TanStack Start e `src/routes`.

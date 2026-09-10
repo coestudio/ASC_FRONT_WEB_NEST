@@ -1,26 +1,26 @@
 import axios, { type AxiosRequestConfig } from "axios";
-import { signOut } from "next-auth/react";
 import { toast } from "react-toastify";
 
 /**
  * Transporte único dos hooks gerados pelo Orval.
  *
  * Interceptor de request:
- *  - Busca sessão em /api/auth/session (NextAuth)
+ *  - Busca a sessão do usuário (TODO: camada de auth ainda não implementada
+ *    no TanStack Start — ver getSession abaixo)
  *  - Checa expiresAt: se expirado, limpa cache e redireciona pro login
  *  - Anexa accessToken no header Authorization
  *
  * Interceptor de response:
- *  - 401 → signOut + redirect /login?toast=expired
+ *  - 401 → redirect /login?toast=expired
  *  - 4xx → toast.warning
  *  - 5xx → toast.error
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 if (!BASE_URL) {
   throw new Error(
-    "NEXT_PUBLIC_API_URL ausente — defina em web/.env (ver .env.example)."
+    "VITE_API_URL ausente — defina em .env (ver .env.exemple)."
   );
 }
 
@@ -35,16 +35,10 @@ let cachedSession: CachedSession | null = null;
 let sessionPromise: Promise<CachedSession> | null = null;
 
 async function fetchSession(): Promise<CachedSession> {
-  try {
-    const res = await fetch("/api/auth/session");
-    const session = await res.json();
-    return {
-      accessToken: session?.accessToken ?? null,
-      expiresAt: session?.expiresAt ?? null,
-    };
-  } catch {
-    return { accessToken: null, expiresAt: null };
-  }
+  // TODO: implementar a camada de auth no TanStack Start (store de sessão +
+  // login chamando o Core). Enquanto isso não existe, seguimos sem token —
+  // as chamadas autenticadas ao Core vão retornar 401 até isso ser feito.
+  return { accessToken: null, expiresAt: null };
 }
 
 function getSession(): Promise<CachedSession> {
@@ -119,10 +113,9 @@ function redirectToLogin() {
   isRedirectingToLogin = true;
   clearSessionCache();
   toast.error("Sessão expirada. Faça login novamente.");
-  signOut({
-    redirect: true,
-    callbackUrl: "/login?toast=expired",
-  });
+  if (typeof window !== "undefined") {
+    window.location.href = "/login?toast=expired";
+  }
 }
 
 // ── Response interceptor ──────────────────────────────────────────────

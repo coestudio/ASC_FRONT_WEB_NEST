@@ -1,5 +1,10 @@
 # SPEC 0002 — Conversão para SPA / static export (deploy Azure Static Web Apps)
 
+> ⚠️ **OBSOLETO** — todo este plano parte de Next.js 16 (`next.config.ts`,
+> `output: export`, `next/image`, `next/font`, Server Actions). O projeto já
+> migrou para TanStack Start (Vite + Nitro), o que resolve o problema de deploy
+> por outro caminho. Não seguir; reescrever se o deploy SWA voltar à pauta.
+
 - **status**: DRAFT (aguardando aprovação)
 - **autor**: agente (sessão de análise de deploy)
 - **aprovado por**: — (pendente: usuário)

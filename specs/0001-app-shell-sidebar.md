@@ -1,5 +1,10 @@
 # SPEC 0001 — AppShell (sidebar + topbar + menu de usuário)
 
+> ⚠️ **DESATUALIZADO** — escrito quando o projeto era Next.js 16 App Router. O
+> projeto migrou para TanStack Start (Vite + Nitro); os caminhos `src/app/**`,
+> Server Actions e NextAuth citados aqui não valem mais. Mantido como histórico
+> de requisitos de UI.
+
 - **status**: APPROVED
 - **autor**: project-orchestrator (sessão sem processo formal de SPEC previamente
   estabelecido neste repo `web`; artefato criado retroativamente pelo agente de

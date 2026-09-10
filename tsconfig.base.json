@@ -10,7 +10,6 @@
     "paths": {
       "@/*": ["./src/*"],
       "api/*": ["./src/api/*"],
-      "app/*": ["./src/app/*"],
       "assets/*": ["./src/assets/*"],
       "components/*": ["./src/components/*"],
       "config/*": ["./src/config/*"],
@@ -26,5 +25,5 @@
       "types/*": ["./src/types/*"]
     }
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/app"]
 }
