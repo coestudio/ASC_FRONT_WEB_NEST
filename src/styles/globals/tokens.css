@@ -1,0 +1,85 @@
+/*
+ * Tokens de tema, mapeados na API de CSS variables do Bootstrap 5.3.
+ * O atributo data-bs-theme ("light" | "dark") no <html> controla qual
+ * bloco se aplica — setado por src/styles/globals/color-modes.ts.
+ */
+
+:root,
+[data-bs-theme="light"] {
+  --bs-primary: #23ab79;
+  --bs-primary-rgb: 35, 171, 121;
+  --bs-secondary: #64748b;
+  --bs-secondary-rgb: 100, 116, 139;
+  /* Verde de marca ASA (Alex Stewart Agriculture) — mesmo valor exato do
+     warren/Portal, ver src/Assets/css/themes/brands/asa.css (--brand-primary
+     em [data-brand="asa"][data-theme="light"]). */
+  --bs-success: #23ab79;
+  --bs-success-rgb: 35, 171, 121;
+  --bs-danger: #dc2626;
+  --bs-danger-rgb: 220, 38, 38;
+  --bs-warning: #d97706;
+  --bs-warning-rgb: 217, 119, 6;
+  --bs-info: #0891b2;
+  --bs-info-rgb: 8, 145, 178;
+  --bs-body-font-family: Arial, Helvetica, sans-serif;
+  --bs-link-color: var(--bs-primary);
+  --bs-link-color-rgb: var(--bs-primary-rgb);
+  --bs-border-radius: 0.5rem;
+  /* Texto sobre um pill preenchido com --bs-primary/success (item ativo do
+     sidebar) — verde claro do tema light é escuro o bastante pra branco
+     ter contraste. */
+  --sidebar-active-fg: #ffffff;
+}
+
+/*
+ * Tokens do AppShell (sidebar do menu logado). A sidebar acompanha o tema:
+ * clara no light, escura no dark.
+ *
+ * Estado ativo (header de seção com filho ativo / sub-item ativo): pill
+ * sólido preenchido com --bs-primary (verde de marca ASA) + texto branco.
+ */
+[data-bs-theme="light"] {
+  --sidebar-bg: #ffffff;
+  --sidebar-fg: #1e293b;
+  --sidebar-fg-muted: #64748b;
+  --sidebar-hover: rgba(0, 0, 0, 0.05);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+}
+
+[data-bs-theme="dark"] {
+  --bs-primary: #61ce70;
+  --bs-primary-rgb: 97, 206, 112;
+  --bs-secondary: #94a3b8;
+  --bs-secondary-rgb: 148, 163, 184;
+  /* Verde de marca ASA no tema escuro — mesmo valor exato do warren/Portal
+     ([data-brand="asa"][data-theme="dark"] --brand-primary). */
+  --bs-success: #61ce70;
+  --bs-success-rgb: 97, 206, 112;
+  --bs-danger: #f87171;
+  --bs-danger-rgb: 248, 113, 113;
+  --bs-warning: #fbbf24;
+  --bs-warning-rgb: 251, 191, 36;
+  --bs-info: #22d3ee;
+  --bs-info-rgb: 34, 211, 238;
+  --bs-link-color: var(--bs-primary);
+  --bs-link-color-rgb: var(--bs-primary-rgb);
+  /* No tema escuro --bs-success é um verde mais claro/saturado — texto
+     escuro tem mais contraste que branco sobre esse tom preenchido. */
+  --sidebar-active-fg: #0d2114;
+  --sidebar-bg: #1a2029;
+  --sidebar-fg: #e8ecf3;
+  --sidebar-fg-muted: #8b96ab;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+}
+
+/*
+ * Sidebar fallback — evita flash antes do data-bs-theme ser avaliado.
+ */
+:root {
+  --sidebar-bg: #ffffff;
+  --sidebar-fg: #1e293b;
+  --sidebar-fg-muted: #64748b;
+  --sidebar-hover: rgba(0, 0, 0, 0.05);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+}

@@ -1,0 +1,25 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 2rem 0;
+  max-width: 480px;
+}
+
+.icon {
+  font-size: 2rem;
+  color: var(--bs-warning);
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.description {
+  color: var(--bs-secondary-color, var(--bs-secondary));
+  margin: 0;
+}

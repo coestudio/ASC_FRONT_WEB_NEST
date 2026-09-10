@@ -1,0 +1,35 @@
+.wrapper {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+/* Fixo no viewport (não no wrapper) — se o card crescer mais que a tela
+   (teclado mobile, conteúdo longo), o fundo não estica/escala junto. */
+.imageWrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
