@@ -23,7 +23,7 @@
       "plugins/*": ["./src/plugins/*"],
       "services/*": ["./src/services/*"],
       "styles/*": ["./src/styles/*"],
-      "types/*": ["./src/types/*"],
+      "types/*": ["./src/types/*"]
     }
   },
   "exclude": ["node_modules"]
