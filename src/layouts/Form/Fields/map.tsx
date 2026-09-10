@@ -1,10 +1,9 @@
+import React from "react";
+import { UseFormReturn } from "react-hook-form";
+import { Row } from "react-bootstrap";
 
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { Row } from 'react-bootstrap';
-
-import * as Layout from './Index';
-import { LayoutField } from './Index';
+import * as Layout from "./Index";
+import { LayoutField } from "./Index";
 
 const RenderFields: React.FC<{
   fields: LayoutField[];

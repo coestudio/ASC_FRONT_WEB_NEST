@@ -21,15 +21,12 @@ const WindowsConfirmation: React.FC<WindowsConfirmationProps> = ({
   const handleNo = () => onResult("no");
 
   return (
-    <Modal 
-      show={show} 
-      size={size || "sm"} 
-      onHide={handleClose} 
-      centered 
-      keyboard
-    >
+    <Modal show={show} size={size || "sm"} onHide={handleClose} centered keyboard>
       <Modal.Body className="d-flex flex-column justify-content-center align-items-center text-center p-4">
-        <p className="mb-4" style={{ maxWidth: '500px', wordWrap: 'break-word', lineHeight: '1.5' }}>
+        <p
+          className="mb-4"
+          style={{ maxWidth: "500px", wordWrap: "break-word", lineHeight: "1.5" }}
+        >
           {message}
         </p>
         <div className="d-flex justify-content-center gap-3">

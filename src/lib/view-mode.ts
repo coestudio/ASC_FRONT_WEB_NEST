@@ -29,9 +29,7 @@ function subscribe(listener: () => void) {
 }
 
 function getSnapshot(): ViewMode {
-  return (
-    (localStorage.getItem(VIEW_MODE_STORAGE_KEY) as ViewMode | null) ?? "list"
-  );
+  return (localStorage.getItem(VIEW_MODE_STORAGE_KEY) as ViewMode | null) ?? "list";
 }
 
 function getServerSnapshot(): ViewMode {
@@ -51,7 +49,7 @@ export function useViewMode(): ViewMode {
 export function useIsMobile(breakpointPx: number = MOBILE_BREAKPOINT_PX): boolean {
   const query = `(max-width: ${breakpointPx}px)`;
   const [isMobile, setIsMobile] = useState<boolean>(() =>
-    typeof window !== "undefined" ? window.matchMedia(query).matches : false
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false,
   );
 
   useEffect(() => {

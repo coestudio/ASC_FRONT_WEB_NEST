@@ -10,13 +10,7 @@ type PageHeaderProps = {
   actions?: ReactNode;
 };
 
-export function PageHeader({
-  section,
-  title,
-  description,
-  icon,
-  actions,
-}: PageHeaderProps) {
+export function PageHeader({ section, title, description, icon, actions }: PageHeaderProps) {
   return (
     <div className="mb-4">
       <p

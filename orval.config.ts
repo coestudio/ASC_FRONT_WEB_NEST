@@ -12,7 +12,7 @@ import { defineConfig } from "orval";
  * Saídas (todas 100% geradas — NUNCA editar à mão):
  *  - `src/api/generated/endpoints/**` — hooks TanStack Query (client
  *    `react-query`, transporte `axios` via `src/api/mutator.ts`). Rodam no
- *    browser (client components) — usam `NEXT_PUBLIC_API_URL` em runtime.
+ *    browser — usam `VITE_API_URL` em runtime.
  *  - `src/api/generated/model/**`    — tipos TypeScript dos DTOs/ViewModels.
  *  - `src/api/generated/zod/**`      — schemas `zod` (validação de input),
  *    fonte de verdade das regras que já existem nos DTOs do backend — ver
@@ -20,11 +20,11 @@ import { defineConfig } from "orval";
  *  - `src/api/generated/static/**`   — gerado por `scripts/staticSnapshots.ts`
  *    (snapshots `x-snapshot` de rotas de enum estáticas, ver justfile → `map`).
  *
- * Diferente do Portal: login e o fluxo de "esqueci a senha" NÃO usam esses
- * hooks — passam por Server Actions (`src/auth.ts`, `src/app/[lang]/**\/actions.ts`)
- * com `API_URL` (server-only), pra nunca expor essas chamadas sensíveis ao
- * browser. Os hooks react-query gerados aqui servem pra telas futuras de
- * leitura/listagem de dados que rodem client-side.
+ * Login e o fluxo de "esqueci a senha" devem passar por server functions do
+ * TanStack Start (com `API_URL` server-only), pra nunca expor essas chamadas
+ * sensíveis ao browser — essa camada ainda está pendente. Os hooks
+ * react-query gerados aqui servem pras telas de leitura/listagem de dados
+ * que rodem client-side.
  *
  * O Core ainda não define `operationId` nas actions — os nomes gerados saem de
  * verbo+rota (ex.: `getApiProduct`, `usePostApiProduct`).
@@ -33,7 +33,7 @@ import { defineConfig } from "orval";
 const apiUrl = process.env.API_URL;
 
 if (!apiUrl) {
-  throw new Error("API_URL ausente — defina em web/.env (ver .env.example).");
+  throw new Error("API_URL ausente — defina em .env (ver .env.exemple).");
 }
 
 const openApiUrl = `${apiUrl.replace(/\/$/, "")}/api/openapi/v1.json`;

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { UserDTO } from './userDTO';
+import type { UserDTO } from "./userDTO";
 
 export interface PagedDTOOfUserDTO {
   items: UserDTO[];

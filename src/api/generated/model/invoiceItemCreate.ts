@@ -7,46 +7,46 @@
 
 export interface InvoiceItemCreate {
   /**
-     * @maxLength 100
-     * @nullable
-     */
+   * @maxLength 100
+   * @nullable
+   */
   itemIdentifier?: string | null;
   /**
-     * @maxLength 100
-     * @nullable
-     */
+   * @maxLength 100
+   * @nullable
+   */
   itemCode?: string | null;
   /**
-     * @maxLength 50
-     * @nullable
-     */
+   * @maxLength 50
+   * @nullable
+   */
   lot?: string | null;
   /**
-     * @maxLength 50
-     * @nullable
-     */
+   * @maxLength 50
+   * @nullable
+   */
   stack?: string | null;
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   netWeight?: number | string | null;
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   tare?: number | string | null;
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   grossWeight?: number | string | null;
   /**
-     * @maxLength 500
-     * @nullable
-     */
+   * @maxLength 500
+   * @nullable
+   */
   observation?: string | null;
 }

@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { TokenData } from './tokenData';
-import type { UserAdminDTO } from './userAdminDTO';
+import type { TokenData } from "./tokenData";
+import type { UserAdminDTO } from "./userAdminDTO";
 
 export interface AuthControllerLoginResponse {
   user: UserAdminDTO;

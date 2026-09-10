@@ -4,17 +4,17 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InvoiceItemStatus } from './invoiceItemStatus';
+import type { InvoiceItemStatus } from "./invoiceItemStatus";
 
 export type GetApiOperationOperationIdInvoiceInvoiceIdItemsParams = {
-Status?: InvoiceItemStatus;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Offset?: number | string;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Limit?: number | string;
-Sort?: string;
+  Status?: InvoiceItemStatus;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Offset?: number | string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Limit?: number | string;
+  Sort?: string;
 };

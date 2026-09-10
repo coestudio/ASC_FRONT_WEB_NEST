@@ -1,7 +1,7 @@
 /**
  * Extrai os snapshots de rotas estáticas do OpenAPI para arquivos `.ts` e grava
  * o marcador `src/api/snapshot.json` (ver `scripts/apiContract.ts`). Mesma
- * ideia do `warren/Portal/Scripts/staticSnapshots.ts`, adaptado pra Next/tsx.
+ * ideia do `warren/Portal/Scripts/staticSnapshots.ts`.
  *
  * O Core marca rotas de lookup de enum com `[StaticEndpoint(typeof(XxxClass))]`
  * (`Core.Plugins.OpenApi`), e o `StaticEndpointTransformer` embute a lista

@@ -4,9 +4,9 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { OperationService } from './operationService';
-import type { OperationStatus } from './operationStatus';
-import type { OperationType } from './operationType';
+import type { OperationService } from "./operationService";
+import type { OperationStatus } from "./operationStatus";
+import type { OperationType } from "./operationType";
 
 export interface OperationDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */

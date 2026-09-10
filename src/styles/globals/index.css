@@ -1,3 +1,7 @@
+/* Bootstrap primeiro; tokens.css sobrescreve as CSS vars --bs-* logo abaixo. */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 @import "./tokens.css";
 @import "./base.css";
+@import "./auth.css";
 @import "react-toastify/ReactToastify.css";

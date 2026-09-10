@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioImportRowDTO } from './romaneioImportRowDTO';
+import type { RomaneioImportRowDTO } from "./romaneioImportRowDTO";
 
 export interface RomaneioImportForeignDTO {
   incoming?: RomaneioImportRowDTO;

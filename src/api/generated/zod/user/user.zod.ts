@@ -4,180 +4,200 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from 'zod';
-
+import * as zod from "zod";
 
 export const PostApiUserIdResetPasswordParams = zod.object({
-  "id": zod.uuid()
-})
+  id: zod.uuid(),
+});
 
 export const PostApiUserIdResetPasswordResponse = zod.object({
-  "message": zod.string().optional()
-})
+  message: zod.string().optional(),
+});
 
 export const PatchApiUserIdActivateParams = zod.object({
-  "id": zod.uuid()
-})
+  id: zod.uuid(),
+});
 
 export const PatchApiUserIdActivateResponse = zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const PatchApiUserIdDeactivateParams = zod.object({
-  "id": zod.uuid()
-})
+  id: zod.uuid(),
+});
 
 export const PatchApiUserIdDeactivateResponse = zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
-export const getApiUserRolesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiUserRolesResponseValueRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiUserRolesResponseItem = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiUserRolesResponseValueRegExpTwo)]),
-  "name": zod.record(zod.string(), zod.string())
-})
-export const GetApiUserRolesResponse = zod.array(GetApiUserRolesResponseItem)
+  value: zod.union([zod.int(), zod.stringFormat("int32", getApiUserRolesResponseValueRegExpTwo)]),
+  name: zod.record(zod.string(), zod.string()),
+});
+export const GetApiUserRolesResponse = zod.array(GetApiUserRolesResponseItem);
 
 export const GetApiUserRolesValueParams = zod.object({
-  "value": zod.int()
-})
+  value: zod.int(),
+});
 
-export const getApiUserRolesValueResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiUserRolesValueResponseValueRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiUserRolesValueResponse = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiUserRolesValueResponseValueRegExpTwo)]),
-  "name": zod.record(zod.string(), zod.string())
-})
+  value: zod.union([
+    zod.int(),
+    zod.stringFormat("int32", getApiUserRolesValueResponseValueRegExpTwo),
+  ]),
+  name: zod.record(zod.string(), zod.string()),
+});
 
-export const getApiUserTypesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiUserTypesResponseValueRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiUserTypesResponseItem = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiUserTypesResponseValueRegExpTwo)]),
-  "name": zod.record(zod.string(), zod.string())
-})
-export const GetApiUserTypesResponse = zod.array(GetApiUserTypesResponseItem)
+  value: zod.union([zod.int(), zod.stringFormat("int32", getApiUserTypesResponseValueRegExpTwo)]),
+  name: zod.record(zod.string(), zod.string()),
+});
+export const GetApiUserTypesResponse = zod.array(GetApiUserTypesResponseItem);
 
 export const GetApiUserTypesValueParams = zod.object({
-  "value": zod.int()
-})
+  value: zod.int(),
+});
 
-export const getApiUserTypesValueResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiUserTypesValueResponseValueRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiUserTypesValueResponse = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiUserTypesValueResponseValueRegExpTwo)]),
-  "name": zod.record(zod.string(), zod.string())
-})
+  value: zod.union([
+    zod.int(),
+    zod.stringFormat("int32", getApiUserTypesValueResponseValueRegExpTwo),
+  ]),
+  name: zod.record(zod.string(), zod.string()),
+});
 
-export const getApiUserQueryOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiUserQueryLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiUserQueryOffsetRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
+export const getApiUserQueryLimitRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiUserQueryParams = zod.object({
-  "Search": zod.string().optional(),
-  "IsActive": zod.boolean().optional(),
-  "IsAdmin": zod.boolean().optional(),
-  "Type": zod.int().optional(),
-  "Role": zod.int().optional(),
-  "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiUserQueryOffsetRegExpTwo)]).optional(),
-  "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiUserQueryLimitRegExpTwo)]).optional(),
-  "Sort": zod.string().optional()
-})
+  Search: zod.string().optional(),
+  IsActive: zod.boolean().optional(),
+  IsAdmin: zod.boolean().optional(),
+  Type: zod.int().optional(),
+  Role: zod.int().optional(),
+  Offset: zod
+    .union([zod.int(), zod.stringFormat("int32", getApiUserQueryOffsetRegExpTwo)])
+    .optional(),
+  Limit: zod
+    .union([zod.int(), zod.stringFormat("int32", getApiUserQueryLimitRegExpTwo)])
+    .optional(),
+  Sort: zod.string().optional(),
+});
 
-export const getApiUserResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiUserResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiUserResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiUserResponseTotalRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
+export const getApiUserResponseOffsetRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
+export const getApiUserResponseLimitRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiUserResponse = zod.object({
-  "items": zod.array(zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})),
-  "total": zod.union([zod.int(),zod.stringFormat('int32', getApiUserResponseTotalRegExpTwo)]),
-  "offset": zod.union([zod.int(),zod.stringFormat('int32', getApiUserResponseOffsetRegExpTwo)]),
-  "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiUserResponseLimitRegExpTwo)]),
-  "hasNext": zod.boolean().optional(),
-  "hasPrevious": zod.boolean().optional()
-})
+  items: zod.array(
+    zod.object({
+      userName: zod.string(),
+      profile: zod.object({
+        fullName: zod.string().optional(),
+        document: zod.string().nullish(),
+        email: zod.string().nullish(),
+        phone: zod.string().nullish(),
+        birthDate: zod.iso.date().nullish(),
+        avatarFile: zod
+          .union([
+            zod.null(),
+            zod.object({
+              name: zod.string().optional(),
+              extension: zod.string().optional(),
+              url: zod.string().optional(),
+              contentType: zod.string().nullish(),
+              id: zod.uuid(),
+              createdAt: zod.iso.datetime({ offset: true }),
+              updatedAt: zod.iso.datetime({ offset: true }),
+            }),
+          ])
+          .optional(),
+        firstName: zod.string().optional(),
+        lastName: zod.string().optional(),
+      }),
+      isActive: zod.boolean(),
+      isAdmin: zod.boolean(),
+      type: zod.int(),
+      roles: zod.array(zod.int()),
+      id: zod.uuid(),
+      createdAt: zod.iso.datetime({ offset: true }),
+      updatedAt: zod.iso.datetime({ offset: true }),
+    }),
+  ),
+  total: zod.union([zod.int(), zod.stringFormat("int32", getApiUserResponseTotalRegExpTwo)]),
+  offset: zod.union([zod.int(), zod.stringFormat("int32", getApiUserResponseOffsetRegExpTwo)]),
+  limit: zod.union([zod.int(), zod.stringFormat("int32", getApiUserResponseLimitRegExpTwo)]),
+  hasNext: zod.boolean().optional(),
+  hasPrevious: zod.boolean().optional(),
+});
 
 export const postApiUserBodyProfileFullNameMin = 3;
 export const postApiUserBodyProfileFullNameMax = 150;
@@ -194,86 +214,105 @@ export const postApiUserBodyProfilePhoneMax = 20;
 export const postApiUserBodyUserNameMin = 3;
 export const postApiUserBodyUserNameMax = 150;
 
-
-
 export const PostApiUserBody = zod.object({
-  "roles": zod.array(zod.int()).nullish(),
-  "isAdmin": zod.boolean().nullish(),
-  "profile": zod.object({
-  "fullName": zod.string().min(postApiUserBodyProfileFullNameMin).max(postApiUserBodyProfileFullNameMax),
-  "document": zod.string().min(postApiUserBodyProfileDocumentMin).max(postApiUserBodyProfileDocumentMax).nullish(),
-  "email": zod.string().min(postApiUserBodyProfileEmailMin).max(postApiUserBodyProfileEmailMax),
-  "phone": zod.string().min(postApiUserBodyProfilePhoneMin).max(postApiUserBodyProfilePhoneMax).nullish(),
-  "birthDate": zod.iso.date().nullish()
-}),
-  "userName": zod.string().min(postApiUserBodyUserNameMin).max(postApiUserBodyUserNameMax)
-})
+  roles: zod.array(zod.int()).nullish(),
+  isAdmin: zod.boolean().nullish(),
+  profile: zod.object({
+    fullName: zod
+      .string()
+      .min(postApiUserBodyProfileFullNameMin)
+      .max(postApiUserBodyProfileFullNameMax),
+    document: zod
+      .string()
+      .min(postApiUserBodyProfileDocumentMin)
+      .max(postApiUserBodyProfileDocumentMax)
+      .nullish(),
+    email: zod.string().min(postApiUserBodyProfileEmailMin).max(postApiUserBodyProfileEmailMax),
+    phone: zod
+      .string()
+      .min(postApiUserBodyProfilePhoneMin)
+      .max(postApiUserBodyProfilePhoneMax)
+      .nullish(),
+    birthDate: zod.iso.date().nullish(),
+  }),
+  userName: zod.string().min(postApiUserBodyUserNameMin).max(postApiUserBodyUserNameMax),
+});
 
 export const PostApiUserResponse = zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const GetApiUserIdParams = zod.object({
-  "id": zod.uuid()
-})
+  id: zod.uuid(),
+});
 
 export const GetApiUserIdResponse = zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const PutApiUserIdParams = zod.object({
-  "id": zod.uuid()
-})
+  id: zod.uuid(),
+});
 
 export const putApiUserIdBodyProfileFullNameMin = 3;
 export const putApiUserIdBodyProfileFullNameMax = 150;
@@ -290,69 +329,82 @@ export const putApiUserIdBodyProfilePhoneMax = 20;
 export const putApiUserIdBodyUserNameMin = 3;
 export const putApiUserIdBodyUserNameMax = 150;
 
-
-
 export const PutApiUserIdBody = zod.object({
-  "profile": zod.object({
-  "fullName": zod.string().min(putApiUserIdBodyProfileFullNameMin).max(putApiUserIdBodyProfileFullNameMax),
-  "document": zod.string().min(putApiUserIdBodyProfileDocumentMin).max(putApiUserIdBodyProfileDocumentMax).nullish(),
-  "email": zod.string().min(putApiUserIdBodyProfileEmailMin).max(putApiUserIdBodyProfileEmailMax),
-  "phone": zod.string().min(putApiUserIdBodyProfilePhoneMin).max(putApiUserIdBodyProfilePhoneMax).nullish(),
-  "birthDate": zod.iso.date().nullish()
-}),
-  "userName": zod.string().min(putApiUserIdBodyUserNameMin).max(putApiUserIdBodyUserNameMax)
-})
+  profile: zod.object({
+    fullName: zod
+      .string()
+      .min(putApiUserIdBodyProfileFullNameMin)
+      .max(putApiUserIdBodyProfileFullNameMax),
+    document: zod
+      .string()
+      .min(putApiUserIdBodyProfileDocumentMin)
+      .max(putApiUserIdBodyProfileDocumentMax)
+      .nullish(),
+    email: zod.string().min(putApiUserIdBodyProfileEmailMin).max(putApiUserIdBodyProfileEmailMax),
+    phone: zod
+      .string()
+      .min(putApiUserIdBodyProfilePhoneMin)
+      .max(putApiUserIdBodyProfilePhoneMax)
+      .nullish(),
+    birthDate: zod.iso.date().nullish(),
+  }),
+  userName: zod.string().min(putApiUserIdBodyUserNameMin).max(putApiUserIdBodyUserNameMax),
+});
 
 export const PutApiUserIdResponse = zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const DeleteApiUserIdParams = zod.object({
-  "id": zod.uuid()
-})
+  id: zod.uuid(),
+});
 
-export const DeleteApiUserIdResponse = zod.unknown()
+export const DeleteApiUserIdResponse = zod.unknown();
 
 export const PatchApiUserIdAvatarParams = zod.object({
-  "id": zod.uuid()
-})
+  id: zod.uuid(),
+});
 
 export const PatchApiUserIdAvatarBody = zod.object({
-  "avatarFile": zod.instanceof(Blob).optional()
-})
+  avatarFile: zod.instanceof(Blob).optional(),
+});
 
 export const PatchApiUserIdAvatarResponse = zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
+  name: zod.string().optional(),
+  extension: zod.string().optional(),
+  url: zod.string().optional(),
+  contentType: zod.string().nullish(),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoUnitDTO } from './cargoUnitDTO';
+import type { CargoUnitDTO } from "./cargoUnitDTO";
 
 export interface PagedDTOOfCargoUnitDTO {
   items: CargoUnitDTO[];

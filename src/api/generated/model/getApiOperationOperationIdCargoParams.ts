@@ -4,24 +4,24 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoIdentificationStatus } from './cargoIdentificationStatus';
-import type { CargoUnitStatus } from './cargoUnitStatus';
+import type { CargoIdentificationStatus } from "./cargoIdentificationStatus";
+import type { CargoUnitStatus } from "./cargoUnitStatus";
 
 export type GetApiOperationOperationIdCargoParams = {
-ContainerOperationId?: string;
-WithoutRomaneio?: boolean;
-WithoutInvoiceItem?: boolean;
-Divergent?: boolean;
-StuffedWithoutDocuments?: boolean;
-Status?: CargoUnitStatus;
-IdentificationStatus?: CargoIdentificationStatus;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Offset?: number | string;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Limit?: number | string;
-Sort?: string;
+  ContainerOperationId?: string;
+  WithoutRomaneio?: boolean;
+  WithoutInvoiceItem?: boolean;
+  Divergent?: boolean;
+  StuffedWithoutDocuments?: boolean;
+  Status?: CargoUnitStatus;
+  IdentificationStatus?: CargoIdentificationStatus;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Offset?: number | string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Limit?: number | string;
+  Sort?: string;
 };

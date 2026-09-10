@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InvoiceDTO } from './invoiceDTO';
+import type { InvoiceDTO } from "./invoiceDTO";
 
 export interface PagedDTOOfInvoiceDTO {
   items: InvoiceDTO[];

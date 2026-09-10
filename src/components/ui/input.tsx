@@ -4,10 +4,5 @@ import styles from "./ui.module.css";
 type InputProps = InputHTMLAttributes<HTMLInputElement>;
 
 export function Input({ className, ...props }: InputProps) {
-  return (
-    <input
-      className={[styles.input, className].filter(Boolean).join(" ")}
-      {...props}
-    />
-  );
+  return <input className={[styles.input, className].filter(Boolean).join(" ")} {...props} />;
 }

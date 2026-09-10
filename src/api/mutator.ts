@@ -1,76 +1,81 @@
-import axios, { type AxiosRequestConfig } from "axios";
-import { signOut } from "next-auth/react";
+import axios, { type AxiosAdapter, type AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 
 /**
  * Transporte único dos hooks gerados pelo Orval.
  *
- * Interceptor de request:
- *  - Busca sessão em /api/auth/session (NextAuth)
- *  - Checa expiresAt: se expirado, limpa cache e redireciona pro login
- *  - Anexa accessToken no header Authorization
+ * Todas as chamadas ao Core passam pelo proxy same-origin `/api/core`
+ * (src/routes/api/core.ts), que anexa o Bearer server-side a partir do cookie
+ * httpOnly selado. O token nunca chega ao JS do browser.
+ * Ver specs/auth-httponly-cookie-bff.md.
  *
- * Interceptor de response:
- *  - 401 → signOut + redirect /login?toast=expired
- *  - 4xx → toast.warning
- *  - 5xx → toast.error
+ * SSR: chamadas autenticadas ao Core no servidor devem usar server functions
+ * (ex.: fetchMeFn em src/lib/auth-fns.ts) — este adapter roda só no browser.
  */
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!BASE_URL) {
-  throw new Error(
-    "NEXT_PUBLIC_API_URL ausente — defina em web/.env (ver .env.example)."
-  );
+/** `/api/operation` + `?Search=x&Limit=20` a partir de config.url + config.params. */
+function buildCorePath(config: AxiosRequestConfig): string {
+  const url = config.url ?? "";
+  const params = config.params as Record<string, unknown> | undefined;
+  if (!params) return url;
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue;
+    if (Array.isArray(value)) value.forEach((v) => qs.append(key, String(v)));
+    else qs.append(key, String(value));
+  }
+  const s = qs.toString();
+  return s ? `${url}${url.includes("?") ? "&" : "?"}${s}` : url;
 }
 
-export const axiosInstance = axios.create({ baseURL: BASE_URL });
+const coreProxyAdapter: AxiosAdapter = async (config) => {
+  if (typeof window === "undefined") {
+    throw new Error(
+      "mutator: chamada autenticada ao Core no SSR — use um server fn " +
+        "(ver specs/auth-httponly-cookie-bff.md §7).",
+    );
+  }
 
-type CachedSession = {
-  accessToken: string | null;
-  expiresAt: string | null;
+  const method = (config.method ?? "get").toUpperCase();
+  const isForm = typeof FormData !== "undefined" && config.data instanceof FormData;
+
+  const headers = new Headers();
+  const rawHeaders = (config.headers?.toJSON?.() ?? config.headers ?? {}) as Record<string, unknown>;
+  for (const [key, value] of Object.entries(rawHeaders)) {
+    if (value != null && typeof value !== "object") headers.set(key, String(value));
+  }
+  headers.set("x-core-path", buildCorePath(config));
+  if (!isForm && config.data != null && !headers.has("content-type")) {
+    headers.set("content-type", "application/json");
+  }
+
+  const hasBody = method !== "GET" && method !== "HEAD" && config.data != null;
+  const res = await fetch("/api/core", {
+    method,
+    headers,
+    credentials: "same-origin",
+    signal: config.signal as AbortSignal | undefined,
+    body: hasBody ? (isForm ? (config.data as FormData) : JSON.stringify(config.data)) : undefined,
+  });
+
+  const contentType = res.headers.get("content-type") ?? "";
+  let data: unknown;
+  if (config.responseType === "blob") data = await res.blob();
+  else if (config.responseType === "arraybuffer") data = await res.arrayBuffer();
+  else if (contentType.includes("application/json")) data = await res.json().catch(() => null);
+  else data = await res.text();
+
+  return {
+    data,
+    status: res.status,
+    statusText: res.statusText,
+    headers: Object.fromEntries(res.headers.entries()),
+    config,
+    request: null,
+  };
 };
 
-let cachedSession: CachedSession | null = null;
-let sessionPromise: Promise<CachedSession> | null = null;
-
-async function fetchSession(): Promise<CachedSession> {
-  try {
-    const res = await fetch("/api/auth/session");
-    const session = await res.json();
-    return {
-      accessToken: session?.accessToken ?? null,
-      expiresAt: session?.expiresAt ?? null,
-    };
-  } catch {
-    return { accessToken: null, expiresAt: null };
-  }
-}
-
-function getSession(): Promise<CachedSession> {
-  if (cachedSession !== null) return Promise.resolve(cachedSession);
-  if (!sessionPromise) {
-    sessionPromise = fetchSession().then((s) => {
-      cachedSession = s;
-      sessionPromise = null;
-      return s;
-    });
-  }
-  return sessionPromise;
-}
-
-function clearSessionCache() {
-  cachedSession = null;
-  sessionPromise = null;
-}
-
-/** Checa se o token do Core expirou (com margem de 30s). */
-function isTokenExpired(expiresAt: string | null): boolean {
-  if (!expiresAt) return false; // sem expiresAt → não bloqueia
-  const expiresAtMs = new Date(expiresAt).getTime();
-  const nowMs = Date.now();
-  return expiresAtMs - 30_000 <= nowMs;
-}
+export const axiosInstance = axios.create({ adapter: coreProxyAdapter });
 
 /** Traduz mensagens conhecidas do EF Core/ASP.NET para PT-BR. */
 const KNOWN_PATTERNS: Array<[RegExp, string]> = [
@@ -96,14 +101,12 @@ function translateBackendMessage(message: string): string {
 /** Extrai mensagem legível de um erro ASP.NET (ProblemDetails). */
 function extractBackendMessage(err: unknown): string | undefined {
   if (!err || typeof err !== "object") return undefined;
-  const data = (err as { response?: { data?: Record<string, unknown> } })
-    .response?.data;
-  if (!data) return undefined;
+  const data = (err as { response?: { data?: Record<string, unknown> } }).response?.data;
+  if (!data || typeof data !== "object") return undefined;
 
   if (data.errors && typeof data.errors === "object") {
     const messages = Object.values(data.errors).flat().filter(Boolean);
-    if (messages.length > 0)
-      return translateBackendMessage(messages.join(" "));
+    if (messages.length > 0) return translateBackendMessage(messages.join(" "));
   }
 
   if (typeof data.message === "string") return data.message;
@@ -117,28 +120,26 @@ let isRedirectingToLogin = false;
 function redirectToLogin() {
   if (isRedirectingToLogin) return;
   isRedirectingToLogin = true;
-  clearSessionCache();
   toast.error("Sessão expirada. Faça login novamente.");
-  signOut({
-    redirect: true,
-    callbackUrl: "/login?toast=expired",
-  });
+  if (typeof window !== "undefined") {
+    window.location.href = "/auth/login";
+  }
 }
 
 // ── Response interceptor ──────────────────────────────────────────────
 axiosInstance.interceptors.response.use(
   (response) => {
-    if (
-      typeof response.data === "string" &&
-      response.data.trim() !== ""
-    ) {
+    if (typeof response.data === "string" && response.data.trim() !== "") {
       toast.success(response.data);
     }
     return response;
   },
   async (error) => {
-    // Se a requisição foi cancelada propositalmente (ex: navegação, desmonte de componente, React Query abort), ignora e não exibe toast.
-    if (axios.isCancel(error) || error?.code === "ERR_CANCELED" || error?.name === "CanceledError") {
+    if (
+      axios.isCancel(error) ||
+      error?.code === "ERR_CANCELED" ||
+      error?.name === "CanceledError"
+    ) {
       return Promise.reject(error);
     }
 
@@ -181,25 +182,8 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
-
-// ── Request interceptor ───────────────────────────────────────────────
-axiosInstance.interceptors.request.use(async (config) => {
-  const session = await getSession();
-
-  // Token expirado? Redireciona pro login antes de fazer a request.
-  if (isTokenExpired(session.expiresAt)) {
-    redirectToLogin();
-    return Promise.reject(new Error("Token expired"));
-  }
-
-  if (session.accessToken) {
-    config.headers.Authorization = `Bearer ${session.accessToken}`;
-  }
-
-  return config;
-});
 
 /**
  * Assinatura esperada pelo Orval (`httpClient: "axios"`): recebe a config da
