@@ -4,17 +4,17 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { DocumentType } from './documentType';
+import type { DocumentType } from "./documentType";
 
 export type GetApiOperationOperationIdDocumentParams = {
-Type?: DocumentType;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Offset?: number | string;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Limit?: number | string;
-Sort?: string;
+  Type?: DocumentType;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Offset?: number | string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Limit?: number | string;
+  Sort?: string;
 };

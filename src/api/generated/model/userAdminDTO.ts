@@ -4,10 +4,10 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { AddressDTO } from './addressDTO';
-import type { InternalRole } from './internalRole';
-import type { ProfileDTO } from './profileDTO';
-import type { UserType } from './userType';
+import type { AddressDTO } from "./addressDTO";
+import type { InternalRole } from "./internalRole";
+import type { ProfileDTO } from "./profileDTO";
+import type { UserType } from "./userType";
 
 export interface UserAdminDTO {
   address: AddressDTO;

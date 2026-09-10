@@ -4,13 +4,13 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ContainerOperationStatus } from './containerOperationStatus';
+import type { ContainerOperationStatus } from "./containerOperationStatus";
 
 export interface ContainerOperationUpdate {
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   tara?: number | string | null;
   /** @nullable */
   sealDate?: string | null;

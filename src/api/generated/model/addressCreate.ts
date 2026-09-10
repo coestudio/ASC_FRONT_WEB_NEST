@@ -7,44 +7,44 @@
 
 export interface AddressCreate {
   /**
-     * @maxLength 2
-     * @nullable
-     * @pattern ^[A-Z]{2}$
-     */
+   * @maxLength 2
+   * @nullable
+   * @pattern ^[A-Z]{2}$
+   */
   country?: string | null;
   /**
-     * @maxLength 10
-     * @nullable
-     */
+   * @maxLength 10
+   * @nullable
+   */
   postalCode: string | null;
   /**
-     * @maxLength -1
-     * @nullable
-     */
+   * @maxLength -1
+   * @nullable
+   */
   state?: string | null;
   /**
-     * @maxLength 100
-     * @nullable
-     */
+   * @maxLength 100
+   * @nullable
+   */
   neighborhood?: string | null;
   /**
-     * @maxLength 200
-     * @nullable
-     */
+   * @maxLength 200
+   * @nullable
+   */
   street?: string | null;
   /**
-     * @maxLength 20
-     * @nullable
-     */
+   * @maxLength 20
+   * @nullable
+   */
   number?: string | null;
   /**
-     * @maxLength 100
-     * @nullable
-     */
+   * @maxLength 100
+   * @nullable
+   */
   complement?: string | null;
   /**
-     * @maxLength 100
-     * @nullable
-     */
+   * @maxLength 100
+   * @nullable
+   */
   city?: string | null;
 }

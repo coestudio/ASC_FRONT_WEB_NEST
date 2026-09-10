@@ -1,0 +1,254 @@
+.shell { min-height: 100vh; display: flex; background-color: var(--bs-body-bg); }
+
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-fg);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: visible;
+  overflow-x: hidden;
+  z-index: 10;
+  border-radius: 0 1.5rem 1.5rem 0;
+}
+/* height = 50px content + 15px padding-top + 15px padding-bottom + 1px border-bottom = 80px, matched by .topbar */
+.sidebarHeader {
+  height: 80px; box-sizing: border-box;
+  padding: 15px 1.25rem; border-bottom: 1px solid var(--sidebar-border);
+}
+.sidebarBrand { display: flex; height: 100%; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; }
+.sidebarBrand :global(.app-brand__title) { color: var(--sidebar-fg); }
+.sidebar :global(.brand-switcher-toggle) { color: var(--sidebar-fg); }
+
+/* kept global: targeted by [data-theme="neon"] .app-sidebar__logo in themes/neon.css */
+:global(.app-sidebar__logo) {
+  width: 36px; height: 36px; border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-light));
+  color: var(--on-brand); display: grid; place-items: center;
+  font-weight: 700; font-size: 0.85rem;
+  box-shadow: 0 1px 3px rgba(30, 50, 90, 0.2);
+}
+.sidebarTitle { font-size: 0.9rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; }
+.sidebarSubtitle { font-size: 0.7rem; opacity: 0.65; }
+.sidebarNav { flex: 1; overflow-y: auto; padding: 0.6rem 0.5rem; }
+
+/* kept global: targeted by [data-theme="neon"] .app-nav-link.active in themes/neon.css */
+:global(.app-nav-link) {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.65rem 0.9rem; border-radius: 0.75rem;
+  font-size: 0.98rem; font-weight: 500;
+  color: var(--sidebar-fg); text-decoration: none;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+:global(.app-nav-link):hover { background-color: var(--sidebar-hover); color: var(--sidebar-fg); }
+:global(.app-nav-link.active) { background-color: var(--sidebar-active-bg); color: var(--brand-primary); font-weight: 600; }
+.navLinkCount { font-size: 0.7rem; opacity: 0.6; }
+
+.navSub {
+  list-style: none; margin: 0.25rem 0 0.5rem 0.9rem; padding-left: 0.65rem;
+  border-left: 1px solid var(--sidebar-border);
+}
+.navSub a {
+  display: block; padding: 0.45rem 0.7rem; border-radius: 0.65rem;
+  font-size: 0.9rem; color: var(--sidebar-fg-muted, var(--ink-muted)); text-decoration: none; line-height: 1.35;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+.navSub a:hover { background-color: var(--sidebar-hover); color: var(--sidebar-fg); }
+.navSub a:global(.active) {
+  background-color: var(--sidebar-active-bg); color: var(--brand-primary); font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--brand-primary);
+}
+
+.sidebarFooter {
+  padding: 0.75rem 1.25rem; font-size: 0.7rem;
+  color: var(--sidebar-fg-muted, var(--ink-muted)); border-top: 1px solid var(--sidebar-border);
+}
+
+.userToggle {
+  display: flex; align-items: center; gap: 0.6rem;
+  background: none; border: none; padding: 0.25rem; margin: -0.25rem;
+  border-radius: 0.75rem; cursor: pointer; color: inherit; width: 100%; min-width: 0;
+  transition: background-color 0.12s ease;
+}
+.userToggle:hover { background-color: var(--sidebar-hover); }
+.userToggle::after { display: none; }
+.userNames { min-width: 0; line-height: 1.2; }
+.userFirstName { font-weight: 600; font-size: 0.85rem; color: var(--sidebar-fg); }
+.userEmail { font-size: 0.75rem; color: var(--sidebar-fg-muted, var(--ink-muted)); opacity: 0.85; }
+
+.swatch {
+  display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 999px;
+  margin-right: 0.55rem; flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.brandSwitcherToggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.9rem; height: 1.9rem; padding: 0; flex-shrink: 0;
+  background: none; border: 1px solid var(--sidebar-border); border-radius: 999px;
+  cursor: pointer; transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+.brandSwitcherToggle:hover { background-color: var(--sidebar-hover); border-color: var(--brand-primary-muted); }
+.brandSwitcherToggle::after { display: none; }
+.brandSwitcherToggle .swatch { margin-right: 0; width: 0.85rem; height: 0.85rem; }
+
+/* Botão de idioma no topbar */
+.languageToggle {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.75rem; flex-shrink: 0;
+  background: none; border: 1px solid var(--bs-border-color); border-radius: 999px;
+  font-size: 0.82rem; color: var(--bs-body-color);
+  cursor: pointer; transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.languageToggle:hover {
+  background-color: var(--brand-primary-soft);
+  border-color: var(--brand-primary-muted);
+  color: var(--brand-primary);
+}
+.languageToggle::after { display: none; }
+
+.submenu { position: relative; }
+.submenuToggle {
+  /* !important: wins over Bootstrap's .dropdown-item { display: block }, same class-specificity */
+  display: flex !important; align-items: center; justify-content: space-between; gap: 0.75rem; cursor: pointer;
+  white-space: nowrap;
+}
+.submenuToggle span { display: flex; align-items: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.submenuCaret {
+  margin-left: 0.75rem; font-size: 0.7rem; opacity: 0.6; flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+.submenuCaretOpen { transform: rotate(90deg); }
+
+/* Sidebar nav item toggle (expandable sections) */
+.navItemToggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  padding: 0.55rem 0.7rem; border-radius: 0.65rem;
+  font-size: 0.9rem; color: var(--sidebar-fg-muted, var(--ink-muted));
+  cursor: pointer; text-decoration: none; user-select: none;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+.navItemToggle:hover { background-color: var(--sidebar-hover); color: var(--sidebar-fg); }
+.navItemToggle.active { background-color: var(--sidebar-active-bg); color: var(--brand-primary); font-weight: 600; }
+.navItemToggle .caret {
+  margin-left: auto; font-size: 0.65rem; opacity: 0.5; flex-shrink: 0;
+  transition: transform 0.18s ease;
+}
+.navItemToggle .caretOpen { transform: rotate(90deg); }
+
+/* Accordion for sidebar sub-items — max-height com altura medida via
+   ResizeObserver (ver SidebarSection em index.tsx), não grid-template-rows
+   0fr/1fr: o truque de grid-fr recalcula o track a cada frame e, com várias
+   seções animando ao mesmo tempo dentro do container com scroll
+   (.sidebarNav), o reflow contaminava os irmãos e jogava o último item pro
+   lado. */
+.sidebarAccordionInner {
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+}
+
+/* Accordion: expands inline below its toggle instead of flying out sideways,
+   so it always stays inside the menu panel (no viewport-edge clipping).
+   Drawer-style open/close: grid-template-rows 0fr -> 1fr animates height
+   without needing a fixed/known pixel height, so the panel grows/shrinks
+   smoothly to fit whatever is expanded. */
+.accordionOuter {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+}
+.accordionOuterOpen { grid-template-rows: 1fr; }
+.accordionInner { overflow: hidden; min-height: 0; }
+
+.accordionBody {
+  margin: 0.15rem 0 0.35rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--bs-border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+
+.main {
+  flex: 1; min-width: 0; display: flex; flex-direction: column;
+  background-color: var(--bs-body-bg);
+  border: 1px solid var(--main-divider-color, var(--bs-border-color));
+  border-right: none;
+  border-radius: 1.5rem 0 0 1.5rem;
+  margin: 0 0 0 0.85rem;
+  box-shadow: var(--main-divider-shadow, -12px 0 28px -24px rgba(15, 25, 45, 0.45));
+}
+/* height = 50px content + 15px padding-top + 15px padding-bottom + 1px border-bottom = 80px, matched by .sidebarHeader */
+.topbar {
+  height: 80px; box-sizing: border-box;
+  border-top-left-radius: inherit;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--surface-translucent); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px 1.5rem; font-size: 0.85rem; color: var(--ink-muted);
+}
+
+/* kept global: targeted by [data-theme="neon"] .app-topbar__avatar in themes/neon.css */
+:global(.app-topbar__avatar) {
+  width: 32px; height: 32px; border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-light));
+  color: var(--on-brand); display: grid; place-items: center;
+  font-size: 0.72rem; font-weight: 600;
+}
+.content { padding: 1.5rem; max-width: 1600px; width: 100%; margin: 0 auto; }
+
+.topbarTitle { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.menuButton {
+  display: none;
+  align-items: center; justify-content: center;
+  width: 2.25rem; height: 2.25rem; flex-shrink: 0;
+  margin-right: 0.75rem;
+  background: none; border: 1px solid var(--bs-border-color);
+  border-radius: 0.75rem; color: var(--bs-body-color); font-size: 1.05rem;
+}
+
+.backdrop { display: none; }
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 84vw; max-width: 300px;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 1045;
+    box-shadow: none;
+  }
+  .sidebarOpen { transform: translateX(0); box-shadow: var(--shadow-elegant); }
+
+  .backdrop {
+    display: block;
+    position: fixed; inset: 0;
+    background: rgba(15, 25, 45, 0.45);
+    z-index: 1040;
+  }
+
+  .menuButton { display: inline-flex; }
+
+  .topbar {
+    height: 64px;
+    padding: 0.75rem 1rem;
+    position: sticky; top: 0; z-index: 1020;
+  }
+  .topbarTitle { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .content { padding: 1rem; }
+
+  .main {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

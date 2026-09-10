@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { AddressDTO } from './addressDTO';
-import type { CollaboratorDTO } from './collaboratorDTO';
+import type { AddressDTO } from "./addressDTO";
+import type { CollaboratorDTO } from "./collaboratorDTO";
 
 export interface ClientDetailDTO {
   razaoSocial?: string;

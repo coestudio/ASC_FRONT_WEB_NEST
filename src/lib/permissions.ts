@@ -11,12 +11,7 @@
  * - Não-Internal (type === 1 ou ausente): vê só "client".
  * - Sem usuário logado: nenhuma área.
  */
-export type AreaId =
-  | "admin"
-  | "administrativo"
-  | "operacional"
-  | "client"
-  | "laboratorio";
+export type AreaId = "admin" | "administrativo" | "operacional" | "client" | "laboratorio";
 
 export type PermissionUser = {
   isAdmin?: boolean;
@@ -26,9 +21,7 @@ export type PermissionUser = {
 
 const INTERNAL_USER_TYPE = 0;
 
-export function getUserAreas(
-  user: PermissionUser | null | undefined
-): AreaId[] {
+export function getUserAreas(user: PermissionUser | null | undefined): AreaId[] {
   if (!user) return [];
 
   if (user.type !== INTERNAL_USER_TYPE) {

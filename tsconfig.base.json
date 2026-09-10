@@ -1,29 +1,30 @@
 {
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "eslint.config.js",
+    "scripts/**/*.ts"
   ],
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"],
       "api/*": ["./src/api/*"],
-      "app/*": ["./src/app/*"],
       "assets/*": ["./src/assets/*"],
       "components/*": ["./src/components/*"],
-      "helpers/*": ["./src/helpers/*"],
       "config/*": ["./src/config/*"],
+      "data/*": ["./src/data/*"],
+      "global/*": ["./src/global/*"],
+      "helpers/*": ["./src/helpers/*"],
       "hooks/*": ["./src/hooks/*"],
       "i18n/*": ["./src/i18n/*"],
+      "lib/*": ["./src/lib/*"],
       "layouts/*": ["./src/layouts/*"],
       "plugins/*": ["./src/plugins/*"],
       "services/*": ["./src/services/*"],
       "styles/*": ["./src/styles/*"],
-      "types/*": ["./src/types/*"],
+      "types/*": ["./src/types/*"]
     }
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/app"]
 }

@@ -11,44 +11,44 @@ export interface InvoiceCreate {
   /** @nullable */
   issuedOn?: string | null;
   /**
-     * @minimum 0
-     * @maximum 2147483647
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)$
-     */
+   * @minimum 0
+   * @maximum 2147483647
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
   declaredItemsCount?: number | string | null;
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   declaredGrossWeight?: number | string | null;
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   declaredNetWeight?: number | string | null;
   /**
-     * @maxLength 18
-     * @nullable
-     */
+   * @maxLength 18
+   * @nullable
+   */
   issuerCnpj?: string | null;
   /**
-     * @minLength 2
-     * @maxLength 2
-     * @nullable
-     */
+   * @minLength 2
+   * @maxLength 2
+   * @nullable
+   */
   issuerUf?: string | null;
   /**
-     * @minLength 44
-     * @maxLength 44
-     * @nullable
-     */
+   * @minLength 44
+   * @maxLength 44
+   * @nullable
+   */
   accessKey?: string | null;
   /**
-     * @maxLength 500
-     * @nullable
-     */
+   * @maxLength 500
+   * @nullable
+   */
   observation?: string | null;
 }

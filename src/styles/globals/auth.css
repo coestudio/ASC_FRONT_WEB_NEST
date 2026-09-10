@@ -1,0 +1,78 @@
+/* Páginas de autenticação (/auth/*).
+   Referência visual: warren/Portal/src/Assets/css/base.css (.auth-shell / .auth-card),
+   adaptado para as CSS vars do Bootstrap 5.3 usadas no NewPortal. */
+
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background:
+    radial-gradient(
+      1200px 600px at 10% -10%,
+      rgba(var(--bs-primary-rgb), 0.14),
+      transparent 60%
+    ),
+    radial-gradient(900px 500px at 110% 110%, var(--bs-tertiary-bg), transparent 60%),
+    var(--bs-body-bg);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem;
+  border-radius: 24px;
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  box-shadow: 0 18px 40px -24px rgba(15, 23, 42, 0.35);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-brand__logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.auth-brand__title {
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--bs-body-color);
+}
+
+.auth-brand__subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+}
+
+.auth-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--bs-body-color);
+  margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+  font-size: 0.85rem;
+  color: var(--bs-secondary-color);
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .auth-shell {
+    padding: 1rem;
+  }
+  .auth-card {
+    padding: 1.5rem;
+  }
+}

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { OperationStatus } from './operationStatus';
+import type { OperationStatus } from "./operationStatus";
 
 export interface OperationStatusPatch {
   status: OperationStatus;

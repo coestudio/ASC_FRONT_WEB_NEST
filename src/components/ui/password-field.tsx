@@ -53,7 +53,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
       onChange,
       onBlur,
     },
-    ref
+    ref,
   ) {
     const [visible, setVisible] = useState(false);
     const controlId = useId();
@@ -93,12 +93,10 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             {visible ? <EyeSlash /> : <Eye />}
           </Button>
           {isInvalid && feedback && (
-            <Form.Control.Feedback type="invalid">
-              {feedback}
-            </Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{feedback}</Form.Control.Feedback>
           )}
         </InputGroup>
       </Form.Group>
     );
-  }
+  },
 );

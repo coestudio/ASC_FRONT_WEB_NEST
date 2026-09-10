@@ -1,23 +1,15 @@
 // Store de tema (localStorage + pub/sub via useSyncExternalStore) usada por
-// TODOS os controles de tema do app — hoje o ThemeToggle
-// (src/components/theme/theme-toggle.tsx) e o submenu "Preferências > Tema"
-// do menu de usuário do AppShell (src/components/shell/user-menu.tsx). É
-// importante que ambos importem os mesmos `useThemeMode`/`setThemeMode`
-// daqui (mesmo módulo = mesmo Set de listeners), garantindo uma única fonte
-// de verdade sincronizada mesmo entre os dois controles quando ambos
-// estão montados na mesma página.
+// TODOS os controles de tema do app (hoje o ThemeToggle em
+// src/components/theme/theme-toggle.tsx). É importante que todos importem os
+// mesmos `useThemeMode`/`setThemeMode` daqui (mesmo módulo = mesmo Set de
+// listeners), garantindo uma única fonte de verdade sincronizada mesmo entre
+// controles distintos montados na mesma página.
 //
-// Separado de ./color-modes.ts (que é importado por um Server Component
-// só pelas constantes/tipos) porque este arquivo usa hooks do React —
-// precisa da boundary "use client".
-"use client";
+// Separado de ./color-modes.ts (que expõe só constantes/tipos) porque este
+// arquivo usa hooks do React.
 
 import { useEffect, useSyncExternalStore } from "react";
-import {
-  THEME_STORAGE_KEY,
-  THEME_COOKIE_NAME,
-  type ThemeMode,
-} from "./color-modes";
+import { THEME_STORAGE_KEY, THEME_COOKIE_NAME, type ThemeMode } from "./color-modes";
 
 const listeners = new Set<() => void>();
 
@@ -35,9 +27,7 @@ function subscribe(listener: () => void) {
 }
 
 function getSnapshot(): ThemeMode {
-  return (
-    (localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null) ?? "light"
-  );
+  return (localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null) ?? "light";
 }
 
 function getServerSnapshot(): ThemeMode {

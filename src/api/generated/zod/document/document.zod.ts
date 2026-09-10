@@ -4,191 +4,225 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from 'zod';
+import * as zod from "zod";
 
-
-export const getApiDocumentTypesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiDocumentTypesResponseValueRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiDocumentTypesResponseItem = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiDocumentTypesResponseValueRegExpTwo)]),
-  "name": zod.record(zod.string(), zod.string())
-})
-export const GetApiDocumentTypesResponse = zod.array(GetApiDocumentTypesResponseItem)
+  value: zod.union([
+    zod.int(),
+    zod.stringFormat("int32", getApiDocumentTypesResponseValueRegExpTwo),
+  ]),
+  name: zod.record(zod.string(), zod.string()),
+});
+export const GetApiDocumentTypesResponse = zod.array(GetApiDocumentTypesResponseItem);
 
 export const GetApiDocumentTypesValueParams = zod.object({
-  "value": zod.int()
-})
+  value: zod.int(),
+});
 
-export const getApiDocumentTypesValueResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiDocumentTypesValueResponseValueRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
 
 export const GetApiDocumentTypesValueResponse = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiDocumentTypesValueResponseValueRegExpTwo)]),
-  "name": zod.record(zod.string(), zod.string())
-})
+  value: zod.union([
+    zod.int(),
+    zod.stringFormat("int32", getApiDocumentTypesValueResponseValueRegExpTwo),
+  ]),
+  name: zod.record(zod.string(), zod.string()),
+});
 
 export const GetApiOperationOperationIdDocumentParams = zod.object({
-  "operationId": zod.uuid()
-})
+  operationId: zod.uuid(),
+});
 
-export const getApiOperationOperationIdDocumentQueryOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiOperationOperationIdDocumentQueryLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiOperationOperationIdDocumentQueryOffsetRegExpTwo = new RegExp(
+  "^-?(?:0|[1-9]\\d*)$",
+);
+export const getApiOperationOperationIdDocumentQueryLimitRegExpTwo = new RegExp(
+  "^-?(?:0|[1-9]\\d*)$",
+);
 
 export const GetApiOperationOperationIdDocumentQueryParams = zod.object({
-  "Type": zod.int().optional(),
-  "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdDocumentQueryOffsetRegExpTwo)]).optional(),
-  "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdDocumentQueryLimitRegExpTwo)]).optional(),
-  "Sort": zod.string().optional()
-})
+  Type: zod.int().optional(),
+  Offset: zod
+    .union([
+      zod.int(),
+      zod.stringFormat("int32", getApiOperationOperationIdDocumentQueryOffsetRegExpTwo),
+    ])
+    .optional(),
+  Limit: zod
+    .union([
+      zod.int(),
+      zod.stringFormat("int32", getApiOperationOperationIdDocumentQueryLimitRegExpTwo),
+    ])
+    .optional(),
+  Sort: zod.string().optional(),
+});
 
-export const getApiOperationOperationIdDocumentResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiOperationOperationIdDocumentResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiOperationOperationIdDocumentResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
+export const getApiOperationOperationIdDocumentResponseTotalRegExpTwo = new RegExp(
+  "^-?(?:0|[1-9]\\d*)$",
+);
+export const getApiOperationOperationIdDocumentResponseOffsetRegExpTwo = new RegExp(
+  "^-?(?:0|[1-9]\\d*)$",
+);
+export const getApiOperationOperationIdDocumentResponseLimitRegExpTwo = new RegExp(
+  "^-?(?:0|[1-9]\\d*)$",
+);
 
 export const GetApiOperationOperationIdDocumentResponse = zod.object({
-  "items": zod.array(zod.object({
-  "operationId": zod.uuid(),
-  "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "cargoUnitId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "type": zod.int(),
-  "title": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "file": zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})),
-  "total": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdDocumentResponseTotalRegExpTwo)]),
-  "offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdDocumentResponseOffsetRegExpTwo)]),
-  "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdDocumentResponseLimitRegExpTwo)]),
-  "hasNext": zod.boolean().optional(),
-  "hasPrevious": zod.boolean().optional()
-})
+  items: zod.array(
+    zod.object({
+      operationId: zod.uuid(),
+      invoiceId: zod.uuid().nullish(),
+      invoiceItemId: zod.uuid().nullish(),
+      cargoUnitId: zod.uuid().nullish(),
+      romaneioId: zod.uuid().nullish(),
+      type: zod.int(),
+      title: zod.string().optional(),
+      observation: zod.string().optional(),
+      file: zod.object({
+        name: zod.string().optional(),
+        extension: zod.string().optional(),
+        url: zod.string().optional(),
+        contentType: zod.string().nullish(),
+        id: zod.uuid(),
+        createdAt: zod.iso.datetime({ offset: true }),
+        updatedAt: zod.iso.datetime({ offset: true }),
+      }),
+      id: zod.uuid(),
+      createdAt: zod.iso.datetime({ offset: true }),
+      updatedAt: zod.iso.datetime({ offset: true }),
+    }),
+  ),
+  total: zod.union([
+    zod.int(),
+    zod.stringFormat("int32", getApiOperationOperationIdDocumentResponseTotalRegExpTwo),
+  ]),
+  offset: zod.union([
+    zod.int(),
+    zod.stringFormat("int32", getApiOperationOperationIdDocumentResponseOffsetRegExpTwo),
+  ]),
+  limit: zod.union([
+    zod.int(),
+    zod.stringFormat("int32", getApiOperationOperationIdDocumentResponseLimitRegExpTwo),
+  ]),
+  hasNext: zod.boolean().optional(),
+  hasPrevious: zod.boolean().optional(),
+});
 
 export const PostApiOperationOperationIdDocumentParams = zod.object({
-  "operationId": zod.uuid()
-})
+  operationId: zod.uuid(),
+});
 
 export const postApiOperationOperationIdDocumentBodyTitleMin = 3;
 export const postApiOperationOperationIdDocumentBodyTitleMax = 150;
 
-
-
 export const PostApiOperationOperationIdDocumentBody = zod.object({
-  "File": zod.instanceof(Blob).optional(),
-  "Title": zod.string().min(postApiOperationOperationIdDocumentBodyTitleMin).max(postApiOperationOperationIdDocumentBodyTitleMax).optional(),
-  "Type": zod.int().optional(),
-  "Observation": zod.string().optional(),
-  "InvoiceId": zod.uuid().optional(),
-  "InvoiceItemId": zod.uuid().optional(),
-  "CargoUnitId": zod.uuid().optional(),
-  "RomaneioId": zod.uuid().optional()
-})
+  File: zod.instanceof(Blob).optional(),
+  Title: zod
+    .string()
+    .min(postApiOperationOperationIdDocumentBodyTitleMin)
+    .max(postApiOperationOperationIdDocumentBodyTitleMax)
+    .optional(),
+  Type: zod.int().optional(),
+  Observation: zod.string().optional(),
+  InvoiceId: zod.uuid().optional(),
+  InvoiceItemId: zod.uuid().optional(),
+  CargoUnitId: zod.uuid().optional(),
+  RomaneioId: zod.uuid().optional(),
+});
 
 export const PostApiOperationOperationIdDocumentResponse = zod.object({
-  "operationId": zod.uuid(),
-  "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "cargoUnitId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "type": zod.int(),
-  "title": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "file": zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  operationId: zod.uuid(),
+  invoiceId: zod.uuid().nullish(),
+  invoiceItemId: zod.uuid().nullish(),
+  cargoUnitId: zod.uuid().nullish(),
+  romaneioId: zod.uuid().nullish(),
+  type: zod.int(),
+  title: zod.string().optional(),
+  observation: zod.string().optional(),
+  file: zod.object({
+    name: zod.string().optional(),
+    extension: zod.string().optional(),
+    url: zod.string().optional(),
+    contentType: zod.string().nullish(),
+    id: zod.uuid(),
+    createdAt: zod.iso.datetime({ offset: true }),
+    updatedAt: zod.iso.datetime({ offset: true }),
+  }),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const GetApiOperationOperationIdDocumentIdParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
+  operationId: zod.uuid(),
+  id: zod.uuid(),
+});
 
 export const GetApiOperationOperationIdDocumentIdResponse = zod.object({
-  "operationId": zod.uuid(),
-  "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "cargoUnitId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "type": zod.int(),
-  "title": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "file": zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  operationId: zod.uuid(),
+  invoiceId: zod.uuid().nullish(),
+  invoiceItemId: zod.uuid().nullish(),
+  cargoUnitId: zod.uuid().nullish(),
+  romaneioId: zod.uuid().nullish(),
+  type: zod.int(),
+  title: zod.string().optional(),
+  observation: zod.string().optional(),
+  file: zod.object({
+    name: zod.string().optional(),
+    extension: zod.string().optional(),
+    url: zod.string().optional(),
+    contentType: zod.string().nullish(),
+    id: zod.uuid(),
+    createdAt: zod.iso.datetime({ offset: true }),
+    updatedAt: zod.iso.datetime({ offset: true }),
+  }),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const PutApiOperationOperationIdDocumentIdParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
+  operationId: zod.uuid(),
+  id: zod.uuid(),
+});
 
 export const putApiOperationOperationIdDocumentIdBodyTitleMin = 3;
 export const putApiOperationOperationIdDocumentIdBodyTitleMax = 150;
 
-
-
 export const PutApiOperationOperationIdDocumentIdBody = zod.object({
-  "title": zod.string().min(putApiOperationOperationIdDocumentIdBodyTitleMin).max(putApiOperationOperationIdDocumentIdBodyTitleMax),
-  "type": zod.int(),
-  "observation": zod.string().optional(),
-  "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "cargoUnitId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish()
-})
+  title: zod
+    .string()
+    .min(putApiOperationOperationIdDocumentIdBodyTitleMin)
+    .max(putApiOperationOperationIdDocumentIdBodyTitleMax),
+  type: zod.int(),
+  observation: zod.string().optional(),
+  invoiceId: zod.uuid().nullish(),
+  invoiceItemId: zod.uuid().nullish(),
+  cargoUnitId: zod.uuid().nullish(),
+  romaneioId: zod.uuid().nullish(),
+});
 
 export const PutApiOperationOperationIdDocumentIdResponse = zod.object({
-  "operationId": zod.uuid(),
-  "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "cargoUnitId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "type": zod.int(),
-  "title": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "file": zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
+  operationId: zod.uuid(),
+  invoiceId: zod.uuid().nullish(),
+  invoiceItemId: zod.uuid().nullish(),
+  cargoUnitId: zod.uuid().nullish(),
+  romaneioId: zod.uuid().nullish(),
+  type: zod.int(),
+  title: zod.string().optional(),
+  observation: zod.string().optional(),
+  file: zod.object({
+    name: zod.string().optional(),
+    extension: zod.string().optional(),
+    url: zod.string().optional(),
+    contentType: zod.string().nullish(),
+    id: zod.uuid(),
+    createdAt: zod.iso.datetime({ offset: true }),
+    updatedAt: zod.iso.datetime({ offset: true }),
+  }),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});

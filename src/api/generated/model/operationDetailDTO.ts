@@ -4,17 +4,17 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ClientDTO } from './clientDTO';
-import type { ContainerOperationDTO } from './containerOperationDTO';
-import type { DocumentDTO } from './documentDTO';
-import type { OperationService } from './operationService';
-import type { OperationStatus } from './operationStatus';
-import type { OperationType } from './operationType';
-import type { ProductDTO } from './productDTO';
-import type { ResponsibleDTO } from './responsibleDTO';
-import type { RomaneioDTO } from './romaneioDTO';
-import type { RomaneioImportDTO } from './romaneioImportDTO';
-import type { VesselDTO } from './vesselDTO';
+import type { ClientDTO } from "./clientDTO";
+import type { ContainerOperationDTO } from "./containerOperationDTO";
+import type { DocumentDTO } from "./documentDTO";
+import type { OperationService } from "./operationService";
+import type { OperationStatus } from "./operationStatus";
+import type { OperationType } from "./operationType";
+import type { ProductDTO } from "./productDTO";
+import type { ResponsibleDTO } from "./responsibleDTO";
+import type { RomaneioDTO } from "./romaneioDTO";
+import type { RomaneioImportDTO } from "./romaneioImportDTO";
+import type { VesselDTO } from "./vesselDTO";
 
 export interface OperationDetailDTO {
   client: ClientDTO;

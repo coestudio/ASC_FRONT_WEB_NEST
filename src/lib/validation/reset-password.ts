@@ -35,6 +35,4 @@ export const forgotPasswordEmailSchema = z.object({
   email: z.string().email(),
 });
 
-export type ForgotPasswordEmailInput = z.infer<
-  typeof forgotPasswordEmailSchema
->;
+export type ForgotPasswordEmailInput = z.infer<typeof forgotPasswordEmailSchema>;

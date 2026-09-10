@@ -13,9 +13,11 @@
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
+# build output
+/dist
+/.output
+/.nitro
+/.tanstack
 
 # production
 /build
@@ -30,7 +32,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# Envs
 .env.prod
 .env.dev
 .env.local
@@ -44,5 +46,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 .DS
+src/vite-env.d.ts
+.env.prod.json
