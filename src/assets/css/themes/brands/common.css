@@ -1,0 +1,14 @@
+/* Alias genérico: sempre aponta para a marca ativa (data-brand), qualquer que seja */
+:root {
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
+  --bs-link-color: var(--brand-primary);
+  --bs-link-hover-color: var(--brand-primary-hover);
+
+  /* Acento amarelo — uso raro (destaques pontuais, badges de atenção).
+     Fallback para a tonalidade clara da marca se o brand não definir. */
+  --brand-accent: var(--brand-yellow, var(--brand-primary-light));
+  --brand-accent-soft: color-mix(in srgb, var(--brand-accent) 16%, transparent);
+  --brand-accent-muted: color-mix(in srgb, var(--brand-accent) 35%, transparent);
+  --on-accent: #2a2205;
+}

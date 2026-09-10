@@ -1,0 +1,15 @@
+/* Bootstrap base */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* Mode variable sets (data-theme on <html>) — brand-agnostic structure */
+@import "./themes/light.css";
+@import "./themes/dark.css";
+
+/* Brand variable sets (data-brand on <html>) — combine with each mode above */
+@import "./themes/brands/asa.css";
+@import "./themes/brands/asi.css";
+@import "./themes/brands/common.css";
+
+/* Structural styles, theme-agnostic (consume the variables above) */
+@import "./base.css";

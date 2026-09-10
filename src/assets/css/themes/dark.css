@@ -1,0 +1,69 @@
+[data-theme="dark"] {
+  --ice-1: #12161f;
+  --ice-2: #1a2029;
+  --ice-3: #212836;
+  --ink: #e8ecf3;
+  --ink-muted: #8b96ab;
+
+  --surface: #1a2029;
+  --surface-translucent: rgba(26, 32, 41, 0.75);
+
+  /* Sidebar mais clara que o body para destacar a divisória no dark */
+  --sidebar-bg: #252d3a;
+  --sidebar-fg: #e8ecf3;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-hover: rgba(255, 255, 255, 0.07);
+  --sidebar-active-bg: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  --sidebar-fg-muted: color-mix(in srgb, #e8ecf3 60%, transparent);
+  --sidebar-active-fg: #ffffff;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-elegant: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+
+  --bs-body-bg: var(--ice-1);
+  --bs-body-color: var(--ink);
+  --bs-border-color: #313b4d;
+  --bs-secondary-bg: var(--ice-2);
+  --bs-tertiary-bg: var(--ice-3);
+
+  /* Divisória sidebar / área densa mais visível no tema escuro */
+  --main-divider-color: #3a455a;
+  --main-divider-shadow: -16px 0 32px -20px rgba(0, 0, 0, 0.55);
+
+  /* Placeholders mais legíveis no tema escuro */
+  --placeholder-color: #9aa5b8;
+}
+
+[data-theme="dark"] .form-control::placeholder,
+[data-theme="dark"] .form-select::placeholder {
+  color: var(--placeholder-color);
+  opacity: 1;
+}
+
+[data-theme="dark"] .form-control::-webkit-input-placeholder,
+[data-theme="dark"] .form-select::-webkit-input-placeholder {
+  color: var(--placeholder-color);
+  opacity: 1;
+}
+
+/* Botão de fechar modal/ofcanvas visível no tema escuro */
+[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Botões outline-secondary (ex.: Cancelar) legíveis no tema escuro */
+[data-theme="dark"] .btn-outline-secondary {
+  color: var(--ink-muted);
+  border-color: var(--bs-border-color);
+}
+[data-theme="dark"] .btn-outline-secondary:hover,
+[data-theme="dark"] .btn-outline-secondary:focus {
+  color: var(--bs-body-color);
+  background-color: var(--ice-2);
+  border-color: var(--bs-border-color);
+}
+[data-theme="dark"] .btn-outline-secondary:active {
+  color: var(--bs-body-color);
+  background-color: var(--ice-3);
+  border-color: var(--bs-border-color);
+}

@@ -1,0 +1,42 @@
+/* ASA — verde da marca
+   Tonalidades oficiais:
+   - #61CE70  → verde claro, usado sobre fundos escuros
+   - #23AB79  → verde sólido, usado sobre fundos claros/brancos
+   O amarelo é acento raro (destaques pontuais), nunca estrutural. */
+:root,
+[data-brand="asa"][data-theme="light"] {
+  --brand-primary: #23ab79;
+  --brand-primary-hover: #1c8e64;
+  --brand-primary-light: #61ce70;
+  --brand-primary-soft: #e6f5ee;
+  --brand-primary-muted: #a6ddc6;
+  --brand-primary-rgb: 35, 171, 121;
+  --on-brand: #ffffff;
+
+  /* acento amarelo — reservado a destaques raros */
+  --brand-yellow: #f2ba3f;
+}
+
+[data-brand="asa"][data-theme="dark"] {
+  --brand-primary: #61ce70;
+  --brand-primary-hover: #7cdc89;
+  --brand-primary-light: #8fe09a;
+  --brand-primary-soft: #14301f;
+  --brand-primary-muted: #2f6b45;
+  --brand-primary-rgb: 97, 206, 112;
+  --on-brand: #0d2114;
+
+  --brand-yellow: #e8bf5a;
+}
+
+[data-brand="asa"][data-theme="neon"] {
+  --brand-primary: #61ce70;
+  --brand-primary-hover: #8affa0;
+  --brand-primary-light: #a8ffb6;
+  --brand-primary-soft: #0f2a17;
+  --brand-primary-muted: #1f8a4a;
+  --brand-primary-rgb: 97, 206, 112;
+  --on-brand: #04140a;
+
+  --brand-yellow: #ffd75e;
+}
