@@ -1,11 +1,10 @@
 {
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "vite.config.ts",
+    "eslint.config.js",
+    "scripts/**/*.ts"
   ],
   "compilerOptions": {
     "paths": {
@@ -19,6 +18,7 @@
       "helpers/*": ["./src/helpers/*"],
       "hooks/*": ["./src/hooks/*"],
       "i18n/*": ["./src/i18n/*"],
+      "lib/*": ["./src/lib/*"],
       "layouts/*": ["./src/layouts/*"],
       "plugins/*": ["./src/plugins/*"],
       "services/*": ["./src/services/*"],
