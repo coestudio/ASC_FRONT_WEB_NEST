@@ -211,6 +211,15 @@ function AdminAccessPageContent() {
     [roleOptions, locale],
   );
 
+  // Mapa valor→label pra exibir a coluna "perfil" na lista (contrato de
+  // colunas da SPEC-03 §3.2) sem repetir a resolução de EnumOptionDTO por
+  // linha.
+  const roleLabelByValue = useMemo(() => {
+    const map = new Map<string | number, string>();
+    roleFieldOptions.forEach((opt) => map.set(opt.value, opt.label));
+    return map;
+  }, [roleFieldOptions]);
+
   const invalidateList = () => queryClient.invalidateQueries({ queryKey: getGetApiUserQueryKey() });
 
   const createMutation = usePostApiUser();
@@ -262,8 +271,11 @@ function AdminAccessPageContent() {
     { key: "name", headerKey: "access.colName", render: (u) => u.profile.fullName },
     { key: "username", headerKey: "access.colUsername", render: (u) => u.userName },
     { key: "email", headerKey: "access.colEmail", render: (u) => u.profile.email ?? "—" },
-    { key: "phone", headerKey: "access.colPhone", render: (u) => u.profile.phone ?? "—" },
-    { key: "document", headerKey: "access.colDocument", render: (u) => u.profile.document ?? "—" },
+    {
+      key: "profile",
+      headerKey: "access.colProfile",
+      render: (u) => u.roles.map((r) => roleLabelByValue.get(r) ?? r).join(", ") || "—",
+    },
     {
       key: "status",
       headerKey: "access.colStatus",
@@ -272,6 +284,16 @@ function AdminAccessPageContent() {
           {t(u.isActive ? "access.active" : "access.inactive")}
         </Badge>
       ),
+    },
+    {
+      key: "type",
+      headerKey: "access.colType",
+      render: (u) => t(u.type === 0 ? "access.internal" : "access.external"),
+    },
+    {
+      key: "createdAt",
+      headerKey: "access.colCreatedAt",
+      render: (u) => new Date(u.createdAt).toLocaleDateString(locale),
     },
     {
       key: "actions",

@@ -2,8 +2,7 @@
 
 - **ID:** SPEC-12
 - **Nome:** usermenu-accordion-and-access-visual-polish
-- **Status:** IMPLEMENTED (itens 1, 2, 3, 5) / item 4 com pendência não
-  resolvida (ver §6 e §8)
+- **Status:** IMPLEMENTED (todos os itens — D1 resolvido, ver §6 e §8)
 - **Autor:** portal-dev-agent (spec escrita **depois** da implementação, a
   pedido do usuário — registro de fato consumado, não fluxo normal de
   aprovação prévia)
@@ -193,17 +192,24 @@ CSS gerado do Bootstrap, não só por leitura visual.
 
 A view "cards" (grid de `Card`) não foi alterada por este item.
 
-### 5.4 — `admin/access`: colunas telefone/documento, `RowActions`, badges pílula
+### 5.4 — `admin/access`: `RowActions` circular + badges pílula (colunas = contrato SPEC-03)
 
 `src/routes/_dashboard/admin/access/index.tsx`:
 
-- **Colunas trocadas** de `nome, usuário, email, perfil, status, tipo,
-  criado em` (contrato original da SPEC-03 §3.2) para
-  `nome, usuário, email, telefone, documento, status, ações` — perfil
-  (roles), tipo (interno/externo) e criado em **saíram** da tabela; telefone
-  (`u.profile.phone`) e documento (`u.profile.document`, ambos campos reais
-  de `ProfileDTO`, não inventados) **entraram**. **Ver §6 — divergência não
-  resolvida com a SPEC-03.**
+- **Colunas.** Durante a implementação inicial desta rodada, as colunas
+  foram trocadas de `nome, usuário, email, perfil, status, tipo, criado em`
+  (contrato original da SPEC-03 §3.2) para `nome, usuário, email, telefone,
+  documento, status, ações` (perfil/tipo/criado em removidos; telefone/
+  documento adicionados, ambos campos reais de `ProfileDTO`, não
+  inventados). **Essa troca foi revertida** depois que o usuário decidiu o
+  `D1` (§6/§8): a tabela e o card voltaram ao conjunto de colunas do
+  contrato da SPEC-03 —
+  `nome, usuário, email, perfil, status, tipo, criado em, ações` — incluindo
+  de volta `roleLabelByValue` (mapa `EnumOptionDTO.value` → label
+  traduzido, usado pra resolver a coluna "perfil" a partir de
+  `u.roles`). Telefone e documento **não aparecem mais como coluna** da
+  lista (continuam existindo como campos do formulário de criar/editar,
+  isso nunca mudou).
 - **`RowActions`** — componente extraído, compartilhado entre a `<Table>`
   (view lista) e o `<Card>` (view cards), evitando duplicar o markup dos 5
   botões de ação por linha/card: ver (neutro), editar (verde/brand),
@@ -228,37 +234,36 @@ A view "cards" (grid de `Card`) não foi alterada por este item.
 ### 5.5 — i18n: `colPhone`/`colDocument`
 
 `src/i18n/dictionaries/{pt-BR,en,es,zh}/access.json` ganharam as chaves
-`colPhone`/`colDocument` (rótulo de coluna), mantendo as chaves antigas
-`colProfile`/`colType`/`colCreatedAt` no dicionário mesmo não sendo mais
-usadas pela tabela atual (não removidas — ver §6, a reversão da coluna pode
-precisar delas de volta).
+`colPhone`/`colDocument` (rótulo de coluna). Elas **ficam no dicionário
+como chaves órfãs** — decisão explícita do usuário ao fechar `D1` (§6):
+não fazem mal mantidas (não usadas por nenhuma coluna hoje, mas o texto já
+existe e traduzido nos 4 locales, caso telefone/documento voltem a ser
+coluna ou campo de exibição no futuro). As chaves que o contrato da SPEC-03
+usa (`colProfile`/`colType`/`colCreatedAt`) permaneceram presentes o tempo
+todo nos 4 arquivos — confirmado por `grep` antes de reverter o código, não
+precisaram ser restauradas.
 
-## 6. Divergência não resolvida com a SPEC-03 — `[NEEDS_DECISION]`
+## 6. Divergência com a SPEC-03 — resolvida (`D1`)
 
-O item 4 (§5.4) **contradiz** o contrato de colunas da SPEC-03
-(`IMPLEMENTED`, §3.2): "colunas: nome, usuário, email, perfil, status,
-tipo, criado em". A implementação atual tem
-`nome, usuário, email, telefone, documento, status, ações`.
+Durante a implementação inicial desta rodada, o item 4 (§5.4) chegou a
+contradizer o contrato de colunas da SPEC-03 (`IMPLEMENTED`, §3.2):
+"colunas: nome, usuário, email, perfil, status, tipo, criado em" virou
+`nome, usuário, email, telefone, documento, status, ações` no código, sem
+aprovação formal — o usuário havia decidido apenas "ajustar o visual agora,
+decidir colunas depois" (registrado na primeira versão desta SPEC como
+`[NEEDS_DECISION]` `D1`).
 
-Isto **não foi aprovado retroativamente** como revisão da SPEC-03 — o
-usuário decidiu explicitamente, durante a sessão de implementação, "só
-ajustar o visual agora, decidir colunas depois". Esta SPEC-12 documenta o
-fato consumado (o código está assim, em produção, mergeado em
-`SPECS-LEGADO`), mas **não resolve** a divergência de contrato. Ficam duas
-perguntas em aberto para o usuário decidir, sem prazo definido:
+**Decisão do usuário (`D1`, resolvida):** manter o contrato de colunas da
+SPEC-03 como está — reverter `admin/access` para
+`nome, usuário, email, perfil, status, tipo, criado em` (+ coluna de
+ações), removendo telefone/documento da lista. O visual novo desta SPEC
+(`RowActions` circular, badges `pill`, `<Table>` do react-bootstrap com
+hairline) foi mantido — só as **colunas** voltaram ao contrato original, o
+**estilo** da tabela/ações não foi revertido.
 
-1. A SPEC-03 deve ser **revisada** (nova revisão do `spec.md`, mudando o
-   §3.2 para o conjunto de colunas atual — perfil/tipo/criado em saem
-   definitivamente da UI, mesmo que o Core continue expondo esses campos)?
-2. Ou a implementação deve **voltar** ao contrato original da SPEC-03
-   (perfil/tipo/criado em), tratando telefone/documento como colunas
-   adicionais (não substitutas) ou como um pedido separado, ainda a
-   desenhar?
-
-Enquanto essa decisão não for tomada, `admin/access` roda em produção com
-um contrato de coluna que diverge do único documento que deveria ser fonte
-de verdade dele. Nenhuma outra SPEC nova deve copiar esse padrão de colunas
-sem essa decisão estar resolvida.
+Não há mais divergência entre `admin/access` e a SPEC-03. Nenhuma SPEC
+futura de área (04–09) precisa considerar esse padrão de coluna
+telefone/documento como referência — ele não está mais em produção.
 
 ## 7. Riscos
 
@@ -267,44 +272,49 @@ sem essa decisão estar resolvida.
   feita varredura exaustiva de todo uso de `Dropdown.Item` no código; risco
   aceito, mitigação é revisão visual pontual se algum outro dropdown ficar
   com aparência inesperada.
-- **R2** — a divergência do §6 pode se propagar: se uma SPEC futura de área
-  (04–09) copiar o padrão "5 botões circulares + colunas ajustadas ao
-  print" sem checar que aqui é um caso pendente de decisão, o débito cresce
-  sem controle. Mitigação: este documento existe justamente para registrar
-  isso antes que aconteça.
-- **R3** — chaves i18n órfãs (`colProfile`/`colType`/`colCreatedAt` em
-  `access.json`, §5.5) ficam sem uso até a decisão do §6 — aceito como
-  reversível, não removido para não perder o texto se a decisão for
-  reverter a coluna.
+- **R2** — (resolvido) a divergência de colunas foi revertida antes de se
+  propagar pra outra SPEC de área — nenhuma SPEC 04–09 chegou a copiar o
+  padrão telefone/documento.
+- **R3** — chaves i18n órfãs (`colPhone`/`colDocument` em `access.json`)
+  ficam no dicionário sem uso ativo por decisão explícita do usuário
+  (§5.5) — aceito, reversível, não removido.
 
 ## 8. Decisões pendentes
 
-- **D1 — `[NEEDS_DECISION]`, ver §6.** Revisar SPEC-03 (formalizando as
-  colunas telefone/documento) **ou** reverter `admin/access` para o
-  contrato original de colunas da SPEC-03. Sem essa decisão, o item 4
-  desta SPEC fica com status "implementado, mas não formalmente aprovado
-  contra o contrato vigente" — não vira `IMPLEMENTED` limpo enquanto isso
-  não for resolvido.
+- **D1 — resolvida (confirmado pelo usuário):** manter o contrato de
+  colunas da SPEC-03 (§3.2) como está — `admin/access` foi revertido para
+  `nome, usuário, email, perfil, status, tipo, criado em, ações`, mantendo
+  o visual novo desta SPEC (`RowActions` circular, badges `pill`, `<Table>`
+  com hairline). Nenhuma decisão pendente restante nesta SPEC.
 
-## 9. Comandos executados (verificação desta sessão de registro)
+## 9. Comandos executados
 
-- `bun run check` → **VERIFIED**, `tsc --noEmit` sem erro (rodado depois de
-  escrever esta SPEC — nenhum arquivo de código foi tocado nesta sessão,
-  só este `spec.md`).
+**Sessão de registro (escrita inicial da SPEC, sem código):**
+- `bun run check` → **VERIFIED**, `tsc --noEmit` sem erro.
 
-## 10. Critérios de aceitação (desta SPEC de registro)
+**Sessão de reversão de `D1` (`src/routes/_dashboard/admin/access/index.tsx`):**
+- `bun run check` → **VERIFIED**, `tsc --noEmit` sem erro.
+- `bunx eslint src/routes/_dashboard/admin/access/index.tsx` → **VERIFIED**,
+  0 erros/warnings.
+- `git diff` conferido: `roleLabelByValue` restaurado, colunas `profile`/
+  `type`/`createdAt` de volta, colunas `phone`/`document` removidas da
+  tabela/card; `RowActions`, badges `pill` e `<Table>` do react-bootstrap
+  (itens 3 e parte visual do item 4) não foram tocados.
+- `just map` — não rodado (contrato do Core não mudou).
+
+## 10. Critérios de aceitação
 
 | # | Critério | Status |
 | --- | --- | --- |
 | CA1 | SPEC documenta os 5 itens implementados com base no diff real (`git show 835be31`), não só no resumo do usuário | PASS |
-| CA2 | Divergência do item 4 contra a SPEC-03 está registrada como pendência explícita, não aprovada retroativamente | PASS |
-| CA3 | `bun run check` limpo (nenhuma mudança de código nesta sessão) | PASS |
-| CA4 | Numeração sequencial respeitada (`12`, próximo livre depois de `11`) | PASS |
+| CA2 | Divergência do item 4 contra a SPEC-03 foi registrada como pendência explícita antes de ser resolvida (não aprovada retroativamente por conta própria) | PASS |
+| CA3 | `D1` resolvido por decisão explícita do usuário, código revertido pro contrato da SPEC-03, visual novo preservado | PASS |
+| CA4 | `bun run check` + lint limpos nos arquivos tocados pela reversão | PASS |
+| CA5 | Numeração sequencial respeitada (`12`, próximo livre depois de `11`) | PASS |
 
 ---
 
-**Status: itens 1, 2, 3, 5 — `IMPLEMENTED` (fato consumado, documentado
-retroativamente). Item 4 (colunas de `admin/access`) — implementado em
-produção, mas com contrato **não aprovado** contra a SPEC-03 (`D1` em
-aberto, §6/§8). Esta SPEC não fecha `IMPLEMENTED` de forma limpa enquanto
-`D1` não for decidido.**
+**Status: IMPLEMENTED.** Todos os itens (1–5) documentados e consistentes
+com o código em produção; `D1` (divergência de colunas com a SPEC-03)
+resolvido por decisão do usuário — colunas de `admin/access` seguem o
+contrato da SPEC-03, visual novo desta SPEC mantido.
