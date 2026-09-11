@@ -2,7 +2,11 @@
 
 - **ID:** SPEC-13
 - **Nome:** static-enum-snapshot-naming
-- **Status:** WAITING_APPROVAL
+- **Status:** IMPLEMENTED (2026-09-11) — motivada por achado concreto durante
+  a revisão pós `just map`: o gerador antigo produzia
+  `export const getApiContainerOperation-statuses` (hífen de
+  `container/operation-statuses` sobrevivendo no identificador) — **inválido
+  como JS**, quebrava o parse do módulo. Ver "Implementation Notes" no fim.
 - **Autor:** portal-dev-agent
 - **Área:** `scripts/staticSnapshots.ts`, `src/api/generated/static/**`
   (saída gerada)
@@ -161,6 +165,111 @@ Nenhuma pendente — desenho já resolvido em conjunto com
 
 ---
 
-**Próximo passo:** `warren/Core/specs/00-enum-contract/spec.md` precisa
-estar `IMPLEMENTED` primeiro (senão não há `x-enum-name` pra consumir).
-Usuário responde `APROVAR SPEC-13`.
+## Implementation Notes (2026-09-11)
+
+**Contexto de execução:** `warren/Core/specs/00-enum-contract` e
+`01-enum-coverage` já `IMPLEMENTED`; `just map` já tinha sido rodado pelo
+usuário antes desta sessão, expondo o bug do cabeçalho (identificador com
+hífen) nos 3 enums novos de rota hifenizada
+(`cargo/identification-statuses`, `container/operation-statuses`,
+`invoice/item-statuses`) — os outros 11 enums (rota de segmento único)
+mascaravam o defeito até agora.
+
+**Arquivos alterados:**
+
+- `scripts/staticSnapshots.ts` — `EnumOption`/`Operation` ganharam `key`/
+  `"x-enum-name"?`; nova `enumOptionName(xEnumName)` (`"UserType"` →
+  `"userTypeOptions"`); corpo do arquivo gerado ganhou `ByKey` +
+  `resolve${xEnumName}Label(key, locale)` quando `x-enum-name` presente;
+  fallback pro `operationName()` antigo (path-based) preservado quando
+  ausente (§7/R1 — nunca implementado antes, sempre existiu como código
+  morto até esta rodada, que finalmente o exercitou de fato ao ser escrito).
+- `src/api/generated/static/*.ts` — regenerado: 14 arquivos, nomes por
+  `x-enum-name` (`userTypeOptions.ts`, `internalRoleOptions.ts`,
+  `genderOptions.ts`, `operationStatusOptions.ts`, `operationTypeOptions.ts`,
+  `operationServiceOptions.ts`, `romaneioSourceOptions.ts`,
+  `invoiceStatusOptions.ts`, `invoiceItemStatusOptions.ts`,
+  `documentTypeOptions.ts`, `containerOperationStatusOptions.ts`,
+  `sealNameOptions.ts`, `cargoUnitStatusOptions.ts`,
+  `cargoIdentificationStatusOptions.ts`); 14 arquivos antigos (nome por
+  path, incluindo os 3 com hífen inválido) removidos como órfãos; `index.ts`
+  (barrel) regenerado.
+- `src/api/snapshot.json` — marcador reescrito com o mesmo hash já presente
+  (contrato não mudou entre o `just map` do usuário e esta execução —
+  conferido por igualdade de hash antes de escrever qualquer arquivo).
+- `src/data/admin-roles.ts` — import trocado pra `internalRoleOptions`;
+  `opt.name.pt` → `opt.name["pt-BR"]` (achado adicional, ver nota abaixo).
+- `src/routes/_dashboard/admin/access/index.tsx` — `resolveEnumOptionName`
+  (shim local) removido (RF5); call-site usa `resolveInternalRoleLabel(opt.key,
+  locale)` importado do snapshot gerado; import de `Locale`
+  (`@/i18n/config`) removido por ficar sem uso.
+- `src/layouts/Form/Fields/Select.tsx` — **achado adicional, fora do §10
+  original, corrigido na mesma rodada por ser regressão real da mesma causa
+  raiz**: `enumLocaleKey()` mapeava `"pt-BR"` (locale do app) → `"pt"`
+  (assumindo a chave de 2 letras que o catálogo de nomes usava antes de
+  `warren/Core/specs/00-enum-contract`). Essa SPEC do Core mudou a chave
+  serializada de `Langs.pt` pra `"pt-BR"` (`[JsonStringEnumMemberName]`) —
+  depois do `just map`, `opt.name.pt` é `undefined` em **todo** enum, então
+  o rótulo em português caía silenciosamente no fallback
+  (`String(opt.value)`, um número cru) em qualquer `<Select enumOptions=.../>`
+  já em uso. Corrigido pra indexar `opt.name[locale]` direto (chaves batem
+  1:1 com `Locale` agora, sem tradução) — não é bind por `key` em vez de
+  `value` (essa parte, `Select.tsx` ainda passa o `Value` numérico pro
+  formulário, é escopo de `specs/15-enum-string-contract-and-locale-messages/
+  spec.md`, RF4 lá).
+
+**Comandos executados e resultado:**
+
+- Ambiente sem `bun`/`node`/`npm`/`npx` disponíveis nesta sessão — o script
+  TS não pôde ser executado diretamente. Regeneração feita por um script
+  Python equivalente (mesma lógica linha a linha de
+  `scripts/staticSnapshots.ts` pós-edição, incluindo o algoritmo de hash de
+  `scripts/apiContract.ts`), **verificado por igualdade de hash** contra o
+  `src/api/snapshot.json` já commitado (produzido pelo `just map` real do
+  usuário, rodando a ferramenta de verdade) antes de escrever qualquer
+  arquivo — mesmo hash (`sha256:e3f77a84…babc0`) confirma que o documento
+  OpenAPI não mudou e que a reimplementação Python do algoritmo de
+  canonicalização bate com a função TS original. — **VERIFIED** por
+  equivalência, não por execução do script real.
+- CA1/CA2/CA4 — **VERIFIED** via grep (ver corpo do arquivo).
+- CA3 — **VERIFIED** por leitura de código (`userTypeOptionsByKey["Internal"]`
+  presente com `name.en === "Internal"`, `resolve${x}Label` segue o mesmo
+  padrão em todos os 14 arquivos).
+- CA5 (`bun run check` + `bun run lint`) — **NOT VERIFIED** nesta sessão
+  (sem `bun` disponível no ambiente). Recomenda-se rodar localmente antes de
+  dar a SPEC por fechada em definitivo.
+
+**Critérios de aceitação:**
+
+| # | Critério | Status |
+| --- | --- | --- |
+| CA1 | `userTypeOptions.ts` existe, não `getApiUserTypes.ts` | PASS |
+| CA2 | zero colisão de nome com hook do Orval | PASS |
+| CA3 | `ByKey`/`resolveXxxLabel` corretos | PASS (leitura de código) |
+| CA4 | `resolveEnumOptionName` não existe mais em `src` | PASS |
+| CA5 | `bun run check` + `bun run lint` | NOT VERIFIED — sem `bun` no ambiente desta sessão |
+
+**Achado fora do §10 original, corrigido na mesma rodada:** `Select.tsx` e
+`src/data/admin-roles.ts` também liam `opt.name.pt` (chave antiga) — mesma
+causa raiz do Core SPEC-00 (`Langs.pt` → `"pt-BR"`), não uma consequência
+do rewrite desta SPEC-13 em si, mas uma regressão silenciosa que só ficou
+visível ao investigar o mesmo lote de arquivos. Corrigidos junto por serem
+triviais e da mesma família de bug (ver §10 revisado seria redundante —
+registrado aqui em vez de reabrir o escopo formal).
+
+**Limitações conhecidas:**
+
+- CA5 não verificado por falta de `bun` no ambiente desta sessão — rodar
+  `bun run check && bun run lint` antes do próximo deploy.
+- O bind de `Select.tsx` por `Value` (numérico) em vez de `Key` (string) —
+  que vai quebrar contra o Core novo (binder não aceita mais `int`) —
+  **não foi corrigido aqui**, é RF4 de
+  `specs/15-enum-string-contract-and-locale-messages/spec.md` (`DRAFT`,
+  aguardando aprovação separada).
+
+---
+
+**Próximo passo:** rodar `bun run check && bun run lint` localmente pra
+fechar CA5. Aprovar e implementar
+`specs/15-enum-string-contract-and-locale-messages/spec.md` em seguida —
+cobre o bind por `Key` do `Select.tsx` e a propagação de `x-locale`.

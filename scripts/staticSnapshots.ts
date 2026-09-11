@@ -21,8 +21,8 @@ import { getOpenApiUrl, fetchSpec, toSnapshot, writeSnapshot } from "./apiContra
 
 const OUT_DIR = "./src/api/generated/static";
 
-type EnumOption = { value: number; name: Record<string, string> };
-type Operation = { "x-snapshot"?: EnumOption[] };
+type EnumOption = { value: number | string; key: string; name: Record<string, string> };
+type Operation = { "x-snapshot"?: EnumOption[]; "x-enum-name"?: string };
 
 /** `/api/operation/statuses` + `get` → `getApiOperationStatuses` (mesmo esquema de nome do Orval sem operationId). */
 function operationName(method: string, path: string): string {
@@ -33,6 +33,11 @@ function operationName(method: string, path: string): string {
     .filter(Boolean);
   const pascal = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("");
   return method.toLowerCase() + pascal;
+}
+
+/** `"UserType"` → `"userTypeOptions"` — nome pelo enum C# real, não pelo path da rota (SPEC-13). */
+function enumOptionName(xEnumName: string): string {
+  return xEnumName.charAt(0).toLowerCase() + xEnumName.slice(1) + "Options";
 }
 
 async function main() {
@@ -49,15 +54,31 @@ async function main() {
       const snapshot = op["x-snapshot"];
       if (!snapshot) continue;
 
-      const name = operationName(method, path);
+      const xEnumName = op["x-enum-name"];
+      // Fallback defensivo: Core sem x-enum-name (versão antiga, ou rota
+      // x-snapshot sem enum por trás) — não trava o script, só volta pro
+      // nome por path (comportamento anterior a esta SPEC).
+      const name = xEnumName ? enumOptionName(xEnumName) : operationName(method, path);
       const file = `${name}.ts`;
       written.add(file);
 
-      const body =
-        `// AUTO-GERADO por scripts/staticSnapshots.ts — x-snapshot de ${method.toUpperCase()} ${path}\n` +
-        `// Rota estática (dados só mudam em restart da API). NÃO editar à mão.\n` +
-        `import type { EnumOptionDTO } from "../model";\n\n` +
-        `export const ${name}: EnumOptionDTO[] = ${JSON.stringify(snapshot, null, 2)};\n`;
+      const body = xEnumName
+        ? `// AUTO-GERADO por scripts/staticSnapshots.ts — x-snapshot de ${method.toUpperCase()} ${path}\n` +
+          `// Rota estática (dados só mudam em restart da API). NÃO editar à mão.\n` +
+          `import type { EnumOptionDTO } from "../model";\n` +
+          `import type { Locale } from "@/i18n/config";\n\n` +
+          `export const ${name}: EnumOptionDTO[] = ${JSON.stringify(snapshot, null, 2)};\n\n` +
+          `export const ${name}ByKey: Record<string, EnumOptionDTO> = Object.fromEntries(\n` +
+          `  ${name}.map((o) => [o.key, o]),\n` +
+          `);\n\n` +
+          `export function resolve${xEnumName}Label(key: string, locale: Locale): string {\n` +
+          `  return ${name}ByKey[key]?.name[locale] ?? key;\n` +
+          `}\n`
+        : `// AUTO-GERADO por scripts/staticSnapshots.ts — x-snapshot de ${method.toUpperCase()} ${path}\n` +
+          `// Rota estática (dados só mudam em restart da API). NÃO editar à mão.\n` +
+          `// Sem x-enum-name no Core — nome derivado do path (fallback, ver specs/13-static-enum-snapshot-naming/spec.md §7).\n` +
+          `import type { EnumOptionDTO } from "../model";\n\n` +
+          `export const ${name}: EnumOptionDTO[] = ${JSON.stringify(snapshot, null, 2)};\n`;
 
       writeFileSync(join(OUT_DIR, file), body, "utf-8");
       console.log(`  ✓ ${file} (${snapshot.length} opções)`);

@@ -216,12 +216,17 @@ majoritário no app.
 
 ### 7.2 Header `x-locale` em server fn com `coreClient` direto
 
+**Decisão (D3, ver §14):** helper compartilhado, não parâmetro explícito do
+caller nem parse inline duplicado em cada fn. Novo `getRequestLocale()` (ex.
+`src/lib/locale.server.ts`) — lê o cookie `asc_locale` via `getCookie()` do
+TanStack Start; se ausente, cai em `negotiateLocale(Accept-Language)` (mesma
+função já usada no `__root` pro seed de idioma da UI, `src/i18n/config.ts`).
 Cada `createServerFn` que hoje chama `coreClient.post/get(...)` direto
-(`auth-fns.ts`, `user-fns.ts`) resolve o locale por request (cookie
-`asc_locale` lido via `getCookie`/`getRequestHeader` do TanStack Start, ou
-`negotiateLocale(Accept-Language)` como fallback — mesmo padrão do
-`__root`) e passa `headers: { "x-locale": locale }` na própria chamada —
-não em `core-client.ts` (instância singleton, sem contexto de request).
+(`auth-fns.ts`, `user-fns.ts`) chama `getRequestLocale()` no próprio corpo e
+passa `headers: { "x-locale": locale }` na chamada ao `coreClient` — o
+helper centraliza a lógica, mas a chamada em si continua explícita por fn
+(não vira default global de `core-client.ts`, que é singleton sem contexto
+de request).
 
 ### 7.3 `extractBackendMessage` — prioridade de campo
 
@@ -275,7 +280,8 @@ pra ela).
 | Arquivo | Ação |
 | --- | --- |
 | `src/routes/api/core.ts` | editar — lê `asc_locale` do cookie, seta `x-locale` no fetch ao Core |
-| `src/lib/auth-fns.ts` | editar — resolve locale por request, manda `x-locale` nas chamadas `coreClient` |
+| `src/lib/locale.server.ts` | criar — `getRequestLocale()` (D3, §7.2/§14): cookie `asc_locale` via `getCookie()`, fallback `negotiateLocale(Accept-Language)` |
+| `src/lib/auth-fns.ts` | editar — chama `getRequestLocale()`, manda `x-locale` nas chamadas `coreClient` |
 | `src/lib/user-fns.ts` | editar — idem |
 | outros `src/lib/*-fns.ts` com `coreClient` direto (confirmar lista exata em implementação) | editar — idem |
 | `src/api/mutator.ts` | editar — `extractBackendMessage` passa a ler `data.detail` primeiro |
@@ -310,10 +316,8 @@ pra ela).
   então também aparece como `detail` de um `ProblemDetails`, só que sempre
   pt-BR) continuam funcionando — mitigação já embutida no desenho §7.3
   (fallbacks mantidos, não removidos).
-- **R3** — Onde exatamente resolver locale nos server fns individuais
-  (parâmetro explícito vs. helper compartilhado lendo `getRequestHeader`)
-  é decisão de implementação, não fechada aqui — `[NEEDS_DECISION]`, não
-  bloqueia aprovação desta SPEC, só a escolha de código durante execução.
+- **R3** — Resolvido (D3, §14) — helper compartilhado `getRequestLocale()`,
+  não parâmetro explícito nem parse inline duplicado por fn.
 
 ## 14. Decisões
 
@@ -325,11 +329,15 @@ pra ela).
   `detail`, bind de `Select` por `key`) — não inclui a limpeza dos ~140
   `throw` legados do Core (fora deste repo) nem a tradução `en`/`es`/`zh`
   pendente do lado Core.
+- **D3** — Resolvida pelo usuário (nesta sessão): locale nos server fns com
+  `coreClient` direto (§7.2) é resolvido por um **helper compartilhado**
+  (`getRequestLocale()`, novo `src/lib/locale.server.ts` — cookie
+  `asc_locale` via `getCookie()`, fallback `negotiateLocale(Accept-Language)`),
+  não por parâmetro explícito do caller nem parse de cookie duplicado em
+  cada fn. Justificativa do usuário: fonte única de verdade, sem repetir
+  lógica se mais server fns com `coreClient` direto aparecerem depois.
 
-`[NEEDS_DECISION]` — mecanismo exato de resolução de locale por server fn
-(§7.2/R3): cookie direto vs. helper compartilhado vs. parâmetro explícito
-do caller. Fica para quem implementar decidir, registrando a escolha nas
-Implementation Notes desta SPEC.
+Nenhuma decisão pendente — todas as três resolvidas.
 
 ---
 

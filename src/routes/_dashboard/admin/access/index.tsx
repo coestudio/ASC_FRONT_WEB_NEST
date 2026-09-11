@@ -25,18 +25,9 @@ import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user"
 import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
-import type { Locale } from "@/i18n/config";
 import type { TranslationKey } from "@/i18n/translate";
+import { resolveInternalRoleLabel } from "@/api/generated/static/internalRoleOptions";
 import styles from "./index.module.css";
-
-// `EnumOptionDTO.name` usa chave de 2 letras (pt/en/es/zh, ver
-// src/api/generated/static/getApiUserRoles.ts) — não bate 1:1 com `Locale`
-// ("pt-BR"). Resolve pro texto certo, com fallback honesto (nunca inventa
-// tradução: cai pro primeiro valor disponível ou pro próprio value).
-function resolveEnumOptionName(name: Record<string, string>, locale: Locale): string {
-  const key = locale === "pt-BR" ? "pt" : locale;
-  return name[key] ?? name.pt ?? Object.values(name)[0] ?? "";
-}
 
 const PAGE_SIZE = 20;
 
@@ -207,7 +198,7 @@ function AdminAccessPageContent() {
     () =>
       (roleOptions ?? []).map((opt) => ({
         value: opt.value,
-        label: resolveEnumOptionName(opt.name, locale),
+        label: resolveInternalRoleLabel(opt.key, locale),
       })),
     [roleOptions, locale],
   );

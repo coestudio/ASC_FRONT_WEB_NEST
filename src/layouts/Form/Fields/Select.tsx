@@ -7,17 +7,15 @@ import { useLocale } from "@/lib/ui-prefs";
 
 interface SelectProps<T extends FieldValues> extends InputDTO<T> {
   /**
-   * Snapshot estático de enum gerado (ex.: `getApiOperationStatuses`, de
-   * `src/api/generated/static/*`), resolvido pro idioma atual via
+   * Snapshot estático de enum gerado (ex.: `operationStatusOptions`, de
+   * `src/api/generated/static/*` — nome pelo enum C# real, SPEC-13),
+   * resolvido pro idioma atual via
    * `useLocale()`. Alternativa a `config.options` quando as opções vêm
    * direto do snapshot do Core, sem o consumidor precisar pré-resolver o
    * rótulo por idioma.
    */
   enumOptions?: EnumOptionDTO[];
 }
-
-/** `pt-BR` (locale do app) vira `pt` (chave de `EnumOptionDTOName`, gerada pelo Core). */
-const enumLocaleKey = (locale: string): string => (locale === "pt-BR" ? "pt" : locale);
 
 /**
  * Dropdown de opção única (`<Form.Select>`) pra enum estático gerado
@@ -36,12 +34,11 @@ function Select<T extends FieldValues>({
   ...colProps
 }: SelectProps<T>) {
   const locale = useLocale();
-  const localeKey = enumLocaleKey(locale);
 
   const options: FieldOption[] =
     enumOptions?.map((opt) => ({
       value: opt.value,
-      label: opt.name[localeKey] ?? opt.name.pt ?? String(opt.value),
+      label: opt.name[locale] ?? opt.name["pt-BR"] ?? String(opt.value),
     })) ??
     config.options ??
     [];
