@@ -103,7 +103,7 @@ src/routes/_dashboard/_internal/administrative/clients/
 | Arquivo | Ação |
 | --- | --- |
 | `src/routes/.../administrative/clients/index.tsx` | criar |
-| `src/layouts/AppShell/nav-config.ts` | editar (item Clientes) |
+| `src/layouts/AppShell/nav/administrative-clients.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-clients.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação

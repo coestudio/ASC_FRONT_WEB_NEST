@@ -149,7 +149,7 @@ Operações fica mesmo como componente à parte.
 | `src/components/operations/operations-list.tsx` | criar |
 | `src/routes/.../administrative/operations/index.tsx` | criar |
 | `src/routes/.../administrative/operations/$id/**` | criar (8 arquivos) |
-| `src/layouts/AppShell/nav-config.ts` | editar (item Operações) |
+| `src/layouts/AppShell/nav/administrative-operations.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-operations.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação

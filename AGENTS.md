@@ -79,6 +79,9 @@ correspondente **antes** deste. Cobertura atual:
 `.claude/agents/portal-dev-agent.md` — agente único de Spec-Driven Development
 para este frontend, espelhando o `core-spec-agent` do `warren/Core`. Toda
 feature de frontend passa por SPEC aprovada antes de implementação.
+`specs/BRANCHING.md` define de qual branch cada SPEC nasce e pra qual PR
+(plano de ondas — SPEC-02 sozinha, SPEC-03/04/05/06/07/09 em paralelo,
+SPEC-08 por último — convergindo em `SPECS-LEGADO`).
 
 ## Estrutura
 
@@ -116,8 +119,9 @@ feature de frontend passa por SPEC aprovada antes de implementação.
   não é usada por nenhuma rota (portada do `warren/Portal` sem consumidor
   ainda) — passa a ter consumidor real a partir da SPEC-02.
 - `src/hooks/**` — `useUser`, `useCan` (guard de UI, não de rota).
-- `src/i18n/**` — 3 idiomas (`pt-BR` canônico, `en`, `zh`). Dicts em
-  `dictionaries/*.json`.
+- `src/i18n/**` — 4 idiomas (`pt-BR` canônico, `en`, `es`, `zh`). Dicts
+  particionados por namespace: `dictionaries/<locale>/<namespace>.json`
+  (SPEC-00, `IMPLEMENTED`).
 - `src/styles/**` — `styles/globals/**` (Bootstrap import, tokens CSS,
   `theme-store.ts`, script anti-flash de tema). CSS Modules (`*.module.css`)
   para estilo local de componente.
@@ -242,9 +246,11 @@ por pronta.
   são inputs raw que violam a regra — débito herdado de antes dela existir,
   migração pra `layouts/Form/Fields` é escopo da `specs/02-app-shell-navigation/spec.md`
   junto com o resto do formulário de auth (zodResolver).
-- `specs/` está vazio, mas o código referencia specs que não existem
-  (`specs/auth-httponly-cookie-bff.md`, `specs/i18n-and-theme.md`). Recriar
-  sob demanda no fluxo SDD.
+- `specs/00` e `specs/01` estão `IMPLEMENTED`; `specs/02` a `09` estão
+  `DRAFT`, aguardando aprovação (ver `specs/BRANCHING.md` pro plano de
+  branch/onda). Código antigo ainda cita specs apagadas de antes desse fluxo
+  existir (`specs/auth-httponly-cookie-bff.md`, `specs/i18n-and-theme.md`) —
+  recriar sob demanda no fluxo SDD, se necessário.
 - Áreas de dashboard (administrativo/operacional/laboratório) ainda são
   páginas "em construção".
 - `.env.exemple` e comentários avulsos citam Next.js / Server Actions — lixo

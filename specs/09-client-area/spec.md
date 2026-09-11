@@ -114,7 +114,7 @@ src/routes/_dashboard/client/
 | `src/routes/_dashboard/client/collaborators/index.tsx` | criar |
 | `src/routes/_dashboard/client/final-report/index.tsx` | criar |
 | `src/routes/_dashboard/client/tracking/index.tsx` | criar |
-| `src/layouts/AppShell/nav-config.ts` | editar (seção Client) |
+| `src/layouts/AppShell/nav/client.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/client.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação

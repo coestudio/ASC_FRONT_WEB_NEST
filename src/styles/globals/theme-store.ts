@@ -1,5 +1,5 @@
 // Helpers de tema (cookie + DOM). Sem React — o estado reativo vive no
-// UiPrefsProvider (src/lib/ui-prefs.tsx). Ver specs/i18n-and-theme.md.
+// UiPrefsProvider (src/lib/ui-prefs.tsx). Ver specs/01-brand-theming/spec.md.
 
 import {
   THEME_STORAGE_KEY,

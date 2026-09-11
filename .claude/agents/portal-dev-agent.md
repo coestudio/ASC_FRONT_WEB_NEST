@@ -135,6 +135,15 @@ Specs citadas no código que não existem mais (`auth-httponly-cookie-bff.md`,
 `i18n-and-theme.md`) podem ser recriadas como spec de documentação quando a
 área for tocada — mas só com aprovação, como qualquer spec.
 
+### Branch
+
+`specs/BRANCHING.md` é a fonte de verdade de **qual branch criar e a partir
+de qual outra** pra cada SPEC (plano de ondas até `SPECS-LEGADO`). Ao receber
+`APROVAR SPEC-NN`, antes de codar: confira lá a base correta da branch —
+nunca puxar de `main` direto pra uma SPEC de área (02–09), e nunca criar
+`spec-08-operacional` antes de `spec-07-operacoes` estar mergeada na branch
+de onda.
+
 ## 4. STATUS
 
 ```

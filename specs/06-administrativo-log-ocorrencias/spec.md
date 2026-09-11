@@ -92,7 +92,7 @@ src/routes/_dashboard/_internal/administrative/
 | `src/data/occurrences-mock.ts` | criar |
 | `src/routes/.../administrative/log/index.tsx` | criar |
 | `src/routes/.../administrative/occurrences/index.tsx` | criar |
-| `src/layouts/AppShell/nav-config.ts` | editar |
+| `src/layouts/AppShell/nav/administrative-log.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-log.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação

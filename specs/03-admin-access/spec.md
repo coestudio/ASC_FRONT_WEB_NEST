@@ -54,7 +54,7 @@ muda.
 5. `admin/roles/index.tsx` — página estática, uma entrada por role
    (`InternalRole`, ver `userAdminDTO`/`internalRole` gerados), descrição de
    permissões — conteúdo i18n, sem tabela dinâmica de "que rota cada role
-   acessa" (isso seria derivado de `nav-config.ts` da SPEC-02, ver D1).
+   acessa" (isso seria derivado dos fragmentos `nav/*.ts` da SPEC-02, ver D1).
 
 ## 4. Fora do escopo
 
@@ -70,7 +70,7 @@ muda.
 - **RF3** — Editar usuário idem com `UserUpdate`.
 - **RF4** — Reset de senha e desativar/ativar passam por `ConfirmationModal`
   antes de disparar a mutation.
-- **RF5** — `admin/perfis` renderiza sem chamada ao Core (conteúdo estático
+- **RF5** — `admin/roles` renderiza sem chamada ao Core (conteúdo estático
   do bundle, i18n).
 
 ## 6. Requisitos não funcionais
@@ -115,7 +115,7 @@ src/routes/_dashboard/admin/
 | `src/routes/_dashboard/admin/route.tsx` | criar |
 | `src/routes/_dashboard/admin/access/index.tsx` | criar |
 | `src/routes/_dashboard/admin/roles/index.tsx` | criar |
-| `src/layouts/AppShell/nav-config.ts` | editar (seção Admin) |
+| `src/layouts/AppShell/nav/admin.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/admin.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação
@@ -136,10 +136,10 @@ src/routes/_dashboard/admin/
 
 ## 13. Decisões pendentes
 
-- **D1** — `admin/roles` (URL; rótulo exibido continua "Perfis") deriva a lista "o que cada role acessa" do
-  `nav-config.ts` (dinâmico, sempre correto) ou é texto estático mantido à
-  mão (como o legado, com risco de ficar desatualizado)? Recomendação:
-  dinâmico.
+- **D1** — `admin/roles` (URL; rótulo exibido continua "Perfis") deriva a
+  lista "o que cada role acessa" dos fragmentos `nav/*.ts` (dinâmico, sempre
+  correto) ou é texto estático mantido à mão (como o legado, com risco de
+  ficar desatualizado)? Recomendação: dinâmico.
 - **D2** — Reset de senha gera senha aleatória e mostra uma vez (como
   costuma ser o padrão do Core) ou envia link por e-mail? Depende do que
   `POST /api/user/{id}/reset-password` já faz no Core — confirmar contrato.

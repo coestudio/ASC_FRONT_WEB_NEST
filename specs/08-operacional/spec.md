@@ -105,7 +105,7 @@ src/routes/_dashboard/_internal/operational/
 | `src/routes/.../operational/index.tsx` | criar |
 | `src/routes/.../operational/operations/index.tsx` | criar |
 | `src/routes/.../operational/operations/$id/index.tsx` | criar |
-| `src/layouts/AppShell/nav-config.ts` | editar |
+| `src/layouts/AppShell/nav/operational.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/operational.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação

@@ -112,7 +112,7 @@ SPEC-02.
 | Arquivo | Ação |
 | --- | --- |
 | `src/routes/.../administrative/registry/{terminal,harbor,container,vessel,product}/index.tsx` | criar (5) |
-| `src/layouts/AppShell/nav-config.ts` | editar (submenu Cadastro) |
+| `src/layouts/AppShell/nav/administrative-registry.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-registry.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação

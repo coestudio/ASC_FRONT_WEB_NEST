@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-01
 - **Nome:** brand-theming
-- **Status:** APROVADA
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/styles/**`, `src/lib/ui-prefs.tsx`, `src/routes/__root.tsx`,
   `src/components/theme/**`, `src/components/i18n/**` (padrão do switcher),

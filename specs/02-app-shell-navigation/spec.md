@@ -85,9 +85,24 @@ Legado (`warren/Portal`):
 
 ## 3. Escopo
 
-1. Nav config declarativo por área (`src/layouts/AppShell/nav-config.ts`):
-   lista de seções → itens (label i18n, rota, ícone), montado dinamicamente
-   por `getUserAreas`/`useCan`.
+1. **Nav config declarativo, montado por merge de fragmentos** (não um
+   literal central editado por todo mundo — mesma ideia do dicionário
+   particionado da SPEC-00, pra evitar que toda SPEC de área conflite no
+   mesmo arquivo quando implementadas em paralelo):
+   - `src/layouts/AppShell/nav/types.ts` — `NavItem { labelKey, to, icon?,
+     order? }`, `NavFragment { area: AreaId, sectionLabelKey, items:
+     NavItem[] }`.
+   - `src/layouts/AppShell/nav/index.ts` — `import.meta.glob('./*.ts',
+     { eager: true })` sobre os fragmentos, agrupa por `area`, ordena itens
+     por `order`, expõe `getNavSections(areas: AreaId[])`.
+   - **Cada SPEC de área cria o próprio arquivo** de fragmento
+     (`nav/admin.ts` na SPEC-03, `nav/administrative-registry.ts` na
+     SPEC-04, etc.) — nunca edita `index.ts` nem o fragmento de outra área.
+     Duas áreas que contribuem pra mesma seção (ex.: SPEC-04/05/06/07 todas
+     em "administrativo") viram arquivos **separados com o mesmo `area`**;
+     o merge concatena, não precisa de coordenação entre specs.
+   - Sidebar consome `getNavSections(getUserAreas(user))`, igual ao desenho
+     anterior.
 2. `UserMenu` no `AppShell`: avatar/nome, abre `ProfileModal`, atalhos de
    tema (já existe `theme-toggle`) e brand (depende do `brand-switcher` da
    SPEC-01), `LanguageSwitcher` (já existe), logout (`logoutFn`).
@@ -184,8 +199,10 @@ N/A direto — `AppShell` já é o layout de `_dashboard`. Nenhuma rota nova.
 
 ```
 src/layouts/AppShell/
-  nav-config.ts        (novo) — seções por AreaId, cada item { labelKey, to, icon }
-  index.tsx             (editar) — consome nav-config, renderiza seções via useCan
+  nav/
+    types.ts             (novo) — NavItem, NavFragment
+    index.ts              (novo) — glob-merge dos fragmentos, getNavSections()
+  index.tsx             (editar) — consome getNavSections(), renderiza seções via useCan
   UserMenu.tsx           (editar) — + ProfileModal, + brand/theme/language/logout
 src/components/profile/
   profile-modal.tsx      (novo)
@@ -206,7 +223,8 @@ src/components/ui/
 
 | Arquivo | Ação |
 | --- | --- |
-| `src/layouts/AppShell/nav-config.ts` | criar |
+| `src/layouts/AppShell/nav/types.ts` | criar |
+| `src/layouts/AppShell/nav/index.ts` | criar |
 | `src/layouts/AppShell/index.tsx` | editar |
 | `src/layouts/AppShell/UserMenu.tsx` | editar |
 | `src/components/profile/*.tsx` | criar |
@@ -238,6 +256,7 @@ src/components/ui/
 | CA7 | `crud-list-page`/`crud-record-modal` conseguem cobrir a tela Terminal (o caso mais simples da SPEC-04) só com config, sem editar o componente genérico — valida que a abstração não nasceu forte demais nem fraca demais |
 | CA8 | `mock-data-banner` é o único lugar do repo com o texto "dados de exemplo" (`grep -rn "dados de exemplo" src` só acha o componente + i18n, nunca hardcoded numa tela) |
 | CA9 | `src/components/ui/{input,field,password-field}.tsx` não existem mais; `grep -rn "<input\|Form.Control" src/routes/auth src/components/crud` não acha input cru — só componentes de `layouts/Form/Fields` |
+| CA10 | Criar um `nav/<qualquer-nome>.ts` novo com um `NavFragment` e nada mais faz aparecer a seção na sidebar — sem editar `nav/index.ts` nem nenhum outro fragmento |
 
 ## 12. Riscos
 
