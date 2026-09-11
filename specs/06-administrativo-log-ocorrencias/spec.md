@@ -12,9 +12,9 @@
 ## 1. Objetivo
 
 Portar Log (auditoria) e Ocorrências (incidentes/exceções) como telas
-**UI-only** — o Core não tem endpoint equivalente hoje (classificação
-"Faltante" no `Plans/Mapa-Paridade-Portal-Core.md`, mesmo módulo citado em
-`Plans/Escopo-Adiado-Portal-Core.md`). Por decisão do usuário, a estrutura
+**UI-only** — não existe módulo `log`/`audit`/`occurrence` em
+`src/api/generated/**` (client gerado pelo Orval a partir do OpenAPI do
+Core) — sem endpoint equivalente hoje. Por decisão do usuário, a estrutura
 entra agora mesmo assim, com dado mockado de propósito, pra não travar o
 front esperando o backend.
 
@@ -46,8 +46,12 @@ rede em nenhuma das duas.
 
 ## 5. Requisitos funcionais
 
-- **RF1** — As duas tabelas renderizam, filtram e ordenam client-side sobre
-  o array mockado.
+- **RF1** — As duas tabelas renderizam o array mockado. Os controles de
+  filtro (período/ator/ação no Log; severidade/status em Ocorrências) são
+  **visuais apenas** nesta SPEC — mockup de UI, sem lógica de filtragem
+  real (não precisam de slot novo em `crud-list-page` nem filtragem
+  client-side própria). Filtragem funcional fica para SPEC dedicada, quando
+  a integração com dado real acontecer (ver D3).
 - **RF2** — Nenhuma delas faz `fetch`/chama hook Orval.
 - **RF3** — `mock-data-banner` visível em ambas ("dados de exemplo —
   aguardando endpoint no Core", texto via i18n).
@@ -55,8 +59,9 @@ rede em nenhuma das duas.
 ## 6. Requisitos não funcionais
 
 - RNF1 — `bun run check` + `lint` passam.
-- RNF2 — Mesmo componente de tabela genérica se a SPEC-04 já tiver criado
-  algo reaproveitável (ex.: uma `data-table` genérica) — não reinventar.
+- RNF2 — Reaproveita `crud-list-page` (SPEC-02) como componente de tabela —
+  já é genérico o bastante (recebe `items: T[]` direto), sem precisar de
+  extensão nesta SPEC (filtro é só visual, ver RF1/D3).
 
 ## 7. Contrato de rota
 
@@ -69,8 +74,11 @@ rede em nenhuma das duas.
 
 Nenhuma — array local tipado em `src/data/` (mesmo padrão que já existe em
 `src/data/politicas.ts`/`servicos.ts` para conteúdo estático do site
-público), com comentário `// MOCK — sem endpoint no Core (Faltante em
-Plans/Mapa-Paridade-Portal-Core.md), ver specs/06-.../spec.md`.
+público), com comentário `// MOCK — sem módulo log/audit/occurrence em
+src/api/generated, ver specs/06-.../spec.md`. Não há DTO gerado do Orval
+envolvido nesta SPEC — sem dependência da extensão de tipo "grupo" que a
+SPEC-04 introduz em `LayoutField`/`RenderFields` (essa dependência só se
+aplica a SPEC-05, que consome `ClientCreate.address`).
 
 ## 9. Desenho
 
@@ -84,6 +92,12 @@ src/routes/_dashboard/_internal/administrative/
   occurrences/index.tsx
 ```
 
+Duas telas independentes: fragmento nav e namespace i18n próprios para cada
+uma (`administrative-log` / `administrative-occurrences`), mesmo padrão 1:1
+já usado por SPEC-04 (`administrative-registry`), SPEC-05
+(`administrative-clients`) e SPEC-07 (`administrative-operations`) — não um
+fragmento único cobrindo as duas.
+
 ## 10. Arquivos esperados
 
 | Arquivo | Ação |
@@ -92,8 +106,11 @@ src/routes/_dashboard/_internal/administrative/
 | `src/data/occurrences-mock.ts` | criar |
 | `src/routes/.../administrative/log/index.tsx` | criar |
 | `src/routes/.../administrative/occurrences/index.tsx` | criar |
-| `src/layouts/AppShell/nav/administrative-log.ts` | criar (fragmento, SPEC-02 §3.1) |
+| `src/layouts/AppShell/nav/administrative-log.ts` | criar (fragmento, SPEC-02 §3.1 — só o item de Log) |
+| `src/layouts/AppShell/nav/administrative-occurrences.ts` | criar (fragmento, SPEC-02 §3.1 — só o item de Ocorrências) |
 | `src/i18n/dictionaries/*/administrative-log.json` | criar (4 locales) |
+| `src/i18n/dictionaries/*/administrative-occurrences.json` | criar (4 locales) |
+| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover `administrativoLog` (`/administrativo/log`) e `administrativoOccurrences` (`/administrativo/ocorrencias`) hoje hard-coded; migram pros dois fragmentos novos acima. Não mexer nos demais itens (escopo de SPEC-04/05/07) |
 
 ## 11. Critérios de aceitação
 
@@ -101,15 +118,16 @@ src/routes/_dashboard/_internal/administrative/
 | --- | --- |
 | CA1 | `grep -rn "getApi\|useQuery\|fetch(" src/routes/.../administrative/{log,occurrences}` não acha nada — confirma zero chamada real |
 | CA2 | `mock-data-banner` visível nas duas telas (não um aviso ad hoc reescrito localmente) |
-| CA3 | Filtro/ordenação funcionam client-side |
+| CA3 | Controles de filtro aparecem na UI das duas telas (mockup visual); nenhuma lógica de filtragem real é esperada nesta SPEC |
 | CA4 | `bun run check` + `lint` passam |
 
 ## 12. Riscos
 
 - **R1** — Ficar esquecido como "mock pra sempre" se o Core nunca ganhar
   endpoint de auditoria. Mitigação: o aviso na UI e o comentário no código
-  deixam isso rastreável; revisitar quando/se `Plans/Mapa-Paridade-Portal-Core.md`
-  for atualizado.
+  deixam isso rastreável; revisitar quando/se `src/api/generated/**` ganhar
+  um módulo `log`/`audit`/`occurrence` (sinal de que `just map` já pegou o
+  endpoint novo do Core).
 
 ## 13. Decisões pendentes
 
@@ -119,6 +137,12 @@ src/routes/_dashboard/_internal/administrative/
 - **D2** — Estas duas telas continuam em `administrative` como no legado, ou
   fazem mais sentido como seção própria "Auditoria" no nav? Legado mantém em
   Administrativo — manter, mudar depois se pedido.
+- **D3** — Resolvido: filtros (período/ator/ação, severidade/status) são
+  **só visuais** nesta SPEC, sem filtragem real — é mockup, sem ligação com
+  back-end. Integração real (filtragem funcional sobre dado real) fica para
+  SPEC dedicada, futura, quando o Core ganhar endpoint de auditoria/
+  ocorrências. Não requer extensão de `crud-list-page` nem filtragem
+  client-side própria nesta SPEC.
 
 ---
 
