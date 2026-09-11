@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Pagination, Spinner } from "react-bootstrap";
+import type { UseQueryOptions } from "@tanstack/react-query";
 
 import { useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
@@ -8,6 +9,7 @@ import { useResponsiveViewMode } from "@/lib/view-mode";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { InputText } from "@/layouts/Form/Fields/Index";
+import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 
 /**
  * Busca da lista — campo isolado (não faz parte de um `useForm` maior, só
@@ -53,20 +55,39 @@ export type CrudColumn<T> = {
   render: (item: T) => ReactNode;
 };
 
-export type CrudListPageProps<T> = {
+/** Shape mínimo que toda resposta paginada do Core segue (`PagedDTOOfXxxDTO` gerado pelo Orval). */
+export type CrudPagedResult<T> = {
+  items: T[];
+  total: number | string;
+};
+
+export type CrudListPageProps<
+  T,
+  TQueryData extends CrudPagedResult<T> = CrudPagedResult<T>,
+  TError = unknown,
+> = {
   titleKey: TranslationKey;
   descriptionKey?: TranslationKey;
-  items: T[];
+  /**
+   * `queryOptions` já resolvido pros parâmetros atuais (busca/página) —
+   * normalmente `xxxListQueryOptions(params)` do módulo
+   * (`src/lib/queries/**`, mesma queryKey do hook Orval gerado, seedável no
+   * loader da rota via server fn — ver `src/lib/queries/user.ts` +
+   * `admin/access/index.tsx` como referência). `TQueryData` é o
+   * `PagedDTOOfXxxDTO` gerado (só precisa ter `items`/`total`, o resto do
+   * shape passa direto). O `CrudListPage` decide *como e quando* buscar (via
+   * `useSsrSafeQuery`, SPEC-10) — a rota nunca chama `useQuery`/
+   * `useGetApiXxx` direto pro dado da lista.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  queryOptions: UseQueryOptions<TQueryData, TError, TQueryData, any>;
   columns: CrudColumn<T>[];
   renderCard: (item: T) => ReactNode;
   getItemKey: (item: T) => string;
-  isLoading?: boolean;
-  isError?: boolean;
   search?: string;
   onSearchChange?: (value: string) => void;
   page: number;
   pageSize: number;
-  total: number;
   onPageChange: (page: number) => void;
   onCreate?: () => void;
   emptyMessageKey?: TranslationKey;
@@ -77,29 +98,40 @@ export type CrudListPageProps<T> = {
 /**
  * Lista genérica: título, busca, colunas (tabela) ou card (via `ViewToggle`),
  * paginação, estado vazio/erro, botão "novo". Config por módulo — nunca
- * reimplementada por SPEC de área (SPEC-02 §3.7).
+ * reimplementada por SPEC de área (SPEC-02 §3.7). Busca o próprio dado via
+ * `queryOptions` (SPEC-10) — nunca recebe `items` prontos da rota, pra
+ * nenhum consumidor futuro esquecer o guard de SSR.
  */
-export function CrudListPage<T>({
+export function CrudListPage<
+  T,
+  TQueryData extends CrudPagedResult<T> = CrudPagedResult<T>,
+  TError = unknown,
+>({
   titleKey,
   descriptionKey,
-  items,
+  queryOptions,
   columns,
   renderCard,
   getItemKey,
-  isLoading,
-  isError,
   search,
   onSearchChange,
   page,
   pageSize,
-  total,
   onPageChange,
   onCreate,
   emptyMessageKey,
   isMock,
-}: CrudListPageProps<T>) {
+}: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
+  const query = useSsrSafeQuery(queryOptions);
+  const isClient = typeof window !== "undefined";
+  // No SSR a query fica `enabled: false` (sem dado, sem erro) — trata como
+  // "carregando" pra não piscar estado vazio antes da hidratação.
+  const isLoading = !isClient || query.isLoading;
+  const isError = query.isError;
+  const items = query.data?.items ?? [];
+  const total = Number(query.data?.total ?? 0);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (

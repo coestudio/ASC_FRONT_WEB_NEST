@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-10
 - **Nome:** ssr-safe-client-queries
-- **Status:** APPROVED
+- **Status:** IN_PROGRESS
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/crud/**` (SPEC-02, já `IMPLEMENTED`), `src/routes/_dashboard/admin/access/index.tsx`
   (SPEC-03, já `IMPLEMENTED`), e por extensão toda SPEC 04–09 que ainda vai
@@ -202,6 +202,71 @@ hooks já existentes (`useGetApiUser`, `useGetApiUserRoles`).
 
 ---
 
-**Status: APPROVED — Opção C confirmada pelo usuário. Implementação ainda
-NÃO autorizada nesta sessão (usuário pediu explicitamente para não
-implementar ainda) — aguardando sinal pra começar.**
+## 13. Implementation Notes
+
+Branch: `spec-10-ssr-safe-client-queries` (a partir de `spec-03-admin-access`
+— único lugar que já tinha `admin/access/index.tsx`).
+
+**Achado no meio da implementação:** antes de eu começar a Opção C, o
+usuário já tinha corrigido o caso concreto (`admin/access`) manualmente
+num commit `Worktree SPEC-03` (`40f3e8b`, na branch `spec-03-admin-access`),
+usando um padrão **diferente**: seed do cache via `loader` da rota +
+server function (`src/lib/queries/user.ts` +
+`src/lib/user-fns.ts:fetchUserListFn/fetchUserRolesFn`), o mesmo desenho já
+usado por `profileMeQueryOptions`/`fetchMeFn` no `__root.tsx`. Esse fix
+**não foi descartado** — é complementar à Opção C, não concorrente:
+
+- O `loader` continua semeando o cache (primeira página, sem busca) —
+  evita loading flash na primeira renderização.
+- `CrudListPage` (Opção C) passou a buscar via `queryOptions` internamente
+  com `useSsrSafeQuery` (guard de SSR embutido) — se o cache já estiver
+  quente (seedado pelo loader), usa ele sem refetch; se não estiver (troca
+  de página/busca, ou uma rota futura sem loader próprio), busca com
+  segurança, sem quebrar no servidor.
+- O lookup de roles pro multi-select do form (`userRolesQueryOptions()`),
+  usado fora do `CrudListPage`, também passou a usar `useSsrSafeQuery`
+  diretamente (não estava no texto original da SPEC-10, que falava só do
+  `CrudListPage` — extensão necessária pro mesmo bug não continuar por
+  esse hook).
+
+**Arquivos alterados/criados:**
+- `src/lib/queries/use-ssr-safe-query.ts` (novo) — wrapper de `useQuery`
+  com o guard de SSR (`enabled: typeof window !== "undefined"`).
+- `src/components/crud/crud-list-page.tsx` (editado) — contrato novo
+  (`queryOptions` em vez de `items`/`isLoading`/`isError`/`total`), busca
+  o próprio dado via `useSsrSafeQuery`.
+- `src/routes/_dashboard/admin/access/index.tsx` (editado) — adaptado pro
+  novo contrato; `useSsrSafeQuery(userRolesQueryOptions())` no lugar do
+  `useQuery` cru pro lookup de roles.
+- `specs/02-app-shell-navigation/spec.md` (editado) — nota de emenda
+  registrando a mudança de contrato do `CrudListPage`.
+
+**Comandos executados:**
+- `bun run check` → **VERIFIED**, 0 erros.
+- `bun run lint` → **VERIFIED**, mesmo baseline de antes (65 problems, 3
+  errors pré-existentes em `session.server.ts`) — zero novo.
+- Validação em dev: subi `bun run dev` (porta 8081, a 8080 já estava em
+  uso — provavelmente a sessão do próprio usuário) só o tempo de checar
+  que não há crash no boot/log do servidor, depois encerrei o processo.
+  `curl` sem sessão em `/admin/access` recebeu `307` (redirect pro login,
+  guard funcionando) sem nenhum erro de `mutator` no log do servidor.
+  **NOT VERIFIED end-to-end autenticado** — precisa do usuário confirmar
+  no navegador (sessão real) que `/admin/access` e `/admin/roles` carregam
+  sem erro no primeiro load, sem precisar de "Try again" (CA1/CA2).
+
+**Critérios de aceitação:**
+| # | Critério | Status |
+| --- | --- | --- |
+| CA1 | `/admin/access` sem erro no primeiro load | Implementado; NOT VERIFIED autenticado nesta sessão — pedir confirmação do usuário |
+| CA2 | `/admin/roles` idem | Implementado (dependia da mesma causa raiz); NOT VERIFIED autenticado |
+| CA3 | `bun run check` + `lint` passam | PASS |
+| CA4 | `crud-list-page.tsx` documenta o padrão pra SPEC-04+ | PASS — JSDoc do componente + emenda na SPEC-02 |
+| CA5 | SPEC-02 com nota de emenda | PASS |
+
+Status mantido `IN_PROGRESS` até CA1/CA2 serem confirmados no navegador
+pelo usuário (sessão autenticada real) — só então viro `IMPLEMENTED`.
+
+---
+
+**Próximo passo:** usuário confirmar em `http://localhost:8080/admin/access`
+e `/admin/roles` (sessão logada) que carregam sem erro, sem "Try again".

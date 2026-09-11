@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Badge, Button, Card } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -22,6 +22,7 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user";
 import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
+import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { Locale } from "@/i18n/config";
 
@@ -102,14 +103,15 @@ function AdminAccessPage() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
-  const { data, isLoading, isError } = useQuery(
-    userListQueryOptions({
-      Search: search || undefined,
-      Offset: (page - 1) * PAGE_SIZE,
-      Limit: PAGE_SIZE,
-    }),
-  );
-  const { data: roleOptions } = useQuery(userRolesQueryOptions());
+  const listQueryOptions = userListQueryOptions({
+    Search: search || undefined,
+    Offset: (page - 1) * PAGE_SIZE,
+    Limit: PAGE_SIZE,
+  });
+  // Lookup de roles pro multi-select do form (fora do CrudListPage) — mesmo
+  // guard de SSR via useSsrSafeQuery (SPEC-10); o cache já vem quente do
+  // loader acima na primeira renderização.
+  const { data: roleOptions } = useSsrSafeQuery(userRolesQueryOptions());
 
   const roleFieldOptions = useMemo(
     () =>
@@ -248,9 +250,6 @@ function AdminAccessPage() {
     },
   ];
 
-  const items = data?.items ?? [];
-  const total = Number(data?.total ?? 0);
-
   const handleSubmit = async (values: UserFormValues) => {
     try {
       if (modal?.mode === "create") {
@@ -355,7 +354,7 @@ function AdminAccessPage() {
       <CrudListPage
         titleKey="access.title"
         descriptionKey="access.description"
-        items={items}
+        queryOptions={listQueryOptions}
         columns={columns}
         renderCard={(u) => (
           <Card>
@@ -415,8 +414,6 @@ function AdminAccessPage() {
           </Card>
         )}
         getItemKey={(u) => u.id}
-        isLoading={isLoading}
-        isError={isError}
         search={search}
         onSearchChange={(value) => {
           setSearch(value);
@@ -424,7 +421,6 @@ function AdminAccessPage() {
         }}
         page={page}
         pageSize={PAGE_SIZE}
-        total={total}
         onPageChange={setPage}
         onCreate={() => setModal({ mode: "create" })}
         emptyMessageKey="access.emptyState"

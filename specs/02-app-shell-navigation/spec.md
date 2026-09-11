@@ -434,3 +434,38 @@ src/layouts/Form/Fields/
 
 **Próximo passo:** iniciar SPEC-03 a SPEC-09 consumindo `nav/*`, `ViewToggle`/`ConfirmationModal`
 e a biblioteca `crud-list-page`/`crud-record-modal`/`MockDataBanner`.
+
+---
+
+## Emenda (pós-`IMPLEMENTED`) — SPEC-10
+
+`src/components/crud/crud-list-page.tsx` teve o contrato de props alterado
+pela **SPEC-10** (`specs/10-ssr-safe-client-queries/spec.md`), depois desta
+SPEC-02 já `IMPLEMENTED`. Motivo: o primeiro consumidor real (`admin/access`,
+SPEC-03) quebrava no SSR — `CrudListPage` recebia `items`/`isLoading`/
+`isError`/`total` prontos da rota, que buscava o dado via hook Orval direto
+no componente sem seed, batendo na trava de `mutator.ts`.
+
+**Mudança de contrato:**
+- **Antes:** `items: T[]`, `isLoading?: boolean`, `isError?: boolean`,
+  `total: number` — a rota buscava o dado e passava pronto.
+- **Depois:** `queryOptions: UseQueryOptions<TQueryData, TError, TQueryData, any>`
+  (onde `TQueryData extends CrudPagedResult<T> = { items: T[]; total:
+  number | string }`) — `CrudListPage` busca o próprio dado internamente via
+  `useSsrSafeQuery` (`src/lib/queries/use-ssr-safe-query.ts`, novo em
+  SPEC-10), que nunca deixa o `queryFn` rodar no servidor.
+
+**Para SPEC-04 em diante:** toda tela de lista real passa
+`queryOptions={xxxListQueryOptions(params)}` (função em
+`src/lib/queries/<modulo>.ts`, mesma queryKey do hook Orval gerado) em vez
+de chamar `useGetApiXxx`/`useQuery` direto na rota. Se a tela também quiser
+first-paint sem loading (melhor UX, não obrigatório), o `loader` da rota
+pode semear o cache antes via uma server function
+(`src/lib/<modulo>-fns.ts`, mesmo padrão de `fetchMeFn`/`fetchUserListFn`)
+— `CrudListPage` usa o cache já quente sem refetch. Ver
+`src/routes/_dashboard/admin/access/index.tsx` como referência completa dos
+dois padrões combinados.
+
+Nenhum outro contrato da SPEC-02 mudou. `crud-record-modal.tsx` e os demais
+componentes compartilhados (`ViewToggle`, `ConfirmationModal`,
+`MockDataBanner`) não foram tocados.
