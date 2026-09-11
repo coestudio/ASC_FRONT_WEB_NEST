@@ -35,10 +35,14 @@ function Select<T extends FieldValues>({
 }: SelectProps<T>) {
   const locale = useLocale();
 
+  // Bind por `key` (nome do membro C#, string) — não por `value` (int
+  // legado). Desde SPEC-00/15 do Core, o binder do JsonStringEnumConverter
+  // só aceita a string do enum; `Value` continua existindo no DTO só por
+  // compatibilidade, não é mais o que se submete.
   const options: FieldOption[] =
     enumOptions?.map((opt) => ({
-      value: opt.value,
-      label: opt.name[locale] ?? opt.name["pt-BR"] ?? String(opt.value),
+      value: opt.key,
+      label: opt.name[locale] ?? opt.name["pt-BR"] ?? opt.key,
     })) ??
     config.options ??
     [];

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { coreClient } from "@/lib/core-client";
 import { readServerSession } from "@/lib/session.server";
+import { getRequestLocale } from "@/lib/locale.server";
 import type { GetApiUserParams } from "@/api/generated/model/getApiUserParams";
 import type { EnumOptionDTO, PagedDTOOfUserDTO } from "@/api/generated/model";
 
@@ -21,7 +22,10 @@ export const fetchUserListFn = createServerFn({ method: "GET" })
     try {
       const res = await coreClient.get<PagedDTOOfUserDTO>("/api/user", {
         params: data,
-        headers: { Authorization: `Bearer ${session.accessToken}` },
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          "x-locale": getRequestLocale(),
+        },
       });
       return res.data;
     } catch {
@@ -35,7 +39,10 @@ export const fetchUserRolesFn = createServerFn({ method: "GET" }).handler(
     if (!session) return null;
     try {
       const res = await coreClient.get<EnumOptionDTO[]>("/api/user/roles", {
-        headers: { Authorization: `Bearer ${session.accessToken}` },
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          "x-locale": getRequestLocale(),
+        },
       });
       return res.data;
     } catch {

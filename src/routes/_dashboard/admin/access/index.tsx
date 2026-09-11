@@ -15,7 +15,7 @@ import {
   getGetApiUserQueryKey,
 } from "@/api/generated/endpoints/user/user";
 import { PostApiUserBody } from "@/api/generated/zod/user/user.zod";
-import type { UserDTO } from "@/api/generated/model";
+import { UserType, type UserDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
@@ -194,20 +194,24 @@ function AdminAccessPageContent() {
   // loader acima na primeira renderização.
   const { data: roleOptions } = useSsrSafeQuery(userRolesQueryOptions());
 
+  // Bind por `opt.key` (string), não `opt.value` (int legado do snapshot) —
+  // `UserDTO.roles`/`UserCreate.roles` são `InternalRole[]`, enum string
+  // (SPEC-15). Achado da auditoria §3.4 da SPEC-15, corrigido aqui (fora da
+  // "Área" formal daquela spec, autorizado pelo usuário como extensão pontual).
   const roleFieldOptions = useMemo(
     () =>
       (roleOptions ?? []).map((opt) => ({
-        value: opt.value,
+        value: opt.key,
         label: resolveInternalRoleLabel(opt.key, locale),
       })),
     [roleOptions, locale],
   );
 
-  // Mapa valor→label pra exibir a coluna "perfil" na lista (contrato de
+  // Mapa key→label pra exibir a coluna "perfil" na lista (contrato de
   // colunas da SPEC-03 §3.2) sem repetir a resolução de EnumOptionDTO por
-  // linha.
+  // linha. `u.roles` já vem como `InternalRole[]` (string) do Core.
   const roleLabelByValue = useMemo(() => {
-    const map = new Map<string | number, string>();
+    const map = new Map<string, string>();
     roleFieldOptions.forEach((opt) => map.set(opt.value, opt.label));
     return map;
   }, [roleFieldOptions]);
@@ -280,7 +284,7 @@ function AdminAccessPageContent() {
     {
       key: "type",
       headerKey: "access.colType",
-      render: (u) => t(u.type === 0 ? "access.internal" : "access.external"),
+      render: (u) => t(u.type === UserType.Internal ? "access.internal" : "access.external"),
     },
     {
       key: "createdAt",
@@ -302,7 +306,7 @@ function AdminAccessPageContent() {
             userName: values.userName,
             profile: {
               fullName: values.fullName,
-              document: values.document || null,
+              document: values.document,
               email: values.email,
               phone: values.phone || null,
               birthDate: values.birthDate || null,
@@ -319,7 +323,7 @@ function AdminAccessPageContent() {
             userName: values.userName,
             profile: {
               fullName: values.fullName,
-              document: values.document || null,
+              document: values.document,
               email: values.email,
               phone: values.phone || null,
               birthDate: values.birthDate || null,
@@ -413,7 +417,7 @@ function AdminAccessPageContent() {
                   {t(u.isActive ? "access.active" : "access.inactive")}
                 </Badge>
                 <Badge pill bg="info">
-                  {t(u.type === 0 ? "access.internal" : "access.external")}
+                  {t(u.type === UserType.Internal ? "access.internal" : "access.external")}
                 </Badge>
                 <div className="mt-2">
                   <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />

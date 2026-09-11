@@ -2,7 +2,10 @@
 
 - **ID:** SPEC-15
 - **Nome:** enum-string-contract-and-locale-messages
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED (2026-09-11) — ver "Implementation Notes" (§15).
+  Ressalva: CA3/CA4 não verificados manualmente em browser. Achado de
+  `admin/access/index.tsx` (`roleFieldOptions`) corrigido como extensão
+  pontual autorizada pelo usuário (ver §15).
 - **Autor:** portal-dev-agent
 - **Área:** `src/api/mutator.ts`, `src/routes/api/core.ts`, `src/lib/core-client.ts`,
   `src/lib/auth-fns.ts`, `src/lib/user-fns.ts` (e demais `*-fns.ts` que chamam
@@ -204,9 +207,7 @@ usuário e o texto real que o Core já manda.
 
 ```ts
 // src/routes/api/core.ts — dentro de handler(), antes do fetch ao Core
-const localeCookie = request.headers
-  .get("cookie")
-  ?.match(/(?:^|;\s*)asc_locale=([^;]+)/)?.[1];
+const localeCookie = request.headers.get("cookie")?.match(/(?:^|;\s*)asc_locale=([^;]+)/)?.[1];
 if (localeCookie) headers.set("x-locale", localeCookie);
 ```
 
@@ -234,7 +235,9 @@ de request).
 function extractBackendMessage(err: unknown): string | undefined {
   // ...
   if (typeof data.detail === "string") return data.detail; // ProblemDetails real (Core, SPEC-02+)
-  if (data.errors && typeof data.errors === "object") { /* mantém como está */ }
+  if (data.errors && typeof data.errors === "object") {
+    /* mantém como está */
+  }
   if (typeof data.message === "string") return data.message; // fallback: proxy BFF / legado
   if (typeof data.error === "string") return data.error;
   if (typeof data.title === "string") return data.title;
@@ -246,11 +249,13 @@ function extractBackendMessage(err: unknown): string | undefined {
 
 ```tsx
 // value={opt.value} → value={opt.key}
-{options.map((opt) => (
-  <option key={opt.key} value={opt.key}>
-    {opt.name[localeKey] ?? opt.name.pt ?? opt.key}
-  </option>
-))}
+{
+  options.map((opt) => (
+    <option key={opt.key} value={opt.key}>
+      {opt.name[localeKey] ?? opt.name.pt ?? opt.key}
+    </option>
+  ));
+}
 ```
 
 `FieldOption.value` (usado por `config.options` custom, não vindo de
@@ -277,28 +282,29 @@ pra ela).
 
 ## 11. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/api/core.ts` | editar — lê `asc_locale` do cookie, seta `x-locale` no fetch ao Core |
-| `src/lib/locale.server.ts` | criar — `getRequestLocale()` (D3, §7.2/§14): cookie `asc_locale` via `getCookie()`, fallback `negotiateLocale(Accept-Language)` |
-| `src/lib/auth-fns.ts` | editar — chama `getRequestLocale()`, manda `x-locale` nas chamadas `coreClient` |
-| `src/lib/user-fns.ts` | editar — idem |
-| outros `src/lib/*-fns.ts` com `coreClient` direto (confirmar lista exata em implementação) | editar — idem |
-| `src/api/mutator.ts` | editar — `extractBackendMessage` passa a ler `data.detail` primeiro |
-| `src/layouts/Form/Fields/Select.tsx` | editar — `value`/`key` da opção passa a usar `opt.key`, não `opt.value` |
-| `src/api/generated/**` | regenerado via `just map` (não editar à mão) |
+| Arquivo                                                                                    | Ação                                                                                                                            |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/api/core.ts`                                                                   | editar — lê `asc_locale` do cookie, seta `x-locale` no fetch ao Core                                                            |
+| `src/lib/locale.server.ts`                                                                 | criar — `getRequestLocale()` (D3, §7.2/§14): cookie `asc_locale` via `getCookie()`, fallback `negotiateLocale(Accept-Language)` |
+| `src/lib/auth-fns.ts`                                                                      | editar — chama `getRequestLocale()`, manda `x-locale` nas chamadas `coreClient`                                                 |
+| `src/lib/user-fns.ts`                                                                      | editar — idem                                                                                                                   |
+| outros `src/lib/*-fns.ts` com `coreClient` direto (confirmar lista exata em implementação) | editar — idem                                                                                                                   |
+| `src/api/mutator.ts`                                                                       | editar — `extractBackendMessage` passa a ler `data.detail` primeiro                                                             |
+| `src/layouts/Form/Fields/Select.tsx`                                                       | editar — `value`/`key` da opção passa a usar `opt.key`, não `opt.value`                                                         |
+| `src/routes/_dashboard/admin/access/index.tsx`                                             | editar — extensão pontual autorizada (fora da "Área" original): `roleFieldOptions`/`roleLabelByValue` passam a usar `opt.key` |
+| `src/api/generated/**`                                                                     | regenerado via `just map` (não editar à mão)                                                                                    |
 
 ## 12. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | `grep -n "data.detail" src/api/mutator.ts` — presente, e antes (na ordem de leitura do código) dos fallbacks existentes |
-| CA2 | `grep -n "x-locale" src/routes/api/core.ts src/lib/*.ts` — presente nos pontos listados em §11 |
+| #   | Critério                                                                                                                                                                                                                                                                                            |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1 | `grep -n "data.detail" src/api/mutator.ts` — presente, e antes (na ordem de leitura do código) dos fallbacks existentes                                                                                                                                                                             |
+| CA2 | `grep -n "x-locale" src/routes/api/core.ts src/lib/*.ts` — presente nos pontos listados em §11                                                                                                                                                                                                      |
 | CA3 | Teste manual: trocar idioma (seletor de idioma → cookie `asc_locale`) e provocar um erro conhecido do catálogo (ex. `POST /api/auth/forgot-password` com e-mail inexistente) em pelo menos 2 idiomas (`pt-BR` e um outro) — toast mostra o texto correto de cada idioma, não o mesmo texto nos dois |
-| CA4 | Teste manual: salvar um formulário com campo `Select` de enum (ex. tipo de usuário em `admin`) depois de `just map` — sucesso, sem 400 |
-| CA5 | `grep -n "opt.value\|option.value" src/layouts/Form/Fields/Select.tsx` — não referencia mais `EnumOptionDTO.Value` como valor de campo/opção |
-| CA6 | `bun run check` + `bun run lint` passam |
-| CA7 | Nenhuma mensagem de erro deixa de aparecer no toast comparado ao comportamento antes desta SPEC (RF3 — sem regressão de mensagem "engolida") |
+| CA4 | Teste manual: salvar um formulário com campo `Select` de enum (ex. tipo de usuário em `admin`) depois de `just map` — sucesso, sem 400                                                                                                                                                              |
+| CA5 | `grep -n "opt.value\|option.value" src/layouts/Form/Fields/Select.tsx` — não referencia mais `EnumOptionDTO.Value` como valor de campo/opção                                                                                                                                                        |
+| CA6 | `bun run check` + `bun run lint` passam                                                                                                                                                                                                                                                             |
+| CA7 | Nenhuma mensagem de erro deixa de aparecer no toast comparado ao comportamento antes desta SPEC (RF3 — sem regressão de mensagem "engolida")                                                                                                                                                        |
 
 ## 13. Riscos
 
@@ -341,7 +347,87 @@ Nenhuma decisão pendente — todas as três resolvidas.
 
 ---
 
-**Próximo passo:** SPEC em `DRAFT` — aguardando aprovação do usuário
-(`APROVAR SPEC-15`) antes de qualquer implementação. Pode ser aprovada e
-executada em paralelo com `specs/13-static-enum-snapshot-naming/spec.md`
-(companion, sem sobreposição de arquivos).
+## 15. Implementation Notes
+
+**Status: IMPLEMENTED.**
+
+**Arquivos alterados:**
+
+- `src/lib/locale.server.ts` — criado. `getRequestLocale()` (D3): cookie
+  `asc_locale` via `getCookie()`, fallback `negotiateLocale(Accept-Language)`.
+- `src/routes/api/core.ts` — lê `asc_locale` do header `cookie` da request e
+  seta `x-locale` no fetch ao Core.
+- `src/lib/auth-fns.ts` — `loginFn` e `fetchMeFn` passam `x-locale:
+  getRequestLocale()` nas chamadas `coreClient`.
+- `src/lib/user-fns.ts` — `fetchUserListFn` e `fetchUserRolesFn`, idem.
+- `src/api/mutator.ts` — `extractBackendMessage` lê `data.detail` antes dos
+  fallbacks (`errors`/`message`/`error`/`title`, todos mantidos).
+- `src/layouts/Form/Fields/Select.tsx` — bind de opção por `opt.key`
+  (string), não mais `opt.value` (int/union). Comentário adicionado
+  explicando o motivo (JsonStringEnumConverter).
+- `just map` rodado contra o Core real (`dev-asc-api.alexstewart.com.br`) —
+  diff resultante: só o timestamp `pulledAt` de `src/api/snapshot.json`
+  (mesmo hash de contrato já documentado, `sha256:e3f77a841498…`). O client
+  gerado já estava com `EnumOptionDTO.key`/`UserType`/`InternalRole` como
+  string antes desta sessão (trabalho de `just map` anterior, fora deste
+  chat) — nenhuma mudança adicional em `src/api/generated/**`.
+
+**Comandos executados:**
+
+- `just map` — **VERIFIED**, zero diff de contrato (só timestamp).
+- `bun run check` (`tsc --noEmit`) — **VERIFIED**, limpo, zero erro.
+- `bun run lint` — **VERIFIED**: `66 problems (3 errors, 63 warnings)`, os 3
+  erros são pré-existentes em `src/lib/session.server.ts`
+  (`react-hooks/rules-of-hooks`, fora da "Área" desta SPEC, não
+  introduzidos por ela) — zero erro/warning novo nos arquivos tocados.
+
+**Critérios de aceitação — resultado:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | `grep -n "data.detail" src/api/mutator.ts` presente antes dos fallbacks | PASS |
+| CA2 | `grep -n "x-locale"` nos pontos do §11 | PASS |
+| CA3 | Teste manual (2 idiomas, erro do catálogo) | **NOT VERIFIED** — sem acesso a browser/dev server nesta sessão; recomendado antes do merge |
+| CA4 | Formulário com `Select` de enum salva sem 400 após `just map` | **NOT VERIFIED manualmente** (sem browser), mas `bind` corrigido e tipos batem (`InternalRole`/`UserType` como string, `Select.tsx` envia `opt.key`) |
+| CA5 | `grep` não referencia mais `EnumOptionDTO.Value` como valor de campo | PASS semanticamente — o grep literal ainda acha `opt.value` na linha 76 de `Select.tsx`, mas ali `opt` é o `FieldOption` já mapeado (`value: opt.key` na linha 44); não é mais `EnumOptionDTO.Value` |
+| CA6 | `bun run check` + `bun run lint` | PASS (check limpo; lint sem erro novo, mesmos 3 pré-existentes fora de área) |
+| CA7 | Nenhuma mensagem "engolida" (fallbacks mantidos) | PASS — fallbacks de `mutator.ts` preservados, `data.detail` só adicionado antes deles |
+
+**Achado da auditoria §3.4 — fora da "Área" desta SPEC, não corrigido aqui:**
+`src/routes/_dashboard/admin/access/index.tsx` (`roleFieldOptions`, linha
+~197) constrói as opções do `InputMultiSelect` de `roles` usando `opt.value`
+do snapshot `internalRoleOptions` (que continua numérico: `100`/`200`/`300`),
+enquanto `UserDTO.roles`/`UserCreate.roles` já são `InternalRole[]` — enum
+string (`"Agent"`/`"Supervisor"`/`"Laboratory"`) desde o `just map` mais
+recente. Isso é uma inconsistência real e concreta (leitura de código, não
+hipotética): submeter esse formulário hoje manda valor numérico onde o Core
+espera string. `roleLabelByValue` (linha ~209) tem o mesmo problema no
+sentido inverso (indexado por número, `u.roles` já vem como string). Como
+`admin/access/index.tsx` não está listado em "Área" desta SPEC (§ "Área") e
+o §3.4 explicitamente excluía esse arquivo do escopo de auditoria (partindo
+da premissa, desatualizada, de que ele já indexava por `key`/nome — válida
+antes da SPEC-13 rodar, não depois).
+
+**Resolvido em sessão posterior** — usuário autorizou explicitamente
+("pode fazer isso mas seguir o contrato da api ... roles") corrigir como
+extensão pontual desta SPEC-15: `roleFieldOptions` passa a usar `opt.key`
+(não `opt.value`), `roleLabelByValue` passa a ser `Map<string, string>`
+(era `Map<string | number, string>`), alinhado ao contrato real
+(`UserDTO.roles`/`UserCreate.roles` = `InternalRole[]`, string). `bun run
+check`/`lint` re-verificados após a correção — mesmo resultado (check limpo,
+3 erros pré-existentes de `session.server.ts`, nada novo).
+
+**Decisões tomadas durante a implementação:** nenhuma além das já registradas
+em §14 (D1-D3); a correção do `roleFieldOptions` foi extensão pontual
+autorizada explicitamente pelo usuário, não uma decisão minha.
+
+**Limitações conhecidas:**
+- CA3/CA4 não verificados manualmente (sem browser nesta sessão) — recomenda-
+  se antes do merge.
+
+---
+
+**Próximo passo:** SPEC `APPROVED` pelo usuário (`APROVAR SPEC-15`, direto na
+conversa principal) e **implementada** nesta sessão. Ressalvas: CA3/CA4
+pedem verificação manual em browser; achado de `admin/access/index.tsx`
+(`roleFieldOptions`) pendente de decisão de escopo.
