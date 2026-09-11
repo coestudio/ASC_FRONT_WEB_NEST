@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioImportRomaneioFormat } from "./romaneioImportRomaneioFormat";
+import type { RomaneioImportRomaneioFormat } from './romaneioImportRomaneioFormat.ts';
 
 export type GetApiOperationOperationIdRomaneioExportParams = {
-  format?: RomaneioImportRomaneioFormat;
+format?: RomaneioImportRomaneioFormat;
 };

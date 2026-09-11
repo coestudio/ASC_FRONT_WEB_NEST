@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { VesselDTO } from "./vesselDTO";
+import type { VesselDTO } from './vesselDTO.ts';
 
 export interface PagedDTOOfVesselDTO {
   items: VesselDTO[];

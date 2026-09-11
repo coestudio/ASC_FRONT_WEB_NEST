@@ -4,21 +4,21 @@ import type { EnumOptionDTO } from "../model";
 
 export const getApiOperationTypes: EnumOptionDTO[] = [
   {
-    value: 1,
-    name: {
-      pt: "Ova de Contêiner",
-      en: "Container Stuffing",
-      es: "Llenado de Contenedor",
-      zh: "集装箱装箱",
-    },
+    "value": 1,
+    "name": {
+      "pt": "Ova de Contêiner",
+      "en": "Container Stuffing",
+      "es": "Llenado de Contenedor",
+      "zh": "集装箱装箱"
+    }
   },
   {
-    value: 2,
-    name: {
-      pt: "Embarque",
-      en: "Boarding",
-      es: "Embarque",
-      zh: "装运",
-    },
-  },
+    "value": 2,
+    "name": {
+      "pt": "Embarque",
+      "en": "Boarding",
+      "es": "Embarque",
+      "zh": "装运"
+    }
+  }
 ];

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { EnumOptionDTOName } from "./enumOptionDTOName";
+import type { EnumOptionDTOName } from './enumOptionDTOName.ts';
 
 export interface EnumOptionDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */

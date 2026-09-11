@@ -4,87 +4,89 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from "zod";
+import * as zod from 'zod';
 
-export const getApiProductQueryOffsetRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
-export const getApiProductQueryLimitRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
+
+export const getApiProductQueryOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiProductQueryLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const GetApiProductQueryParams = zod.object({
-  Search: zod.string().optional(),
-  Offset: zod
-    .union([zod.int(), zod.stringFormat("int32", getApiProductQueryOffsetRegExpTwo)])
-    .optional(),
-  Limit: zod
-    .union([zod.int(), zod.stringFormat("int32", getApiProductQueryLimitRegExpTwo)])
-    .optional(),
-  Sort: zod.string().optional(),
-});
+  "Search": zod.string().optional(),
+  "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiProductQueryOffsetRegExpTwo)]).optional(),
+  "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiProductQueryLimitRegExpTwo)]).optional(),
+  "Sort": zod.string().optional()
+})
 
-export const getApiProductResponseTotalRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
-export const getApiProductResponseOffsetRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
-export const getApiProductResponseLimitRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
+export const getApiProductResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiProductResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiProductResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const GetApiProductResponse = zod.object({
-  items: zod.array(
-    zod.object({
-      name: zod.string(),
-      id: zod.uuid(),
-      createdAt: zod.iso.datetime({ offset: true }),
-      updatedAt: zod.iso.datetime({ offset: true }),
-    }),
-  ),
-  total: zod.union([zod.int(), zod.stringFormat("int32", getApiProductResponseTotalRegExpTwo)]),
-  offset: zod.union([zod.int(), zod.stringFormat("int32", getApiProductResponseOffsetRegExpTwo)]),
-  limit: zod.union([zod.int(), zod.stringFormat("int32", getApiProductResponseLimitRegExpTwo)]),
-  hasNext: zod.boolean().optional(),
-  hasPrevious: zod.boolean().optional(),
-});
+  "items": zod.array(zod.object({
+  "name": zod.string(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', getApiProductResponseTotalRegExpTwo)]),
+  "offset": zod.union([zod.int(),zod.stringFormat('int32', getApiProductResponseOffsetRegExpTwo)]),
+  "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiProductResponseLimitRegExpTwo)]),
+  "hasNext": zod.boolean().optional(),
+  "hasPrevious": zod.boolean().optional()
+})
 
 export const postApiProductBodyNameMin = 3;
 export const postApiProductBodyNameMax = 100;
 
+
+
 export const PostApiProductBody = zod.object({
-  name: zod.string().min(postApiProductBodyNameMin).max(postApiProductBodyNameMax),
-});
+  "name": zod.string().min(postApiProductBodyNameMin).max(postApiProductBodyNameMax)
+})
 
 export const PostApiProductResponse = zod.object({
-  name: zod.string(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "name": zod.string(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const GetApiProductIdParams = zod.object({
-  id: zod.uuid(),
-});
+  "id": zod.uuid()
+})
 
 export const GetApiProductIdResponse = zod.object({
-  name: zod.string(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "name": zod.string(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const PutApiProductIdParams = zod.object({
-  id: zod.uuid(),
-});
+  "id": zod.uuid()
+})
 
 export const putApiProductIdBodyNameMin = 3;
 export const putApiProductIdBodyNameMax = 100;
 
+
+
 export const PutApiProductIdBody = zod.object({
-  name: zod.string().min(putApiProductIdBodyNameMin).max(putApiProductIdBodyNameMax),
-});
+  "name": zod.string().min(putApiProductIdBodyNameMin).max(putApiProductIdBodyNameMax)
+})
 
 export const PutApiProductIdResponse = zod.object({
-  name: zod.string(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "name": zod.string(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const DeleteApiProductIdParams = zod.object({
-  id: zod.uuid(),
-});
+  "id": zod.uuid()
+})
 
-export const DeleteApiProductIdResponse = zod.unknown();
+export const DeleteApiProductIdResponse = zod.unknown()
+

@@ -4,917 +4,564 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from "zod";
+import * as zod from 'zod';
+
 
 export const GetApiOperationOperationIdContainerParams = zod.object({
-  operationId: zod.uuid(),
-});
+  "operationId": zod.uuid()
+})
 
-export const getApiOperationOperationIdContainerQueryOffsetRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
-export const getApiOperationOperationIdContainerQueryLimitRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+export const getApiOperationOperationIdContainerQueryOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdContainerQueryLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const GetApiOperationOperationIdContainerQueryParams = zod.object({
-  Offset: zod
-    .union([
-      zod.int(),
-      zod.stringFormat("int32", getApiOperationOperationIdContainerQueryOffsetRegExpTwo),
-    ])
-    .optional(),
-  Limit: zod
-    .union([
-      zod.int(),
-      zod.stringFormat("int32", getApiOperationOperationIdContainerQueryLimitRegExpTwo),
-    ])
-    .optional(),
-  Sort: zod.string().optional(),
-});
+  "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerQueryOffsetRegExpTwo)]).optional(),
+  "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerQueryLimitRegExpTwo)]).optional(),
+  "Sort": zod.string().optional()
+})
 
-export const getApiOperationOperationIdContainerResponseItemsItemTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo =
-  new RegExp("^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$");
-export const getApiOperationOperationIdContainerResponseItemsItemRomaneioCountRegExpTwo =
-  new RegExp("^-?(?:0|[1-9]\\d*)$");
-export const getApiOperationOperationIdContainerResponseTotalRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
-export const getApiOperationOperationIdContainerResponseOffsetRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
-export const getApiOperationOperationIdContainerResponseLimitRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+export const getApiOperationOperationIdContainerResponseItemsItemTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerResponseItemsItemRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdContainerResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdContainerResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdContainerResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const GetApiOperationOperationIdContainerResponse = zod.object({
-  items: zod.array(
-    zod.object({
-      operationId: zod.uuid(),
-      containerId: zod.uuid(),
-      tara: zod
-        .union([
-          zod.number(),
-          zod.stringFormat(
-            "double",
-            getApiOperationOperationIdContainerResponseItemsItemTaraRegExpTwo,
-          ),
-        ])
-        .nullish(),
-      sealDate: zod.iso.date().nullish(),
-      status: zod.int(),
-      container: zod.object({
-        identifier: zod.string(),
-        tara: zod
-          .union([
-            zod.number(),
-            zod.stringFormat(
-              "double",
-              getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo,
-            ),
-          ])
-          .nullish(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-      romaneioCount: zod
-        .union([
-          zod.int(),
-          zod.stringFormat(
-            "int32",
-            getApiOperationOperationIdContainerResponseItemsItemRomaneioCountRegExpTwo,
-          ),
-        ])
-        .optional(),
-      seals: zod
-        .array(
-          zod.object({
-            label: zod.string().optional(),
-            name: zod.int().optional(),
-            description: zod.string().optional(),
-            userId: zod.uuid(),
-            photo: zod
-              .union([
-                zod.null(),
-                zod.object({
-                  name: zod.string().optional(),
-                  extension: zod.string().optional(),
-                  url: zod.string().optional(),
-                  contentType: zod.string().nullish(),
-                  id: zod.uuid(),
-                  createdAt: zod.iso.datetime({ offset: true }),
-                  updatedAt: zod.iso.datetime({ offset: true }),
-                }),
-              ])
-              .optional(),
-            id: zod.uuid(),
-            createdAt: zod.iso.datetime({ offset: true }),
-            updatedAt: zod.iso.datetime({ offset: true }),
-          }),
-        )
-        .optional(),
-      photos: zod
-        .array(
-          zod.object({
-            slot: zod.int(),
-            file: zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-            id: zod.uuid(),
-            createdAt: zod.iso.datetime({ offset: true }),
-            updatedAt: zod.iso.datetime({ offset: true }),
-          }),
-        )
-        .optional(),
-      id: zod.uuid(),
-      createdAt: zod.iso.datetime({ offset: true }),
-      updatedAt: zod.iso.datetime({ offset: true }),
-    }),
-  ),
-  total: zod.union([
-    zod.int(),
-    zod.stringFormat("int32", getApiOperationOperationIdContainerResponseTotalRegExpTwo),
-  ]),
-  offset: zod.union([
-    zod.int(),
-    zod.stringFormat("int32", getApiOperationOperationIdContainerResponseOffsetRegExpTwo),
-  ]),
-  limit: zod.union([
-    zod.int(),
-    zod.stringFormat("int32", getApiOperationOperationIdContainerResponseLimitRegExpTwo),
-  ]),
-  hasNext: zod.boolean().optional(),
-  hasPrevious: zod.boolean().optional(),
-});
+  "items": zod.array(zod.object({
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerResponseItemsItemTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerResponseItemsItemRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerResponseTotalRegExpTwo)]),
+  "offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerResponseOffsetRegExpTwo)]),
+  "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerResponseLimitRegExpTwo)]),
+  "hasNext": zod.boolean().optional(),
+  "hasPrevious": zod.boolean().optional()
+})
 
 export const PostApiOperationOperationIdContainerParams = zod.object({
-  operationId: zod.uuid(),
-});
+  "operationId": zod.uuid()
+})
 
-export const postApiOperationOperationIdContainerBodyTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
+export const postApiOperationOperationIdContainerBodyTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
 
 export const PostApiOperationOperationIdContainerBody = zod.object({
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat("double", postApiOperationOperationIdContainerBodyTaraRegExpTwo),
-    ])
-    .nullish(),
-});
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerBodyTaraRegExpTwo)]).nullish()
+})
 
-export const postApiOperationOperationIdContainerResponseTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const postApiOperationOperationIdContainerResponseRomaneioCountRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+export const postApiOperationOperationIdContainerResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const PostApiOperationOperationIdContainerResponse = zod.object({
-  operationId: zod.uuid(),
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat("double", postApiOperationOperationIdContainerResponseTaraRegExpTwo),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-  container: zod.object({
-    identifier: zod.string(),
-    tara: zod
-      .union([
-        zod.number(),
-        zod.stringFormat(
-          "double",
-          postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo,
-        ),
-      ])
-      .nullish(),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  romaneioCount: zod
-    .union([
-      zod.int(),
-      zod.stringFormat("int32", postApiOperationOperationIdContainerResponseRomaneioCountRegExpTwo),
-    ])
-    .optional(),
-  seals: zod
-    .array(
-      zod.object({
-        label: zod.string().optional(),
-        name: zod.int().optional(),
-        description: zod.string().optional(),
-        userId: zod.uuid(),
-        photo: zod
-          .union([
-            zod.null(),
-            zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-          ])
-          .optional(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  photos: zod
-    .array(
-      zod.object({
-        slot: zod.int(),
-        file: zod.object({
-          name: zod.string().optional(),
-          extension: zod.string().optional(),
-          url: zod.string().optional(),
-          contentType: zod.string().nullish(),
-          id: zod.uuid(),
-          createdAt: zod.iso.datetime({ offset: true }),
-          updatedAt: zod.iso.datetime({ offset: true }),
-        }),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerResponseTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdContainerResponseRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const GetApiOperationOperationIdContainerIdParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
 
-export const getApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const getApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+export const getApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const GetApiOperationOperationIdContainerIdResponse = zod.object({
-  operationId: zod.uuid(),
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat("double", getApiOperationOperationIdContainerIdResponseTaraRegExpTwo),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-  container: zod.object({
-    identifier: zod.string(),
-    tara: zod
-      .union([
-        zod.number(),
-        zod.stringFormat(
-          "double",
-          getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo,
-        ),
-      ])
-      .nullish(),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  romaneioCount: zod
-    .union([
-      zod.int(),
-      zod.stringFormat(
-        "int32",
-        getApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo,
-      ),
-    ])
-    .optional(),
-  seals: zod
-    .array(
-      zod.object({
-        label: zod.string().optional(),
-        name: zod.int().optional(),
-        description: zod.string().optional(),
-        userId: zod.uuid(),
-        photo: zod
-          .union([
-            zod.null(),
-            zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-          ])
-          .optional(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  photos: zod
-    .array(
-      zod.object({
-        slot: zod.int(),
-        file: zod.object({
-          name: zod.string().optional(),
-          extension: zod.string().optional(),
-          url: zod.string().optional(),
-          contentType: zod.string().nullish(),
-          id: zod.uuid(),
-          createdAt: zod.iso.datetime({ offset: true }),
-          updatedAt: zod.iso.datetime({ offset: true }),
-        }),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerIdResponseTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const PutApiOperationOperationIdContainerIdParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
 
-export const putApiOperationOperationIdContainerIdBodyTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
+export const putApiOperationOperationIdContainerIdBodyTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
 
 export const PutApiOperationOperationIdContainerIdBody = zod.object({
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat("double", putApiOperationOperationIdContainerIdBodyTaraRegExpTwo),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-});
+  "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdBodyTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int()
+})
 
-export const putApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const putApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+export const putApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const PutApiOperationOperationIdContainerIdResponse = zod.object({
-  operationId: zod.uuid(),
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat("double", putApiOperationOperationIdContainerIdResponseTaraRegExpTwo),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-  container: zod.object({
-    identifier: zod.string(),
-    tara: zod
-      .union([
-        zod.number(),
-        zod.stringFormat(
-          "double",
-          putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo,
-        ),
-      ])
-      .nullish(),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  romaneioCount: zod
-    .union([
-      zod.int(),
-      zod.stringFormat(
-        "int32",
-        putApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo,
-      ),
-    ])
-    .optional(),
-  seals: zod
-    .array(
-      zod.object({
-        label: zod.string().optional(),
-        name: zod.int().optional(),
-        description: zod.string().optional(),
-        userId: zod.uuid(),
-        photo: zod
-          .union([
-            zod.null(),
-            zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-          ])
-          .optional(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  photos: zod
-    .array(
-      zod.object({
-        slot: zod.int(),
-        file: zod.object({
-          name: zod.string().optional(),
-          extension: zod.string().optional(),
-          url: zod.string().optional(),
-          contentType: zod.string().nullish(),
-          id: zod.uuid(),
-          createdAt: zod.iso.datetime({ offset: true }),
-          updatedAt: zod.iso.datetime({ offset: true }),
-        }),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdResponseTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', putApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const DeleteApiOperationOperationIdContainerIdParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
 
-export const DeleteApiOperationOperationIdContainerIdResponse = zod.unknown();
+export const DeleteApiOperationOperationIdContainerIdResponse = zod.unknown()
 
 export const PostApiOperationOperationIdContainerIdPhotoParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
 
 export const PostApiOperationOperationIdContainerIdPhotoBody = zod.object({
-  file: zod.instanceof(Blob).optional(),
-  slot: zod.int().optional(),
-});
+  "file": zod.instanceof(Blob).optional(),
+  "slot": zod.int().optional()
+})
 
-export const postApiOperationOperationIdContainerIdPhotoResponseTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const postApiOperationOperationIdContainerIdPhotoResponseRomaneioCountRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+export const postApiOperationOperationIdContainerIdPhotoResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdPhotoResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const PostApiOperationOperationIdContainerIdPhotoResponse = zod.object({
-  operationId: zod.uuid(),
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat("double", postApiOperationOperationIdContainerIdPhotoResponseTaraRegExpTwo),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-  container: zod.object({
-    identifier: zod.string(),
-    tara: zod
-      .union([
-        zod.number(),
-        zod.stringFormat(
-          "double",
-          postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo,
-        ),
-      ])
-      .nullish(),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  romaneioCount: zod
-    .union([
-      zod.int(),
-      zod.stringFormat(
-        "int32",
-        postApiOperationOperationIdContainerIdPhotoResponseRomaneioCountRegExpTwo,
-      ),
-    ])
-    .optional(),
-  seals: zod
-    .array(
-      zod.object({
-        label: zod.string().optional(),
-        name: zod.int().optional(),
-        description: zod.string().optional(),
-        userId: zod.uuid(),
-        photo: zod
-          .union([
-            zod.null(),
-            zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-          ])
-          .optional(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  photos: zod
-    .array(
-      zod.object({
-        slot: zod.int(),
-        file: zod.object({
-          name: zod.string().optional(),
-          extension: zod.string().optional(),
-          url: zod.string().optional(),
-          contentType: zod.string().nullish(),
-          id: zod.uuid(),
-          createdAt: zod.iso.datetime({ offset: true }),
-          updatedAt: zod.iso.datetime({ offset: true }),
-        }),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdPhotoResponseTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdContainerIdPhotoResponseRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-  photoId: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid(),
+  "photoId": zod.uuid()
+})
 
-export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo =
-  new RegExp("^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$");
-export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseRomaneioCountRegExpTwo =
-  new RegExp("^-?(?:0|[1-9]\\d*)$");
+export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdResponse = zod.object({
-  operationId: zod.uuid(),
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat(
-        "double",
-        deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseTaraRegExpTwo,
-      ),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-  container: zod.object({
-    identifier: zod.string(),
-    tara: zod
-      .union([
-        zod.number(),
-        zod.stringFormat(
-          "double",
-          deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo,
-        ),
-      ])
-      .nullish(),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  romaneioCount: zod
-    .union([
-      zod.int(),
-      zod.stringFormat(
-        "int32",
-        deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseRomaneioCountRegExpTwo,
-      ),
-    ])
-    .optional(),
-  seals: zod
-    .array(
-      zod.object({
-        label: zod.string().optional(),
-        name: zod.int().optional(),
-        description: zod.string().optional(),
-        userId: zod.uuid(),
-        photo: zod
-          .union([
-            zod.null(),
-            zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-          ])
-          .optional(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  photos: zod
-    .array(
-      zod.object({
-        slot: zod.int(),
-        file: zod.object({
-          name: zod.string().optional(),
-          extension: zod.string().optional(),
-          url: zod.string().optional(),
-          contentType: zod.string().nullish(),
-          id: zod.uuid(),
-          createdAt: zod.iso.datetime({ offset: true }),
-          updatedAt: zod.iso.datetime({ offset: true }),
-        }),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const PostApiOperationOperationIdContainerIdSealParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
 
 export const postApiOperationOperationIdContainerIdSealBodyLabelMax = 100;
 
 export const postApiOperationOperationIdContainerIdSealBodyDescriptionMax = 255;
 
-export const PostApiOperationOperationIdContainerIdSealBody = zod.object({
-  userId: zod.uuid(),
-  label: zod.string().max(postApiOperationOperationIdContainerIdSealBodyLabelMax).nullish(),
-  name: zod.int(),
-  description: zod
-    .string()
-    .max(postApiOperationOperationIdContainerIdSealBodyDescriptionMax)
-    .nullish(),
-});
 
-export const postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const postApiOperationOperationIdContainerIdSealResponseRomaneioCountRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+
+export const PostApiOperationOperationIdContainerIdSealBody = zod.object({
+  "userId": zod.uuid(),
+  "label": zod.string().max(postApiOperationOperationIdContainerIdSealBodyLabelMax).nullish(),
+  "name": zod.int(),
+  "description": zod.string().max(postApiOperationOperationIdContainerIdSealBodyDescriptionMax).nullish()
+})
+
+export const postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdSealResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const PostApiOperationOperationIdContainerIdSealResponse = zod.object({
-  operationId: zod.uuid(),
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat("double", postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-  container: zod.object({
-    identifier: zod.string(),
-    tara: zod
-      .union([
-        zod.number(),
-        zod.stringFormat(
-          "double",
-          postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo,
-        ),
-      ])
-      .nullish(),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  romaneioCount: zod
-    .union([
-      zod.int(),
-      zod.stringFormat(
-        "int32",
-        postApiOperationOperationIdContainerIdSealResponseRomaneioCountRegExpTwo,
-      ),
-    ])
-    .optional(),
-  seals: zod
-    .array(
-      zod.object({
-        label: zod.string().optional(),
-        name: zod.int().optional(),
-        description: zod.string().optional(),
-        userId: zod.uuid(),
-        photo: zod
-          .union([
-            zod.null(),
-            zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-          ])
-          .optional(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  photos: zod
-    .array(
-      zod.object({
-        slot: zod.int(),
-        file: zod.object({
-          name: zod.string().optional(),
-          extension: zod.string().optional(),
-          url: zod.string().optional(),
-          contentType: zod.string().nullish(),
-          id: zod.uuid(),
-          createdAt: zod.iso.datetime({ offset: true }),
-          updatedAt: zod.iso.datetime({ offset: true }),
-        }),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdContainerIdSealResponseRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const DeleteApiOperationOperationIdContainerIdSealSealIdParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-  sealId: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid(),
+  "sealId": zod.uuid()
+})
 
-export const deleteApiOperationOperationIdContainerIdSealSealIdResponseTaraRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
-);
-export const deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo =
-  new RegExp("^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$");
-export const deleteApiOperationOperationIdContainerIdSealSealIdResponseRomaneioCountRegExpTwo =
-  new RegExp("^-?(?:0|[1-9]\\d*)$");
+export const deleteApiOperationOperationIdContainerIdSealSealIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdSealSealIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const DeleteApiOperationOperationIdContainerIdSealSealIdResponse = zod.object({
-  operationId: zod.uuid(),
-  containerId: zod.uuid(),
-  tara: zod
-    .union([
-      zod.number(),
-      zod.stringFormat(
-        "double",
-        deleteApiOperationOperationIdContainerIdSealSealIdResponseTaraRegExpTwo,
-      ),
-    ])
-    .nullish(),
-  sealDate: zod.iso.date().nullish(),
-  status: zod.int(),
-  container: zod.object({
-    identifier: zod.string(),
-    tara: zod
-      .union([
-        zod.number(),
-        zod.stringFormat(
-          "double",
-          deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo,
-        ),
-      ])
-      .nullish(),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  romaneioCount: zod
-    .union([
-      zod.int(),
-      zod.stringFormat(
-        "int32",
-        deleteApiOperationOperationIdContainerIdSealSealIdResponseRomaneioCountRegExpTwo,
-      ),
-    ])
-    .optional(),
-  seals: zod
-    .array(
-      zod.object({
-        label: zod.string().optional(),
-        name: zod.int().optional(),
-        description: zod.string().optional(),
-        userId: zod.uuid(),
-        photo: zod
-          .union([
-            zod.null(),
-            zod.object({
-              name: zod.string().optional(),
-              extension: zod.string().optional(),
-              url: zod.string().optional(),
-              contentType: zod.string().nullish(),
-              id: zod.uuid(),
-              createdAt: zod.iso.datetime({ offset: true }),
-              updatedAt: zod.iso.datetime({ offset: true }),
-            }),
-          ])
-          .optional(),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  photos: zod
-    .array(
-      zod.object({
-        slot: zod.int(),
-        file: zod.object({
-          name: zod.string().optional(),
-          extension: zod.string().optional(),
-          url: zod.string().optional(),
-          contentType: zod.string().nullish(),
-          id: zod.uuid(),
-          createdAt: zod.iso.datetime({ offset: true }),
-          updatedAt: zod.iso.datetime({ offset: true }),
-        }),
-        id: zod.uuid(),
-        createdAt: zod.iso.datetime({ offset: true }),
-        updatedAt: zod.iso.datetime({ offset: true }),
-      }),
-    )
-    .optional(),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "containerId": zod.uuid(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdSealSealIdResponseTaraRegExpTwo)]).nullish(),
+  "sealDate": zod.iso.date().nullish(),
+  "status": zod.int(),
+  "container": zod.object({
+  "identifier": zod.string(),
+  "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "romaneioCount": zod.union([zod.int(),zod.stringFormat('int32', deleteApiOperationOperationIdContainerIdSealSealIdResponseRomaneioCountRegExpTwo)]).optional(),
+  "seals": zod.array(zod.object({
+  "label": zod.string().optional(),
+  "name": zod.int().optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "photos": zod.array(zod.object({
+  "slot": zod.int(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+

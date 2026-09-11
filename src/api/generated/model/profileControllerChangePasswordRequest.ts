@@ -7,18 +7,18 @@
 
 export interface ProfileControllerChangePasswordRequest {
   /**
-   * @minLength 6
-   * @maxLength 100
-   */
+     * @minLength 6
+     * @maxLength 100
+     */
   currentPassword: string;
   /**
-   * @minLength 6
-   * @maxLength 100
-   */
+     * @minLength 6
+     * @maxLength 100
+     */
   newPassword: string;
   /**
-   * @minLength 6
-   * @maxLength 100
-   */
+     * @minLength 6
+     * @maxLength 100
+     */
   newPasswordConfirm: string;
 }

@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InternalRole } from "./internalRole";
-import type { ProfileCreate } from "./profileCreate";
+import type { InternalRole } from './internalRole.ts';
+import type { ProfileCreate } from './profileCreate.ts';
 
 export interface UserCreate {
   /** @nullable */
@@ -14,8 +14,8 @@ export interface UserCreate {
   isAdmin?: boolean | null;
   profile: ProfileCreate;
   /**
-   * @minLength 3
-   * @maxLength 150
-   */
+     * @minLength 3
+     * @maxLength 150
+     */
   userName: string;
 }
