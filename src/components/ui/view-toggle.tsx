@@ -20,15 +20,15 @@ export function ViewToggle({
     <div className="btn-group flex-shrink-0" role="group" aria-label={ariaLabel}>
       <button
         type="button"
-        className={`btn btn-sm ${value === "cards" ? "btn-primary" : "btn-outline-primary"}`}
+        className={`btn btn-sm ${value === "cards" ? "btn-primary" : "btn-soft"}`}
         onClick={() => onChange("cards")}
         aria-pressed={value === "cards"}
       >
-        <i className="bi bi-grid-3x3-gap-fill" aria-hidden />
+        <i className="bi bi-grid-3x3-gap" aria-hidden />
       </button>
       <button
         type="button"
-        className={`btn btn-sm ${value === "list" ? "btn-primary" : "btn-outline-primary"}`}
+        className={`btn btn-sm ${value === "list" ? "btn-primary" : "btn-soft"}`}
         onClick={() => onChange("list")}
         aria-pressed={value === "list"}
       >

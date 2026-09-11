@@ -63,27 +63,39 @@
   --bs-warning-rgb: 217, 119, 6;
   --bs-info: #0891b2;
   --bs-info-rgb: 8, 145, 178;
-  --bs-body-font-family: Arial, Helvetica, sans-serif;
+  /* Mantém a mesma pilha tipográfica padrão do Bootstrap usada pelo Portal. */
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-body-bg: #fcfdff;
+  --bs-body-color: #2b3a55;
+  --bs-border-color: #e4eaf3;
+  --bs-secondary-bg: #f1f4f9;
+  --bs-tertiary-bg: #e4eaf3;
+  --surface: #ffffff;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
-  --bs-border-radius: 0.5rem;
+  --bs-border-radius: 0.85rem;
+  --bs-border-radius-sm: 0.6rem;
+  --bs-border-radius-lg: 1.15rem;
+  --bs-border-radius-xl: 1.4rem;
+  --bs-border-radius-pill: 999px;
 
   /* Tokens do AppShell (sidebar do menu logado) — tema claro */
-  --sidebar-active-fg: #ffffff;
-  --sidebar-active-bg: var(--brand-primary);
-  --sidebar-bg: #ffffff;
-  --sidebar-fg: #1e293b;
-  --sidebar-fg-muted: #64748b;
-  --sidebar-hover: rgba(0, 0, 0, 0.05);
-  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --sidebar-active-fg: color-mix(in srgb, var(--brand-primary) 75%, #2b3a55);
+  --sidebar-active-bg: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  --sidebar-bg: #f7f7f7;
+  --sidebar-fg: #2b3a55;
+  --sidebar-fg-muted: #6b7a92;
+  --sidebar-hover: rgba(43, 58, 85, 0.05);
+  --sidebar-border: #dfe6f0;
 
   /* Neutros de UI (topbar, divisor da sidebar, sombra do drawer mobile) —
      mesmo valor nas 3 brands, só varia por modo. */
-  --ink-muted: #64748b;
-  --surface-translucent: rgba(255, 255, 255, 0.72);
-  --shadow-elegant: 0 20px 45px -20px rgba(15, 23, 42, 0.35);
-  --main-divider-color: rgba(15, 23, 42, 0.08);
-  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.45);
+  --ink-muted: #6b7a92;
+  --surface-translucent: rgba(255, 255, 255, 0.75);
+  --shadow-soft: 0 1px 2px rgba(30, 50, 90, 0.05), 0 4px 12px rgba(30, 50, 90, 0.07);
+  --shadow-elegant: 0 10px 30px -12px rgba(var(--brand-primary-rgb), 0.35);
+  --main-divider-color: var(--bs-border-color);
+  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.12);
 }
 
 [data-brand="asa"][data-bs-theme="dark"] {
@@ -109,23 +121,30 @@
   --bs-warning-rgb: 251, 191, 36;
   --bs-info: #22d3ee;
   --bs-info-rgb: 34, 211, 238;
+  --bs-body-bg: #12161f;
+  --bs-body-color: #e8ecf3;
+  --bs-border-color: #313b4d;
+  --bs-secondary-bg: #1a2029;
+  --bs-tertiary-bg: #212836;
+  --surface: #1a2029;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
 
   /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
-  --sidebar-active-fg: #0d2114;
-  --sidebar-active-bg: var(--brand-primary);
-  --sidebar-bg: #1a2029;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-active-bg: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  --sidebar-bg: #252d3a;
   --sidebar-fg: #e8ecf3;
   --sidebar-fg-muted: #8b96ab;
-  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-hover: rgba(255, 255, 255, 0.07);
   --sidebar-border: rgba(255, 255, 255, 0.1);
 
   --ink-muted: #8b96ab;
-  --surface-translucent: rgba(26, 32, 41, 0.72);
-  --shadow-elegant: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
-  --main-divider-color: rgba(255, 255, 255, 0.08);
-  --main-divider-shadow: -12px 0 28px -24px rgba(0, 0, 0, 0.6);
+  --surface-translucent: rgba(26, 32, 41, 0.75);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-elegant: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --main-divider-color: #3a455a;
+  --main-divider-shadow: -16px 0 32px -20px rgba(0, 0, 0, 0.55);
 }
 
 [data-brand="asi"][data-bs-theme="light"] {
@@ -154,21 +173,23 @@
   --bs-info-rgb: 8, 145, 178;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --surface: #ffffff;
 
   /* Tokens do AppShell (sidebar do menu logado) — tema claro */
-  --sidebar-active-fg: #3a0f12;
-  --sidebar-active-bg: var(--brand-primary-soft);
-  --sidebar-bg: #ffffff;
-  --sidebar-fg: #1e293b;
-  --sidebar-fg-muted: #64748b;
-  --sidebar-hover: rgba(0, 0, 0, 0.05);
-  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --sidebar-active-fg: color-mix(in srgb, var(--brand-primary) 75%, #2b3a55);
+  --sidebar-active-bg: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  --sidebar-bg: #f7f7f7;
+  --sidebar-fg: #2b3a55;
+  --sidebar-fg-muted: #6b7a92;
+  --sidebar-hover: rgba(43, 58, 85, 0.05);
+  --sidebar-border: #dfe6f0;
 
-  --ink-muted: #64748b;
-  --surface-translucent: rgba(255, 255, 255, 0.72);
-  --shadow-elegant: 0 20px 45px -20px rgba(15, 23, 42, 0.35);
-  --main-divider-color: rgba(15, 23, 42, 0.08);
-  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.45);
+  --ink-muted: #6b7a92;
+  --surface-translucent: rgba(255, 255, 255, 0.75);
+  --shadow-soft: 0 1px 2px rgba(30, 50, 90, 0.05), 0 4px 12px rgba(30, 50, 90, 0.07);
+  --shadow-elegant: 0 10px 30px -12px rgba(var(--brand-primary-rgb), 0.35);
+  --main-divider-color: var(--bs-border-color);
+  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.12);
 }
 
 [data-brand="asi"][data-bs-theme="dark"] {
@@ -194,23 +215,30 @@
   --bs-warning-rgb: 251, 191, 36;
   --bs-info: #22d3ee;
   --bs-info-rgb: 34, 211, 238;
+  --bs-body-bg: #12161f;
+  --bs-body-color: #e8ecf3;
+  --bs-border-color: #313b4d;
+  --bs-secondary-bg: #1a2029;
+  --bs-tertiary-bg: #212836;
+  --surface: #1a2029;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
 
   /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
-  --sidebar-active-fg: #240a0b;
-  --sidebar-active-bg: var(--brand-primary-soft);
-  --sidebar-bg: #1a2029;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-active-bg: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  --sidebar-bg: #252d3a;
   --sidebar-fg: #e8ecf3;
   --sidebar-fg-muted: #8b96ab;
-  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-hover: rgba(255, 255, 255, 0.07);
   --sidebar-border: rgba(255, 255, 255, 0.1);
 
   --ink-muted: #8b96ab;
-  --surface-translucent: rgba(26, 32, 41, 0.72);
-  --shadow-elegant: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
-  --main-divider-color: rgba(255, 255, 255, 0.08);
-  --main-divider-shadow: -12px 0 28px -24px rgba(0, 0, 0, 0.6);
+  --surface-translucent: rgba(26, 32, 41, 0.75);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-elegant: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --main-divider-color: #3a455a;
+  --main-divider-shadow: -16px 0 32px -20px rgba(0, 0, 0, 0.55);
 }
 
 [data-brand="asc"][data-bs-theme="light"] {
@@ -238,21 +266,23 @@
   --bs-info-rgb: 8, 145, 178;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --surface: #ffffff;
 
   /* Tokens do AppShell (sidebar do menu logado) — tema claro */
-  --sidebar-active-fg: #ffffff;
-  --sidebar-active-bg: var(--brand-primary);
-  --sidebar-bg: #ffffff;
-  --sidebar-fg: #1e293b;
-  --sidebar-fg-muted: #64748b;
-  --sidebar-hover: rgba(0, 0, 0, 0.05);
-  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --sidebar-active-fg: color-mix(in srgb, var(--brand-primary) 75%, #2b3a55);
+  --sidebar-active-bg: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  --sidebar-bg: #f7f7f7;
+  --sidebar-fg: #2b3a55;
+  --sidebar-fg-muted: #6b7a92;
+  --sidebar-hover: rgba(43, 58, 85, 0.05);
+  --sidebar-border: #dfe6f0;
 
-  --ink-muted: #64748b;
-  --surface-translucent: rgba(255, 255, 255, 0.72);
-  --shadow-elegant: 0 20px 45px -20px rgba(15, 23, 42, 0.35);
-  --main-divider-color: rgba(15, 23, 42, 0.08);
-  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.45);
+  --ink-muted: #6b7a92;
+  --surface-translucent: rgba(255, 255, 255, 0.75);
+  --shadow-soft: 0 1px 2px rgba(30, 50, 90, 0.05), 0 4px 12px rgba(30, 50, 90, 0.07);
+  --shadow-elegant: 0 10px 30px -12px rgba(var(--brand-primary-rgb), 0.35);
+  --main-divider-color: var(--bs-border-color);
+  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.12);
 }
 
 [data-brand="asc"][data-bs-theme="dark"] {
@@ -278,21 +308,28 @@
   --bs-warning-rgb: 251, 191, 36;
   --bs-info: #22d3ee;
   --bs-info-rgb: 34, 211, 238;
+  --bs-body-bg: #12161f;
+  --bs-body-color: #e8ecf3;
+  --bs-border-color: #313b4d;
+  --bs-secondary-bg: #1a2029;
+  --bs-tertiary-bg: #212836;
+  --surface: #1a2029;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
 
   /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
-  --sidebar-active-fg: #0b1f33;
-  --sidebar-active-bg: var(--brand-primary-soft);
-  --sidebar-bg: #1a2029;
+  --sidebar-active-fg: #ffffff;
+  --sidebar-active-bg: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  --sidebar-bg: #252d3a;
   --sidebar-fg: #e8ecf3;
   --sidebar-fg-muted: #8b96ab;
-  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-hover: rgba(255, 255, 255, 0.07);
   --sidebar-border: rgba(255, 255, 255, 0.1);
 
   --ink-muted: #8b96ab;
-  --surface-translucent: rgba(26, 32, 41, 0.72);
-  --shadow-elegant: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
-  --main-divider-color: rgba(255, 255, 255, 0.08);
-  --main-divider-shadow: -12px 0 28px -24px rgba(0, 0, 0, 0.6);
+  --surface-translucent: rgba(26, 32, 41, 0.75);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-elegant: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --main-divider-color: #3a455a;
+  --main-divider-shadow: -16px 0 32px -20px rgba(0, 0, 0, 0.55);
 }

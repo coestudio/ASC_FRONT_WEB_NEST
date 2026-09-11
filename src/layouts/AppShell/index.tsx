@@ -149,7 +149,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div
           className={`${styles.sidebarHeader} d-flex align-items-center justify-content-between`}
         >
-          <AppBrand as="link" to="/dashboard" size="sm" className={styles.sidebarBrand} />
+          <AppBrand as="link" to="/dashboard" size="md" className={styles.sidebarBrand} />
         </div>
 
         <Nav className={`${styles.sidebarNav} flex-column`}>

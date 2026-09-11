@@ -154,24 +154,26 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
           ))}
         </div>
       ) : (
-        <Table responsive borderless className={`align-middle ${styles.crudTable}`}>
-          <thead>
-            <tr>
-              {columns.map((col) => (
-                <th key={col.key}>{t(col.headerKey)}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={getItemKey(item)}>
+        <div className={styles.tableCard}>
+          <Table responsive hover className={`align-middle mb-0 ${styles.crudTable}`}>
+            <thead>
+              <tr>
                 {columns.map((col) => (
-                  <td key={col.key}>{col.render(item)}</td>
+                  <th key={col.key}>{t(col.headerKey)}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={getItemKey(item)}>
+                  {columns.map((col) => (
+                    <td key={col.key}>{col.render(item)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       )}
 
       {totalPages > 1 ? (
@@ -226,17 +228,11 @@ export function CrudListPage<
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+      <div className="mb-3">
         <div>
           <h1 className="h4 mb-0">{t(titleKey)}</h1>
           {descriptionKey ? <p className="text-body-secondary mb-0">{t(descriptionKey)}</p> : null}
         </div>
-        {onCreate ? (
-          <Button variant="primary" onClick={onCreate}>
-            <i className="bi bi-plus-lg me-1" aria-hidden />
-            {t("crud.list.new")}
-          </Button>
-        ) : null}
       </div>
 
       {isMock ? <MockDataBanner className="mb-3" /> : null}
@@ -259,6 +255,12 @@ export function CrudListPage<
           hidden={isMobile}
           ariaLabel={t("crud.list.viewMode")}
         />
+        {onCreate ? (
+          <Button variant="primary" onClick={onCreate}>
+            <i className="bi bi-plus-lg me-1" aria-hidden />
+            {t("crud.list.new")}
+          </Button>
+        ) : null}
       </div>
 
       {mounted ? (

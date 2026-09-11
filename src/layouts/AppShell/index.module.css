@@ -91,10 +91,7 @@
 }
 :global(.app-nav-link.active) {
   background-color: var(--sidebar-active-bg);
-  /* --sidebar-active-fg é o token calibrado por brand/modo pra contrastar
-     com --sidebar-active-bg (branco sobre verde sólido no asa, por ex.) —
-     usar var(--brand-primary) aqui deixava o texto invisível quando o bg
-     ativo é sólido (bug reportado: item selecionado sem texto visível). */
+  /* O token preserva contraste no dark e a cor suave da marca no light. */
   color: var(--sidebar-active-fg, var(--brand-primary));
   font-weight: 600;
 }

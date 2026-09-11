@@ -20,6 +20,7 @@ import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page"
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
+import { PageLayout } from "@/layouts/PageLayout";
 import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user";
 import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -402,42 +403,46 @@ function AdminAccessPageContent() {
     : ({} as never);
 
   return (
-    <div>
-      <CrudListPage
-        titleKey="access.title"
-        descriptionKey="access.description"
-        queryOptions={listQueryOptions}
-        columns={columns}
-        renderCard={(u) => (
-          <Card>
-            <Card.Body>
-              <Card.Title className="h6">{u.profile.fullName}</Card.Title>
-              <Card.Subtitle className="text-body-secondary small mb-2">{u.userName}</Card.Subtitle>
-              <div className="small text-body-secondary mb-2">{u.profile.email ?? "—"}</div>
-              <Badge pill bg={u.isActive ? "success" : "secondary"} className="me-1">
-                {t(u.isActive ? "access.active" : "access.inactive")}
-              </Badge>
-              <Badge pill bg="info">
-                {t(u.type === 0 ? "access.internal" : "access.external")}
-              </Badge>
-              <div className="mt-2">
-                <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />
-              </div>
-            </Card.Body>
-          </Card>
-        )}
-        getItemKey={(u) => u.id}
-        search={search}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
-        page={page}
-        pageSize={PAGE_SIZE}
-        onPageChange={setPage}
-        onCreate={() => setModal({ mode: "create" })}
-        emptyMessageKey="access.emptyState"
-      />
+    <>
+      <PageLayout density="wide">
+        <CrudListPage
+          titleKey="access.title"
+          descriptionKey="access.description"
+          queryOptions={listQueryOptions}
+          columns={columns}
+          renderCard={(u) => (
+            <Card>
+              <Card.Body>
+                <Card.Title className="h6">{u.profile.fullName}</Card.Title>
+                <Card.Subtitle className="text-body-secondary small mb-2">
+                  {u.userName}
+                </Card.Subtitle>
+                <div className="small text-body-secondary mb-2">{u.profile.email ?? "—"}</div>
+                <Badge pill bg={u.isActive ? "success" : "secondary"} className="me-1">
+                  {t(u.isActive ? "access.active" : "access.inactive")}
+                </Badge>
+                <Badge pill bg="info">
+                  {t(u.type === 0 ? "access.internal" : "access.external")}
+                </Badge>
+                <div className="mt-2">
+                  <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />
+                </div>
+              </Card.Body>
+            </Card>
+          )}
+          getItemKey={(u) => u.id}
+          search={search}
+          onSearchChange={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
+          page={page}
+          pageSize={PAGE_SIZE}
+          onPageChange={setPage}
+          onCreate={() => setModal({ mode: "create" })}
+          emptyMessageKey="access.emptyState"
+        />
+      </PageLayout>
 
       {modal ? (
         <CrudRecordModal<UserFormValues>
@@ -462,6 +467,6 @@ function AdminAccessPageContent() {
           onCancel={() => setPending(null)}
         />
       ) : null}
-    </div>
+    </>
   );
 }

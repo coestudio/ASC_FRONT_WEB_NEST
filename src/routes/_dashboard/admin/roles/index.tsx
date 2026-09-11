@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ADMIN_ROLES } from "@/data/admin-roles";
+import { PageLayout } from "@/layouts/PageLayout";
 import { useT } from "@/lib/ui-prefs";
 
 // Página estática de referência de perfis (SPEC-03, decisão D1: sem chamada
@@ -15,10 +16,7 @@ function AdminRolesPage() {
   const t = useT();
 
   return (
-    <div>
-      <h1 className="h4 mb-1">{t("access.rolesTitle")}</h1>
-      <p className="text-body-secondary mb-4">{t("access.rolesDescription")}</p>
-
+    <PageLayout title={t("access.rolesTitle")} description={t("access.rolesDescription")}>
       {ADMIN_ROLES.length === 0 ? (
         <div className="alert alert-secondary">{t("access.rolesEmpty")}</div>
       ) : (
@@ -33,6 +31,6 @@ function AdminRolesPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 }

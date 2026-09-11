@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { PageLayout } from "@/layouts/PageLayout";
+
 // Home da área autenticada. Envolvida pelo layout pathless /_dashboard.
 export const Route = createFileRoute("/_dashboard/dashboard/")({
   head: () => ({ meta: [{ title: "Dashboard — ASC" }] }),
@@ -8,9 +10,6 @@ export const Route = createFileRoute("/_dashboard/dashboard/")({
 
 function DashboardHome() {
   return (
-    <div className="mx-auto p-4" style={{ maxWidth: "56rem" }}>
-      <h1 className="fs-5 fw-semibold text-body">Dashboard</h1>
-      <p className="mt-2 small text-body-secondary">Bem-vindo ao portal interno.</p>
-    </div>
+    <PageLayout density="compact" title="Dashboard" description="Bem-vindo ao portal interno." />
   );
 }

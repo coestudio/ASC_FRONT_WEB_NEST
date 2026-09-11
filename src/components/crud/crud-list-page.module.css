@@ -3,6 +3,14 @@
    design (print da tela de Acesso, SPEC-11 escopo expandido). Densidade e
    nomes de token seguem o padrão real do warren/Portal
    (Assets/css/base.css, bloco `.table`), adaptado pros tokens do NEST. */
+.tableCard {
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1.15rem;
+  box-shadow: var(--shadow-soft);
+}
+
 .crudTable {
   --bs-table-bg: transparent;
   font-size: 0.85rem;
@@ -14,16 +22,17 @@
   font-weight: 600;
   letter-spacing: 0.07em;
   color: var(--ink-muted);
+  background: var(--bs-secondary-bg);
   border-bottom: 1px solid var(--bs-border-color);
   white-space: nowrap;
   padding-top: 0.85rem;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.85rem;
 }
 .crudTable tbody td {
   vertical-align: middle;
   border-bottom: 1px solid var(--bs-border-color);
-  padding-top: 0.85rem;
-  padding-bottom: 0.85rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 .crudTable tbody tr:last-child td {
   border-bottom: none;

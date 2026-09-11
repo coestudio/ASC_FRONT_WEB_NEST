@@ -1,0 +1,44 @@
+.page {
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+}
+
+.standard {
+  max-width: 72rem;
+}
+
+.wide {
+  max-width: 100%;
+}
+
+.compact {
+  max-width: 56rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.heading {
+  min-width: 0;
+}
+
+.actions {
+  flex-shrink: 0;
+}
+
+@media (max-width: 575.98px) {
+  .header {
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+
+  .actions {
+    width: 100%;
+  }
+}
