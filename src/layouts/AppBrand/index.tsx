@@ -32,7 +32,11 @@ export function AppBrand({ as = "div", to = "/", size = "md", className = "" }: 
   );
 
   if (as === "link") {
-    return <Link to={to} className={classes}>{inner}</Link>;
+    return (
+      <Link to={to} className={classes}>
+        {inner}
+      </Link>
+    );
   }
   return <div className={classes}>{inner}</div>;
 }

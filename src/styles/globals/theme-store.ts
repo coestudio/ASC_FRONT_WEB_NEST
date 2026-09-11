@@ -1,64 +1,53 @@
-// Store de tema (localStorage + pub/sub via useSyncExternalStore) usada por
-// TODOS os controles de tema do app (hoje o ThemeToggle em
-// src/components/theme/theme-toggle.tsx). É importante que todos importem os
-// mesmos `useThemeMode`/`setThemeMode` daqui (mesmo módulo = mesmo Set de
-// listeners), garantindo uma única fonte de verdade sincronizada mesmo entre
-// controles distintos montados na mesma página.
-//
-// Separado de ./color-modes.ts (que expõe só constantes/tipos) porque este
-// arquivo usa hooks do React.
+// Helpers de tema (cookie + DOM). Sem React — o estado reativo vive no
+// UiPrefsProvider (src/lib/ui-prefs.tsx). Ver specs/i18n-and-theme.md.
 
-import { useEffect, useSyncExternalStore } from "react";
-import { THEME_STORAGE_KEY, THEME_COOKIE_NAME, type ThemeMode } from "./color-modes";
+import {
+  THEME_STORAGE_KEY,
+  THEME_COOKIE_NAME,
+  isThemeMode,
+  resolveTheme,
+  type ThemeMode,
+  type ResolvedTheme,
+} from "./color-modes";
 
-const listeners = new Set<() => void>();
+const ONE_YEAR = 60 * 60 * 24 * 365;
 
-function emitChange() {
-  listeners.forEach((listener) => listener());
+/** Lê a escolha de tema do cookie (client-side). `null` se ausente/ inválida. */
+export function readThemeCookie(): ThemeMode | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)asc_theme=([^;]+)/);
+  const value = match ? decodeURIComponent(match[1]) : null;
+  return isThemeMode(value) ? value : null;
 }
 
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  window.addEventListener("storage", listener);
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener("storage", listener);
-  };
+export function writeThemeCookie(mode: ThemeMode): void {
+  if (typeof document !== "undefined") {
+    document.cookie = `${THEME_COOKIE_NAME}=${mode}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`;
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, mode);
+    } catch {
+      /* private mode / storage bloqueado */
+    }
+  }
 }
 
-function getSnapshot(): ThemeMode {
-  return (localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null) ?? "light";
+export function applyThemeToDocument(resolved: ResolvedTheme): void {
+  if (typeof document !== "undefined") {
+    document.documentElement.setAttribute("data-bs-theme", resolved);
+  }
 }
 
-function getServerSnapshot(): ThemeMode {
-  return "light";
-}
-
-export function setThemeMode(mode: ThemeMode) {
-  localStorage.setItem(THEME_STORAGE_KEY, mode);
-  document.cookie = `${THEME_COOKIE_NAME}=${encodeURIComponent(mode)}; path=/; max-age=31536000; SameSite=Lax`;
-  emitChange();
-}
-
-export function useThemeMode(): ThemeMode {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-}
-
-export function resolveTheme(mode: ThemeMode): "light" | "dark" {
-  return mode;
-}
-
-export function applyTheme(mode: ThemeMode) {
-  document.documentElement.setAttribute("data-bs-theme", resolveTheme(mode));
-}
+export { resolveTheme };
 
 /**
- * Aplica o tema atual no <html>. Chamado uma única vez no AppShell (montado
- * em toda página logada) — funciona independentemente de o ThemeToggle
- * "solto" estar renderizado na página ou não.
+ * Script inline (blocking) injetado no <head> pelo __root para acertar
+ * `data-bs-theme` antes do primeiro paint — cobre o caso `system` (o SSR não
+ * conhece a preferência do SO) e qualquer divergência com o cookie.
  */
-export function useSyncThemeToDocument(mode: ThemeMode) {
-  useEffect(() => {
-    applyTheme(mode);
-  }, [mode]);
-}
+export const THEME_NO_FLASH_SCRIPT = `
+try {
+  var m = (document.cookie.match(/(?:^|;\\s*)asc_theme=([^;]+)/) || [])[1] || "system";
+  var dark = m === "dark" || (m === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.setAttribute("data-bs-theme", dark ? "dark" : "light");
+} catch (e) {}
+`.trim();

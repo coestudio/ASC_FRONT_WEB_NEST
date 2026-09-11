@@ -9,11 +9,7 @@
   justify-content: center;
   padding: 1.5rem;
   background:
-    radial-gradient(
-      1200px 600px at 10% -10%,
-      rgba(var(--bs-primary-rgb), 0.14),
-      transparent 60%
-    ),
+    radial-gradient(1200px 600px at 10% -10%, rgba(var(--bs-primary-rgb), 0.14), transparent 60%),
     radial-gradient(900px 500px at 110% 110%, var(--bs-tertiary-bg), transparent 60%),
     var(--bs-body-bg);
 }

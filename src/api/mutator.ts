@@ -40,7 +40,10 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
   const isForm = typeof FormData !== "undefined" && config.data instanceof FormData;
 
   const headers = new Headers();
-  const rawHeaders = (config.headers?.toJSON?.() ?? config.headers ?? {}) as Record<string, unknown>;
+  const rawHeaders = (config.headers?.toJSON?.() ?? config.headers ?? {}) as Record<
+    string,
+    unknown
+  >;
   for (const [key, value] of Object.entries(rawHeaders)) {
     if (value != null && typeof value !== "object") headers.set(key, String(value));
   }

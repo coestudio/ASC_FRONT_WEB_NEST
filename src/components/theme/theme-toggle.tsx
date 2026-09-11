@@ -1,26 +1,22 @@
-"use client";
+import { SunFill, MoonStarsFill, CircleHalf } from "react-bootstrap-icons";
 
-import { SunFill, MoonStarsFill } from "react-bootstrap-icons";
 import { Button } from "@/components/ui/button";
 import type { ThemeMode } from "@/styles/globals/color-modes";
-import { useThemeMode, setThemeMode, useSyncThemeToDocument } from "@/styles/globals/theme-store";
+import { useThemeMode, useSetThemeMode } from "@/lib/ui-prefs";
 
-const ORDER: ThemeMode[] = ["light", "dark"];
+const ORDER: ThemeMode[] = ["light", "dark", "system"];
 
 const ICONS: Record<ThemeMode, typeof SunFill> = {
   light: SunFill,
   dark: MoonStarsFill,
+  system: CircleHalf,
 };
 
 export type ThemeToggleLabels = Record<ThemeMode, string>;
 
 export function ThemeToggle({ labels }: { labels: ThemeToggleLabels }) {
   const mode = useThemeMode();
-  useSyncThemeToDocument(mode);
-
-  function cycle() {
-    setThemeMode(ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length]);
-  }
+  const setThemeMode = useSetThemeMode();
 
   const Icon = ICONS[mode];
 
@@ -28,7 +24,7 @@ export function ThemeToggle({ labels }: { labels: ThemeToggleLabels }) {
     <Button
       type="button"
       variant="secondary"
-      onClick={cycle}
+      onClick={() => setThemeMode(ORDER[(ORDER.indexOf(mode) + 1) % ORDER.length])}
       aria-label={labels[mode]}
       title={labels[mode]}
     >

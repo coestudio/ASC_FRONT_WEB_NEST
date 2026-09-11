@@ -3,7 +3,10 @@ import { useLocation } from "@tanstack/react-router";
 import { Nav } from "react-bootstrap";
 
 import { useCan } from "@/hooks";
+import { useT } from "@/lib/ui-prefs";
 import type { AreaId } from "@/lib/permissions";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { UserMenu } from "./UserMenu";
 import styles from "./index.module.css";
 
@@ -149,6 +152,12 @@ function SidebarSection({
 export function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const pathname = location.pathname;
+  const t = useT();
+  const themeLabels = {
+    light: t("theme.light"),
+    dark: t("theme.dark"),
+    system: t("theme.system"),
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -190,9 +199,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               section={section}
               pathname={pathname}
               expanded={!!expanded[section.id]}
-              onToggle={() =>
-                setExpanded((prev) => ({ ...prev, [section.id]: !prev[section.id] }))
-              }
+              onToggle={() => setExpanded((prev) => ({ ...prev, [section.id]: !prev[section.id] }))}
             />
           ))}
         </Nav>
@@ -213,7 +220,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             <i className="bi bi-list" />
           </button>
           <div className={`${styles.topbarTitle} flex-grow-1`}>Portal interno</div>
-          {/* TODO(user): controles de tema / idioma entram aqui. */}
+          <div className="d-flex align-items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle labels={themeLabels} />
+          </div>
         </header>
         <div className={styles.content}>{children}</div>
       </div>
