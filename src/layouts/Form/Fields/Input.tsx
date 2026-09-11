@@ -30,14 +30,6 @@ function Input<T extends FieldValues>({
         render={({ field, fieldState }) => (
           <Form.Group
             className={`${config.containerClass || default_containerClass}${fieldState.error ? " field-invalid" : ""}`}
-            // Gerenciadores de senha (LastPass, Bitwarden, 1Password) injetam
-            // nó próprio (ex.: data-lastpass-icon-root) dentro do form antes
-            // do hydrate do React → mismatch de hidratação (não é bug nosso,
-            // acontece em qualquer framework SSR). suppressHydrationWarning
-            // é o escape hatch oficial do React p/ esse caso: silencia o
-            // mismatch de 1 nível de filhos deste Form.Group, sem afetar
-            // validação nem re-render normal do campo.
-            suppressHydrationWarning
           >
             <Form.Label>{label || config.label || "Texto"}</Form.Label>
 
