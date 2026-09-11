@@ -2,14 +2,23 @@
 
 - **ID:** SPEC-09
 - **Nome:** client-area
-- **Status:** DRAFT
-- **Autor:** portal-dev-agent (rascunho)
+- **Status:** DRAFT — revisão aponta um gap de contrato real (D1) que
+  bloqueia RF1 como está escrita hoje; precisa de decisão do usuário (e
+  possivelmente do Core) antes de `WAITING_APPROVAL`. Ver §13.
+- **Autor:** portal-dev-agent (rascunho + revisão)
 - **Área:** `src/routes/_dashboard/client/**` (nova — `client` não é
   `_internal`, é a área de usuário externo)
-- **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02; SPEC-07 pelo
-  padrão de dado real de operação
-  (Relatório Final/Acompanhamento podem derivar de `operation`/`romaneio`
-  reais em vez do array mock do legado — ver D2).
+- **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02 (nav —
+  **`nav/client.ts` já existe**, criado como placeholder pela SPEC-02, ver
+  D3; `crud-list-page`/`crud-record-modal`/`mock-data-banner`). SPEC-07
+  **não** é mais dependência real (ver D2 revisado) — só voltaria a ser se a
+  decisão final de D2 for "projetar de `operation`/`romaneio` reais", o que
+  a recomendação desta SPEC desaconselha.
+- **Referenciada por:** `specs/05-administrativo-clientes/spec.md` §13 (D1)
+  — `ClientDetailDTO.collaborations` (visto do lado admin, dentro do modal
+  `view` de Cliente) é explicitamente posto fora do escopo da SPEC-05 "por
+  ser escopo da SPEC-09". Esta SPEC é quem de fato cobre `Collaborator` — ver
+  nota em §4.
 
 ---
 
@@ -61,11 +70,23 @@ Segmentos de rota em inglês: `colaboradores`→`collaborators`,
 - Fluxo de proposta/pagamento (`Plans/Escopo-Adiado-Portal-Core.md` —
   formalmente adiado, não é desta leva).
 - Emissão real de relatório final (mesma limitação de backend das SPEC-05/06).
+- **Não** inclui edição de Colaborador (ver R3/D1 revisado — o Core não
+  expõe `PUT/PATCH` para `Collaborator`, só criar/listar/detalhar/excluir).
+- **Não** é a visão do lado administrativo de "clientes e seus
+  colaboradores" — isso, quando existir, é outra tela (a SPEC-05 já deixa o
+  campo `ClientDetailDTO.collaborations` de fora do modal `view` de Cliente
+  citando esta SPEC). Esta SPEC cobre só a autogestão do colaborador pelo
+  próprio usuário externo logado.
 
 ## 5. Requisitos funcionais
 
-- **RF1** — Colaboradores: CRUD real, escopado ao cliente logado (o
-  endpoint já deve resolver isso pelo token — confirmar em D1).
+- **RF1** — Colaboradores: **criar/listar/detalhar/excluir** real, escopado
+  ao cliente logado. **Revisado:** o endpoint gerado é
+  `GET/POST /api/client/{clientId}/collaborator` e
+  `GET/DELETE /api/client/{clientId}/collaborator/{id}` — recebe `clientId`
+  explícito na URL, **não** resolve isso implicitamente via token. Não há
+  `PUT`/`PATCH` (sem "editar"). Ver D1 (bloqueante) pra origem do `clientId`
+  do usuário logado.
 - **RF2** — Relatório Final/Acompanhamento: dado mockado ou projetado de
   dado real (conforme D2), nunca escrita real.
 - **RF3** — Guard de área: `client` só aparece pra `type !== Internal`
@@ -89,10 +110,27 @@ Segmentos de rota em inglês: `colaboradores`→`collaborators`,
 
 ## 8. Camada de dados
 
-- Real: hooks Orval de `collaborator` (a API gerada, não a mock do legado).
+- Real: hooks Orval de `collaborator` — `useGetApiClientClientIdCollaborator`
+  (lista), `useGetApiClientClientIdCollaboratorId` (detalhe/`view`),
+  `usePostApiClientClientIdCollaborator` (criar),
+  `useDeleteApiClientClientIdCollaboratorId` (excluir, via
+  `ConfirmationModal`). Todos exigem `clientId` — **bloqueado por D1**.
+- Schema de criação: `CollaboratorCreate` é `{ userName, profile:
+  ProfileCreate }` — objeto aninhado, mas **não** precisa da extensão de tipo
+  "grupo" da SPEC-04 (essa resolve especificamente `Group/Adress.tsx`).
+  Segue o mesmo padrão já usado por `src/components/profile/detail-tab.tsx`
+  (aba Detalhes do `ProfileModal`, SPEC-02): schema local em
+  `src/lib/validation/collaborator.ts` **achata** os campos remapeando
+  `PostApiClientClientIdCollaboratorBody.shape.profile.shape.<campo>` +
+  `.shape.userName` num objeto flat (`fullName`, `document`, `email`,
+  `phone`, `birthDate`, `userName`); o wrapper que chama
+  `crud-record-modal` reagrupa em `{ userName, profile: {...} }` no
+  `onSubmit` antes de disparar a mutation — sem `.refine`/regra nova, só
+  remapeamento de shape (regra 2 do `AGENTS.md`). Sem dependência de
+  SPEC-04.
 - UI-only/projetado: conforme D2 — se projetado, hooks Orval de
-  `operation`/`romaneio` filtrados pelo cliente logado; se mock puro, array
-  local comentado como nas SPECs anteriores.
+  `operation`/`romaneio` filtrados pelo cliente logado; se mock puro (opção
+  recomendada), array local comentado como nas SPECs anteriores.
 
 ## 9. Desenho
 
@@ -114,39 +152,90 @@ src/routes/_dashboard/client/
 | `src/routes/_dashboard/client/collaborators/index.tsx` | criar |
 | `src/routes/_dashboard/client/final-report/index.tsx` | criar |
 | `src/routes/_dashboard/client/tracking/index.tsx` | criar |
-| `src/layouts/AppShell/nav/client.ts` | criar (fragmento, SPEC-02 §3.1) |
-| `src/i18n/dictionaries/*/client.json` | criar (4 locales) |
+| `src/lib/validation/collaborator.ts` | criar — schema achatado (remapeia `PostApiClientClientIdCollaboratorBody`, ver §8) |
+| `src/layouts/AppShell/nav/client.ts` | **editar** (D3 — já existe, criado como placeholder pela SPEC-02 com URLs em português: `to: "/client/relatorio-final"`, `/client/acompanhamento`, `/client/colaboradores`; troca os 3 `to:` para `/client/final-report`, `/client/tracking`, `/client/collaborators`, inglês conforme §3. `labelKey`s ficam como estão — `navigation.client*` já existe e já está traduzido nos 4 locales, mesmo tratamento da SPEC-03 D4) |
+| `src/i18n/dictionaries/*/client.json` | criar (4 locales) — conteúdo das telas (Home, colunas/campos de Colaboradores, textos de Relatório Final/Acompanhamento); **não** duplica as chaves `navigation.client*` que já existem em `navigation.json` |
 
 ## 11. Critérios de aceitação
 
 | # | Critério |
 | --- | --- |
-| CA1 | Colaboradores faz CRUD real contra o Core (dev) — confirma que a API `Collaborator` funciona de ponta a ponta, coisa que o legado nunca validou |
+| CA1 | Colaboradores faz criar/listar/detalhar/excluir real contra o Core (dev), escopado ao `clientId` resolvido conforme D1 — confirma que a API `Collaborator` funciona de ponta a ponta, coisa que o legado nunca validou. **Sem** ação de editar (Core não expõe update) |
 | CA2 | Usuário `Internal` não acessa `/client/*` (guard de área) |
 | CA3 | Relatório Final/Acompanhamento não têm write real, e a fonte do dado (mock ou projetado) está documentada no código | 
 | CA4 | `bun run check` + `lint` passam |
+| CA5 | `grep -n "PUT\|PATCH" src/routes/_dashboard/client/collaborators/index.tsx` não acha nada — nenhuma tentativa de "editar" Colaborador |
+| CA6 | `src/layouts/AppShell/nav/client.ts` aponta pras 3 rotas em inglês (`final-report`, `tracking`, `collaborators`), nenhum `to:` em português sobrevive |
 
 ## 12. Riscos
 
 - **R1** — API `Collaborator` real nunca foi exercitada em produção (nem
   no legado) — pode ter lacuna de contrato não descoberta até implementar
   de verdade (mesma classe de risco que a aba Responsáveis da SPEC-07).
+  **Confirmado nesta revisão:** a lacuna já apareceu antes mesmo de
+  implementar — ver D1 (bloqueante) e R3.
 - **R2** — Se D2 escolher "projetar de dado real", a tela de Acompanhamento
   precisa de um conceito de "etapas" que o Core não modela explicitamente
   (`OperationStatus` é um enum simples, não um histórico de eventos) — pode
   não dar pra fazer uma timeline real fiel, mesmo projetando.
+- **R3** (novo, desta revisão) — `Collaborator` não tem `PUT`/`PATCH` no
+  Core (só `GET` lista, `GET` por id, `POST` criar, `DELETE`) —
+  confirmado lendo `src/api/generated/endpoints/collaborator/collaborator.ts`
+  e `src/api/generated/model/collaboratorCreate.ts` (não existe
+  `collaboratorUpdate.ts`). "CRUD real" do §1 é, na prática, **CRD** — RF1/
+  escopo/CA1 já ajustados acima. Baixo risco de implementação (não bloqueia
+  nada, só reduz o que existe pra construir), mas registrar pra não
+  prometer "editar" na UI por engano.
 
 ## 13. Decisões pendentes
 
-- **D1** — Confirmar que `GET /api/collaborator` já escopa por cliente via
-  token (usuário externo só vê os próprios colaboradores) ou se precisa de
-  filtro explícito no front.
+- **D1 — BLOQUEANTE, revisado.** A pergunta original ("o endpoint já
+  escopa por token?") tinha resposta técnica: **não.** O endpoint real é
+  `GET/POST /api/client/{clientId}/collaborator` e
+  `GET/DELETE /api/client/{clientId}/collaborator/{id}` — `clientId` é
+  parâmetro de rota explícito, não inferido do token. Verificado também que
+  `UserDetailDTO` (o que `GET /api/profile/me` devolve, fonte do
+  `useUser()`) **não tem campo `clientId`/`client`** — nem `UserDTO`. Ou
+  seja: hoje **não existe, no client gerado, nenhum jeito do front descobrir
+  o `clientId` do usuário externo logado** pra montar essa URL. Isso não é
+  uma decisão de UX — é gap de contrato, território do Core (regra do
+  agente: endpoint que falta/não serve pro caso é `[NEEDS_DECISION]`, Core
+  muda primeiro). Opções pro usuário decidir (com o time do Core, se for o
+  caso):
+  1. Core expõe `clientId` no `UserDetailDTO`/`ProfileDTO` pra usuário
+     `External` (ou um DTO específico de sessão externa).
+  2. Core expõe um endpoint "auto-escopado" (`GET /api/collaborator/me` ou
+     equivalente) que resolve o cliente a partir do token, sem exigir
+     `clientId` na URL.
+  3. Alguma outra fonte já disponível hoje (ex.: usuário externo é ele
+     próprio um `Collaborator`, e algum outro DTO da sessão já carrega
+     `clientId` sem eu ter enxergado) — precisa ser apontada explicitamente,
+     não presumida.
+  **Sem resolver D1, RF1/CA1 não são implementáveis como escritos.** Não
+  decido isso sozinho — aguardando confirmação do usuário (e, se for opção
+  1/2, isso volta por `just map` depois do Core mudar).
 - **D2** — Relatório Final/Acompanhamento: mock solto (mais simples, mais
   fiel à decisão "UI-only") ou projeção de `operation`/`romaneio` reais do
-  cliente logado (mais valioso, mas esbarra no R2 acima e amplia escopo)?
-  Recomendação: começar mock solto nesta SPEC, abrir SPEC futura se quiser
-  projetar depois.
+  cliente logado (mais valioso, mas esbarra no R2 acima, amplia escopo e
+  reabre a dependência de SPEC-07)? Recomendação mantida: mock solto nesta
+  SPEC, abrir SPEC futura se quiser projetar depois — **se o usuário
+  confirmar essa recomendação, a dependência de SPEC-07 no cabeçalho cai por
+  completo** (não é mais nem soft-dependency).
+- **D3** — Resolvido nesta revisão (mesmo padrão da SPEC-03 D4):
+  `src/layouts/AppShell/nav/client.ts` **já existe** — foi criado pela
+  SPEC-02 como placeholder (parte do CA12 dela, cobrindo os 5 `AreaId`), com
+  `to:` em português (`/client/relatorio-final`, `/client/acompanhamento`,
+  `/client/colaboradores`) que não batem com os segmentos em inglês desta
+  SPEC (§3). Esta SPEC **edita**, não cria, trocando os 3 `to:` — ver §10.
+  `labelKey`s (`navigation.clientHome`, `navigation.clientFinalReport`,
+  `navigation.clientTracking`, `navigation.clientCollaborators`) continuam
+  apontando pro namespace legado `navigation.json` (já existem, já
+  traduzidos nos 4 locales) — não migram pro novo `client.json`, que fica só
+  pro conteúdo das próprias telas.
 
 ---
 
-**Próximo passo:** `APROVAR SPEC-09`.
+**Próximo passo:** D1 precisa de decisão do usuário (e possivelmente
+confirmação/ajuste no `warren/Core`) antes de `WAITING_APPROVAL`. D2 também
+precisa de confirmação explícita (mesmo com recomendação já registrada, por
+mudar a dependência declarada da SPEC). Depois disso, `APROVAR SPEC-09`.
