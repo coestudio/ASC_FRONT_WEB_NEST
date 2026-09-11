@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-03
 - **Nome:** admin-access
-- **Status:** DRAFT
+- **Status:** WAITING_APPROVAL
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/**` (nova — irmã de `_internal`, não
   filha, ver §3.1), `src/lib/queries/**`
@@ -53,8 +53,15 @@ muda.
    da SPEC-02), deletar.
 5. `admin/roles/index.tsx` — página estática, uma entrada por role
    (`InternalRole`, ver `userAdminDTO`/`internalRole` gerados), descrição de
-   permissões — conteúdo i18n, sem tabela dinâmica de "que rota cada role
-   acessa" (isso seria derivado dos fragmentos `nav/*.ts` da SPEC-02, ver D1).
+   permissões — conteúdo i18n **mantido à mão** (decisão D1: estática, não
+   deriva de `nav/*.ts` nem de `GetApiUserRoles`). Validar mapeamento de
+   roles contra o enum `InternalRole` do Core antes de escrever o texto
+   (ver R1).
+6. Campo `roles: InternalRole[]` no form de criar/editar usuário (`crud-
+   record-modal`) usa um **multi-select dropdown novo**
+   (`layouts/Form/Fields/InputMultiSelect.tsx`, decisão D3) — um único
+   dropdown com seleção múltipla, populado via `useGetApiUserRoles()`
+   (`EnumOptionDTO[]`, label vindo do Core).
 
 ## 4. Fora do escopo
 
@@ -71,7 +78,11 @@ muda.
 - **RF4** — Reset de senha e desativar/ativar passam por `ConfirmationModal`
   antes de disparar a mutation.
 - **RF5** — `admin/roles` renderiza sem chamada ao Core (conteúdo estático
-  do bundle, i18n).
+  do bundle, i18n; decisão D1).
+- **RF6** — Campo `roles` do form de usuário é um `InputMultiSelect`
+  (decisão D3, novo Field em `layouts/Form/Fields/`), populado via
+  `useGetApiUserRoles()`, integrado a `react-hook-form`/`zodResolver` como
+  qualquer outro Field da biblioteca (regra 10 do `AGENTS.md`).
 
 ## 6. Requisitos não funcionais
 
@@ -115,7 +126,9 @@ src/routes/_dashboard/admin/
 | `src/routes/_dashboard/admin/route.tsx` | criar |
 | `src/routes/_dashboard/admin/access/index.tsx` | criar |
 | `src/routes/_dashboard/admin/roles/index.tsx` | criar |
-| `src/layouts/AppShell/nav/admin.ts` | criar (fragmento, SPEC-02 §3.1) |
+| `src/layouts/Form/Fields/InputMultiSelect.tsx` | criar (decisão D3 — dropdown único, seleção múltipla, wrapper `react-hook-form`/`Controller` igual aos demais Fields) |
+| `src/layouts/Form/Fields/Index.ts` | editar (exportar `InputMultiSelect`) |
+| `src/layouts/AppShell/nav/admin.ts` | **editar** (já existe, portado como placeholder pela SPEC-02 com URLs em português e um link quebrado — trocar `to: "/admin/acesso"` → `/admin/access` e `to: "/admin/acessos"` → `/admin/roles`, decisão D4) |
 | `src/i18n/dictionaries/*/admin.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação
@@ -133,16 +146,50 @@ src/routes/_dashboard/admin/
 - **R1** — `InternalRole` pode não cobrir 1:1 as roles descritas no
   `RolesPage.tsx` do legado — validar mapeamento antes de escrever o texto
   estático (não inventar role que não existe no enum do Core).
+- **R2** — `admin/roles` é conteúdo estático mantido à mão (D1): risco
+  conhecido e aceito de ficar desatualizado se o Core ganhar role nova ou
+  mudar o que uma role acessa — sem mecanismo automático de alerta. Mitigação:
+  revisar manualmente quando `nav/*.ts` ganhar item novo numa área
+  restrita por role.
 
 ## 13. Decisões pendentes
 
-- **D1** — `admin/roles` (URL; rótulo exibido continua "Perfis") deriva a
-  lista "o que cada role acessa" dos fragmentos `nav/*.ts` (dinâmico, sempre
-  correto) ou é texto estático mantido à mão (como o legado, com risco de
-  ficar desatualizado)? Recomendação: dinâmico.
-- **D2** — Reset de senha gera senha aleatória e mostra uma vez (como
-  costuma ser o padrão do Core) ou envia link por e-mail? Depende do que
-  `POST /api/user/{id}/reset-password` já faz no Core — confirmar contrato.
+- **D1** — Resolvido (confirmado pelo usuário): **estática**. `admin/roles`
+  (URL; rótulo exibido continua "Perfis") é texto mantido à mão, não deriva
+  de `nav/*.ts` nem de `GetApiUserRoles` — mesmo padrão do legado
+  (`RolesPage.tsx`). Risco de ficar desatualizado aceito e registrado em R2.
+- **D2** — Resolvido (confirmado pelo usuário): o Core **envia a nova senha
+  por e-mail** ao usuário-alvo (`POST /api/user/{id}/reset-password`), não
+  devolve senha nem link no corpo da resposta (`MessageDTO.message` é só
+  texto de confirmação, ex.: "e-mail enviado"). Implicações pra UI:
+  - Ação de reset abre `ConfirmationModal` (SPEC-02) explicando que uma nova
+    senha será enviada por e-mail ao usuário; ao confirmar, dispara
+    `usePostApiUserIdResetPassword` e mostra toast com o `message` retornado.
+  - **Não** implementar exibição de senha gerada nem botão de copiar — o
+    valor não trafega pro front.
+  - Linha/registro sem `profile.email` preenchido (campo `email?: string |
+    null` em `ProfileDTO`): a ação de reset deve ficar desabilitada (tooltip
+    explicando "usuário sem e-mail cadastrado") em vez de disparar a mutation
+    e deixar o Core falhar — evita erro genérico sem contexto pro
+    administrador.
+- **D3** — Resolvido (confirmado pelo usuário): **multi-select dropdown**.
+  Campo `roles: InternalRole[]` no form de criar/editar usuário usa um Field
+  novo, `InputMultiSelect` (`layouts/Form/Fields/InputMultiSelect.tsx`) — um
+  único dropdown com seleção múltipla (não checkboxes soltos, não múltiplos
+  selects). Segue o wrapper `Controller`/Bootstrap dos demais Fields da
+  biblioteca (regra 10 do `AGENTS.md`); opções vêm de `useGetApiUserRoles()`
+  (`EnumOptionDTO[]`, label já traduzido pelo Core). É o primeiro Field de
+  seleção da biblioteca — abre precedente reutilizável pras próximas SPECs
+  que precisarem de enum/lookup em dropdown.
+- **D4** — Resolvido (confirmado pelo usuário): **corrigir, não criar**.
+  `src/layouts/AppShell/nav/admin.ts` já existe (portado como placeholder
+  pela SPEC-02) com URLs em português e um link quebrado
+  (`to: "/admin/acessos"` duplicando o padrão de "/admin/acesso" em vez de
+  apontar pra página de perfis). Esta SPEC edita esse arquivo — não cria —
+  trocando os dois `to:` para `/admin/access` e `/admin/roles` (inglês,
+  conforme §3), mantendo `labelKey` como já estão
+  (`navigation.adminAccess`/`navigation.adminAccessProfiles`, já presentes
+  em `navigation.json`).
 
 ---
 
