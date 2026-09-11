@@ -12,6 +12,48 @@ import RenderFields from "@/layouts/Form/Fields/map";
 
 export type CrudRecordMode = "create" | "edit" | "view";
 
+/**
+ * Normaliza `""` pra `null` (raso, entra em objeto plano/array) antes da
+ * validação Zod. Causa raiz do bug "cadastro não acontece": os schemas
+ * gerados pelo Orval marcam campo opcional como `.nullish()` (aceita só
+ * `null`/`undefined`, não string vazia — ex.: `document`/`phone` em
+ * `PostApiUserBody`, `birthDate` com `zod.iso.date()`), mas todo Field de
+ * `layouts/Form/Fields` deixa o campo vazio como `""` quando o usuário não
+ * preenche (nenhum Field converte pra `null` sozinho). Sem essa
+ * normalização, qualquer campo opcional em branco falha a validação
+ * (min length / formato ISO) e trava o submit — o formulário "não faz
+ * nada" e o erro só aparece como texto pequeno embaixo do campo opcional
+ * que nem era obrigatório preencher.
+ *
+ * Isso NÃO edita nenhum schema Zod (regra 2 do AGENTS.md) — só reescreve o
+ * valor bruto que chega no `resolver` do react-hook-form, antes de passar
+ * pro `zodResolver(schema)` de verdade. Mesmo espírito do que já é feito em
+ * `src/lib/validation/reset-password.ts` (comparação de senha fora do
+ * schema, no `onSubmit`) — regra de negócio/normalização fica fora do
+ * schema gerado, nunca dentro dele.
+ */
+function emptyStringsToNull<V>(value: V): V {
+  if (value === "") return null as unknown as V;
+  if (Array.isArray(value)) {
+    return value.map((item) => emptyStringsToNull(item)) as unknown as V;
+  }
+  if (value !== null && typeof value === "object" && !(value instanceof Date)) {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, val]) => [
+        key,
+        emptyStringsToNull(val),
+      ]),
+    ) as V;
+  }
+  return value;
+}
+
+/** Envolve `zodResolver` aplicando `emptyStringsToNull` nos valores brutos do form antes de validar. */
+function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Resolver<T> {
+  const resolver = zodResolver(schema as never) as unknown as Resolver<T>;
+  return (values, context, options) => resolver(emptyStringsToNull(values), context, options);
+}
+
 export type CrudRecordModalProps<T extends FieldValues> = {
   show: boolean;
   mode: CrudRecordMode;
@@ -45,9 +87,10 @@ export function CrudRecordModal<T extends FieldValues>({
 }: CrudRecordModalProps<T>) {
   const t = useT();
   const methods = useForm<T>({
-    // `zodResolver` genérico sobre T (extends FieldValues) não infere o
-    // Resolver<T> exato — cast seguro, o shape vem do próprio `schema: ZodType<T>`.
-    resolver: zodResolver(schema as never) as unknown as Resolver<T>,
+    // `withEmptyStringsAsNull` normaliza "" → null antes de validar (ver
+    // comentário acima) e por baixo já usa `zodResolver` — schema gerado
+    // continua sendo a única fonte de regra de validação.
+    resolver: withEmptyStringsAsNull(schema),
     defaultValues: defaultValues as never,
   });
   const {
