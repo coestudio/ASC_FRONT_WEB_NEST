@@ -54,9 +54,9 @@ Legado: `OperationDocumentosReal`.
 
 ## 7. Contrato de rota
 
-| Rota                                       | Dado |
-| ------------------------------------------ | ---- |
-| `/administrative/operations/$id/documents` | real |
+Sem rota própria (D2 revertida em SPEC-07-02 §13) — esta aba é um
+componente comum, montado pelo shell de `/administrative/operations/$id`
+via estado local, dado real (`Document` API).
 
 ## 8. Camada de dados
 
@@ -65,15 +65,15 @@ Hooks Orval de `document` (CRUD, lookup de tipo) — já gerados.
 ## 9. Desenho
 
 ```
-src/routes/.../administrative/operations/$id/
-  documents/index.tsx
+src/components/operations/tabs/
+  Documents.tsx
 ```
 
 ## 10. Arquivos esperados
 
 | Arquivo                                                            | Ação                                        |
 | ------------------------------------------------------------------ | ------------------------------------------- |
-| `src/routes/.../administrative/operations/$id/documents/index.tsx` | criar                                       |
+| `src/components/operations/tabs/Documents.tsx`                     | criar                                       |
 | `src/i18n/dictionaries/*/administrative-operations.json`           | editar — adicionar chaves da aba Documentos |
 
 ## 11. Critérios de aceitação

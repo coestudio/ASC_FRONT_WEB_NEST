@@ -113,10 +113,14 @@ resto do header).
 
 ### 7. Footer do menu aberto (sidebar expandido)
 
-Ajustar/criar footer do sidebar quando expandido (rodapé com versão, ou
-user info reduzido, a definir com usuário — hoje `AppShell` não tem essa
-seção ou está incompleta). **Precisa decisão do usuário sobre o que entra
-no footer antes de implementar** — este item fica `[NEEDS_DECISION]`.
+**Decisão do usuário:** footer mostra só a **versão do app** (ex.
+`v0.1.0`, a partir de `package.json` → `version`) — sem info de usuário
+reduzida (isso já existe no `UserMenu` do topbar; duplicar não agrega).
+Baixo esforço: string estática, sem novo estado nem chamada de rede.
+Mecanismo de acesso ao valor de `package.json` no client (import direto do
+JSON, ou `define` no `vite.config.ts` — ex. `__APP_VERSION__`) fica a
+critério de quem implementar, desde que não vaze o `package.json` inteiro
+pro bundle do browser, só a string da versão.
 
 ---
 
@@ -132,4 +136,5 @@ no footer antes de implementar** — este item fica `[NEEDS_DECISION]`.
 - `bun run check` e `bun run lint` limpos.
 - Visual conferido nas 3 brands (asa/asi/asc) × light/dark — ver
   `.github/instructions/theming.instructions.md`.
-- Item 7 desbloqueado só depois do usuário definir o conteúdo do footer.
+- Item 7 resolvido (decisão do usuário: só versão do app) — sem mais
+  bloqueio, os 7 itens podem ser implementados juntos.

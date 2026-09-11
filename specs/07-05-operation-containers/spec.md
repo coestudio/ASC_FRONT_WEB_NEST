@@ -57,9 +57,9 @@ Legado: `OperationContainersReal`.
 
 ## 7. Contrato de rota
 
-| Rota                                        | Dado |
-| ------------------------------------------- | ---- |
-| `/administrative/operations/$id/containers` | real |
+Sem rota própria (D2 revertida em SPEC-07-02 §13) — esta aba é um
+componente comum, montado pelo shell de `/administrative/operations/$id`
+via estado local, dado real (`OperationContainer` API).
 
 ## 8. Camada de dados
 
@@ -69,15 +69,15 @@ gerados.
 ## 9. Desenho
 
 ```
-src/routes/.../administrative/operations/$id/
-  containers/index.tsx
+src/components/operations/tabs/
+  Containers.tsx
 ```
 
 ## 10. Arquivos esperados
 
 | Arquivo                                                             | Ação                                        |
 | ------------------------------------------------------------------- | ------------------------------------------- |
-| `src/routes/.../administrative/operations/$id/containers/index.tsx` | criar                                       |
+| `src/components/operations/tabs/Containers.tsx`                     | criar                                       |
 | `src/i18n/dictionaries/*/administrative-operations.json`            | editar — adicionar chaves da aba Containers |
 
 ## 11. Critérios de aceitação

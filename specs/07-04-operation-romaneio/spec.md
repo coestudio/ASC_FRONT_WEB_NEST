@@ -65,9 +65,9 @@ Legado: `OperationRomaneioReal`. Fluxo de import documentado no
 
 ## 7. Contrato de rota
 
-| Rota                                      | Dado |
-| ----------------------------------------- | ---- |
-| `/administrative/operations/$id/romaneio` | real |
+Sem rota própria (D2 revertida em SPEC-07-02 §13) — esta aba é um
+componente comum, montado pelo shell de `/administrative/operations/$id`
+via estado local, dado real (`Romaneio` API).
 
 ## 8. Camada de dados
 
@@ -76,15 +76,15 @@ Hooks Orval de `romaneio` (CRUD + import analyze/apply) — já gerados.
 ## 9. Desenho
 
 ```
-src/routes/.../administrative/operations/$id/
-  romaneio/index.tsx
+src/components/operations/tabs/
+  Romaneio.tsx
 ```
 
 ## 10. Arquivos esperados
 
 | Arquivo                                                           | Ação                                      |
 | ----------------------------------------------------------------- | ----------------------------------------- |
-| `src/routes/.../administrative/operations/$id/romaneio/index.tsx` | criar                                     |
+| `src/components/operations/tabs/Romaneio.tsx`                     | criar                                     |
 | `src/i18n/dictionaries/*/administrative-operations.json`          | editar — adicionar chaves da aba Romaneio |
 
 ## 11. Critérios de aceitação

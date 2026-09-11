@@ -55,9 +55,9 @@ Legado: aba "Detalhes" de `Operations/Detail.tsx`, componente real
 
 ## 7. Contrato de rota
 
-| Rota                                     | Dado |
-| ---------------------------------------- | ---- |
-| `/administrative/operations/$id/details` | real |
+Sem rota própria (D2 revertida em SPEC-07-02 §13) — esta aba é um
+componente comum, montado pelo shell de `/administrative/operations/$id`
+via estado local, dado real (`Operation` API).
 
 ## 8. Camada de dados
 
@@ -67,16 +67,16 @@ Hooks Orval de `operation` (`getApiOperationId`,
 ## 9. Desenho
 
 ```
-src/routes/.../administrative/operations/$id/
-  details/index.tsx
+src/components/operations/tabs/
+  Details.tsx
 ```
 
 ## 10. Arquivos esperados
 
-| Arquivo                                                          | Ação                                                                         |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `src/routes/.../administrative/operations/$id/details/index.tsx` | criar                                                                        |
-| `src/i18n/dictionaries/*/administrative-operations.json`         | editar — adicionar chaves da aba Detalhes (namespace criado pela SPEC-07-01) |
+| Arquivo                                                | Ação                                                                         |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `src/components/operations/tabs/Details.tsx`             | criar                                                                        |
+| `src/i18n/dictionaries/*/administrative-operations.json` | editar — adicionar chaves da aba Detalhes (namespace criado pela SPEC-07-01) |
 
 ## 11. Critérios de aceitação
 

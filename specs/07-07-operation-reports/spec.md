@@ -48,9 +48,9 @@ Legado: aba "Relatórios" mock, usa `OPERATIONS` de `data.ts`.
 
 ## 7. Contrato de rota
 
-| Rota                                     | Dado    |
-| ---------------------------------------- | ------- |
-| `/administrative/operations/$id/reports` | UI-only |
+Sem rota própria (D2 revertida em SPEC-07-02 §13) — esta aba é um
+componente comum, montado pelo shell de `/administrative/operations/$id`
+via estado local, UI-only (mock).
 
 ## 8. Camada de dados
 
@@ -59,15 +59,15 @@ Nenhuma — array local tipado no componente (mesmo padrão da SPEC-05).
 ## 9. Desenho
 
 ```
-src/routes/.../administrative/operations/$id/
-  reports/index.tsx        (UI-only, com mock-data-banner)
+src/components/operations/tabs/
+  Reports.tsx        (UI-only, com mock-data-banner)
 ```
 
 ## 10. Arquivos esperados
 
 | Arquivo                                                          | Ação                                        |
 | ---------------------------------------------------------------- | ------------------------------------------- |
-| `src/routes/.../administrative/operations/$id/reports/index.tsx` | criar                                       |
+| `src/components/operations/tabs/Reports.tsx`                     | criar                                       |
 | `src/i18n/dictionaries/*/administrative-operations.json`         | editar — adicionar chaves da aba Relatórios |
 
 ## 11. Critérios de aceitação

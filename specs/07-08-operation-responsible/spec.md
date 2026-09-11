@@ -51,9 +51,9 @@ está gerada no client — só nunca foi exercitada por nenhuma tela.
 
 ## 7. Contrato de rota
 
-| Rota                                         | Dado             |
-| -------------------------------------------- | ---------------- |
-| `/administrative/operations/$id/responsible` | UI-only (ver D1) |
+Sem rota própria (D2 revertida em SPEC-07-02 §13) — esta aba é um
+componente comum, montado pelo shell de `/administrative/operations/$id`
+via estado local, UI-only (ver D1).
 
 ## 8. Camada de dados
 
@@ -64,15 +64,15 @@ existe e está gerada (`src/api/generated/**`), mas não é consumida aqui
 ## 9. Desenho
 
 ```
-src/routes/.../administrative/operations/$id/
-  responsible/index.tsx    (UI-only, ver D1)
+src/components/operations/tabs/
+  Responsible.tsx    (UI-only, ver D1)
 ```
 
 ## 10. Arquivos esperados
 
 | Arquivo                                                              | Ação                                          |
 | -------------------------------------------------------------------- | --------------------------------------------- |
-| `src/routes/.../administrative/operations/$id/responsible/index.tsx` | criar                                         |
+| `src/components/operations/tabs/Responsible.tsx`                     | criar                                         |
 | `src/i18n/dictionaries/*/administrative-operations.json`             | editar — adicionar chaves da aba Responsáveis |
 
 ## 11. Critérios de aceitação

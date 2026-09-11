@@ -5,10 +5,11 @@
 - **Status:** DRAFT
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/operations/$id/**`
-  (layout, nova)
+  (rota única, nova), `src/components/operations/tabs/**` (componentes de
+  aba, um por sub-SPEC)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
 - **Bloqueia:** SPEC-07-03 a SPEC-07-09 (todas as abas montam dentro deste
-  layout).
+  shell — D2, §13: estado local, não sub-rota).
 
 ---
 
@@ -31,23 +32,34 @@ silent-fail** aqui, ver RF2).
 
 ## 3. Escopo
 
-1. `operations/$id/` — layout de abas com 7 sub-rotas (`details`,
-   `romaneio`, `containers`, `documents`, `reports`, `responsible`, `log`)
-   — conteúdo de cada uma é escopo das SPECs 07-03 a 07-09.
-2. Redirect `$id` (sem sub-rota) → `$id/details`.
+1. `operations/$id/index.tsx` — rota única (sem sub-rota por aba) que
+   renderiza a navegação de abas (`details`, `romaneio`, `containers`,
+   `documents`, `reports`, `responsible`, `log`) e o componente da aba ativa
+   via **estado local** (`useState`, D2 revertida — ver §13). Conteúdo de
+   cada aba é escopo das SPECs 07-03 a 07-09, como componente em
+   `src/components/operations/tabs/<Nome>.tsx`, importado e renderizado
+   condicionalmente pelo shell — não como rota própria.
+2. Aba inicial (ao entrar em `$id`) é `details` — sem redirect de rota (não
+   há sub-rota pra redirecionar), só o estado local nasce com `"details"`.
 3. Resolução do `id` da operação (`useParams`, `useGetApiOperationId` ou
-   equivalente) compartilhada pelas abas via contexto de rota — cada aba
-   não refaz a própria busca do registro pai.
+   equivalente) feita uma vez no shell e passada por prop pros componentes
+   de aba — cada aba não refaz a própria busca do registro pai.
 
 ## 4. Fora do escopo
 
 - Conteúdo de qualquer aba (dado, formulário, tabela) — cada uma é uma
   sub-SPEC própria (07-03 a 07-09).
+- Deep-link direto pra uma aba específica (ex. compartilhar URL já na aba
+  Romaneio) — consequência aceita de D2 (§13): sem sub-rota, a URL não
+  carrega qual aba está ativa.
 
 ## 5. Requisitos funcionais
 
-- **RF1** — Abas como sub-rotas (layout `$id/route.tsx` + `<Outlet/>`),
-  não estado de tab local — permite deep-link direto pra uma aba (D2).
+- **RF1** — Abas como **estado local** do shell (`useState`, sem mudar a
+  URL) — mesmo comportamento do legado (D2 revertida, §13). Nenhuma
+  sub-rota `$id/<aba>` é criada; o conteúdo de cada aba é um componente
+  comum (`src/components/operations/tabs/<Nome>.tsx`) montado/desmontado
+  por condicional, não por roteamento.
 - **RF2** — **Sem silent-fail**: se o `id` não resolve, o shell mostra
   estado vazio/erro explícito — nunca um `&&` que some sem feedback (bug
   conhecido do legado, não repetir). Cada sub-SPEC de aba herda essa regra
@@ -59,38 +71,53 @@ silent-fail** aqui, ver RF2).
 
 ## 7. Contrato de rota
 
-| Rota                                                    | Dado |
-| ------------------------------------------------------- | ---- |
-| `/administrative/operations/$id` (redirect → `details`) | —    |
+| Rota                              | Dado |
+| ---------------------------------- | ---- |
+| `/administrative/operations/$id`  | —    |
 
-(As 7 sub-rotas de aba são contrato das respectivas sub-SPECs 07-03..09.)
+Rota única — nenhuma sub-rota por aba (D2 revertida, §13). O estado da aba
+ativa vive só no componente, nunca na URL. As 7 sub-SPECs (07-03 a 07-09)
+não têm contrato de rota próprio — cada uma expõe um componente consumido
+por este shell.
 
 ## 8. Camada de dados
 
 Hook Orval de `operation` (`getApiOperationId`) para resolver o registro
-pai e alimentar o contexto de rota consumido pelas abas.
+pai e alimentar (via prop) os componentes de aba.
 
 ## 9. Desenho
 
 ```
 src/routes/_dashboard/_internal/administrative/operations/
   $id/
-    route.tsx          (layout de abas + tab nav + resolução do id)
+    index.tsx          (shell: tab nav + estado local da aba ativa +
+                         resolução do id + render condicional do
+                         componente de src/components/operations/tabs/*)
+
+src/components/operations/tabs/
+  Details.tsx          (SPEC-07-03)
+  Romaneio.tsx          (SPEC-07-04)
+  Containers.tsx        (SPEC-07-05)
+  Documents.tsx         (SPEC-07-06)
+  Reports.tsx           (SPEC-07-07)
+  Responsible.tsx        (SPEC-07-08)
+  Log.tsx               (SPEC-07-09)
 ```
 
 ## 10. Arquivos esperados
 
 | Arquivo                                                  | Ação  |
 | -------------------------------------------------------- | ----- |
-| `src/routes/.../administrative/operations/$id/route.tsx` | criar |
+| `src/routes/.../administrative/operations/$id/index.tsx` | criar |
 
 ## 11. Critérios de aceitação
 
 | #   | Critério                                                                                  |
 | --- | ----------------------------------------------------------------------------------------- |
-| CA1 | Acessar `/administrative/operations/$id` sem sub-rota redireciona pra `details`           |
+| CA1 | Acessar `/administrative/operations/$id` mostra a aba `details` ativa por padrão, sem sub-rota nem redirect |
 | CA2 | `id` inexistente/inválido mostra estado de erro visível, nunca desaparece silenciosamente |
-| CA3 | `bun run check` + `lint` passam                                                           |
+| CA3 | Trocar de aba não muda a URL (D2) e não perde o `id` resolvido (sem refetch por aba)      |
+| CA4 | `bun run check` + `lint` passam                                                           |
 
 ## 12. Riscos
 
@@ -99,9 +126,13 @@ Nenhum específico além dos já cobertos pelo índice geral
 
 ## 13. Decisões pendentes
 
-- **D2** — Abas como sub-rota (`$id/romaneio`) — confirma, ou prefere
-  estado de tab local sem mudar URL (like legado)? Recomendação: sub-rota,
-  por deep-link e por já ser o padrão de roteamento do TanStack aqui.
+- **D2** — Resolvida pelo usuário: **estado de tab local**, sem sub-rota —
+  contra a recomendação original desta SPEC (que sugeria sub-rota por
+  deep-link). Paridade direta com o comportamento do legado
+  (`Operations/Detail.tsx`, que já despachava por estado local). Consequência
+  aceita: sem deep-link direto pra uma aba específica (§4); conteúdo de cada
+  aba nasce como componente em `src/components/operations/tabs/<Nome>.tsx`
+  (não como rota), consumido pelo shell via render condicional.
 
 ---
 
