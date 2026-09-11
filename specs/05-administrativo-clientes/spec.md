@@ -7,11 +7,11 @@
 - **Área:** `src/routes/_dashboard/_internal/administrative/clients/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
   (`crud-list-page`, `crud-record-modal` modo `view`, `mock-data-banner`),
-  **SPEC-04** (extensão de `LayoutField`/`RenderFields` com tipo "grupo"
-  para `Group/Adress.tsx` — ver §9/§10). Diferente das outras SPECs da Onda
-  2, esta **não** pode mergear em `wave-2-parallel-areas` antes da SPEC-04
-  ter entregado essa extensão (ou implementá-la aqui, mas então a SPEC-04
-  passa a reusar — evitar duplicar; ver nota na SPEC-04).
+  **SPEC-SHARE-01** (`AddressGroup`, pro campo `address` de Cliente — mesmo
+  bloco reutilizável consumido por SPEC-04 pro campo `address` de Harbor;
+  esta SPEC não pode mergear em `wave-2-parallel-areas` antes de
+  SPEC-SHARE-01). **Não** depende de SPEC-04 — as duas consomem
+  `AddressGroup` em paralelo, sem ordem entre si.
 
 ---
 
@@ -105,9 +105,10 @@ src/routes/_dashboard/_internal/administrative/clients/
 
 **Campo `address` (Cliente)** — `ClientCreate.address`/`ClientUpdate.address`
 são objeto aninhado (`AddressCreate`/`AddressUpdate`), mesma situação do
-`HarborCreate.address` na SPEC-04. Esta SPEC **reusa** o tipo "grupo" que a
-SPEC-04 introduz em `Fields/Index.ts`/`RenderFields` — não reimplementa. Por
-isso a dependência explícita de SPEC-04 no cabeçalho.
+`HarborCreate.address` na SPEC-04. Esta SPEC **reusa** `AddressGroup`
+(SPEC-SHARE-01) — não reimplementa. Por isso a dependência explícita de
+SPEC-SHARE-01 no cabeçalho, em vez de SPEC-04 (que também só consome, não
+é dona do campo).
 
 ## 10. Arquivos esperados
 
@@ -117,7 +118,7 @@ isso a dependência explícita de SPEC-04 no cabeçalho.
 | `src/layouts/AppShell/nav/administrative-clients.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-clients.json` | criar (4 locales) |
 | `src/layouts/AppShell/nav/administrativo.ts` | editar — remover o item `administrativoClients` (rota antiga `/administrativo/clientes`) hoje hard-coded; item equivalente passa a viver em `administrative-clients.ts`. Não mexer nos demais itens (escopo de SPEC-04/06/07) |
-| `src/layouts/Form/Fields/Index.ts` / `map.tsx` | **reusar** o tipo "grupo" da SPEC-04 (não recriar) |
+| `src/layouts/Form/Fields/Index.ts` / `map.tsx` | **reusar** `AddressGroup` (SPEC-SHARE-01, não recriar) |
 
 ## 11. Critérios de aceitação
 

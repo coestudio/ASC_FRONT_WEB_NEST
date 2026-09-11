@@ -7,13 +7,10 @@
 - **Área:** `src/routes/_dashboard/_internal/administrative/registry/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
   (`crud-list-page`, `crud-record-modal` — esta SPEC só configura, não cria
-  os componentes)
-- **Bloqueia:** SPEC-05 (`administrativo-clientes`) — a extensão de
-  `LayoutField`/`RenderFields` com tipo "grupo" para `Group/Adress.tsx`
-  (§9/§10, campo `address` de Harbor) é implementada aqui; SPEC-05 reusa
-  pro campo `address` de Cliente, não reimplementa. Diferente das outras
-  SPECs da Onda 2, SPEC-05 não pode mergear em `wave-2-parallel-areas`
-  antes desta.
+  os componentes), **SPEC-SHARE-01** (`AddressGroup`, pro campo `address`
+  de Harbor, e `SelectAsync`, pro campo `harborId` de Terminal — nenhum dos
+  dois é criado aqui, só consumido; esta SPEC não pode mergear em
+  `wave-2-parallel-areas` antes de SPEC-SHARE-01)
 
 ---
 
@@ -45,7 +42,10 @@ legado **não é portado como padrão**, só a forma da tela.
 2. Cada tela: lista paginada + busca + `ViewToggle` + criar/editar (modal) +
    deletar (`ConfirmationModal`).
 3. Campos por cadastro (a partir dos DTOs gerados):
-   - **Terminal** — `TerminalCreate`/`Update`.
+   - **Terminal** — `TerminalCreate`/`Update`. `harborId` (FK obrigatória
+     pra Harbor) usa `SelectAsync` (SPEC-SHARE-01 — autocomplete por
+     digitação sobre `getApiHarbor`), não um `<select>` populado de uma vez
+     (lista de portos pode crescer).
    - **Porto (Harbor)** — `HarborCreate`/`Update` (só `name` + `address`;
      **não** inclui terminais — relação é inversa, ver RF4).
    - **Container** — `ContainerCreate`/`Update`.
@@ -110,12 +110,17 @@ principal da tela.
 configuração por módulo, sem recriar lista/form.
 
 **Campo `address` (Harbor)** — `HarborCreate.address` é objeto aninhado
-(`AddressCreate`), e `Fields/Index.ts`/`RenderFields` hoje só resolvem
-componentes `Input*` flat; `Group/Adress.tsx` não está exportado ali. Esta
-SPEC estende `LayoutField`/`RenderFields` com um novo tipo "grupo" que
-renderiza `Group/Adress.tsx` como bloco dentro do form — mudança no
-componente genérico da SPEC-02, mas reutilizável por qualquer form futuro
-com endereço (ex.: Cliente na SPEC-05). Entra em "Arquivos esperados" (§10).
+(`AddressCreate`). Usa `AddressGroup` (SPEC-SHARE-01, não criado aqui) —
+bloco de campos de endereço reutilizável, também consumido por SPEC-05 pro
+campo `address` de Cliente. Nenhuma extensão de `RenderFields`/`LayoutField`
+acontece nesta SPEC — só configuração do campo `address` como `AddressGroup`
+na config do form de Harbor.
+
+**Campo `harborId` (Terminal)** — FK obrigatória, sem tela dedicada de
+"escolher Harbor" no legado (que usava `<Form.Select>` populado com todos
+os portos de uma vez). Usa `SelectAsync` (SPEC-SHARE-01, não criado aqui)
+configurado sobre o hook Orval de `harbor` (`useGetApiHarbor` com
+`Search`).
 
 ```
 src/routes/_dashboard/_internal/administrative/registry/
@@ -137,9 +142,7 @@ SPEC-02.
 | `src/routes/.../administrative/registry/{terminal,harbor,container,vessel,product}/index.tsx` | criar (5) |
 | `src/layouts/AppShell/nav/administrative-registry.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-registry.json` | criar (4 locales) |
-| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover os 5 itens de registry (`administrativoVessel`, `administrativoContainer`, `administrativoTerminal`, `administrativoHarbor`, `administrativoProduct`) hoje hard-coded com rotas antigas em PT; migram pro fragmento novo acima. Não mexer nos demais itens (`administrativoClients`, `administrativoOperations`, `administrativoLog`, `administrativoOccurrences` — escopo de SPEC-05/06/07) |
-| `src/layouts/Form/Fields/Index.ts` | editar — exportar novo tipo de campo "grupo" que renderiza `Group/Adress.tsx` |
-| `src/layouts/Form/Fields/map.tsx` (ou onde `RenderFields` resolve `FieldName`→componente) | editar — suportar o novo tipo "grupo" além dos `Input*` flat |
+| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover os 5 itens de registry (`administrativoVessel`, `administrativoContainer`, `administrativoTerminal`, `administrativoHarbor`, `administrativoProduct`) hoje hard-coded com rotas antigas em PT; migram pro fragmento novo acima. Não mexer nos demais itens (`administrativoClients`, `administrativoOperations` — escopo de SPEC-05/07. `administrativoLog`/`administrativoOccurrences` **não têm mais spec que os remova** — SPEC-06 cancelada; ficam órfãos no fragmento legado, apontando pra rota antiga, até decisão futura) |
 
 ## 11. Critérios de aceitação
 
@@ -149,6 +152,8 @@ SPEC-02.
 | CA2 | Nenhuma valida com Zod escrito à mão |
 | CA3 | As 5 telas reusam `crud-list-page`/`crud-record-modal` da SPEC-02 (não criam nem copiam componente próprio) |
 | CA4 | `bun run check` + `lint` passam |
+| CA5 | Form de Terminal resolve `harborId` via `SelectAsync` (SPEC-SHARE-01), não `<select>` estático populado de uma vez |
+| CA6 | Form de Harbor resolve `address` via `AddressGroup` (SPEC-SHARE-01), não campos `Input*` soltos repetidos |
 
 ## 12. Riscos
 
@@ -176,9 +181,10 @@ SPEC-02.
 - **D4** — Resolvido pela SPEC-02 + regra inviolável 10 do `AGENTS.md`:
   componente genérico mora em `components/crud/`; cada campo do form é
   `layouts/Form/Fields/*` (nunca `components/ui`, que não tem mais input
-  nenhum depois da migração da SPEC-02). Ressalva: campo composto
-  (`address` de Harbor) exige estender `RenderFields`/`LayoutField` com um
-  tipo "grupo" — ver §9 e §10.
+  nenhum depois da migração da SPEC-02). Campos compostos/de seleção
+  reusados por mais de uma SPEC (`address`, `harborId`) não nascem aqui —
+  são `AddressGroup`/`SelectAsync` de SPEC-SHARE-01, só consumidos por
+  config — ver §9.
 
 ---
 

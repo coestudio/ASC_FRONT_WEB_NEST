@@ -9,10 +9,14 @@
   `src/i18n/dictionaries/**`
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
   (`mock-data-banner`, `ViewToggle`; **não** reusa `crud-list-page` — ver
-  §9, filtros/enriquecimento mais complexos que o molde genérico cobre)
+  §9, filtros/enriquecimento mais complexos que o molde genérico cobre),
+  **SPEC-SHARE-01** (`Select`/`SelectAsync` — usados pelos filtros desta
+  lista, não criados aqui; esta SPEC não pode mergear em
+  `wave-2-parallel-areas` antes de SPEC-SHARE-01)
 - **Bloqueia:** SPEC-08 (`operacional`) — importa `operations-list.tsx` em
-  modo `readOnly`. Bloqueia também SPEC-07-03/05/06 desta mesma leva (Select
-  criado aqui é reusado por elas).
+  modo `readOnly`. Bloqueia também SPEC-07-03/05/06 desta mesma leva, que
+  editam o namespace i18n `administrative-operations.json` criado aqui
+  (`Select`/`SelectAsync` em si vêm de SPEC-SHARE-01, não desta SPEC).
 
 ---
 
@@ -39,11 +43,8 @@ correspondente no Core, não portar, mesmo corte do legado).
    feature reusada fora da própria SPEC (pela SPEC-08, em modo
    `readOnly`), por isso nasce como componente próprio em
    `src/components/operations/`, não só JSX dentro da rota.
-3. Campo de seleção novo em `layouts/Form/Fields` (D3 — resolvido, ver
-   §13): `Select` (opções fixas) e `SelectAsync` (autocomplete assíncrono)
-   — usados pelos filtros desta lista (tipo/status/cliente) e reusados
-   pelas sub-SPECs de aba que precisarem de FK/enum (SPEC-07-03 Detalhes,
-   SPEC-07-05 Containers, SPEC-07-06 Documents).
+3. Filtros de tipo/status/cliente usam `Select`/`SelectAsync`
+   (SPEC-SHARE-01, D1 lá) — campos consumidos, não criados aqui.
 4. Fragmento de nav (`administrative-operations.ts`) e namespace i18n
    (`administrative-operations.json`) — únicos para toda a feature
    Operações (lista + abas); as sub-SPECs de aba **editam** o namespace
@@ -61,9 +62,9 @@ correspondente no Core, não portar, mesmo corte do legado).
 - **RF2** — `operations-list.tsx` aceita prop `readOnly` que esconde
   criar/editar/deletar, mantendo listagem/filtro/busca — é o que a
   SPEC-08 consome sem editar o arquivo.
-- **RF3** — Filtros de tipo/status usam o `Select` novo (D3); filtro de
-  cliente usa `SelectAsync` (autocomplete, busca por digitação — lista de
-  clientes pode ser grande).
+- **RF3** — Filtros de tipo/status usam `Select` (SPEC-SHARE-01); filtro de
+  cliente usa `SelectAsync` (SPEC-SHARE-01, autocomplete, busca por
+  digitação — lista de clientes pode ser grande).
 
 ## 6. Requisitos não funcionais
 
@@ -102,13 +103,11 @@ Operações fica mesmo como componente à parte.
 
 | Arquivo | Ação |
 | --- | --- |
-| `src/layouts/Form/Fields/Select.tsx` | criar — campo de opções fixas (enum: `status`/`opType`/`opService`/etc., via `src/api/generated/static/*`), exportado em `Index.ts` como `LayoutField` regular (stub já existe em `Fields/make/Select.tsx`, vazio — implementar aqui) |
-| `src/layouts/Form/Fields/SelectAsync.tsx` | criar — autocomplete assíncrono (busca por digitação, debounce) para FK de lista grande (ex.: `clientId`), usando o hook Orval de listagem do respectivo módulo como fonte |
 | `src/components/operations/operations-list.tsx` | criar |
 | `src/routes/.../administrative/operations/index.tsx` | criar |
 | `src/layouts/AppShell/nav/administrative-operations.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-operations.json` | criar (4 locales) — namespace único de toda a feature Operações; sub-SPECs de aba editam, não recriam |
-| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover o item `administrativoOperations` (rota antiga `/operacoes`) hoje hard-coded; item equivalente passa a viver em `administrative-operations.ts`. Não mexer nos demais itens (escopo de SPEC-04/05/06) |
+| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover o item `administrativoOperations` (rota antiga `/operacoes`) hoje hard-coded; item equivalente passa a viver em `administrative-operations.ts`. Não mexer nos demais itens (escopo de SPEC-04/05; `administrativoLog`/`administrativoOccurrences` ficam órfãos — SPEC-06 cancelada, ver nota em SPEC-04) |
 
 ## 11. Critérios de aceitação
 
@@ -125,12 +124,10 @@ Nenhum específico além dos já cobertos pelo índice geral
 
 ## 13. Decisões pendentes
 
-- **D3** — Resolvido: `layouts/Form/Fields` não tem campo de seleção hoje
-  (`Fields/make/Select.tsx` é stub vazio). Esta SPEC cria dois campos
-  novos: `Select` (opções fixas, pra enums) e `SelectAsync` (autocomplete
-  assíncrono, busca por digitação, pra FK de lista grande). Dropdown
-  simples populado de uma vez foi descartado pra FK por não escalar com o
-  crescimento da base de Clientes/Produtos.
+- **D3** — Superado por SPEC-SHARE-01 (D1 lá): `Select`/`SelectAsync` não
+  nascem mais nesta SPEC — extraídos pra SPEC-SHARE-01 porque acabaram
+  reusados por SPEC-07-03/05/06 e por SPEC-04 (campo `harborId` de
+  Terminal), não só pelos filtros desta lista. Esta SPEC só consome.
 
 ---
 

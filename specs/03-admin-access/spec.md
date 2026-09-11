@@ -66,7 +66,10 @@ muda.
 ## 4. Fora do escopo
 
 - Qualquer edição de permissão granular por rota (não existe no Core hoje).
-- Auditoria de quem mudou o quê (isso seria "Log", SPEC-06, UI-only).
+- Auditoria de quem mudou o quê ("Log" genérico de auditoria — tinha uma
+  SPEC própria, SPEC-06, **cancelada**: mockup sem API real por trás deixou
+  de fazer sentido pro escopo desta leva; fica fora de `SPECS-LEGADO`
+  também, sem substituto previsto).
 
 ## 5. Requisitos funcionais
 

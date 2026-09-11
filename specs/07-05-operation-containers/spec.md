@@ -6,9 +6,10 @@
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/containers/**`
   (nova)
-- **Depende de:** SPEC-00, SPEC-02, SPEC-07-01 (`Select`, para status do
-  vínculo), SPEC-07-02 (shell de abas), SPEC-07-00 (`InputPhotoMulti`,
-  para fotos do container)
+- **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`, para status
+  do vínculo, e `InputPhotoMulti`, para fotos do container), SPEC-07-01
+  (namespace `administrative-operations.json`, editado aqui), SPEC-07-02
+  (shell de abas)
 
 ---
 
@@ -28,11 +29,11 @@ Legado: `OperationContainersReal`.
 
 1. `operations/$id/containers/index.tsx` — vínculo de containers à
    operação (`operation-container` gerado: fotos, lacres, status).
-2. Fotos do container usam `InputPhotoMulti` (SPEC-07-00) — múltiplas
+2. Fotos do container usam `InputPhotoMulti` (SPEC-SHARE-01) — múltiplas
    imagens por container, preview em grid, remoção individual antes do
    envio.
 3. Status do vínculo (`ContainerOperationStatus`) usa `Select`
-   (SPEC-07-01).
+   (SPEC-SHARE-01).
 
 ## 4. Fora do escopo
 
@@ -44,9 +45,9 @@ Legado: `OperationContainersReal`.
 
 - **RF1** — Consome só hooks Orval gerados de `operation-container`, nunca
   dado mockado.
-- **RF2** — Upload de fotos via `InputPhotoMulti` (SPEC-07-00).
-- **RF3** — Status do vínculo via `Select` (SPEC-07-01) com as opções de
-  `ContainerOperationStatus`.
+- **RF2** — Upload de fotos via `InputPhotoMulti` (SPEC-SHARE-01).
+- **RF3** — Status do vínculo via `Select` (SPEC-SHARE-01) com as opções
+  de `ContainerOperationStatus`.
 - **RF4** — Sem silent-fail (herda RF2 da SPEC-07-02).
 
 ## 6. Requisitos não funcionais

@@ -6,7 +6,10 @@
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/romaneio/**`
   (nova)
-- **Depende de:** SPEC-00, SPEC-02, SPEC-07-02 (shell de abas)
+- **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`InputFileSingle`, pro
+  upload da planilha na etapa `analyze` do import — ver §3), SPEC-07-01
+  (namespace `administrative-operations.json`, editado aqui), SPEC-07-02
+  (shell de abas)
 
 ---
 
@@ -32,9 +35,11 @@ Legado: `OperationRomaneioReal`. Fluxo de import documentado no
 ## 3. Escopo
 
 1. `operations/$id/romaneio/index.tsx` — CRUD de fardos.
-2. Import de romaneio em 2 etapas: `.../romaneio/import/analyze` →
-   revisão de grupos classificados no front →
-   `.../romaneio/import/apply`, sem pular a etapa de revisão.
+2. Import de romaneio em 2 etapas: `.../romaneio/import/analyze` (upload
+   da planilha via `InputFileSingle`, SPEC-SHARE-01 —
+   `PostApiOperationOperationIdRomaneioImportAnalyzeBody.File`) → revisão
+   de grupos classificados no front → `.../romaneio/import/apply`, sem
+   pular a etapa de revisão.
 
 ## 4. Fora do escopo
 
@@ -48,8 +53,9 @@ Legado: `OperationRomaneioReal`. Fluxo de import documentado no
 - **RF1** — Consome só hooks Orval gerados de `romaneio`, nunca dado
   mockado.
 - **RF2** — Import de romaneio segue o fluxo de 2 etapas do Core
-  (`.../romaneio/import/analyze` → revisão de grupos classificados no
-  front → `.../romaneio/import/apply`), sem pular a etapa de revisão.
+  (`.../romaneio/import/analyze`, upload via `InputFileSingle` → revisão
+  de grupos classificados no front → `.../romaneio/import/apply`), sem
+  pular a etapa de revisão.
 - **RF3** — Sem silent-fail (herda RF2 da SPEC-07-02).
 
 ## 6. Requisitos não funcionais
@@ -87,6 +93,7 @@ src/routes/.../administrative/operations/$id/
 | --- | --- |
 | CA1 | Aba funciona ponta a ponta contra o Core (dev) |
 | CA2 | Import de romaneio respeita as 2 etapas (analyze → revisão → apply) |
+| CA4 | Upload da planilha (etapa `analyze`) usa `InputFileSingle` (SPEC-SHARE-01), não `<input type="file">` cru |
 | CA3 | `bun run check` + `lint` passam |
 
 ## 12. Riscos

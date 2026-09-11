@@ -118,8 +118,8 @@ Legado (`warren/Portal`):
    - **Cada SPEC de área cria o próprio arquivo** de fragmento
      (`nav/admin.ts` na SPEC-03, `nav/administrative-registry.ts` na
      SPEC-04, etc.) — nunca edita `index.ts` nem o fragmento de outra área.
-     Duas áreas que contribuem pra mesma seção (ex.: SPEC-04/05/06/07 todas
-     em "administrativo") viram arquivos **separados com o mesmo `area`**;
+     Duas áreas que contribuem pra mesma seção (ex.: SPEC-04/05/07 todas em
+     "administrativo") viram arquivos **separados com o mesmo `area`**;
      o merge concatena, não precisa de coordenação entre specs.
    - Sidebar consome `getNavSections(getUserAreas(user))`, igual ao desenho
      anterior.

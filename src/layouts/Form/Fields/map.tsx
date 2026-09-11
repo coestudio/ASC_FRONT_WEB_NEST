@@ -20,10 +20,11 @@ const RenderFields: React.FC<{
           label={field.label}
           placeholder={field.placeholder}
           config={{
-            placeholder: field.placeholder,
-            containerClass: field.config?.containerClass,
-            className: field.config?.className,
-            options: field.config?.options,
+            // Repassa toda a config declarativa (inclui `enumOptions`,
+            // `fetchOptions`, `accept`, `previewUrl`, `selectedLabel` — SPEC-SHARE-01)
+            // e mantém o `placeholder` do topo como fallback, como antes.
+            ...field.config,
+            placeholder: field.config?.placeholder ?? field.placeholder,
           }}
           {...field.col}
         />

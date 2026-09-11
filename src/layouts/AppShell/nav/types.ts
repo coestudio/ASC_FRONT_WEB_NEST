@@ -29,6 +29,7 @@ export type NavFragment = {
 export type NavSection = {
   area: AreaId;
   sectionLabelKey: TranslationKey;
+  icon?: string;
   items: NavItem[];
 };
 

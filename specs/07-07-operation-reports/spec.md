@@ -15,7 +15,7 @@
 
 Sub-SPEC extraída da divisão de SPEC-07 (índice geral,
 `specs/07-operacoes/spec.md`): aba **Relatórios** — UI-only, dado mockado,
-mesma decisão de UI-only mockup já aplicada em SPEC-05/06.
+mesma decisão de UI-only mockup já aplicada em SPEC-05.
 
 **Real vs UI-only:** 100% UI-only (mock no legado também).
 
@@ -30,7 +30,7 @@ Legado: aba "Relatórios" mock, usa `OPERATIONS` de `data.ts`.
 
 ## 4. Fora do escopo
 
-- Emissão real de relatório (mesma razão da SPEC-05/06 — Core não tem
+- Emissão real de relatório (mesma razão da SPEC-05 — Core não tem
   endpoint).
 - Conteúdo das demais abas.
 
@@ -54,7 +54,7 @@ Legado: aba "Relatórios" mock, usa `OPERATIONS` de `data.ts`.
 
 ## 8. Camada de dados
 
-Nenhuma — array local tipado no componente (mesmo padrão da SPEC-05/06).
+Nenhuma — array local tipado no componente (mesmo padrão da SPEC-05).
 
 ## 9. Desenho
 

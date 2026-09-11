@@ -18,9 +18,10 @@ da operação, dado mockado.
 
 **Real vs UI-only:** 100% UI-only (mock no legado também).
 
-Esta aba é distinta da SPEC-06 (Log de auditoria genérico,
-`/administrative/log`, namespace `administrative-log`) — aqui é o
-histórico de eventos **de uma operação específica**
+Esta aba é distinta do Log de auditoria genérico
+(`/administrative/log`, namespace `administrative-log`) que tinha uma SPEC
+própria (SPEC-06, **cancelada** — mockup sem API real deixou de fazer
+sentido) — aqui é o histórico de eventos **de uma operação específica**
 (`/administrative/operations/$id/log`, namespace
 `administrative-operations`). Sem colisão de rota/nav/i18n; só cuidado na
 UI pra não confundir os dois conceitos (ex.: rotular como "Log da
@@ -67,7 +68,7 @@ SPEC, candidato a SPEC futura.
 
 ## 8. Camada de dados
 
-Nenhuma — array local tipado no componente (mesmo padrão da SPEC-05/06).
+Nenhuma — array local tipado no componente (mesmo padrão da SPEC-05).
 
 ## 9. Desenho
 

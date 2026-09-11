@@ -157,7 +157,7 @@ export function UserMenu() {
                                   className={`dropdown-item d-flex align-items-center gap-2 ${o.value === themeMode ? "active" : ""}`}
                                   onClick={() => setThemeMode(o.value)}
                                 >
-                                  <i className={`bi ${o.icon}`} aria-hidden />
+                                  <i className={`bi ${o.icon}`} />
                                   <span className="flex-grow-1 text-start">
                                     {themeLabels[o.value]}
                                   </span>

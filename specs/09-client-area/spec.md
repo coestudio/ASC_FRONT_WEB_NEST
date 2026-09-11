@@ -64,7 +64,7 @@ Segmentos de rota em inglês: `colaboradores`→`collaborators`,
 
 - Fluxo de proposta/pagamento (`Plans/Escopo-Adiado-Portal-Core.md` —
   formalmente adiado, não é desta leva).
-- Emissão real de relatório final (mesma limitação de backend das SPEC-05/06).
+- Emissão real de relatório final (mesma limitação de backend da SPEC-05).
 - **Não** inclui edição de Colaborador (ver R3/D1 revisado — o Core não
   expõe `PUT/PATCH` para `Collaborator`, só criar/listar/detalhar/excluir).
 - **Não** é a visão do lado administrativo de "clientes e seus
@@ -121,10 +121,11 @@ Segmentos de rota em inglês: `colaboradores`→`collaborators`,
   (`/api/profile/me`, fonte de `useUser()`) **não** tem `collaborator` —
   por isso o valor precisa ser persistido no login, não relido depois.
 - Schema de criação: `CollaboratorCreate` é `{ userName, profile:
-  ProfileCreate }` — objeto aninhado, mas **não** precisa da extensão de tipo
-  "grupo" da SPEC-04 (essa resolve especificamente `Group/Adress.tsx`).
-  Segue o mesmo padrão já usado por `src/components/profile/detail-tab.tsx`
-  (aba Detalhes do `ProfileModal`, SPEC-02): schema local em
+  ProfileCreate }` — objeto aninhado, mas **não** precisa de `AddressGroup`
+  (SPEC-SHARE-01, resolve especificamente o bloco `address` de
+  `AddressCreate` — `ProfileCreate` não é um endereço). Segue o mesmo
+  padrão já usado por `src/components/profile/detail-tab.tsx` (aba
+  Detalhes do `ProfileModal`, SPEC-02): schema local em
   `src/lib/validation/collaborator.ts` **achata** os campos remapeando
   `PostApiClientClientIdCollaboratorBody.shape.profile.shape.<campo>` +
   `.shape.userName` num objeto flat (`fullName`, `document`, `email`,
@@ -132,7 +133,7 @@ Segmentos de rota em inglês: `colaboradores`→`collaborators`,
   `crud-record-modal` reagrupa em `{ userName, profile: {...} }` no
   `onSubmit` antes de disparar a mutation — sem `.refine`/regra nova, só
   remapeamento de shape (regra 2 do `AGENTS.md`). Sem dependência de
-  SPEC-04.
+  SPEC-SHARE-01.
 - UI-only: array local mockado (D2), comentado como nas SPECs anteriores —
   sem hooks Orval de `operation`/`romaneio`.
 

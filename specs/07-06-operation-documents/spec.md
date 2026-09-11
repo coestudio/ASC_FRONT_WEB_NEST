@@ -6,9 +6,10 @@
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/documents/**`
   (nova)
-- **Depende de:** SPEC-00, SPEC-02, SPEC-07-01 (`Select`, para tipo de
-  documento), SPEC-07-02 (shell de abas), SPEC-07-00 (`InputFileSingle`,
-  para o arquivo do documento)
+- **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`, para tipo de
+  documento, e `InputFileSingle`, para o arquivo do documento), SPEC-07-01
+  (namespace `administrative-operations.json`, editado aqui), SPEC-07-02
+  (shell de abas)
 
 ---
 
@@ -28,10 +29,10 @@ Legado: `OperationDocumentosReal`.
 
 1. `operations/$id/documents/index.tsx` — CRUD de documentos (`document`
    gerado, tipos via lookup).
-2. Upload do arquivo usa `InputFileSingle` (SPEC-07-00) para
+2. Upload do arquivo usa `InputFileSingle` (SPEC-SHARE-01) para
    `DocumentDTO.file` — um arquivo por documento, `accept` sem restrição
    forçada (tipo vem do lookup de `DocumentType`, não do MIME).
-3. Tipo de documento (`DocumentType`) usa `Select` (SPEC-07-01).
+3. Tipo de documento (`DocumentType`) usa `Select` (SPEC-SHARE-01).
 
 ## 4. Fora do escopo
 
@@ -41,9 +42,9 @@ Legado: `OperationDocumentosReal`.
 
 - **RF1** — Consome só hooks Orval gerados de `document`, nunca dado
   mockado.
-- **RF2** — Upload de arquivo via `InputFileSingle` (SPEC-07-00).
-- **RF3** — Tipo de documento via `Select` (SPEC-07-01), populado pelo
-  lookup de `DocumentType`.
+- **RF2** — Upload de arquivo via `InputFileSingle` (SPEC-SHARE-01).
+- **RF3** — Tipo de documento via `Select` (SPEC-SHARE-01), populado
+  pelo lookup de `DocumentType`.
 - **RF4** — Sem silent-fail (herda RF2 da SPEC-07-02).
 
 ## 6. Requisitos não funcionais

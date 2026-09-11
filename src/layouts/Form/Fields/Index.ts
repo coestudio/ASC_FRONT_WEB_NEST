@@ -39,13 +39,22 @@ export { default as InputColorPicker } from "./InputColorPicker";
 
 //* Seleção
 export { default as InputMultiSelect } from "./InputMultiSelect";
+export { default as Select } from "./Select";
+export { default as SelectAsync } from "./SelectAsync";
+
+//* Endereço
+export { default as AddressGroup } from "./AddressGroup";
 
 //* Files
 export { default as InputAvatar } from "./InputAvatar";
+export { default as InputFileSingle } from "./InputFileSingle";
+export { default as InputPhotoSingle } from "./InputPhotoSingle";
+export { default as InputFileMulti } from "./InputFileMulti";
+export { default as InputPhotoMulti } from "./InputPhotoMulti";
 
 type FieldExports = typeof import("./Index");
 export type FieldName = {
-  [K in keyof FieldExports]: K extends `Input${string}`
+  [K in keyof FieldExports]: K extends `Input${string}` | "Select" | "SelectAsync" | "AddressGroup"
     ? FieldExports[K] extends React.ComponentType<any>
       ? K
       : never
@@ -61,7 +70,18 @@ export type LayoutField = {
   config?: {
     containerClass?: string;
     className?: string;
-    /** Opções de campo de seleção (ex.: `InputMultiSelect`) — SPEC-03 D3. */
+    placeholder?: string;
+    /** Opções de campo de seleção (ex.: `InputMultiSelect`, `Select`) — SPEC-03 D3. */
     options?: { value: string | number; label: string }[];
+    /** Snapshot bruto de enum gerado, pro `Select` resolver pelo idioma atual — SPEC-SHARE-01 RF2. */
+    enumOptions?: { value: string | number; name: Record<string, string> }[];
+    /** Fonte de busca do `SelectAsync` (debounce) — SPEC-SHARE-01 RF3. */
+    fetchOptions?: (search: string) => Promise<{ value: string | number; label: string }[]>;
+    /** Rótulo já resolvido do valor atual do `SelectAsync`, antes de qualquer busca. */
+    selectedLabel?: string;
+    /** Whitelist de MIME/extensão dos campos de upload (`InputFileSingle`/`InputFileMulti`) — SPEC-SHARE-01 RF5. */
+    accept?: string;
+    /** URL já salva no servidor pros campos de foto única (`InputPhotoSingle`), até o usuário trocar o arquivo. */
+    previewUrl?: string | null;
   };
 };

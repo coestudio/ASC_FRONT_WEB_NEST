@@ -73,7 +73,7 @@ function SidebarSection({
         aria-expanded={expanded}
       >
         <span>
-          <i className="bi bi-grid-1x2 me-2" aria-hidden />
+          <i className={`bi ${section.icon || "bi-grid-1x2"} me-2`} />
           {t(section.sectionLabelKey)}
         </span>
         <i

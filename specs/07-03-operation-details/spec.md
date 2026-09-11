@@ -5,8 +5,10 @@
 - **Status:** DRAFT
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/details/**` (nova)
-- **Depende de:** SPEC-00, SPEC-02, SPEC-07-01 (`Select`, para o campo de
-  status), SPEC-07-02 (shell de abas)
+- **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`, para o campo
+  de status), SPEC-07-01 (namespace `administrative-operations.json`,
+  editado aqui — não pelo `Select` em si, que vem de SPEC-SHARE-01),
+  SPEC-07-02 (shell de abas)
 
 ---
 
@@ -29,7 +31,7 @@ Legado: aba "Detalhes" de `Operations/Detail.tsx`, componente real
 1. `operations/$id/details/index.tsx` — dados da operação
    (`OperationDetailDTO`).
 2. Troca de status da operação (`usePatchApiOperationIdStatus`,
-   `OperationStatusPatch`) via `Select` (SPEC-07-01, D3) com as opções de
+   `OperationStatusPatch`) via `Select` (SPEC-SHARE-01) com as opções de
    `OperationStatus` — não é só leitura.
 
 ## 4. Fora do escopo

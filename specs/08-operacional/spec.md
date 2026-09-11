@@ -60,7 +60,7 @@ descuido.
 - **RF1** — Lista reusa o mesmo componente de dado real da SPEC-07, só com
   affordances de edição escondidas (`readOnly`).
 - **RF2** — Detalhe é claramente mock: `mock-data-banner` (SPEC-02) visível
-  no topo, mesmo comentário `// MOCK` das SPEC-05/06/07.
+  no topo, mesmo comentário `// MOCK` das SPEC-05/07.
 - **RF3** — Navegar de "Operacional > Operações" pro detalhe usa um id que
   **não** precisa bater com o id real do Core (é uma tela ilustrativa,
   como no legado) — mas a UI não pode fingir que é dado real.
