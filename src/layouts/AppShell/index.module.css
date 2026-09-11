@@ -102,6 +102,13 @@
   border-top: 1px solid var(--sidebar-border);
 }
 
+/* Versão do app, abaixo do UserMenu no footer do sidebar — SPEC-11 item 7. */
+.appVersion {
+  margin-top: 0.5rem;
+  text-align: center;
+  opacity: 0.6;
+}
+
 .userToggle {
   display: flex;
   align-items: center;

@@ -4,6 +4,7 @@ import { Nav } from "react-bootstrap";
 
 import { useCan, useUser } from "@/hooks";
 import { useT } from "@/lib/ui-prefs";
+import { APP_VERSION } from "@/lib/app-version";
 import { getUserAreas, type AreaId, type PermissionUser } from "@/lib/permissions";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
@@ -169,6 +170,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className={styles.sidebarFooter}>
           <UserMenu />
+          {/* Versão do app — SPEC-11 item 7 (decisão do usuário: só a
+              string da versão, sem duplicar dado que já existe no UserMenu). */}
+          <div className={styles.appVersion}>v{APP_VERSION}</div>
         </div>
       </aside>
 
