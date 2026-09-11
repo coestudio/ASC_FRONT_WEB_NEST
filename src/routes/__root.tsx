@@ -16,6 +16,8 @@ import appCss from "../styles/globals/index.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { isAuthedFn, fetchMeFn } from "@/lib/auth-fns";
 import { profileMeQueryOptions } from "@/lib/queries/profile";
+import { readUiPrefs, UiPrefsProvider } from "@/lib/ui-prefs";
+import { resolveTheme, THEME_NO_FLASH_SCRIPT } from "@/styles/globals/theme-store";
 
 const DESCRIPTION = "Sistema interno de gestão para laboratório, indústria, porto e transbordo.";
 const PREVIEW_IMAGE = "/share.jpg";
@@ -75,9 +77,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  // Guard barato (só checa o cookie no servidor) — disponibilizado no contexto
-  // para as rotas filhas (ver _dashboard.tsx).
-  beforeLoad: async () => ({ authed: await isAuthedFn() }),
+  // Guard barato (só checa o cookie no servidor) + preferências de UI
+  // (tema/idioma, do cookie / Accept-Language) — tudo no contexto para as
+  // rotas filhas, o shell e o provider.
+  beforeLoad: async () => ({ authed: await isAuthedFn(), ...readUiPrefs() }),
 
   // Semeia o cache do React Query com a identidade do usuário. No SSR busca
   // server→Core com o cookie (fetchMeFn); o client re-hidrata sem refetch.
@@ -117,7 +120,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { id: "favicon", rel: "icon", href: "/favicons/asa.ico", type: "image/x-icon" },
     ],
-    scripts: [{ children: "" }],
+    // Acerta data-bs-theme antes do primeiro paint (cobre o caso `system`).
+    scripts: [{ children: THEME_NO_FLASH_SCRIPT }],
   }),
 
   shellComponent: RootShell,
@@ -127,8 +131,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const { locale, themeMode } = Route.useRouteContext();
   return (
-    <html lang="pt-BR">
+    <html lang={locale} data-bs-theme={resolveTheme(themeMode)}>
       <head>
         <HeadContent />
       </head>
@@ -143,11 +148,12 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   // O QueryClientProvider é provido por setupRouterSsrQueryIntegration
   // (wrapQueryClient) em src/router.tsx.
+  const { locale, themeMode } = Route.useRouteContext();
   return (
-    <>
+    <UiPrefsProvider initial={{ locale, themeMode }}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <ToastContainer position="top-right" autoClose={4000} theme="colored" />
-    </>
+    </UiPrefsProvider>
   );
 }

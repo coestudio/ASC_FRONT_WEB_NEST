@@ -1,7 +1,24 @@
 # Spec — Idioma (i18n) e Tema
 
-**Status:** proposta (aguardando aprovação)
+**Status:** implementada (runtime) · retrofit dos call-sites pendente
 **Data:** 2026-09-10
+
+**Implementado (validado em `vite dev` + `vite build`):**
+
+- `<html lang>` e `data-bs-theme` resolvidos no SSR a partir de cookie
+  (`asc_locale` / `asc_theme`) — testado: `Cookie: asc_locale=en; asc_theme=dark`
+  → `<html lang="en" data-bs-theme="dark">`; `Accept-Language` como fallback.
+- `<script>` no-flash no `<head>` para o caso `system`.
+- `UiPrefsProvider` (tema + idioma juntos), `useT` / `useLocale` / `useSetLocale`
+  / `useThemeMode` / `useSetThemeMode` / `useResolvedTheme` em `src/lib/ui-prefs.tsx`.
+- `translate()` com chaves tipadas (`DeepKeys`) + interpolação `{param}`.
+- Dicionários: **as 3 locales têm as 114 chaves idênticas** (risco 2 resolvido).
+- Switchers montados na topbar do `AppShell`.
+- Removidos `src/lib/locale-path.ts` e `src/app/[lang]/**`.
+
+**Pendente:** trocar as strings fixas em PT dos componentes já escritos
+(`auth/login`, `auth/forgot-password`, `AppShell`, `__root` 404/erro, `SiteHeader`…)
+por `useT(...)`. O runtime está pronto; é só retrofit.
 **Contexto:** o login/BFF já está de pé (ver
 [auth-httponly-cookie-bff.md](auth-httponly-cookie-bff.md)). Falta ligar as duas
 preferências de UI que ficaram como stub/TODO: **idioma** e **tema**. Ambas
@@ -13,6 +30,7 @@ sem flash, store no client para trocas**.
 ## 1. Estado atual
 
 ### Tema
+
 - [src/styles/globals/color-modes.ts](../src/styles/globals/color-modes.ts) —
   `ThemeMode = "light" | "dark"` (sem `"system"`, apesar do dicionário ter a
   chave), `THEME_STORAGE_KEY`/`THEME_COOKIE_NAME = "theme"`.
@@ -27,6 +45,7 @@ sem flash, store no client para trocas**.
   (FOUC) no carregamento. O cookie é escrito mas **nunca lido no servidor**.
 
 ### Idioma
+
 - [src/i18n/config.ts](../src/i18n/config.ts) — `locales = ["pt-BR", "en", "zh"]`,
   `defaultLocale = "pt-BR"`.
 - [src/i18n/dictionaries/](../src/i18n/dictionaries/) — `pt-BR.json` / `en.json` /
@@ -45,6 +64,7 @@ sem flash, store no client para trocas**.
 ## 2. Metas / não-metas
 
 ### Metas
+
 1. Tema e idioma resolvidos **no servidor** a partir de cookie, aplicados no
    HTML do SSR — **sem flash**, sem mismatch de hidratação.
 2. `useT()` funcional com autocomplete das chaves e interpolação `{param}`.
@@ -55,6 +75,7 @@ sem flash, store no client para trocas**.
    usuário) e no header do site.
 
 ### Não-metas
+
 - Segmento de locale na URL (`/pt-BR/...`). Locale é preferência de usuário via
   cookie, igual ao tema. `locale-path.ts` e `src/app/[lang]/**` são removidos.
 - Pluralização / ICU MessageFormat / gênero. Se surgir necessidade real,
@@ -79,6 +100,7 @@ sem flash, store no client para trocas**.
 
 Cookies (renomeados para o padrão `asc_*`, `SameSite=Lax`, `max-age` 1 ano, **não**
 httpOnly — precisam ser lidos por JS no client e pelo script no-flash):
+
 - `asc_theme` = `light | dark | system`
 - `asc_locale` = `pt-BR | en | zh`
 
@@ -88,6 +110,7 @@ na auth). Sem `useSession` — não é dado sensível.
 ## 4. Tema
 
 ### `color-modes.ts`
+
 ```ts
 export type ThemeMode = "light" | "dark" | "system";
 export type ResolvedTheme = "light" | "dark";
@@ -95,6 +118,7 @@ export const THEME_COOKIE_NAME = "asc_theme";
 ```
 
 ### `theme-store.ts`
+
 - `resolveTheme(mode, systemPref?)`: `"system"` → `systemPref` (do
   `matchMedia("(prefers-color-scheme: dark)")` no client; no SSR assume `"light"`
   ou o que o script no-flash já aplicou).
@@ -105,20 +129,23 @@ export const THEME_COOKIE_NAME = "asc_theme";
 - Novo listener em `matchMedia` para reatividade quando `mode === "system"`.
 
 ### Sem flash
+
 `__root.head()` injeta um `<script>` inline (blocking, no `<head>`) que:
+
 ```js
 try {
-  var m = (document.cookie.match(/(?:^|; )asc_theme=([^;]+)/)||[])[1] || "system";
-  var d = m === "dark" || (m === "system" &&
-    matchMedia("(prefers-color-scheme: dark)").matches);
+  var m = (document.cookie.match(/(?:^|; )asc_theme=([^;]+)/) || [])[1] || "system";
+  var d = m === "dark" || (m === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
   document.documentElement.setAttribute("data-bs-theme", d ? "dark" : "light");
 } catch (e) {}
 ```
+
 Para `light`/`dark` o SSR já acerta o atributo (cookie conhecido); o script cobre
 o caso `system` e divergências. React não re-renderiza `<html>`, então não há
 conflito de hidratação — o efeito do store apenas confirma o mesmo valor.
 
 ### `<ThemeToggle>`
+
 - `ORDER = ["light", "dark", "system"]`, ícone por modo (`sun` / `moon` / `circle-half`).
 - `labels` já vêm traduzidas (`theme.light` / `theme.dark` / `theme.system`).
 
@@ -126,20 +153,22 @@ conflito de hidratação — o efeito do store apenas confirma o mesmo valor.
 
 ### `src/i18n/` — arquivos
 
-| Arquivo | Papel |
-| --- | --- |
-| `config.ts` | (existe) `locales`, `defaultLocale`, `isLocale`. + `LOCALE_COOKIE_NAME = "asc_locale"`, `LOCALE_LABELS` (nome + flag por locale). |
-| `dictionaries.ts` | **novo** — `import ptBR from "./dictionaries/pt-BR.json"` (idem en, zh); `export const dictionaries = { "pt-BR": ptBR, en, zh }`. `pt-BR` é a **fonte de verdade** do shape. |
-| `keys.ts` | **novo** — `type TranslationKey = DeepKeys<typeof ptBR>` (tipo recursivo de chaves com ponto). Dá autocomplete no `t()`. |
-| `translate.ts` | **novo** — `translate(dict, key, params?)`: caminha o path com ponto, faz `String.replace(/\{(\w+)\}/g, ...)` com `params`. Chave faltando → retorna a própria chave + `console.warn` em dev. |
-| `index.tsx` | `LanguageProvider` **real**: recebe `locale` (do contexto) e provê `{ locale, dict }` num React context. `useT()` → `(key, params?) => translate(dict, key, params)`. `useLocale()`, `useSetLocale()`. |
-| `locale.server.ts` | **novo** — `getServerLocale()`: `getCookie("asc_locale")` válido → usa; senão negocia `Accept-Language` contra `locales`; senão `defaultLocale`. |
-| `locale-store.ts` | **novo** — client store (`useSyncExternalStore` sobre cookie); `setLocale(l)` grava cookie + `document.documentElement.lang = l` + emite. Como os 3 dicts já estão no bundle, o `LanguageProvider` troca o dict na hora — **sem** `router.invalidate()`. |
+| Arquivo            | Papel                                                                                                                                                                                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config.ts`        | (existe) `locales`, `defaultLocale`, `isLocale`. + `LOCALE_COOKIE_NAME = "asc_locale"`, `LOCALE_LABELS` (nome + flag por locale).                                                                                                                        |
+| `dictionaries.ts`  | **novo** — `import ptBR from "./dictionaries/pt-BR.json"` (idem en, zh); `export const dictionaries = { "pt-BR": ptBR, en, zh }`. `pt-BR` é a **fonte de verdade** do shape.                                                                             |
+| `keys.ts`          | **novo** — `type TranslationKey = DeepKeys<typeof ptBR>` (tipo recursivo de chaves com ponto). Dá autocomplete no `t()`.                                                                                                                                 |
+| `translate.ts`     | **novo** — `translate(dict, key, params?)`: caminha o path com ponto, faz `String.replace(/\{(\w+)\}/g, ...)` com `params`. Chave faltando → retorna a própria chave + `console.warn` em dev.                                                            |
+| `index.tsx`        | `LanguageProvider` **real**: recebe `locale` (do contexto) e provê `{ locale, dict }` num React context. `useT()` → `(key, params?) => translate(dict, key, params)`. `useLocale()`, `useSetLocale()`.                                                   |
+| `locale.server.ts` | **novo** — `getServerLocale()`: `getCookie("asc_locale")` válido → usa; senão negocia `Accept-Language` contra `locales`; senão `defaultLocale`.                                                                                                         |
+| `locale-store.ts`  | **novo** — client store (`useSyncExternalStore` sobre cookie); `setLocale(l)` grava cookie + `document.documentElement.lang = l` + emite. Como os 3 dicts já estão no bundle, o `LanguageProvider` troca o dict na hora — **sem** `router.invalidate()`. |
 
 ### `locale-path.ts`
+
 Removido (junto com `src/app/[lang]/**`).
 
 ### `__root`
+
 - `beforeLoad` (ou um `createIsomorphicFn`): resolve `locale` e devolve no
   contexto. `loader`/context também expõe o `dict` (`dictionaries[locale]`) para
   o `RootShell` e o `LanguageProvider`.
@@ -149,6 +178,7 @@ Removido (junto com `src/app/[lang]/**`).
   usar `useT()` (componentes) — nota, não bloqueia.
 
 ### Tamanho
+
 Os 3 dicionários juntos (~10 KB minificado) entram no bundle. Se crescerem
 muito, migrar para: server serializa só o dict ativo no payload SSR + client
 faz `import()` dinâmico ao trocar. Não agora.
@@ -165,21 +195,21 @@ faz `import()` dinâmico ao trocar. Não agora.
 
 ## 7. Arquivos afetados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/styles/globals/color-modes.ts` | `+ "system"`, `ResolvedTheme`, cookie `asc_theme` |
-| `src/styles/globals/theme-store.ts` | `resolveTheme` com system + `matchMedia`; `getServerSnapshot` do contexto |
-| `src/components/theme/theme-toggle.tsx` | ordem com `system` + ícone |
-| `src/i18n/config.ts` | `+ LOCALE_COOKIE_NAME`, `LOCALE_LABELS` |
-| `src/i18n/dictionaries.ts` · `keys.ts` · `translate.ts` · `locale.server.ts` · `locale-store.ts` | **novos** |
-| `src/i18n/index.tsx` | `LanguageProvider` real + `useT`/`useLocale`/`useSetLocale` |
-| `src/components/i18n/language-switcher.tsx` | **novo** |
-| `src/routes/__root.tsx` | resolve locale+theme no contexto; `<html lang>`; `<script>` no-flash; `head()` do dict; `LanguageProvider` + `ThemeProvider` no `RootComponent` |
-| `src/routes/_site.tsx` | já usa `LanguageProvider` (passa a ser o real) |
-| `src/layouts/AppShell/index.tsx` · `UserMenu.tsx` | montar os switchers nos slots |
-| `src/lib/locale-path.ts` | **remover** |
-| `src/app/[lang]/**` | **remover** (legado Next.js) |
-| textos fixos em PT no `__root` (404, erro) | passam a `useT()` |
+| Arquivo                                                                                          | Ação                                                                                                                                            |
+| ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/styles/globals/color-modes.ts`                                                              | `+ "system"`, `ResolvedTheme`, cookie `asc_theme`                                                                                               |
+| `src/styles/globals/theme-store.ts`                                                              | `resolveTheme` com system + `matchMedia`; `getServerSnapshot` do contexto                                                                       |
+| `src/components/theme/theme-toggle.tsx`                                                          | ordem com `system` + ícone                                                                                                                      |
+| `src/i18n/config.ts`                                                                             | `+ LOCALE_COOKIE_NAME`, `LOCALE_LABELS`                                                                                                         |
+| `src/i18n/dictionaries.ts` · `keys.ts` · `translate.ts` · `locale.server.ts` · `locale-store.ts` | **novos**                                                                                                                                       |
+| `src/i18n/index.tsx`                                                                             | `LanguageProvider` real + `useT`/`useLocale`/`useSetLocale`                                                                                     |
+| `src/components/i18n/language-switcher.tsx`                                                      | **novo**                                                                                                                                        |
+| `src/routes/__root.tsx`                                                                          | resolve locale+theme no contexto; `<html lang>`; `<script>` no-flash; `head()` do dict; `LanguageProvider` + `ThemeProvider` no `RootComponent` |
+| `src/routes/_site.tsx`                                                                           | já usa `LanguageProvider` (passa a ser o real)                                                                                                  |
+| `src/layouts/AppShell/index.tsx` · `UserMenu.tsx`                                                | montar os switchers nos slots                                                                                                                   |
+| `src/lib/locale-path.ts`                                                                         | **remover**                                                                                                                                     |
+| `src/app/[lang]/**`                                                                              | **remover** (legado Next.js)                                                                                                                    |
+| textos fixos em PT no `__root` (404, erro)                                                       | passam a `useT()`                                                                                                                               |
 
 ## 8. Riscos / questões
 

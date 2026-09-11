@@ -10,9 +10,7 @@ function DashboardHome() {
   return (
     <div className="mx-auto p-4" style={{ maxWidth: "56rem" }}>
       <h1 className="fs-5 fw-semibold text-body">Dashboard</h1>
-      <p className="mt-2 small text-body-secondary">
-        Bem-vindo ao portal interno.
-      </p>
+      <p className="mt-2 small text-body-secondary">Bem-vindo ao portal interno.</p>
     </div>
   );
 }

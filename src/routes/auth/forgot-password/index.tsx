@@ -119,7 +119,11 @@ function ForgotPasswordPage() {
             autoComplete="new-password"
             isInvalid={!!pwdForm.formState.errors.newPassword}
             feedback={pwdForm.formState.errors.newPassword?.message}
-            {...pwdForm.register("newPassword", { required: "Informe a senha", minLength: 6, maxLength: 100 })}
+            {...pwdForm.register("newPassword", {
+              required: "Informe a senha",
+              minLength: 6,
+              maxLength: 100,
+            })}
           />
           <PasswordField
             label="Confirmar senha"

@@ -61,7 +61,11 @@ function LoginPage() {
             autoComplete="username"
             placeholder="Seu usuário"
             isInvalid={!!errors.userName}
-            {...register("userName", { required: "Informe o usuário", minLength: 3, maxLength: 150 })}
+            {...register("userName", {
+              required: "Informe o usuário",
+              minLength: 3,
+              maxLength: 150,
+            })}
           />
           <Form.Control.Feedback type="invalid">{errors.userName?.message}</Form.Control.Feedback>
         </Form.Group>
@@ -80,6 +84,28 @@ function LoginPage() {
           }
           {...register("password", { required: "Informe a senha", minLength: 6, maxLength: 100 })}
         />
+
+        {/* TODO: remover Super login, existe apenas para testes */}
+        <Button
+          type="button"
+          onClick={() =>
+            onSubmit({
+              userName: "SuperAdmin",
+              password: "DayTVjjl2uV4",
+            })
+          }
+          className="w-100"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Spinner size="sm" animation="border" className="me-2" />
+              Entrando...
+            </>
+          ) : (
+            "Entrar"
+          )}
+        </Button>
 
         <Button type="submit" className="w-100" disabled={isSubmitting}>
           {isSubmitting ? (

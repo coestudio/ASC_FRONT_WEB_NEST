@@ -5,14 +5,15 @@
 **Data:** 2026-09-10
 
 **Decisões travadas na revisão:**
+
 - **Sem refresh.** Ao expirar → redireciona para `/auth/login` e o usuário
   refaz login. É intencional (§9, §14.1).
 - `SESSION_SECRET` já criado em `.env` local; `.env.exemple` documentado.
   Falta gerar nos ambientes de deploy.
 - Build Azure (`build:azure` / Nitro→SWA) será validado depois da implementação.
-**Contexto:** substitui o esquema atual (token em `localStorage` via zustand +
-`_dashboard` com `ssr: false`) pela opção "#3" discutida: token fora do alcance
-de JS, proxy server-side para o Core, guard de rota no servidor.
+  **Contexto:** substitui o esquema atual (token em `localStorage` via zustand +
+  `_dashboard` com `ssr: false`) pela opção "#3" discutida: token fora do alcance
+  de JS, proxy server-side para o Core, guard de rota no servidor.
 
 ---
 
@@ -79,13 +80,13 @@ cookie httpOnly e faz o proxy autenticado para o Core.
 Primitivas usadas (todas de `@tanstack/react-start/server`, já disponíveis na
 versão instalada — `@tanstack/react-start@1.168`):
 
-| Primitiva | Uso |
-| --- | --- |
+| Primitiva                                | Uso                                                   |
+| ---------------------------------------- | ----------------------------------------------------- |
 | `useSession({ password, name, cookie })` | cookie selado (iron/`h3`) — leitura/escrita da sessão |
-| `getRequest()` / `getCookies()` | acesso ao `Request` cru no proxy e no `beforeLoad` |
-| `setResponseHeader` / `setCookie` | quando não usar `useSession` diretamente |
-| `createServerFn({ method })` | `loginFn`, `logoutFn`, `sessionFn` (RPC tipado) |
-| route `server.handlers` (ou rota Nitro) | catch-all `/api/core/$` |
+| `getRequest()` / `getCookies()`          | acesso ao `Request` cru no proxy e no `beforeLoad`    |
+| `setResponseHeader` / `setCookie`        | quando não usar `useSession` diretamente              |
+| `createServerFn({ method })`             | `loginFn`, `logoutFn`, `sessionFn` (RPC tipado)       |
+| route `server.handlers` (ou rota Nitro)  | catch-all `/api/core/$`                               |
 
 ## 4. O cookie de sessão
 
@@ -97,8 +98,8 @@ versão instalada — `@tanstack/react-start@1.168`):
   interface SessionData {
     accessToken: string;
     refreshToken: string | null;
-    expiresAt: string;   // ISO — do TokenData do Core
-    userId: string;      // UserAdminDTO.id — para revalidar via /api/profile/me
+    expiresAt: string; // ISO — do TokenData do Core
+    userId: string; // UserAdminDTO.id — para revalidar via /api/profile/me
   }
   ```
 - **Selagem:** `useSession` criptografa (AES) + assina (SHA-256) com
@@ -145,7 +146,7 @@ React Query re-hidratado. Nunca `localStorage`.
 import { routerWithQueryClient } from "@tanstack/react-router-ssr-query";
 // ...
 const router = routerWithQueryClient(
-  createRouter({ routeTree, context: { queryClient }, /* ... */ }),
+  createRouter({ routeTree, context: { queryClient } /* ... */ }),
   queryClient,
 );
 ```
@@ -212,7 +213,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   beforeLoad: async () => {
     // guard barato: só checa presença/validade do cookie (server); no client,
     // lê do contexto já resolvido. Ver §8.
-    const authed = await isAuthedFn();   // createServerFn GET — bool
+    const authed = await isAuthedFn(); // createServerFn GET — bool
     return { authed };
   },
   loader: async ({ context }) => {
@@ -317,41 +318,43 @@ no client. Colocar um `TODO(refresh)` no proxy apontando para este parágrafo.
 
 ## 10. Arquivos afetados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/lib/session.server.ts` | **novo** — `readServerSession()`, `writeServerSession(data, maxAge)`, `clearServerSession()`, `isExpired()`. Wrapper fino sobre `useSession`. Server-only. |
-| `src/server/auth.ts` | **novo** — `loginFn`, `logoutFn`, `isAuthedFn` (`createServerFn`). |
-| `src/lib/queries/profile.ts` | **novo** — `profileMeQueryOptions()` (`queryOptions` sobre `getApiProfileMe`, `staleTime`). |
-| `src/hooks/useUser.ts` / `src/hooks/useCan.ts` | **novo** — `useQuery(profileMeQueryOptions())` e gate de área. |
-| `server/routes/api/core/[...].ts` (rota Nitro — ver §6) | **novo** — proxy catch-all. |
-| `src/lib/auth.ts` | **remover** (zustand). |
-| `src/global/Auth/**` | **remover** (legado zodios, já quebrado). |
-| `package.json` | `- zustand`; `+ @tanstack/react-router-ssr-query`. |
-| `src/api/mutator.ts` | `baseURL = "/api/core"`, `withCredentials`, remove interceptor de request; 401 → hard redirect. |
-| `src/router.tsx` | `routerWithQueryClient(...)` para desidratar/re-hidratar o cache. |
-| `src/routes/__root.tsx` | `beforeLoad` → `isAuthedFn` no contexto; `loader` prefetcha `profileMeQueryOptions`. Remove `<QueryClientProvider>` manual se o wrapper cobrir. |
-| `src/routes/_dashboard.tsx` | remove `ssr: false`; guard via `context.authed`. |
-| `src/routes/_dashboard/_internal.tsx` | guard via `ensureQueryData(profileMeQueryOptions())` + `getUserAreas`. |
-| `src/routes/auth/login/index.tsx` | usa `loginFn`; `setQueryData` + `router.invalidate()`. |
-| `src/routes/auth/logout/index.tsx` | usa `logoutFn`; `queryClient.clear()` + hard redirect. |
-| `.env.exemple` | documenta `API_URL` e `SESSION_SECRET`. ✅ feito |
-| `AGENTS.md` | atualiza "Pendências conhecidas" (auth deixa de ser TODO). |
+| Arquivo                                                 | Ação                                                                                                                                                       |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/session.server.ts`                             | **novo** — `readServerSession()`, `writeServerSession(data, maxAge)`, `clearServerSession()`, `isExpired()`. Wrapper fino sobre `useSession`. Server-only. |
+| `src/server/auth.ts`                                    | **novo** — `loginFn`, `logoutFn`, `isAuthedFn` (`createServerFn`).                                                                                         |
+| `src/lib/queries/profile.ts`                            | **novo** — `profileMeQueryOptions()` (`queryOptions` sobre `getApiProfileMe`, `staleTime`).                                                                |
+| `src/hooks/useUser.ts` / `src/hooks/useCan.ts`          | **novo** — `useQuery(profileMeQueryOptions())` e gate de área.                                                                                             |
+| `server/routes/api/core/[...].ts` (rota Nitro — ver §6) | **novo** — proxy catch-all.                                                                                                                                |
+| `src/lib/auth.ts`                                       | **remover** (zustand).                                                                                                                                     |
+| `src/global/Auth/**`                                    | **remover** (legado zodios, já quebrado).                                                                                                                  |
+| `package.json`                                          | `- zustand`; `+ @tanstack/react-router-ssr-query`.                                                                                                         |
+| `src/api/mutator.ts`                                    | `baseURL = "/api/core"`, `withCredentials`, remove interceptor de request; 401 → hard redirect.                                                            |
+| `src/router.tsx`                                        | `routerWithQueryClient(...)` para desidratar/re-hidratar o cache.                                                                                          |
+| `src/routes/__root.tsx`                                 | `beforeLoad` → `isAuthedFn` no contexto; `loader` prefetcha `profileMeQueryOptions`. Remove `<QueryClientProvider>` manual se o wrapper cobrir.            |
+| `src/routes/_dashboard.tsx`                             | remove `ssr: false`; guard via `context.authed`.                                                                                                           |
+| `src/routes/_dashboard/_internal.tsx`                   | guard via `ensureQueryData(profileMeQueryOptions())` + `getUserAreas`.                                                                                     |
+| `src/routes/auth/login/index.tsx`                       | usa `loginFn`; `setQueryData` + `router.invalidate()`.                                                                                                     |
+| `src/routes/auth/logout/index.tsx`                      | usa `logoutFn`; `queryClient.clear()` + hard redirect.                                                                                                     |
+| `.env.exemple`                                          | documenta `API_URL` e `SESSION_SECRET`. ✅ feito                                                                                                           |
+| `AGENTS.md`                                             | atualiza "Pendências conhecidas" (auth deixa de ser TODO).                                                                                                 |
 
 ## 11. Variáveis de ambiente
 
-| Var | Escopo | Descrição |
-| --- | --- | --- |
-| `API_URL` | server | Base do Core para o proxy e server fns. Já existe (`core-client.ts`). |
-| `SESSION_SECRET` | server | Segredo de selagem do cookie (≥ 32 chars). **Novo.** Gerar com `openssl rand -base64 48`. |
-| `VITE_API_URL` | browser | Deixa de ser usado pelo runtime. Manter só para scripts de dev que batem direto no Core; ou remover. |
+| Var              | Escopo  | Descrição                                                                                            |
+| ---------------- | ------- | ---------------------------------------------------------------------------------------------------- |
+| `API_URL`        | server  | Base do Core para o proxy e server fns. Já existe (`core-client.ts`).                                |
+| `SESSION_SECRET` | server  | Segredo de selagem do cookie (≥ 32 chars). **Novo.** Gerar com `openssl rand -base64 48`.            |
+| `VITE_API_URL`   | browser | Deixa de ser usado pelo runtime. Manter só para scripts de dev que batem direto no Core; ou remover. |
 
 ## 12. Migração — em fases
 
 ### Fase 0 — env (✅ feito)
+
 `SESSION_SECRET` + `API_URL` no `.env` local e `.env.exemple`. Falta gerar
 `SESSION_SECRET` nos ambientes de deploy.
 
 ### Fase 1 — server + client, com proxy ainda ausente ✅ feito
+
 - ✅ `+ @tanstack/react-router-ssr-query`, `- zustand`
 - ✅ `src/lib/session.server.ts`, `src/server/auth.ts`
   (`loginFn`/`logoutFn`/`isAuthedFn`/`fetchMeFn`)
@@ -375,6 +378,7 @@ logout, redirect de guard, `/api/profile/me` no SSR (que roda server-side com o
 cookie, direto em `API_URL`) — tudo isso já funciona.
 
 ### Fase 2 — proxy ✅ feito (pendente validação em runtime)
+
 - ✅ `src/routes/api/core.ts` — rota de path fixo, `server.handlers` por método,
   `x-core-path` header, stream, checagem de Origin, 401→limpa cookie
 - ✅ `src/api/mutator.ts` — adapter customizado → `fetch("/api/core")`;
@@ -384,6 +388,7 @@ cookie, direto em `API_URL`) — tudo isso já funciona.
 - Pendente: `npm run dev` com Core real — smoke test do §13
 
 ### Fase 3 — limpeza (parcial)
+
 - ✅ `src/layouts/AppShell/**` — shell novo (sidebar + topbar) sobre
   `useUser`/`useCan`, montado pelo layout `/_dashboard` para todas as rotas do
   dashboard. Links de rotas ainda não migradas são `<a>` (full-page) até virarem

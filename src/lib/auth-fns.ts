@@ -8,11 +8,7 @@ import type {
   UserAdminDTO,
   UserDetailDTO,
 } from "@/api/generated/model";
-import {
-  readServerSession,
-  writeServerSession,
-  clearServerSession,
-} from "@/lib/session.server";
+import { readServerSession, writeServerSession, clearServerSession } from "@/lib/session.server";
 
 /**
  * Server functions de auth. Ver specs/auth-httponly-cookie-bff.md §9.
