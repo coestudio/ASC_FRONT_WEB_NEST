@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-02
 - **Nome:** app-shell-navigation
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/layouts/AppShell/**`, `src/layouts/Form/Fields/**`,
   `src/hooks/**`, `src/components/ui/**`, `src/components/crud/**`,
@@ -90,11 +90,31 @@ Legado (`warren/Portal`):
    particionado da SPEC-00, pra evitar que toda SPEC de área conflite no
    mesmo arquivo quando implementadas em paralelo):
    - `src/layouts/AppShell/nav/types.ts` — `NavItem { labelKey, to, icon?,
-     order? }`, `NavFragment { area: AreaId, sectionLabelKey, items:
-     NavItem[] }`.
+     order? }` (**decidido, D1:** `icon` é `string` — nome da classe
+     `bootstrap-icons`, ex. `"bi-house-door"`, renderizado como
+     `<i className={`bi ${icon}`} aria-hidden />`; é o que já predomina no
+     repo — `UserMenu.tsx`, `AppShell/index.tsx`, `InputPassword.tsx` — e já
+     entra globalmente via `bootstrap-icons/font/bootstrap-icons.css` em
+     `router.tsx`. `react-bootstrap-icons`, usado hoje em `theme-toggle.tsx`
+     e `password-field.tsx`, não migra — fica como débito pra depois, fora
+     do escopo desta SPEC), `NavFragment { area: AreaId, sectionLabelKey,
+     items: NavItem[] }`, e `SECTION_ORDER: AreaId[]` — lista **fixa** (não
+     descoberta por glob) com a ordem das seções entre si
+     (`["admin", "administrativo", "operacional", "laboratorio",
+     "client"]`, igual ao objetivo do §1). `getNavSections` ordena o
+     resultado do merge por essa lista antes de retornar — sem ela, a
+     ordem das seções seria a ordem alfabética dos nomes de arquivo em
+     `nav/`, que não bate com o objetivo. SPEC de área nova que introduz
+     uma seção ainda não listada precisa adicionar 1 linha aqui, além do
+     próprio arquivo de fragmento.
    - `src/layouts/AppShell/nav/index.ts` — `import.meta.glob('./*.ts',
-     { eager: true })` sobre os fragmentos, agrupa por `area`, ordena itens
-     por `order`, expõe `getNavSections(areas: AreaId[])`.
+     { eager: true })` sobre a pasta, mas **filtra** o resultado excluindo
+     `types.ts` e o próprio `index.ts` antes de tratar o resto como
+     fragmento (`path.endsWith('/types.ts')` / `'/index.ts'`) — o glob
+     também casa com esses dois arquivos, que não exportam `NavFragment`;
+     sem o filtro o merge quebra. Só depois disso: agrupa por `area`, ordena
+     itens dentro de cada seção por `order`, ordena as **seções entre si**
+     por `SECTION_ORDER`, expõe `getNavSections(areas: AreaId[])`.
    - **Cada SPEC de área cria o próprio arquivo** de fragmento
      (`nav/admin.ts` na SPEC-03, `nav/administrative-registry.ts` na
      SPEC-04, etc.) — nunca edita `index.ts` nem o fragmento de outra área.
@@ -113,21 +133,44 @@ Legado (`warren/Portal`):
 4. `src/components/ui/confirmation-modal.tsx` — recriado (foi apagado por
    falta de uso; agora tem consumidor real a partir da SPEC-03).
 5. `src/lib/view-mode.ts` + `src/components/ui/view-toggle.tsx` — recriados
-   com a mesma API (`useViewMode`, `useIsMobile`, `useResponsiveViewMode`,
-   `ViewToggle`), cookie/localStorage em vez do padrão Zustand do legado
+   com API parcialmente diferente do legado (**decidido, D3:**
+   `useViewMode()` **sem** `screenKey` — 1 preferência global, não por-tela
+   como no legado; `useIsMobile`, `useResponsiveViewMode`, `ViewToggle`
+   seguem iguais), `localStorage` em vez do padrão Zustand do legado
    (manter consistência com `ui-prefs.tsx`: `useSyncExternalStore` +
-   `localStorage`, já era assim no arquivo apagado — só religar).
+   `localStorage`).
 6. `src/lib/validation/login.ts` (`loginSchema`) recriado e **conectado**:
    `auth/login/index.tsx` passa a usar
    `useForm({ resolver: zodResolver(loginSchema) })`, e os campos trocam de
    `components/ui/input` + `components/ui/password-field` (raw) para
-   `layouts/Form/Fields/InputEmail` + `InputPassword` (regra 10 — o próprio
-   `InputPassword` já suporta o link "esqueceu a senha?" via prop
-   `recurses.forgotPassword`, então nem precisa recriar esse detalhe).
+   `layouts/Form/Fields/InputText` (campo `userName` — **decidido:** não é
+   e-mail, o Core aceita usuário genérico (ex. `SuperAdmin`); `InputEmail`
+   fica fora de escopo aqui) + `InputPassword` (regra 10).
+   O link "esqueceu a senha?" **não** migra pra dentro de `InputPassword` —
+   a prop `recurses.forgotPassword` do componente é **removida** (hoje
+   aponta pra rota inexistente `/forget-password` via `<a>` cru, sem `Link`
+   do TanStack Router — bug pré-existente, não vale recriar). O link
+   continua fora do campo, do jeito que já é hoje: renderizado pela tela
+   (`auth/login/index.tsx`) com `Link to="/auth/forgot-password"` ao lado do
+   label.
+   O botão "Super login" (credenciais de teste, hoje hard-coded no
+   componente) é **mantido por enquanto** (decisão do usuário), mas para de
+   ter usuário/senha hard-coded no código — passa a ler de variáveis de
+   ambiente expostas ao browser: `VITE_SUPER_LOGIN_USER` /
+   `VITE_SUPER_LOGIN_PASSWORD` (prefixo `VITE_`, regra do `AGENTS.md` de Env).
+   O botão só renderiza quando as duas vars estão definidas (ausente por
+   padrão, ex. build sem essas vars). Os **nomes** das vars entram no `.env`
+   versionado (regra 5) com valor vazio/placeholder; o **valor real** de
+   dev (usuário/senha do SuperAdmin) vai em `.env.local` (gitignored,
+   por-dev) — nunca committar credencial real no `.env` versionado.
    `auth/forgot-password/index.tsx` ganha os schemas equivalentes por etapa
    (email / código / nova senha — mesmo shape do que existia em
    `src/lib/validation/reset-password.ts`, também recriado e conectado) e
-   troca os mesmos campos raw por `layouts/Form/Fields`.
+   troca os mesmos campos raw por `layouts/Form/Fields`. A comparação
+   "nova senha" === "confirmar senha" (passo 3) **fica fora do schema**
+   (regra 2 proíbe `.refine` de regra de negócio em `src/lib/validation/*`)
+   — continua manual no `onSubmit`, com `setError("confirmPassword", ...)`
+   quando os valores não baterem, igual ao padrão atual do arquivo.
 7. **Biblioteca de CRUD compartilhada** (movida pra cá — antes descrita como
    nascendo na SPEC-04, mas SPEC-04 vem depois de SPEC-03, que já precisa
    dela):
@@ -170,8 +213,9 @@ Legado (`warren/Portal`):
   `useUser()` (invalidação/`setQueryData` de `profileMeQueryOptions`).
 - **RF4** — `ConfirmationModal` genérico: título, corpo, ação destrutiva
   opcional (variant `danger`), `onConfirm` assíncrono com loading.
-- **RF5** — `useViewMode()` persiste por `localStorage` (chave global) com
-  override opcional por tela (`useResponsiveViewMode` força `cards` <768px).
+- **RF5** — `useViewMode()` (sem `screenKey`, D3) persiste por `localStorage`
+  numa chave global única; `useResponsiveViewMode` força `cards` <768px por
+  cima disso (esse é o único "override", não é por-tela).
 - **RF6** — `auth/login` e `auth/forgot-password` validam via `zodResolver`
   sobre schema gerado/remapeado; nenhuma regra de validação solta em
   `register(...)` sobrevive.
@@ -181,7 +225,13 @@ Legado (`warren/Portal`):
 - RNF1 — `bun run check` + `bun run lint` passam.
 - RNF2 — Zero cor hard-coded (tokens da SPEC-01).
 - RNF3 — Todo label novo entra no namespace `common`/`shell` da SPEC-00 nos
-  4 locales.
+  4 locales, **exceto** as strings de `crud-list-page`/`crud-record-modal`/
+  `mock-data-banner`, que entram num namespace novo e dedicado `crud`
+  (`src/i18n/dictionaries/<locale>/crud.json`, 4 locales) — biblioteca
+  compartilhada consumida por SPEC-03 a SPEC-09, não faz sentido misturar
+  com `common`/`shell`. SPEC de área não recria nem edita `crud.json`, só
+  consome as chaves já existentes (a menos que precise de uma nova, aí
+  adiciona a chave — nunca duplica com um texto solto na tela).
 
 ## 7. Contrato de rota
 
@@ -190,9 +240,9 @@ N/A direto — `AppShell` já é o layout de `_dashboard`. Nenhuma rota nova.
 ## 8. Camada de dados
 
 - `ProfileModal`: hooks Orval gerados de `profile` (leitura) + mutations
-  (update/avatar) — avatar via `requestForm`-equivalente do NewPortal
-  (checar se `mutator.ts` já suporta `FormData`; se não, é ajuste desta
-  SPEC, não da API layer da SPEC-00/01).
+  (update/avatar) — avatar via `requestForm`-equivalente do NewPortal.
+  `mutator.ts` e o proxy `api/core.ts` já suportam `FormData`/multipart sem
+  ajuste (ver R1) — não é escopo desta SPEC mexer neles pra isso.
 - Sem chamada nova ao Core além de `Profile*` (já existe client gerado).
 
 ## 9. Desenho
@@ -217,6 +267,8 @@ src/components/crud/
   crud-record-modal.tsx      (novo — useForm + zodResolver, config por módulo)
 src/components/ui/
   mock-data-banner.tsx     (novo)
+src/layouts/Form/Fields/
+  InputPassword.tsx        (editar) — remove prop/recurso `recurses.forgotPassword`
 ```
 
 ## 10. Arquivos esperados
@@ -233,8 +285,11 @@ src/components/ui/
 | `src/lib/view-mode.ts` | criar |
 | `src/lib/validation/login.ts` | criar (recriado, conectado ao form) |
 | `src/lib/validation/reset-password.ts` | criar (recriado, conectado ao form) |
-| `src/routes/auth/login/index.tsx` | editar — `zodResolver` + `layouts/Form/Fields` |
+| `src/routes/auth/login/index.tsx` | editar — `zodResolver` + `layouts/Form/Fields` (`InputText` + `InputPassword`), link "esqueceu a senha" fora do campo, Super login lê credenciais de `import.meta.env.VITE_SUPER_LOGIN_USER`/`VITE_SUPER_LOGIN_PASSWORD` |
 | `src/routes/auth/forgot-password/index.tsx` | editar — `zodResolver` por etapa + `layouts/Form/Fields` |
+| `src/layouts/Form/Fields/InputPassword.tsx` | editar — remove prop `recurses.forgotPassword` (link quebrado, apontava pra rota inexistente) |
+| `.env` | editar — adiciona `VITE_SUPER_LOGIN_USER=` / `VITE_SUPER_LOGIN_PASSWORD=` (nomes só, valor vazio) |
+| `.env.local` (não versionado) | doc apenas — dev preenche com credencial real do SuperAdmin |
 | `src/components/ui/input.tsx` | remover (superado por `layouts/Form/Fields`) |
 | `src/components/ui/field.tsx` | remover (idem) |
 | `src/components/ui/password-field.tsx` | remover (idem, `InputPassword` já cobre) |
@@ -242,6 +297,7 @@ src/components/ui/
 | `src/components/crud/crud-record-modal.tsx` | criar |
 | `src/components/ui/mock-data-banner.tsx` | criar |
 | `src/i18n/dictionaries/*/common.json` | editar (4 locales) — nome do namespace é o que sair de SPEC-00 D1, não decidir de novo aqui |
+| `src/i18n/dictionaries/*/crud.json` | criar (4 locales) — strings de `crud-list-page`/`crud-record-modal`/`mock-data-banner` |
 
 ## 11. Critérios de aceitação
 
@@ -254,14 +310,21 @@ src/components/ui/
 | CA5 | `bun run check` + `bun run lint` passam |
 | CA6 | `grep -n "required:\|minLength:\|maxLength:" src/routes/auth/{login,forgot-password}/index.tsx` não acha regra de validação solta — só `zodResolver` |
 | CA7 | `crud-list-page`/`crud-record-modal` conseguem cobrir a tela Terminal (o caso mais simples da SPEC-04) só com config, sem editar o componente genérico — valida que a abstração não nasceu forte demais nem fraca demais |
-| CA8 | `mock-data-banner` é o único lugar do repo com o texto "dados de exemplo" (`grep -rn "dados de exemplo" src` só acha o componente + i18n, nunca hardcoded numa tela) |
+| CA8 | Nenhuma rota monta um aviso de "dados de exemplo" à mão: `grep -rln "<Alert" src/routes` só acha `Alert` legítimo (erro/aviso real da tela), nunca substituindo `MockDataBanner`; o aviso de dado mock só existe via `<MockDataBanner />` (`grep -rn "MockDataBanner" src/routes` lista exatamente as telas que usam dados mock) — critério resiste a mudança de texto/capitalização entre locales/SPECs, ao contrário de checar a string literal |
 | CA9 | `src/components/ui/{input,field,password-field}.tsx` não existem mais; `grep -rn "<input\|Form.Control" src/routes/auth src/components/crud` não acha input cru — só componentes de `layouts/Form/Fields` |
 | CA10 | Criar um `nav/<qualquer-nome>.ts` novo com um `NavFragment` e nada mais faz aparecer a seção na sidebar — sem editar `nav/index.ts` nem nenhum outro fragmento |
+| CA11 | `grep -n "recurses" src/layouts/Form/Fields/InputPassword.tsx` não acha nada; `grep -rn "SuperAdmin\|DayTVjjl2uV4" src` não acha credencial hard-coded — Super login lê de `import.meta.env.VITE_SUPER_LOGIN_*` e some do form quando as vars não estão definidas |
+| CA12 | Com fragmentos de todas as áreas presentes (mock de teste cobrindo os 5 `AreaId`), a ordem das seções na sidebar bate exatamente com `SECTION_ORDER`, mesmo se os arquivos de fragmento forem criados fora dessa ordem alfabética |
 
 ## 12. Riscos
 
-- **R1** — Upload de avatar via multipart pode exigir ajuste no `mutator.ts`
-  (hoje pensado para JSON) — validar antes de aprovar implementação.
+- **R1** — Upload de avatar via multipart: já verificado antes da aprovação
+  — `mutator.ts` trata `FormData` (branch `isForm`, não força
+  `content-type: application/json`) e o proxy BFF (`src/routes/api/core.ts`)
+  repassa `request.body` como stream (`duplex: "half"`) com todos os
+  headers exceto hop-by-hop, então o `content-type: multipart/form-data;
+  boundary=...` chega intacto no Core. Risco rebaixado a checklist de fumaça
+  (testar 1 upload real em dev), não bloqueio de design.
 - **R2** — Nav config crescer sem limite conforme SPEC-03+ entram; manter
   como dado declarativo simples, não lógica.
 - **R3** — `crud-list-page`/`crud-record-modal` genéricos demais → viram um
@@ -278,12 +341,21 @@ src/components/ui/
 
 ## 13. Decisões pendentes
 
-- **D1** — Ícones: `bootstrap-icons` (já em uso) ou `react-bootstrap-icons`
-  (também já é dependência)? Padronizar um só.
-- **D2** — `ConfirmationModal` cobre também "resetar senha" (ação não
-  destrutiva mas sensível) ou isso é um modal à parte?
-- **D3** — `useViewMode` global único ou por-tela como no legado
-  (`useViewMode(screenKey)` com override)? Legado tem override por tela.
+- ~~**D1** — Ícones~~ **Decidido:** `bootstrap-icons` (classe `bi bi-*`) é o
+  padrão para tudo novo que a SPEC-02 cria; `react-bootstrap-icons` fica
+  como débito nos usos existentes (`theme-toggle.tsx`, `password-field.tsx`
+  — este último removido nesta SPEC de qualquer forma). Ver §3.1.
+- ~~**D2** — `ConfirmationModal` cobre "resetar senha"~~ **Decidido: fora do
+  escopo desta SPEC.** Nenhum requisito aqui usa "resetar senha de outro
+  usuário" (a única troca de senha é a do próprio usuário, aba Senha do
+  `ProfileModal`). Se uma SPEC de área futura precisar disso, reusa
+  `ConfirmationModal` (já genérico o bastante) ou decide na hora.
+- ~~**D3** — `useViewMode` global único ou por-tela~~ **Decidido:** global
+  único — `useViewMode(): [ViewMode, (m: ViewMode) => void]`, sem
+  `screenKey`, 1 chave só de `localStorage` (`asc:view-mode`) pra toda tela
+  que usa `crud-list-page`. Não segue o legado (que tinha override por
+  tela) — decisão consciente, mais simples de implementar e usar; usuário
+  não pode preferir lista numa tela e cards em outra. Ver RF5, §3 item 5.
 
 ---
 
