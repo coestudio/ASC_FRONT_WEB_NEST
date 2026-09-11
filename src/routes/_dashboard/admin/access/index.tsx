@@ -23,6 +23,16 @@ import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-rec
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import type { Locale } from "@/i18n/config";
+
+// `EnumOptionDTO.name` usa chave de 2 letras (pt/en/es/zh, ver
+// src/api/generated/static/getApiUserRoles.ts) — não bate 1:1 com `Locale`
+// ("pt-BR"). Resolve pro texto certo, com fallback honesto (nunca inventa
+// tradução: cai pro primeiro valor disponível ou pro próprio value).
+function resolveEnumOptionName(name: Record<string, string>, locale: Locale): string {
+  const key = locale === "pt-BR" ? "pt" : locale;
+  return name[key] ?? name.pt ?? Object.values(name)[0] ?? "";
+}
 
 export const Route = createFileRoute("/_dashboard/admin/access/")({
   head: () => ({ meta: [{ title: "Acesso — ASC" }] }),
@@ -85,8 +95,7 @@ function AdminAccessPage() {
     () =>
       (roleOptions ?? []).map((opt) => ({
         value: opt.value,
-        label:
-          opt.name[locale] ?? opt.name["pt-BR"] ?? Object.values(opt.name)[0] ?? String(opt.value),
+        label: resolveEnumOptionName(opt.name, locale),
       })),
     [roleOptions, locale],
   );

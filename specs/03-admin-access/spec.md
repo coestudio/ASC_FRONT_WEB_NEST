@@ -246,23 +246,35 @@ de `SPECS-LEGADO`).
 | CA4 | `bun run check` + `lint` passam | `check` PASS; `lint` sem regressão (baseline pré-existente já falhava) |
 | CA5 | `admin/access/**` só configura `crud-list-page`/`crud-record-modal` | PASS |
 
-**Limitação conhecida — bloqueio real, não implementado:**
-`admin/roles` (RF5) está com **conteúdo vazio** (`src/data/admin-roles.ts` =
-`[]`). Não foi possível escrever a descrição real de cada `InternalRole`
-sem inventar texto: não há Core rodando nesta sessão pra consultar
-`GET /api/user/roles`, e o repo legado (`warren/Portal`,
-`RolesPage.tsx`) não está acessível neste ambiente. A tela renderiza um
-estado vazio honesto (`access.rolesEmpty`) em vez de nomes/descrições
-chutados — regra inviolável do agente ("nunca invente... valor chutado").
-**Precisa de:** os nomes reais das roles do Core + descrição de cada uma
-(via consulta ao Core em dev, ou texto fornecido diretamente) antes de CA
-poder ser considerado PASS e o status avançar pra `IMPLEMENTED`.
+**Limitação conhecida — parcialmente resolvida:**
+O usuário rodou `just map` contra o Core de dev real durante a sessão, o
+que trouxe `src/api/generated/static/getApiUserRoles.ts` — snapshot
+estático real (`InternalRole` 100=Agente, 200=Supervisor, 300=Laboratório,
+com nomes em pt/en/es/zh). `src/data/admin-roles.ts` foi reescrito pra
+importar esse snapshot em vez de ficar vazio — nomes e valores agora são
+reais (não inventados), mantendo D1 (estático, sem chamada ao Core em
+runtime — o import é build-time de um arquivo já commitado). Ainda
+**falta a descrição de cada perfil** ("o que ele vê/acessa no NewPortal")
+— não existe no snapshot (só nome+valor) e não foi fornecida; cada card
+mostra um texto placeholder explícito
+(`"Descrição do que este perfil acessa ainda não confirmada..."`) em vez de
+texto chutado.
+
+Também corrigido durante essa verificação: `resolveEnumOptionName()` em
+`admin/access/index.tsx` — a chave de idioma de `EnumOptionDTO.name` usa
+2 letras (`pt`/`en`/`es`/`zh`), não bate com `Locale` (`"pt-BR"`); o
+multi-select de `roles` no form estava resolvendo o label errado antes
+dessa correção.
+
+**Precisa de:** a descrição de cada perfil (o que Agente/Supervisor/
+Laboratório acessam no NewPortal) antes de RF5/CA poderem ser PASS e o
+status avançar pra `IMPLEMENTED`.
 
 Status mantido em `IN_PROGRESS` até essa lacuna ser resolvida (ou o usuário
-decidir aceitar o estado vazio como entrega desta rodada, o que seria uma
-nova decisão explícita a registrar aqui).
+decidir aceitar o texto placeholder como entrega desta rodada, o que seria
+uma nova decisão explícita a registrar aqui).
 
 ---
 
-**Próximo passo:** fornecer o conteúdo de `admin/roles` (ou confirmar
-aceitar vazio) para fechar `IMPLEMENTED`.
+**Próximo passo:** fornecer a descrição de cada perfil (ou confirmar
+aceitar o placeholder) para fechar `IMPLEMENTED`.
