@@ -4,19 +4,19 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { SealName } from "./sealName.ts";
+import type { SealName } from './sealName.ts';
 
 export interface SealCreate {
   userId: string;
   /**
-   * @maxLength 100
-   * @nullable
-   */
+     * @maxLength 100
+     * @nullable
+     */
   label?: string | null;
   name: SealName;
   /**
-   * @maxLength 255
-   * @nullable
-   */
+     * @maxLength 255
+     * @nullable
+     */
   description?: string | null;
 }

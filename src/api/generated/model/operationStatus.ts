@@ -5,4 +5,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type OperationStatus = number;
+export type OperationStatus = typeof OperationStatus[keyof typeof OperationStatus];
+
+
+export const OperationStatus = {
+  Draft: 'Draft',
+  InProgress: 'InProgress',
+  Finished: 'Finished',
+  Pause: 'Pause',
+  Canceled: 'Canceled',
+} as const;

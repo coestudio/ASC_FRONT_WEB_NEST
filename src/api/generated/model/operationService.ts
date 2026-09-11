@@ -5,4 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type OperationService = number;
+export type OperationService = typeof OperationService[keyof typeof OperationService];
+
+
+export const OperationService = {
+  Bale: 'Bale',
+  Bag: 'Bag',
+} as const;

@@ -5,4 +5,19 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CargoUnitEventAction = number;
+export type CargoUnitEventAction = typeof CargoUnitEventAction[keyof typeof CargoUnitEventAction];
+
+
+export const CargoUnitEventAction = {
+  Created: 'Created',
+  Stuffed: 'Stuffed',
+  Updated: 'Updated',
+  Identified: 'Identified',
+  LinkedToInvoice: 'LinkedToInvoice',
+  Canceled: 'Canceled',
+  WeightRecorded: 'WeightRecorded',
+  LinkedToRomaneio: 'LinkedToRomaneio',
+  LinkedToInvoiceItem: 'LinkedToInvoiceItem',
+  MarkedDivergent: 'MarkedDivergent',
+  Reconciled: 'Reconciled',
+} as const;

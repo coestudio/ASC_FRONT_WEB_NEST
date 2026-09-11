@@ -5,4 +5,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ContainerOperationStatus = number;
+export type ContainerOperationStatus = typeof ContainerOperationStatus[keyof typeof ContainerOperationStatus];
+
+
+export const ContainerOperationStatus = {
+  Empty: 'Empty',
+  Stuffing: 'Stuffing',
+  Stuffed: 'Stuffed',
+  Shipped: 'Shipped',
+} as const;

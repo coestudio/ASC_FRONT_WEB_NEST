@@ -5,4 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type OperationType = number;
+export type OperationType = typeof OperationType[keyof typeof OperationType];
+
+
+export const OperationType = {
+  Stuffing: 'Stuffing',
+  Boarding: 'Boarding',
+} as const;

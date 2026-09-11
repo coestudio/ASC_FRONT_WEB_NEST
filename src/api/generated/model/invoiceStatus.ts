@@ -5,4 +5,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type InvoiceStatus = number;
+export type InvoiceStatus = typeof InvoiceStatus[keyof typeof InvoiceStatus];
+
+
+export const InvoiceStatus = {
+  Pending: 'Pending',
+  Confirmed: 'Confirmed',
+  Canceled: 'Canceled',
+} as const;

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioImportConflictResolution } from "./romaneioImportConflictResolution.ts";
+import type { RomaneioImportConflictResolution } from './romaneioImportConflictResolution.ts';
 
 export interface RomaneioImportApply {
   importId: string;

@@ -4,13 +4,13 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { DocumentType } from "./documentType.ts";
+import type { DocumentType } from './documentType.ts';
 
 export interface DocumentUpdate {
   /**
-   * @minLength 3
-   * @maxLength 150
-   */
+     * @minLength 3
+     * @maxLength 150
+     */
   title: string;
   type: DocumentType;
   observation?: string;

@@ -4,18 +4,18 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InvoiceStatus } from "./invoiceStatus.ts";
+import type { InvoiceStatus } from './invoiceStatus.ts';
 
 export type GetApiOperationOperationIdInvoiceParams = {
-  Search?: string;
-  Status?: InvoiceStatus;
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  Offset?: number | string;
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  Limit?: number | string;
-  Sort?: string;
+Search?: string;
+Status?: InvoiceStatus;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+Offset?: number | string;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+Limit?: number | string;
+Sort?: string;
 };

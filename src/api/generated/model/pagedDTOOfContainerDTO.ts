@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ContainerDTO } from "./containerDTO.ts";
+import type { ContainerDTO } from './containerDTO.ts';
 
 export interface PagedDTOOfContainerDTO {
   items: ContainerDTO[];

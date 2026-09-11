@@ -4,12 +4,12 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioDTO } from "./romaneioDTO.ts";
-import type { RomaneioImportConflictDTO } from "./romaneioImportConflictDTO.ts";
-import type { RomaneioImportForeignDTO } from "./romaneioImportForeignDTO.ts";
-import type { RomaneioImportInvalidDTO } from "./romaneioImportInvalidDTO.ts";
-import type { RomaneioImportRowDTO } from "./romaneioImportRowDTO.ts";
-import type { RomaneioImportSummaryDTO } from "./romaneioImportSummaryDTO.ts";
+import type { RomaneioDTO } from './romaneioDTO.ts';
+import type { RomaneioImportConflictDTO } from './romaneioImportConflictDTO.ts';
+import type { RomaneioImportForeignDTO } from './romaneioImportForeignDTO.ts';
+import type { RomaneioImportInvalidDTO } from './romaneioImportInvalidDTO.ts';
+import type { RomaneioImportRowDTO } from './romaneioImportRowDTO.ts';
+import type { RomaneioImportSummaryDTO } from './romaneioImportSummaryDTO.ts';
 
 export interface RomaneioImportAnalysisDTO {
   importId?: string;

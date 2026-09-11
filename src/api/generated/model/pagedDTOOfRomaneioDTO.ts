@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioDTO } from "./romaneioDTO.ts";
+import type { RomaneioDTO } from './romaneioDTO.ts';
 
 export interface PagedDTOOfRomaneioDTO {
   items: RomaneioDTO[];

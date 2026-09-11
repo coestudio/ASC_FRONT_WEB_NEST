@@ -4,9 +4,9 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InternalRole } from "./internalRole.ts";
-import type { ProfileDTO } from "./profileDTO.ts";
-import type { UserType } from "./userType.ts";
+import type { InternalRole } from './internalRole.ts';
+import type { ProfileDTO } from './profileDTO.ts';
+import type { UserType } from './userType.ts';
 
 export interface UserDTO {
   userName: string;

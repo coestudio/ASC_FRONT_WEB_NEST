@@ -5,4 +5,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type InternalRole = number;
+export type InternalRole = typeof InternalRole[keyof typeof InternalRole];
+
+
+export const InternalRole = {
+  Agent: 'Agent',
+  Supervisor: 'Supervisor',
+  Laboratory: 'Laboratory',
+} as const;

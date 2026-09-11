@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InvoiceStatus } from "./invoiceStatus.ts";
+import type { InvoiceStatus } from './invoiceStatus.ts';
 
 export interface InvoiceDTO {
   operationId?: string;
@@ -12,19 +12,19 @@ export interface InvoiceDTO {
   /** @nullable */
   issuedOn?: string | null;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)$
+     */
   declaredItemsCount?: number | string | null;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
   declaredGrossWeight?: number | string | null;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
   declaredNetWeight?: number | string | null;
   issuerCnpj?: string;
   issuerUf?: string;

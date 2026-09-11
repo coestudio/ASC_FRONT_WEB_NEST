@@ -4,13 +4,13 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ProfileUpdate } from "./profileUpdate.ts";
+import type { ProfileUpdate } from './profileUpdate.ts';
 
 export interface UserUpdate {
   profile: ProfileUpdate;
   /**
-   * @minLength 3
-   * @maxLength 150
-   */
+     * @minLength 3
+     * @maxLength 150
+     */
   userName: string;
 }
