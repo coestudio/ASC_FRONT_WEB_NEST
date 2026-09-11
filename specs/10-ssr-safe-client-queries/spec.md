@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-10
 - **Nome:** ssr-safe-client-queries
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/crud/**` (SPEC-02, já `IMPLEMENTED`), `src/routes/_dashboard/admin/access/index.tsx`
   (SPEC-03, já `IMPLEMENTED`), e por extensão toda SPEC 04–09 que ainda vai
@@ -108,10 +108,22 @@ Não há indício de bug próprio em `roles/index.tsx` — é o mesmo erro do
 - RNF2 — Não reintroduzir SSR de dado sensível fora de server fn (não
   enfraquecer o guard do `mutator.ts`).
 
-## 7. Decisões pendentes — `[NEEDS_DECISION]`
+## 7. Decisão (resolvida — confirmada pelo usuário)
 
-Existem pelo menos 3 formas de corrigir, com trade-offs diferentes. Preciso
-que o usuário escolha antes de eu implementar:
+**Opção C escolhida**, isolada (sem combinar com A): a correção acontece
+na base compartilhada — `CrudListPage` (SPEC-02) passa a aceitar
+*queryOptions* em vez de receber `items`/`isLoading` prontos da rota, e
+ele mesmo decide como/quando buscar o dado, com o guard de SSR embutido.
+Isso emenda a SPEC-02 (já `IMPLEMENTED`) e evita que qualquer consumidor
+futuro (SPEC-04 a SPEC-09) precise lembrar de tratar SSR manualmente —
+ninguém mais escreve `useGetApiXxx` direto na rota sem proteção.
+
+`admin/access/index.tsx` (SPEC-03) é adaptado pro novo contrato como parte
+desta SPEC, já que é o consumidor existente que precisa parar de quebrar.
+
+Abaixo, as 3 opções levantadas originalmente ficam registradas como
+histórico da decisão (não descartar o texto — mostra por que A e B foram
+preteridas):
 
 **Opção A — `ssr: false` na rota.**
 TanStack Router/Start suporta desabilitar SSR por rota
@@ -139,13 +151,11 @@ precisaria lembrar de nada. Custo: muda o contrato de `CrudListPage`
 (props), o que é uma alteração retroativa numa SPEC já `IMPLEMENTED`
 (SPEC-02) — precisa reabrir/emendar aquela spec.
 
-**Recomendação do agente:** Opção A pra `/admin/access` e `/admin/roles`
-agora (rápido, baixo risco, desbloqueia o usuário), **e** Opção C como
-correção de fundo na SPEC-02 antes da SPEC-04 nascer (pra nenhuma área
-futura repetir o bug) — ou seja, as duas combinadas, não uma ou outra.
-Mas isso é uma escolha de arquitetura compartilhada — não decido sozinho.
-
-**Aguardando decisão do usuário sobre qual(is) opção(ões) seguir.**
+**Decisão final:** Opção C, sozinha — sem `ssr: false` por rota (Opção A)
+como paliativo separado. `/admin/roles` (se realmente afetado, ver R1)
+também passa a depender de `admin/access/index.tsx` estar corrigido, já
+que a hipótese é o mesmo bug vazando por chunk compartilhado — não precisa
+de tratamento próprio a menos que R1 se confirme falso na validação.
 
 ## 8. Contrato de rota
 
@@ -158,14 +168,14 @@ interno de `CrudListPage`.
 Sem mudança de endpoint/contrato do Core. Muda só *como* o client chama os
 hooks já existentes (`useGetApiUser`, `useGetApiUserRoles`).
 
-## 10. Arquivos esperados (depende da opção escolhida)
+## 10. Arquivos esperados
 
-| Arquivo | Ação (Opção A) | Ação (Opção C, adicional) |
-| --- | --- | --- |
-| `src/routes/_dashboard/admin/access/index.tsx` | editar (`ssr: false`) | editar (usar novo contrato de `CrudListPage`) |
-| `src/routes/_dashboard/admin/roles/index.tsx` | editar (`ssr: false`, se confirmado que precisa — ver R1) | — |
-| `src/components/crud/crud-list-page.tsx` | — | editar (aceita `queryOptions`, embute guard SSR) |
-| `specs/02-app-shell-navigation/spec.md` | — | editar (nota de emenda pós-`IMPLEMENTED`) |
+| Arquivo | Ação |
+| --- | --- |
+| `src/components/crud/crud-list-page.tsx` | editar — aceita *queryOptions* (ou uma prop equivalente que encapsule `queryKey`+`queryFn`) em vez de `items`/`isLoading` prontos; embute o guard de SSR (ex.: `enabled`/checagem client-only) internamente, então nenhum consumidor precisa lembrar disso |
+| `src/routes/_dashboard/admin/access/index.tsx` | editar — adaptado pro novo contrato de `CrudListPage` |
+| `src/routes/_dashboard/admin/roles/index.tsx` | editar, só se a validação (R1) mostrar que precisa de correção própria — expectativa é que não precise |
+| `specs/02-app-shell-navigation/spec.md` | editar — nota de emenda pós-`IMPLEMENTED` registrando essa mudança de contrato, com referência a esta SPEC |
 
 ## 11. Critérios de aceitação
 
@@ -174,7 +184,8 @@ hooks já existentes (`useGetApiUser`, `useGetApiUserRoles`).
 | CA1 | `/admin/access` carrega sem erro no primeiro load (SSR), sem "Try again" |
 | CA2 | `/admin/roles` idem |
 | CA3 | `bun run check` + `lint` passam |
-| CA4 | Se Opção C: uma leitura rápida do `crud-list-page.tsx` documenta claramente como uma SPEC futura (04+) deve usá-lo sem repetir o bug |
+| CA4 | Uma leitura rápida do `crud-list-page.tsx` documenta claramente como uma SPEC futura (04+) deve usá-lo sem repetir o bug — nenhum `useGetApiXxx` cru na rota |
+| CA5 | `specs/02-app-shell-navigation/spec.md` tem nota de emenda referenciando a SPEC-10 |
 
 ## 12. Riscos
 
@@ -191,5 +202,6 @@ hooks já existentes (`useGetApiUser`, `useGetApiUserRoles`).
 
 ---
 
-**Próximo passo:** decidir §7 (Opção A, B, C, ou combinação) e então
-`APROVAR SPEC-10`.
+**Status: APPROVED — Opção C confirmada pelo usuário. Implementação ainda
+NÃO autorizada nesta sessão (usuário pediu explicitamente para não
+implementar ainda) — aguardando sinal pra começar.**
