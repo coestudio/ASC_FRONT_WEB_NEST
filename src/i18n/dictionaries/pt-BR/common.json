@@ -20,6 +20,35 @@
     "viewModeList": "Lista",
     "underConstruction": "Em construção",
     "underConstructionDescription": "Esta tela ainda está em desenvolvimento.",
-    "areaWelcome": "Bem-vindo(a) à área {area}."
+    "areaWelcome": "Bem-vindo(a) à área {area}.",
+    "brand": "Marca",
+    "profileModal": {
+      "title": "Meu perfil",
+      "avatar": "Avatar",
+      "uploadAvatar": "Salvar avatar",
+      "avatarSaved": "Avatar atualizado.",
+      "detailTab": "Detalhes",
+      "addressTab": "Endereço",
+      "passwordTab": "Senha",
+      "fullName": "Nome completo",
+      "userName": "Usuário",
+      "email": "E-mail",
+      "document": "Documento",
+      "phone": "Telefone",
+      "birthDate": "Data de nascimento",
+      "postalCode": "CEP",
+      "state": "Estado",
+      "city": "Cidade",
+      "neighborhood": "Bairro",
+      "street": "Rua",
+      "number": "Número",
+      "complement": "Complemento",
+      "currentPassword": "Senha atual",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar senha",
+      "save": "Salvar",
+      "saved": "Alterações salvas.",
+      "saveError": "Não foi possível salvar. Tente novamente."
+    }
   }
 }

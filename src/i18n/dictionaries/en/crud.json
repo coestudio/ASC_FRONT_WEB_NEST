@@ -1,0 +1,17 @@
+{
+  "list": {
+    "new": "New",
+    "searchPlaceholder": "Search...",
+    "viewMode": "View mode",
+    "error": "Could not load the data.",
+    "empty": "No records found."
+  },
+  "recordModal": {
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save"
+  },
+  "mockDataBanner": {
+    "message": "Sample data — no Core endpoint yet."
+  }
+}

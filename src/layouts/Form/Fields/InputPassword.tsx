@@ -8,15 +8,8 @@ import classNames from "classnames";
 import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
 
 interface InputPasswordProps<T extends FieldValues> extends InputDTO<T> {
-  recurses?: {
-    forgotPassword?: {
-      show?: boolean;
-      label?: string;
-      email?: string;
-    };
-    minLength?: number;
-    maxLength?: number;
-  };
+  minLength?: number;
+  maxLength?: number;
 }
 
 function InputPassword<T extends FieldValues>({
@@ -25,7 +18,8 @@ function InputPassword<T extends FieldValues>({
   label,
   placeholder,
   config = {},
-  recurses,
+  minLength,
+  maxLength,
   ...colProps
 }: InputPasswordProps<T>) {
   return (
@@ -35,20 +29,14 @@ function InputPassword<T extends FieldValues>({
         name={fieldName}
         render={({ field, fieldState }) => (
           <Form.Group className={config.containerClass || default_containerClass}>
-            <div className="d-flex justify-content-between align-items-center">
-              <Form.Label className="mb-0">{label || config.label || "Senha"}</Form.Label>
-              {recurses?.forgotPassword?.show ? (
-                <a
-                  className="text-muted"
-                  href={`/forget-password${
-                    recurses.forgotPassword.email ? `?email=${recurses.forgotPassword.email}` : ""
-                  }`}
-                >
-                  <small>{recurses.forgotPassword.label || "Esqueceu a senha?"}</small>
-                </a>
-              ) : null}
-            </div>
-            <Field field={field} config={config} recurses={recurses} placeholder={placeholder} />
+            <Form.Label className="mb-0">{label || config.label || "Senha"}</Form.Label>
+            <Field
+              field={field}
+              config={config}
+              minLength={minLength}
+              maxLength={maxLength}
+              placeholder={placeholder}
+            />
             {fieldState.error?.message ? (
               <Form.Control.Feedback type="invalid" className="d-block">
                 {fieldState.error?.message}
@@ -66,12 +54,14 @@ function InputPassword<T extends FieldValues>({
 function Field<T extends FieldValues>({
   field,
   config = {},
-  recurses,
+  minLength,
+  maxLength,
   placeholder,
 }: {
   field: ControllerRenderProps<T, Path<T>>;
   config: InputDTO<T>["config"];
-  recurses: InputPasswordProps<T>["recurses"];
+  minLength?: number;
+  maxLength?: number;
   placeholder?: string;
 }) {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -90,8 +80,8 @@ function Field<T extends FieldValues>({
         className={config.className || ""}
         placeholder={placeholder || config.placeholder || "Digite sua senha"}
         as="input"
-        minLength={recurses?.minLength || 6}
-        maxLength={recurses?.maxLength || 32}
+        minLength={minLength || 6}
+        maxLength={maxLength || 32}
       />
       <div
         className={classNames("input-group-text", "input-group-password", {

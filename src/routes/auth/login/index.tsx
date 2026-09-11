@@ -1,13 +1,14 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { Button, Form, Spinner } from "react-bootstrap";
 
-import type { AuthControllerLoginRequest } from "@/api/generated/model";
 import { loginFn } from "@/lib/auth-fns";
 import { profileMeQueryOptions } from "@/lib/queries/profile";
-import { PasswordField } from "@/components/ui/password-field";
+import { loginSchema, type LoginInput } from "@/lib/validation/login";
+import { InputText, InputPassword } from "@/layouts/Form/Fields/Index";
 
 type LoginSearch = { redirect?: string };
 
@@ -19,21 +20,29 @@ export const Route = createFileRoute("/auth/login/")({
   component: LoginPage,
 });
 
+// Super login (credenciais de teste) — só aparece quando as duas vars estão
+// definidas no build. Nomes versionados em .env (valor vazio); valor real de
+// dev vai em .env.local (gitignored).
+const SUPER_LOGIN_USER = import.meta.env.VITE_SUPER_LOGIN_USER;
+const SUPER_LOGIN_PASSWORD = import.meta.env.VITE_SUPER_LOGIN_PASSWORD;
+const hasSuperLogin = !!SUPER_LOGIN_USER && !!SUPER_LOGIN_PASSWORD;
+
 function LoginPage() {
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { redirect } = Route.useSearch();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<AuthControllerLoginRequest>({
+  const methods = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
     defaultValues: { userName: "", password: "" },
   });
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+  } = methods;
 
-  const onSubmit = async (data: AuthControllerLoginRequest) => {
+  const onSubmit = async (data: LoginInput) => {
     try {
       const { user } = await loginFn({ data });
       queryClient.setQueryData(profileMeQueryOptions().queryKey, user);
@@ -54,58 +63,37 @@ function LoginPage() {
       <p className="auth-subtitle">Acesse o portal interno.</p>
 
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group className="mb-3">
-          <Form.Label>Usuário</Form.Label>
-          <Form.Control
-            type="text"
-            autoComplete="username"
-            placeholder="Seu usuário"
-            isInvalid={!!errors.userName}
-            {...register("userName", {
-              required: "Informe o usuário",
-              minLength: 3,
-              maxLength: 150,
-            })}
-          />
-          <Form.Control.Feedback type="invalid">{errors.userName?.message}</Form.Control.Feedback>
-        </Form.Group>
-
-        <PasswordField
-          label="Senha"
-          autoComplete="current-password"
-          placeholder="Sua senha"
-          className="mb-4"
-          isInvalid={!!errors.password}
-          feedback={errors.password?.message}
-          labelAction={
-            <Link to="/auth/forgot-password" className="small text-body-secondary">
-              Esqueci minha senha
-            </Link>
-          }
-          {...register("password", { required: "Informe a senha", minLength: 6, maxLength: 100 })}
+        <InputText
+          methods={methods}
+          fieldName="userName"
+          label="Usuário"
+          placeholder="Seu usuário"
+          config={{ containerClass: "mb-3" }}
         />
 
-        {/* TODO: remover Super login, existe apenas para testes */}
-        <Button
-          type="button"
-          onClick={() =>
-            onSubmit({
-              userName: "SuperAdmin",
-              password: "DayTVjjl2uV4",
-            })
-          }
-          className="w-100"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Spinner size="sm" animation="border" className="me-2" />
-              Entrando...
-            </>
-          ) : (
-            "Entrar"
-          )}
-        </Button>
+        <InputPassword methods={methods} fieldName="password" label="Senha" />
+        <div className="d-flex justify-content-end mb-4">
+          <Link to="/auth/forgot-password" className="small text-body-secondary">
+            Esqueci minha senha
+          </Link>
+        </div>
+
+        {hasSuperLogin && (
+          <Button
+            type="button"
+            variant="outline-secondary"
+            onClick={() =>
+              onSubmit({
+                userName: SUPER_LOGIN_USER,
+                password: SUPER_LOGIN_PASSWORD,
+              })
+            }
+            className="w-100 mb-2"
+            disabled={isSubmitting}
+          >
+            Super login
+          </Button>
+        )}
 
         <Button type="submit" className="w-100" disabled={isSubmitting}>
           {isSubmitting ? (

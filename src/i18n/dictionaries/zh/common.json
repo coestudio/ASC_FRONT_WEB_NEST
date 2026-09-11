@@ -20,6 +20,35 @@
     "viewModeList": "列表视图",
     "underConstruction": "建设中",
     "underConstructionDescription": "此页面仍在开发中。",
-    "areaWelcome": "欢迎来到{area}区域。"
+    "areaWelcome": "欢迎来到{area}区域。",
+    "brand": "品牌",
+    "profileModal": {
+      "title": "我的资料",
+      "avatar": "头像",
+      "uploadAvatar": "保存头像",
+      "avatarSaved": "头像已更新。",
+      "detailTab": "详情",
+      "addressTab": "地址",
+      "passwordTab": "密码",
+      "fullName": "全名",
+      "userName": "用户名",
+      "email": "邮箱",
+      "document": "证件号",
+      "phone": "电话",
+      "birthDate": "出生日期",
+      "postalCode": "邮政编码",
+      "state": "省/州",
+      "city": "城市",
+      "neighborhood": "街区",
+      "street": "街道",
+      "number": "门牌号",
+      "complement": "补充地址",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认密码",
+      "save": "保存",
+      "saved": "更改已保存。",
+      "saveError": "无法保存，请重试。"
+    }
   }
 }
