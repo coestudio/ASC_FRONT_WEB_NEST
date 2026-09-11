@@ -1,0 +1,45 @@
+/* Botões de ação em pílula/círculo colorido — referência de design (print
+   da tela de Acesso, SPEC-11 escopo expandido): editar/redefinir senha em
+   verde (brand), excluir em vermelho, resto neutro. */
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+.actionBtnNeutral {
+  background-color: var(--bs-tertiary-bg, rgba(127, 127, 127, 0.12));
+  color: var(--ink-muted);
+}
+.actionBtnNeutral:hover:not(:disabled) {
+  background-color: var(--sidebar-hover);
+  color: var(--bs-body-color);
+}
+.actionBtnSuccess {
+  background-color: var(--brand-primary-soft);
+  color: var(--brand-primary);
+}
+.actionBtnSuccess:hover:not(:disabled) {
+  background-color: var(--brand-primary);
+  color: var(--on-brand, #fff);
+}
+.actionBtnDanger {
+  background-color: rgba(220, 53, 69, 0.12);
+  color: var(--bs-danger);
+}
+.actionBtnDanger:hover:not(:disabled) {
+  background-color: var(--bs-danger);
+  color: #fff;
+}
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

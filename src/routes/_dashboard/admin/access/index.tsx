@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Spinner } from "react-bootstrap";
+import { Badge, Card, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -25,6 +25,8 @@ import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { Locale } from "@/i18n/config";
+import type { TranslationKey } from "@/i18n/translate";
+import styles from "./index.module.css";
 
 // `EnumOptionDTO.name` usa chave de 2 letras (pt/en/es/zh, ver
 // src/api/generated/static/getApiUserRoles.ts) — não bate 1:1 com `Locale`
@@ -79,6 +81,66 @@ type PendingAction = {
   kind: "activate" | "deactivate" | "resetPassword" | "delete";
   user: UserDTO;
 };
+
+/**
+ * Ações da linha/card — pílulas circulares coloridas (verde pra editar e
+ * redefinir senha, vermelho pra excluir, neutro pro resto), referência de
+ * design: print da tela de Acesso (SPEC-11 escopo expandido). Compartilhada
+ * entre a tabela e o card do `CrudListPage` pra não duplicar o markup.
+ */
+function RowActions({
+  user: u,
+  setModal,
+  setPending,
+  t,
+}: {
+  user: UserDTO;
+  setModal: (v: { mode: CrudRecordMode; user?: UserDTO } | null) => void;
+  setPending: (v: PendingAction | null) => void;
+  t: (key: TranslationKey) => string;
+}) {
+  return (
+    <div className="d-flex gap-1 flex-wrap">
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
+        onClick={() => setModal({ mode: "view", user: u })}
+      >
+        <i className="bi bi-eye" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
+        onClick={() => setModal({ mode: "edit", user: u })}
+      >
+        <i className="bi bi-pencil" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
+        onClick={() => setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })}
+      >
+        <i className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`} aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
+        disabled={!u.profile.email}
+        title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
+        onClick={() => setPending({ kind: "resetPassword", user: u })}
+      >
+        <i className="bi bi-key" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+        onClick={() => setPending({ kind: "delete", user: u })}
+      >
+        <i className="bi bi-trash" aria-hidden />
+      </button>
+    </div>
+  );
+}
 
 function toFormValues(user?: UserDTO): UserFormValues {
   return {
@@ -149,12 +211,6 @@ function AdminAccessPageContent() {
     [roleOptions, locale],
   );
 
-  const roleLabelByValue = useMemo(() => {
-    const map = new Map<string | number, string>();
-    roleFieldOptions.forEach((opt) => map.set(opt.value, opt.label));
-    return map;
-  }, [roleFieldOptions]);
-
   const invalidateList = () => queryClient.invalidateQueries({ queryKey: getGetApiUserQueryKey() });
 
   const createMutation = usePostApiUser();
@@ -206,74 +262,21 @@ function AdminAccessPageContent() {
     { key: "name", headerKey: "access.colName", render: (u) => u.profile.fullName },
     { key: "username", headerKey: "access.colUsername", render: (u) => u.userName },
     { key: "email", headerKey: "access.colEmail", render: (u) => u.profile.email ?? "—" },
-    {
-      key: "profile",
-      headerKey: "access.colProfile",
-      render: (u) => u.roles.map((r) => roleLabelByValue.get(r) ?? r).join(", ") || "—",
-    },
+    { key: "phone", headerKey: "access.colPhone", render: (u) => u.profile.phone ?? "—" },
+    { key: "document", headerKey: "access.colDocument", render: (u) => u.profile.document ?? "—" },
     {
       key: "status",
       headerKey: "access.colStatus",
       render: (u) => (
-        <Badge bg={u.isActive ? "success" : "secondary"}>
+        <Badge pill bg={u.isActive ? "success" : "secondary"}>
           {t(u.isActive ? "access.active" : "access.inactive")}
         </Badge>
       ),
     },
     {
-      key: "type",
-      headerKey: "access.colType",
-      render: (u) => t(u.type === 0 ? "access.internal" : "access.external"),
-    },
-    {
-      key: "createdAt",
-      headerKey: "access.colCreatedAt",
-      render: (u) => new Date(u.createdAt).toLocaleDateString(locale),
-    },
-    {
       key: "actions",
       headerKey: "access.colActions",
-      render: (u) => (
-        <div className="d-flex gap-1 flex-wrap">
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => setModal({ mode: "view", user: u })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => setModal({ mode: "edit", user: u })}
-          >
-            <i className="bi bi-pencil" aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })}
-          >
-            <i className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`} aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            disabled={!u.profile.email}
-            title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
-            onClick={() => setPending({ kind: "resetPassword", user: u })}
-          >
-            <i className="bi bi-key" aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-danger"
-            onClick={() => setPending({ kind: "delete", user: u })}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </Button>
-        </div>
-      ),
+      render: (u) => <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />,
     },
   ];
 
@@ -389,53 +392,14 @@ function AdminAccessPageContent() {
               <Card.Title className="h6">{u.profile.fullName}</Card.Title>
               <Card.Subtitle className="text-body-secondary small mb-2">{u.userName}</Card.Subtitle>
               <div className="small text-body-secondary mb-2">{u.profile.email ?? "—"}</div>
-              <Badge bg={u.isActive ? "success" : "secondary"} className="me-1">
+              <Badge pill bg={u.isActive ? "success" : "secondary"} className="me-1">
                 {t(u.isActive ? "access.active" : "access.inactive")}
               </Badge>
-              <Badge bg="info">{t(u.type === 0 ? "access.internal" : "access.external")}</Badge>
-              <div className="d-flex gap-1 flex-wrap mt-2">
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={() => setModal({ mode: "view", user: u })}
-                >
-                  <i className="bi bi-eye" aria-hidden />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={() => setModal({ mode: "edit", user: u })}
-                >
-                  <i className="bi bi-pencil" aria-hidden />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={() =>
-                    setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })
-                  }
-                >
-                  <i
-                    className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`}
-                    aria-hidden
-                  />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  disabled={!u.profile.email}
-                  title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
-                  onClick={() => setPending({ kind: "resetPassword", user: u })}
-                >
-                  <i className="bi bi-key" aria-hidden />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-danger"
-                  onClick={() => setPending({ kind: "delete", user: u })}
-                >
-                  <i className="bi bi-trash" aria-hidden />
-                </Button>
+              <Badge pill bg="info">
+                {t(u.type === 0 ? "access.internal" : "access.external")}
+              </Badge>
+              <div className="mt-2">
+                <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />
               </div>
             </Card.Body>
           </Card>

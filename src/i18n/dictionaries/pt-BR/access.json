@@ -10,6 +10,8 @@
   "colName": "Nome",
   "colUsername": "Usuário",
   "colEmail": "Email",
+  "colPhone": "Telefone",
+  "colDocument": "Documento",
   "colProfile": "Perfil",
   "colStatus": "Status",
   "colType": "Tipo",

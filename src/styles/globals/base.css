@@ -153,3 +153,21 @@ a {
   --bs-btn-active-border-color: var(--bs-primary);
   --bs-btn-active-color: var(--on-brand, #fff);
 }
+
+/* Item de dropdown (ex.: opções do submenu de preferências) — Bootstrap
+   não arredonda por padrão; item ativo usa azul (--bs-dropdown-link-active-bg)
+   por padrão, troca pra brand + pill arredondado pra combinar com o resto
+   da UI. */
+.dropdown-item {
+  border-radius: 0.7rem;
+}
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--brand-primary-soft);
+  color: var(--brand-primary);
+}
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--brand-primary);
+  color: var(--on-brand, #fff);
+}

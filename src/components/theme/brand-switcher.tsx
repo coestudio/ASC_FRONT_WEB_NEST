@@ -9,7 +9,7 @@ import styles from "@/layouts/AppShell/index.module.css";
  * As vars `--brand-swatch-*` são fixas (não dependem da brand ativa) — ver
  * src/styles/globals/tokens.css.
  */
-const BRANDS: Array<{ id: Brand; label: string; swatch: string }> = [
+export const BRANDS: Array<{ id: Brand; label: string; swatch: string }> = [
   { id: "asa", label: "ASA", swatch: "var(--brand-swatch-asa)" },
   { id: "asi", label: "ASI", swatch: "var(--brand-swatch-asi)" },
   { id: "asc", label: "ASC", swatch: "var(--brand-swatch-asc)" },

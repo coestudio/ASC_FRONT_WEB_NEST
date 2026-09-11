@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Pagination, Spinner } from "react-bootstrap";
+import { Button, Pagination, Spinner, Table } from "react-bootstrap";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
 import { useT } from "@/lib/ui-prefs";
@@ -10,6 +10,7 @@ import { ViewToggle } from "@/components/ui/view-toggle";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { InputText } from "@/layouts/Form/Fields/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import styles from "./crud-list-page.module.css";
 
 /**
  * Busca da lista — campo isolado (não faz parte de um `useForm` maior, só
@@ -153,26 +154,24 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
           ))}
         </div>
       ) : (
-        <div className="table-responsive">
-          <table className="table align-middle">
-            <thead>
-              <tr>
+        <Table responsive borderless className={`align-middle ${styles.crudTable}`}>
+          <thead>
+            <tr>
+              {columns.map((col) => (
+                <th key={col.key}>{t(col.headerKey)}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={getItemKey(item)}>
                 {columns.map((col) => (
-                  <th key={col.key}>{t(col.headerKey)}</th>
+                  <td key={col.key}>{col.render(item)}</td>
                 ))}
               </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={getItemKey(item)}>
-                  {columns.map((col) => (
-                    <td key={col.key}>{col.render(item)}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </Table>
       )}
 
       {totalPages > 1 ? (
@@ -242,7 +241,9 @@ export function CrudListPage<
 
       {isMock ? <MockDataBanner className="mb-3" /> : null}
 
-      <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
+      {/* mb-4 (era mb-3) — respiro embaixo do toolbar de busca/toggle/criar,
+          pedido do usuário (SPEC-11, escopo expandido). */}
+      <div className="d-flex align-items-center gap-2 mb-4 flex-wrap">
         {onSearchChange ? (
           <div className="flex-grow-1" style={{ minWidth: 220 }}>
             <ListSearchInput
