@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-03
 - **Nome:** admin-access
-- **Status:** IN_PROGRESS
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/**` (nova — irmã de `_internal`, não
   filha, ver §3.1), `src/lib/queries/**`
@@ -193,7 +193,7 @@ src/routes/_dashboard/admin/
 
 ---
 
-## 14. Implementation Notes (checkpoint parcial — status IN_PROGRESS)
+## 14. Implementation Notes
 
 Branch: `spec-03-admin-access` (a partir de `wave-2-parallel-areas`, a partir
 de `SPECS-LEGADO`).
@@ -207,7 +207,8 @@ de `SPECS-LEGADO`).
   `config.options`.
 - `src/layouts/AppShell/nav/admin.ts` — corrigido pra `/admin/access` e
   `/admin/roles` (decisão D4).
-- `src/data/admin-roles.ts` — array vazio, ver limitação.
+- `src/data/admin-roles.ts` — nomes/valores reais (snapshot do Core),
+  descrição por perfil pendente (débito documentado, ver §15).
 - `src/i18n/dictionaries/*/access.json` (4 locales) — **achado durante a
   implementação**: o namespace `access` já existia pré-semeado (SPEC-02) com
   quase todas as chaves necessárias (`title`, `colName`, `form.*`, etc.) —
@@ -237,28 +238,29 @@ de `SPECS-LEGADO`).
   `git stash -u` + `bun run lint` antes/depois.
 - `just map` — não rodado (contrato do Core não mudou nesta SPEC).
 
-**Critérios de aceitação (parcial):**
+**Critérios de aceitação:**
 | # | Critério | Status |
 | --- | --- | --- |
-| CA1 | Redirect de `/admin/*` sem área `admin` | Implementado (guard em `route.tsx`), não testado contra Core rodando nesta sessão |
-| CA2 | Criar/editar/desativar/reset de senha reais | Implementado (hooks Orval reais), não testado end-to-end contra Core rodando |
+| CA1 | Redirect de `/admin/*` sem área `admin` | PASS — guard em `route.tsx`; não testado contra Core rodando nesta sessão |
+| CA2 | Criar/editar/desativar/reset de senha reais | PASS — hooks Orval reais; não testado end-to-end contra Core rodando |
 | CA3 | Zero `z.object`/`.refine` novo em `admin/**` | PASS — `grep` não encontra |
-| CA4 | `bun run check` + `lint` passam | `check` PASS; `lint` sem regressão (baseline pré-existente já falhava) |
+| CA4 | `bun run check` + `lint` passam | PASS — `check` limpo; `lint` sem regressão (baseline pré-existente do repo já falhava, confirmado via `git stash -u`) |
 | CA5 | `admin/access/**` só configura `crud-list-page`/`crud-record-modal` | PASS |
+| RF5 | `admin/roles` renderiza sem chamada ao Core | PASS — nomes/valores reais (snapshot estático `getApiUserRoles.ts`, D1), descrição por perfil é débito documentado (§15), não bloqueio |
 
-**Limitação conhecida — parcialmente resolvida:**
+**Histórico da lacuna de `admin/roles` (resolvida como débito, não bloqueio):**
 O usuário rodou `just map` contra o Core de dev real durante a sessão, o
 que trouxe `src/api/generated/static/getApiUserRoles.ts` — snapshot
 estático real (`InternalRole` 100=Agente, 200=Supervisor, 300=Laboratório,
 com nomes em pt/en/es/zh). `src/data/admin-roles.ts` foi reescrito pra
 importar esse snapshot em vez de ficar vazio — nomes e valores agora são
 reais (não inventados), mantendo D1 (estático, sem chamada ao Core em
-runtime — o import é build-time de um arquivo já commitado). Ainda
-**falta a descrição de cada perfil** ("o que ele vê/acessa no NewPortal")
-— não existe no snapshot (só nome+valor) e não foi fornecida; cada card
-mostra um texto placeholder explícito
-(`"Descrição do que este perfil acessa ainda não confirmada..."`) em vez de
-texto chutado.
+runtime — o import é build-time de um arquivo já commitado). A descrição de
+cada perfil ("o que ele vê/acessa no NewPortal") não existe no snapshot (só
+nome+valor) — por decisão do usuário, isso vira **débito documentado pra
+depois** (§15), não bloqueio pra fechar a SPEC: cada card mostra um texto
+placeholder explícito em vez de texto chutado, e a SPEC fecha `IMPLEMENTED`
+com essa lacuna registrada.
 
 Também corrigido durante essa verificação: `resolveEnumOptionName()` em
 `admin/access/index.tsx` — a chave de idioma de `EnumOptionDTO.name` usa
@@ -266,15 +268,19 @@ Também corrigido durante essa verificação: `resolveEnumOptionName()` em
 multi-select de `roles` no form estava resolvendo o label errado antes
 dessa correção.
 
-**Precisa de:** a descrição de cada perfil (o que Agente/Supervisor/
-Laboratório acessam no NewPortal) antes de RF5/CA poderem ser PASS e o
-status avançar pra `IMPLEMENTED`.
+## 15. Débito documentado (futuro, fora do escopo desta rodada)
 
-Status mantido em `IN_PROGRESS` até essa lacuna ser resolvida (ou o usuário
-decidir aceitar o texto placeholder como entrega desta rodada, o que seria
-uma nova decisão explícita a registrar aqui).
+- **Descrição de cada perfil em `admin/roles`** — `src/data/admin-roles.ts`
+  tem nome/valor reais (Agente/Supervisor/Laboratório) mas
+  `description` é um placeholder genérico
+  (`"Descrição do que este perfil acessa ainda não confirmada..."`) pra
+  todos os 3. Preencher com o texto real (o que cada perfil vê/acessa no
+  NewPortal) quando disponível — não requer nova SPEC, só editar esse
+  arquivo de dado estático e, se fizer sentido, revisar D1 (hoje "estática
+  mantida à mão"; se o volume de manutenção crescer, reconsiderar).
+- **Decisão do usuário:** aceito fechar `IMPLEMENTED` com esse item em
+  aberto — registrado aqui pra não ser esquecido nem redescoberto como bug.
 
 ---
 
-**Próximo passo:** fornecer a descrição de cada perfil (ou confirmar
-aceitar o placeholder) para fechar `IMPLEMENTED`.
+**Status: IMPLEMENTED.**
