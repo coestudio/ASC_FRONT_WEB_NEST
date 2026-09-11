@@ -177,15 +177,17 @@ nos commits de SPEC-00/01 (`feat(i18n): particiona dicionários...`,
 
 ## Quando `SPECS-LEGADO` vira PR pra `main`
 
-Só depois que **todas** as SPECs de 02 a 09 estiverem mergeadas nela —
-contando a sub-árvore de SPEC-07 (10 sub-branches) como parte dela, são 16
-branches na Onda 2 (03, 04, 05, 06, 07-00 a 07-09, 09) mais `spec-08-
-operacional`. `spec-08-operacional` e `wave-2-parallel-areas` (com as 16
-dela dentro) são as duas últimas peças. Esse PR final é o marco de
-"paridade funcional com `warren/Portal` alcançada" — é aí que este arquivo
-e as SPEC-02–09 (e as sub-SPECs 07-00 a 07-09) recebem
-`status: IMPLEMENTED`. Nesse mesmo PR, `main` também recebe SPEC-00/01
-(hoje só em `SPECS-LEGADO`).
+Só depois que **todas** as SPECs de 02 a 09 estiverem mergeadas nela.
+Contando a sub-árvore de SPEC-07 (10 sub-branches), são **15 branches
+dentro de `wave-2-parallel-areas`** (03, 04, 05, 06, 07-00 a 07-09, 09)
+mais `spec-08-operacional` **fora** dela (PR direto pra `SPECS-LEGADO`,
+ver "Estrutura" — nunca mergeia de volta em `wave-2-parallel-areas`) — 16
+peças no total entre Onda 2 e Onda 3. `spec-08-operacional` e
+`wave-2-parallel-areas` (com as 15 dela dentro) são as duas últimas peças.
+Esse PR final é o marco de "paridade funcional com `warren/Portal`
+alcançada" — é aí que este arquivo e as SPEC-02–09 (e as sub-SPECs 07-00 a
+07-09) recebem `status: IMPLEMENTED`. Nesse mesmo PR, `main` também recebe
+SPEC-00/01 (hoje só em `SPECS-LEGADO`).
 
 ## Fora deste plano
 

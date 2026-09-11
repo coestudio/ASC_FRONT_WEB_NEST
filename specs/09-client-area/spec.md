@@ -177,7 +177,7 @@ src/routes/_dashboard/client/
 
 - **R1** — API `Collaborator` real nunca foi exercitada em produção (nem
   no legado) — pode ter lacuna de contrato não descoberta até implementar
-  de verdade (mesma classe de risco que a aba Responsáveis da SPEC-07).
+  de verdade (mesma classe de risco que a aba Responsáveis, SPEC-07-08).
   Uma lacuna (origem do `clientId`) já apareceu nesta revisão e foi
   resolvida (D1) — pode haver outras, só descobertas ao implementar.
 - **R2** — Não se aplica mais: D2 decidiu mock solto, não projeção de dado

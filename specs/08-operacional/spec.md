@@ -107,7 +107,7 @@ src/routes/_dashboard/_internal/operational/
 | `src/routes/.../operational/index.tsx` | criar |
 | `src/routes/.../operational/operations/index.tsx` | criar |
 | `src/routes/.../operational/operations/$id/index.tsx` | criar |
-| `src/layouts/AppShell/nav/operational.ts` | criar (fragmento, SPEC-02 §3.1) |
+| `src/layouts/AppShell/nav/operacional.ts` | **editar** (D2 — já existe, criado como placeholder pela SPEC-02 com URLs em português: `to: "/operacional"`, `/operacional/operacoes`; troca os 2 `to:` para `/operational`, `/operational/operations`, inglês conforme §3. `labelKey`s ficam como estão — `navigation.operacional*` já existe e já está traduzido nos 4 locales, mesmo tratamento da SPEC-03 D4/SPEC-09 D3). Arquivo continua se chamando `operacional.ts` (nome de arquivo não muda, só as rotas dentro) |
 | `src/i18n/dictionaries/*/operational.json` | criar (4 locales) |
 
 ## 11. Critérios de aceitação
@@ -129,6 +129,11 @@ src/routes/_dashboard/_internal/operational/
 
 - **D1** — Resolvido: usa `mock-data-banner` (SPEC-02), mesmo componente das
   outras SPECs UI-only — nada específico a decidir aqui.
+- **D2** — Resolvido (mesmo padrão da SPEC-03 D4/SPEC-09 D3):
+  `src/layouts/AppShell/nav/operacional.ts` já existe (placeholder da
+  SPEC-02, URLs em português e um link presumivelmente incompleto — ver
+  §10). Esta SPEC edita esse arquivo — não cria — trocando os `to:` pras
+  URLs em inglês definidas no §7.
 
 ---
 
