@@ -2,9 +2,8 @@
 
 - **ID:** SPEC-14
 - **Nome:** visual-style-tokens
-- **Status:** IMPLEMENTED (ressalva: `check`/`lint`/revisão visual não
-  verificados nesta sessão, sem runtime JS no ambiente — ver
-  "Implementation Notes")
+- **Status:** IMPLEMENTED (`check`/`lint` verificados em sessão posterior, ver
+  "Implementation Notes" — ressalva restante: só revisão visual manual)
 - **Autor:** portal-dev-agent (via sessão de auditoria pedida pelo usuário)
 - **Área:** `src/styles/globals/**`, `src/assets/css/**` (legado), `src/components/ui/**`,
   `src/components/theme/theme-toggle.module.css`, `src/components/crud/crud-list-page.module.css`,
@@ -261,33 +260,38 @@ src/routes` (CA8, padrão corrigido) — **VERIFIED**: restam só padrões
 - Confirmado por grep: zero referência restante a `components/ui/{button,input,field,password-field}`,
   `ui.module.css`, `assets/css`, `.app-sidebar__logo`, `.app-nav-link` em
   qualquer `.tsx`/`.css` do projeto.
-- `bun run check` / `bun run lint` — **NOT VERIFIED nesta sessão**: `bun`,
-  `npm` e `node` não estão disponíveis neste ambiente de execução (sandbox
-  sem runtime JS instalado). Nenhuma mudança desta SPEC altera tipos
-  TypeScript (só CSS + 2 arquivos de doc + deleção de `.tsx` sem
-  consumidor) — risco de regressão de `tsc` é baixo, mas fica como
-  pendência de verificação antes do merge (rodar localmente ou em CI).
-- CA10 (revisão visual manual) — **NOT VERIFIED nesta sessão**, mesma causa
-  (sem acesso a browser/dev server).
+- `bun run check` / `bun run lint` — **VERIFIED em sessão posterior** (runtime
+  disponível): `bun run check` (`tsc --noEmit`) passa limpo, zero erro.
+  `bun run lint` falha (`66 problems, 3 errors`), mas os 3 erros são em
+  `src/lib/session.server.ts` (`react-hooks/rules-of-hooks`, provável falso-
+  positivo do `useSession` do TanStack Start sendo lido como hook React) —
+  arquivo **fora da "Área" desta SPEC** e pré-existente, não introduzido
+  pelas mudanças de SPEC-14. Nenhum warning/erro nos arquivos tocados por
+  esta SPEC.
+- CA10 (revisão visual manual) — **NOT VERIFIED ainda**: sem acesso a
+  browser/dev server nesta sessão também. Continua pendência antes do merge
+  final pra `main`.
 
 **Critérios de aceitação — resultado:**
 
-| #    | Critério                                                   | Resultado                                                       |
-| ---- | ---------------------------------------------------------- | --------------------------------------------------------------- |
-| CA1  | Código morto de `components/ui` apagado; check+lint limpos | Apagado — check/lint NOT VERIFIED (sem runtime)                 |
-| CA2  | `src/assets/css/**` apagado; comentário corrigido          | PASS                                                            |
-| CA3  | Classes mortas removidas; `.app-topbar__avatar` preservado | PASS                                                            |
-| CA4  | `--bs-danger-soft` nas 6 combinações; `access` usa o token | PASS                                                            |
-| CA5  | D1 resolvido e aplicado                                    | PASS (`--table-header-bg`)                                      |
-| CA6  | `.swatch` respeita dark mode; D2 resolvido                 | PASS (`--overlay-bg`)                                           |
-| CA7  | Raios migrados pra `-sm`                                   | PASS                                                            |
-| CA8  | Grep de CA5/SPEC-01 corrigido e re-rodado                  | PASS (achados fora de escopo documentados, não corrigidos aqui) |
-| CA9  | `theming.instructions.md` atualizado                       | PASS                                                            |
-| CA10 | Revisão visual manual                                      | NOT VERIFIED — recomendada antes do merge                       |
+| #    | Critério                                                   | Resultado                                                                                                              |
+| ---- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| CA1  | Código morto de `components/ui` apagado; check+lint limpos | Apagado — check VERIFIED limpo; lint VERIFIED sem erro novo (3 erros pré-existentes fora da área, `session.server.ts`) |
+| CA2  | `src/assets/css/**` apagado; comentário corrigido          | PASS                                                                                                                   |
+| CA3  | Classes mortas removidas; `.app-topbar__avatar` preservado | PASS                                                                                                                   |
+| CA4  | `--bs-danger-soft` nas 6 combinações; `access` usa o token | PASS                                                                                                                   |
+| CA5  | D1 resolvido e aplicado                                    | PASS (`--table-header-bg`)                                                                                             |
+| CA6  | `.swatch` respeita dark mode; D2 resolvido                 | PASS (`--overlay-bg`)                                                                                                  |
+| CA7  | Raios migrados pra `-sm`                                   | PASS                                                                                                                   |
+| CA8  | Grep de CA5/SPEC-01 corrigido e re-rodado                  | PASS (achados fora de escopo documentados, não corrigidos aqui)                                                        |
+| CA9  | `theming.instructions.md` atualizado                       | PASS                                                                                                                   |
+| CA10 | Revisão visual manual                                      | NOT VERIFIED — recomendada antes do merge                                                                              |
 
 ---
 
-**Status: IMPLEMENTED** (com ressalva CA1/CA10 — `check`/`lint`/revisão
-visual não puderam ser verificados nesta sessão por falta de runtime JS no
-ambiente; recomenda-se rodar `bun run check && bun run lint` e revisão
-visual manual antes do merge).
+**Status: IMPLEMENTED.** `bun run check` e `bun run lint` verificados em
+sessão posterior (check limpo; lint sem erro/warning novo nos arquivos desta
+SPEC — os 3 erros pré-existentes de `session.server.ts` são fora de escopo,
+ver acima). Ressalva restante: CA10 (revisão visual manual nas 3 brands ×
+light/dark) ainda não foi feita — recomenda-se antes do merge final pra
+`main`.
