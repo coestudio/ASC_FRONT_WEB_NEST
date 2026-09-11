@@ -390,17 +390,30 @@ separados — não têm dependência entre si.
   ImageMagick/Sharp/Pillow) a partir do logo, 256×256, mesmo formato dos
   favicons ASA/ASI existentes.
 
+**Correção pós-`IMPLEMENTED` (revisão de 2026-09-11):** `grep -rnE
+"#[0-9a-fA-F]{3,8}\b|rgb\(" src/components src/layouts src/routes` (CA5)
+achou `color: #fff` literal em `src/routes/_dashboard/admin/access/
+index.module.css:40` (`.actionBtnDanger:hover`), arquivo criado pela
+SPEC-12 (depois da SPEC-01 já `IMPLEMENTED`, sem re-rodar o grep de CA5
+contra código novo). Corrigido para `var(--on-brand, #fff)`, mesmo padrão
+já usado na linha 32 do mesmo arquivo (`.actionBtnSuccess:hover`). Ver
+também `specs/12-usermenu-accordion-and-access-visual-polish/spec.md`,
+seção "Correção pós-`IMPLEMENTED`".
+
 **Limitações conhecidas:**
 - CA3/CA4/CA6 não foram verificados com clique manual num browser real
   (sem acesso a browser interativo nesta sessão) — só por inspeção de
   código + SSR via curl. Recomenda-se checagem visual rápida antes de
   mergear.
-- `--ink-muted`, `--surface-translucent`, `--shadow-elegant`,
+- ~~`--ink-muted`, `--surface-translucent`, `--shadow-elegant`,
   `--main-divider-color`/`--main-divider-shadow` (usados em
-  `AppShell/index.module.css`) continuam **indefinidos** no CSS ativo
-  (só existem no legado morto `src/assets/css/themes/{light,dark}.css`,
-  não importado). Bug pré-existente, fora do escopo desta SPEC (não está
-  na lista de vars do §9.2/§13) — registrar como possível SPEC futura.
+  `AppShell/index.module.css`) continuam **indefinidos** no CSS ativo~~ —
+  **Corrigido fora desta SPEC.** As 5 vars já estão definidas nos 6 blocos
+  de `tokens.css` (revisão de 2026-09-11 confirmou via `grep`); não há
+  registro de qual SPEC/sessão resolveu isso, mas o `spec.md` ficou
+  desatualizado citando um bug que não existe mais. Deixado aqui como nota
+  histórica em vez de apagado, para não perder o rastro de que a lacuna
+  existiu.
 - `build:azure` só produz o preset correto com `NITRO_PRESET=azure-swa` no
   ambiente — isso já era assim antes desta SPEC (config do
   `@lovable.dev/vite-tanstack-config`), não uma regressão introduzida aqui.

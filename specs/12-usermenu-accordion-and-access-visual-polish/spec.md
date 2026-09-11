@@ -318,3 +318,20 @@ telefone/documento como referência — ele não está mais em produção.
 com o código em produção; `D1` (divergência de colunas com a SPEC-03)
 resolvido por decisão do usuário — colunas de `admin/access` seguem o
 contrato da SPEC-03, visual novo desta SPEC mantido.
+
+## 11. Correção pós-`IMPLEMENTED` (revisão de 2026-09-11)
+
+Revisão das SPECs concluídas achou uma violação de RF6/CA5 da SPEC-01
+("nenhum componente referencia cor literal; tudo via token") introduzida
+por este commit (`835be31`, item 5.4): `src/routes/_dashboard/admin/
+access/index.module.css:40` (`.actionBtnDanger:hover`) tinha
+`color: #fff` hard-coded, sem passar por token — diferente da linha 32
+(`.actionBtnSuccess:hover`), que já usava `var(--on-brand, #fff)`
+corretamente. O grep de CA5 da SPEC-01 não foi re-rodado contra este
+arquivo na sessão original (SPEC-01 já estava `IMPLEMENTED` quando este
+código foi escrito, e esta SPEC-12 não listava esse grep entre seus
+comandos executados, §9).
+
+**Corrigido:** `color: #fff` → `color: var(--on-brand, #fff)`, mesmo
+padrão da linha 32. `bun run check` e o grep de CA5 (§ acima)
+re-verificados limpos após a correção.

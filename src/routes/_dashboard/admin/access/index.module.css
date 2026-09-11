@@ -37,7 +37,7 @@
 }
 .actionBtnDanger:hover:not(:disabled) {
   background-color: var(--bs-danger);
-  color: #fff;
+  color: var(--on-brand, #fff);
 }
 .actionBtn:disabled {
   opacity: 0.5;
