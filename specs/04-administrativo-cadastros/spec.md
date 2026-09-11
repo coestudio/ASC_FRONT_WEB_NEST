@@ -40,8 +40,8 @@ legado **não é portado como padrão**, só a forma da tela.
    deletar (`ConfirmationModal`).
 3. Campos por cadastro (a partir dos DTOs gerados):
    - **Terminal** — `TerminalCreate`/`Update`.
-   - **Porto (Harbor)** — `HarborCreate`/`Update` (inclui endereço e
-     terminais relacionados, conforme já documentado no `AGENTS.md` do Core).
+   - **Porto (Harbor)** — `HarborCreate`/`Update` (só `name` + `address`;
+     **não** inclui terminais — relação é inversa, ver RF4).
    - **Container** — `ContainerCreate`/`Update`.
    - **Navio (Vessel)** — `VesselCreate`/`Update`.
    - **Produto** — `ProductCreate`/`Update`.
@@ -52,6 +52,8 @@ legado **não é portado como padrão**, só a forma da tela.
   `operation-container`, escopo da SPEC-07).
 - Import em lote de qualquer um desses cadastros (o legado não tem; Core
   também não expõe).
+- Edição do vínculo Harbor↔Terminal (associar/desassociar) — nesta SPEC o
+  vínculo é só leitura (ver D2, §13). Anotado como trabalho futuro.
 
 ## 5. Requisitos funcionais
 
@@ -59,8 +61,12 @@ legado **não é portado como padrão**, só a forma da tela.
 - **RF2** — Criar/editar validam com o schema Zod **gerado** do respectivo
   módulo (`terminalCreate.zod` etc.) — zero Zod à mão.
 - **RF3** — Deletar passa por `ConfirmationModal`.
-- **RF4** — Harbor mostra terminais relacionados (mesmo que só leitura nesta
-  SPEC — vínculo editável é `[NEEDS_DECISION]`, ver D2).
+- **RF4** — Harbor mostra terminais relacionados via consulta separada
+  (`TerminalDTO.harborId` é quem referencia o Harbor, não o inverso — não
+  existe campo de terminais no `HarborDTO`): `getApiTerminal({ HarborId:
+  harbor.id })` disparado dentro do `extraContent` do `crud-record-modal`
+  (mesmo mecanismo já usado pela SPEC-05), mesmo que só leitura nesta SPEC —
+  vínculo editável é `[NEEDS_DECISION]`, ver D2.
 
 ## 6. Requisitos não funcionais
 
@@ -87,12 +93,23 @@ O rótulo exibido (i18n) continua em português para o usuário.
 ## 8. Camada de dados
 
 Hooks Orval de `terminal`, `harbor`, `container`, `vessel`, `product` —
-todos já gerados com CRUD + `PagedDTO`.
+todos já gerados com CRUD + `PagedDTO`. Harbor usa adicionalmente
+`useGetApiTerminal` (filtro `HarborId`) só para popular a lista de
+terminais relacionados no detalhe/modal (RF4) — não é o hook de CRUD
+principal da tela.
 
 ## 9. Desenho
 
 `crud-list-page`/`crud-record-modal` já existem (SPEC-02) — aqui é só
-configuração por módulo, sem recriar lista/form:
+configuração por módulo, sem recriar lista/form.
+
+**Campo `address` (Harbor)** — `HarborCreate.address` é objeto aninhado
+(`AddressCreate`), e `Fields/Index.ts`/`RenderFields` hoje só resolvem
+componentes `Input*` flat; `Group/Adress.tsx` não está exportado ali. Esta
+SPEC estende `LayoutField`/`RenderFields` com um novo tipo "grupo" que
+renderiza `Group/Adress.tsx` como bloco dentro do form — mudança no
+componente genérico da SPEC-02, mas reutilizável por qualquer form futuro
+com endereço (ex.: Cliente na SPEC-05). Entra em "Arquivos esperados" (§10).
 
 ```
 src/routes/_dashboard/_internal/administrative/registry/
@@ -114,6 +131,9 @@ SPEC-02.
 | `src/routes/.../administrative/registry/{terminal,harbor,container,vessel,product}/index.tsx` | criar (5) |
 | `src/layouts/AppShell/nav/administrative-registry.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-registry.json` | criar (4 locales) |
+| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover os 5 itens de registry (`administrativoVessel`, `administrativoContainer`, `administrativoTerminal`, `administrativoHarbor`, `administrativoProduct`) hoje hard-coded com rotas antigas em PT; migram pro fragmento novo acima. Não mexer nos demais itens (`administrativoClients`, `administrativoOperations`, `administrativoLog`, `administrativoOccurrences` — escopo de SPEC-05/06/07) |
+| `src/layouts/Form/Fields/Index.ts` | editar — exportar novo tipo de campo "grupo" que renderiza `Group/Adress.tsx` |
+| `src/layouts/Form/Fields/map.tsx` (ou onde `RenderFields` resolve `FieldName`→componente) | editar — suportar o novo tipo "grupo" além dos `Input*` flat |
 
 ## 11. Critérios de aceitação
 
@@ -133,18 +153,26 @@ SPEC-02.
 
 ## 13. Decisões pendentes
 
-- **D1** — Confirma rota por tipo fixo (recomendado, roteamento file-based
-  não combina bem com dispatch por `$tipo` do jeito que o legado fazia) em
-  vez de replicar o `Cadastro/Page.tsx` dinâmico do legado.
-- **D2** — Vínculo Harbor↔Terminal editável nesta SPEC ou só leitura (edição
-  fica pra depois)?
+- **D1** — Resolvido: rota por tipo fixo (roteamento file-based não combina
+  bem com dispatch por `$tipo` do jeito que o legado fazia), não replica o
+  `Cadastro/Page.tsx` dinâmico do legado. Cada rota importa diretamente o
+  tipo/schema **gerado** (`TerminalCreate`, `HarborCreate` etc.) — se o
+  contrato do Core mudar e `just map` regenerar um shape diferente, a config
+  da rota quebra em `tsc --noEmit` (RNF1/CA4), não silenciosamente em
+  runtime. Nenhum tipo `any`/cast solto pra contornar isso.
+- **D2** — Resolvido: vínculo Harbor↔Terminal é **só leitura** nesta SPEC
+  (lista de terminais via `getApiTerminal({HarborId})`, RF4/§8/§9). Edição
+  do vínculo (associar/desassociar Terminal a um Harbor) fica fora de
+  escopo — anotado como trabalho futuro, sem SPEC própria ainda.
 - **D3** — Resolvido: todos os segmentos de rota desta SPEC em inglês
   (`administrative/registry/{terminal,harbor,container,vessel,product}`),
   rótulo em português pro usuário via i18n.
 - **D4** — Resolvido pela SPEC-02 + regra inviolável 10 do `AGENTS.md`:
   componente genérico mora em `components/crud/`; cada campo do form é
   `layouts/Form/Fields/*` (nunca `components/ui`, que não tem mais input
-  nenhum depois da migração da SPEC-02). Nada a decidir aqui.
+  nenhum depois da migração da SPEC-02). Ressalva: campo composto
+  (`address` de Harbor) exige estender `RenderFields`/`LayoutField` com um
+  tipo "grupo" — ver §9 e §10.
 
 ---
 
