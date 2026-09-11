@@ -63,7 +63,7 @@ main                                          (4 commits atrás de SPECS-LEGADO)
 | `wave-2-parallel-areas` | `SPECS-LEGADO` | depois que `spec-02-app-shell-navigation` já foi mergeada em `SPECS-LEGADO` — **nunca antes**, essa onda inteira depende de SPEC-02 |
 | `spec-03-admin-access` | `wave-2-parallel-areas` | ao aprovar SPEC-03 |
 | `spec-04-administrativo-cadastros` | `wave-2-parallel-areas` | ao aprovar SPEC-04 |
-| `spec-05-administrativo-clientes` | `wave-2-parallel-areas` | ao aprovar SPEC-05 |
+| `spec-05-administrativo-clientes` | `wave-2-parallel-areas` | ao aprovar SPEC-05 **e** depois que `spec-04-administrativo-cadastros` já estiver mergeada em `wave-2-parallel-areas` (dependência real, não só de aprovação — ver "Exceção de ordem" abaixo) |
 | `spec-06-administrativo-log-ocorrencias` | `wave-2-parallel-areas` | ao aprovar SPEC-06 |
 | `spec-07-operacoes` | `wave-2-parallel-areas` | ao aprovar SPEC-07 |
 | `spec-09-client-area` | `wave-2-parallel-areas` | ao aprovar SPEC-09 |
@@ -78,15 +78,32 @@ faz pra ela).
 
 ## Ordem de merge dentro da Onda 2
 
-Sem ordem entre si — qualquer uma das 6 pode mergear em
-`wave-2-parallel-areas` primeiro. Único cuidado prático: como todas nascem
-do mesmo commit-base, quem mergear por último deve **atualizar a própria
-branch com `wave-2-parallel-areas` antes do PR** (`git merge`/`git rebase`
-`wave-2-parallel-areas` dentro da branch da spec) pra pegar o que as outras
-já colocaram lá — o risco de conflito real é baixo (rotas e namespaces de
-i18n disjuntos por SPEC, `nav/*.ts` também um arquivo por SPEC desde o
-ajuste da SPEC-02), mas o merge em si precisa acontecer pra `wave-2-
-parallel-areas` sempre ter o estado mais recente.
+Sem ordem entre si, **exceto SPEC-04 → SPEC-05** (ver abaixo) — as demais 5
+podem mergear em `wave-2-parallel-areas` em qualquer ordem. Único cuidado
+prático: como todas nascem do mesmo commit-base, quem mergear por último
+deve **atualizar a própria branch com `wave-2-parallel-areas` antes do PR**
+(`git merge`/`git rebase` `wave-2-parallel-areas` dentro da branch da spec)
+pra pegar o que as outras já colocaram lá — o risco de conflito real é
+baixo (rotas e namespaces de i18n disjuntos por SPEC), mas o merge em si
+precisa acontecer pra `wave-2-parallel-areas` sempre ter o estado mais
+recente.
+
+**Correção:** `nav/*.ts` **não** é um arquivo isolado por SPEC como este
+documento afirmava — `src/layouts/AppShell/nav/administrativo.ts` é um
+fragmento legado único, ainda referenciado, com itens de várias áreas
+(SPEC-04/05/06/07 removem cada uma só os itens que lhe pertencem, deixando
+isso explícito em "Arquivos esperados" de cada spec.md). É um ponto real de
+conflito potencial entre as branches da onda — quem mergear por último
+sente isso com mais força no `git merge`/rebase acima.
+
+**Exceção de ordem — SPEC-04 antes de SPEC-05:** a SPEC-04 introduz a
+extensão de `LayoutField`/`RenderFields` com tipo "grupo" (pra renderizar
+`Group/Adress.tsx` dentro do form genérico — necessária pro campo `address`
+de Harbor). A SPEC-05 tem o mesmo problema pro campo `address` de Cliente e
+**reusa** essa extensão em vez de duplicá-la (ver `specs/04-.../spec.md` e
+`specs/05-.../spec.md`, seções "Depende de"/"Bloqueia"). Na prática:
+`spec-05-administrativo-clientes` não pode mergear em
+`wave-2-parallel-areas` antes de `spec-04-administrativo-cadastros`.
 
 ## Nome do PR / título
 

@@ -6,7 +6,12 @@
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/clients/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
-  (`crud-list-page`, `crud-record-modal` modo `view`, `mock-data-banner`)
+  (`crud-list-page`, `crud-record-modal` modo `view`, `mock-data-banner`),
+  **SPEC-04** (extensão de `LayoutField`/`RenderFields` com tipo "grupo"
+  para `Group/Adress.tsx` — ver §9/§10). Diferente das outras SPECs da Onda
+  2, esta **não** pode mergear em `wave-2-parallel-areas` antes da SPEC-04
+  ter entregado essa extensão (ou implementá-la aqui, mas então a SPEC-04
+  passa a reusar — evitar duplicar; ver nota na SPEC-04).
 
 ---
 
@@ -98,6 +103,12 @@ src/routes/_dashboard/_internal/administrative/clients/
                  modo "view" injeta a seção de relatórios mock no slot extra)
 ```
 
+**Campo `address` (Cliente)** — `ClientCreate.address`/`ClientUpdate.address`
+são objeto aninhado (`AddressCreate`/`AddressUpdate`), mesma situação do
+`HarborCreate.address` na SPEC-04. Esta SPEC **reusa** o tipo "grupo" que a
+SPEC-04 introduz em `Fields/Index.ts`/`RenderFields` — não reimplementa. Por
+isso a dependência explícita de SPEC-04 no cabeçalho.
+
 ## 10. Arquivos esperados
 
 | Arquivo | Ação |
@@ -105,6 +116,8 @@ src/routes/_dashboard/_internal/administrative/clients/
 | `src/routes/.../administrative/clients/index.tsx` | criar |
 | `src/layouts/AppShell/nav/administrative-clients.ts` | criar (fragmento, SPEC-02 §3.1) |
 | `src/i18n/dictionaries/*/administrative-clients.json` | criar (4 locales) |
+| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover o item `administrativoClients` (rota antiga `/administrativo/clientes`) hoje hard-coded; item equivalente passa a viver em `administrative-clients.ts`. Não mexer nos demais itens (escopo de SPEC-04/06/07) |
+| `src/layouts/Form/Fields/Index.ts` / `map.tsx` | **reusar** o tipo "grupo" da SPEC-04 (não recriar) |
 
 ## 11. Critérios de aceitação
 
@@ -125,9 +138,12 @@ src/routes/_dashboard/_internal/administrative/clients/
 
 ## 13. Decisões pendentes
 
-- **D1** — Confirmar contrato exato de `GET /api/client/{id}` (campos de
-  `ClientDetailDTO`) antes de decidir o que entra na seção real vs mock —
-  pode reduzir a superfície mock em relação ao legado.
+- **D1** — Resolvido: `ClientDetailDTO` confirmado — tem `address:
+  AddressDTO` (obrigatório, mesma situação de campo "grupo" do Harbor, ver
+  §9) e `collaborations?: CollaboratorDTO[]`. `collaborations` existe na
+  resposta mas fica **fora de escopo** desta SPEC (é SPEC-09, §4) — o modal
+  `view` desta SPEC ignora esse campo deliberadamente, não precisa filtrar
+  nem esconder ativamente, só não renderizar.
 - **D2** — Resolvido pelo padrão confirmado: detalhe é o modal `view`, não
   rota nem offcanvas. Nada a decidir aqui.
 

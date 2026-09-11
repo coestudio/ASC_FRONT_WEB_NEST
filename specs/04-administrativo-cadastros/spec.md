@@ -8,6 +8,12 @@
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
   (`crud-list-page`, `crud-record-modal` — esta SPEC só configura, não cria
   os componentes)
+- **Bloqueia:** SPEC-05 (`administrativo-clientes`) — a extensão de
+  `LayoutField`/`RenderFields` com tipo "grupo" para `Group/Adress.tsx`
+  (§9/§10, campo `address` de Harbor) é implementada aqui; SPEC-05 reusa
+  pro campo `address` de Cliente, não reimplementa. Diferente das outras
+  SPECs da Onda 2, SPEC-05 não pode mergear em `wave-2-parallel-areas`
+  antes desta.
 
 ---
 
