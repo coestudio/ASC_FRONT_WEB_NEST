@@ -9,6 +9,7 @@ import type {
   UserDetailDTO,
 } from "@/api/generated/model";
 import { readServerSession, writeServerSession, clearServerSession } from "@/lib/session.server";
+import { getRequestLocale } from "@/lib/locale.server";
 
 /**
  * Server functions de auth. Ver specs/auth-httponly-cookie-bff.md §9.
@@ -35,7 +36,9 @@ export const loginFn = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ user: UserAdminDTO }> => {
     let res;
     try {
-      res = await coreClient.post<AuthControllerLoginResponse>("/api/auth/login", data);
+      res = await coreClient.post<AuthControllerLoginResponse>("/api/auth/login", data, {
+        headers: { "x-locale": getRequestLocale() },
+      });
     } catch (err) {
       throw new Error(coreErrorMessage(err, "Não foi possível entrar. Tente novamente."));
     }
@@ -69,7 +72,10 @@ export const fetchMeFn = createServerFn({ method: "GET" }).handler(
     if (!session) return null;
     try {
       const res = await coreClient.get<UserDetailDTO>("/api/profile/me", {
-        headers: { Authorization: `Bearer ${session.accessToken}` },
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          "x-locale": getRequestLocale(),
+        },
       });
       return res.data;
     } catch {

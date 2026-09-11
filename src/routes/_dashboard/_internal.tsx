@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_dashboard/_internal")({
     // No client bate no cache re-hidratado; no SSR reusa o que o __root.loader
     // já buscou (sem round-trip extra).
     const user = await context.queryClient.ensureQueryData(profileMeQueryOptions());
-    if (!getUserAreas(user as PermissionUser | null).includes("laboratorio")) {
+    if (!getUserAreas(user satisfies PermissionUser).includes("laboratorio")) {
       throw redirect({ to: "/dashboard" });
     }
   },

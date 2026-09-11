@@ -107,6 +107,14 @@ function extractBackendMessage(err: unknown): string | undefined {
   const data = (err as { response?: { data?: Record<string, unknown> } }).response?.data;
   if (!data || typeof data !== "object") return undefined;
 
+  // `ProblemDetails.Detail` — campo real que o GlobalExceptionHandler do
+  // Core preenche via MessageCatalog.Resolve(code, locale, args) (SPEC-15).
+  // Checado antes dos fallbacks abaixo, que continuam cobrindo mensagens
+  // fora do catálogo (construtor legado DomainException(string), sempre
+  // pt-BR) e respostas de erro que não são ProblemDetails (ex. o proxy BFF
+  // src/routes/api/core.ts, que devolve { message: "..." }).
+  if (typeof data.detail === "string") return data.detail;
+
   if (data.errors && typeof data.errors === "object") {
     const messages = Object.values(data.errors).flat().filter(Boolean);
     if (messages.length > 0) return translateBackendMessage(messages.join(" "));
