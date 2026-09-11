@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-03
 - **Nome:** admin-access
-- **Status:** WAITING_APPROVAL
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/**` (nova — irmã de `_internal`, não
   filha, ver §3.1), `src/lib/queries/**`
