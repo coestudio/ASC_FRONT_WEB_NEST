@@ -5,6 +5,7 @@
   "searchPlaceholder": "Buscar por nome, usuário ou e-mail...",
   "newUser": "Novo usuário",
   "editUser": "Editar usuário",
+  "viewUser": "Detalhes do usuário",
   "emptyState": "Nenhum usuário encontrado.",
   "colName": "Nome",
   "colUsername": "Usuário",
@@ -13,6 +14,7 @@
   "colStatus": "Status",
   "colType": "Tipo",
   "colCreatedAt": "Criado em",
+  "colActions": "Ações",
   "active": "Ativo",
   "inactive": "Inativo",
   "internal": "Interno",
@@ -33,5 +35,34 @@
     "cancel": "Cancelar",
     "creating": "Criando...",
     "saving": "Salvando..."
-  }
+  },
+  "actions": {
+    "activate": "Ativar",
+    "deactivate": "Desativar",
+    "resetPassword": "Redefinir senha",
+    "delete": "Excluir",
+    "noEmailTooltip": "Usuário sem e-mail cadastrado — não é possível redefinir a senha."
+  },
+  "confirm": {
+    "activateTitle": "Ativar usuário",
+    "activateMessage": "Deseja ativar \"{name}\"?",
+    "deactivateTitle": "Desativar usuário",
+    "deactivateMessage": "Deseja desativar \"{name}\"?",
+    "resetPasswordTitle": "Redefinir senha",
+    "resetPasswordMessage": "Uma nova senha será enviada por e-mail para \"{name}\". Continuar?",
+    "deleteTitle": "Excluir usuário",
+    "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+  },
+  "toast": {
+    "created": "Usuário criado com sucesso.",
+    "updated": "Usuário atualizado com sucesso.",
+    "activated": "Usuário ativado.",
+    "deactivated": "Usuário desativado.",
+    "deleted": "Usuário excluído.",
+    "resetPasswordSent": "Nova senha enviada por e-mail.",
+    "error": "Não foi possível concluir a ação. Tente novamente."
+  },
+  "rolesTitle": "Perfis",
+  "rolesDescription": "Referência dos perfis de acesso e o que cada um pode ver no sistema.",
+  "rolesEmpty": "Conteúdo ainda não cadastrado — descrição dos perfis pendente de confirmação."
 }

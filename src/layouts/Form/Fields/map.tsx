@@ -23,6 +23,7 @@ const RenderFields: React.FC<{
             placeholder: field.placeholder,
             containerClass: field.config?.containerClass,
             className: field.config?.className,
+            options: field.config?.options,
           }}
           {...field.col}
         />

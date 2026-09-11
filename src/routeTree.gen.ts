@@ -14,14 +14,18 @@ import { Route as SiteRouteImport } from './routes/_site'
 import { Route as SystemRouteImport } from './routes/_system'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as DashboardInternalRouteImport } from './routes/_dashboard/_internal'
+import { Route as DashboardAdminRouteRouteImport } from './routes/_dashboard/admin/route'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SystemNotFoundRouteImport } from './routes/_system/not-found'
 import { Route as ApiCoreRouteImport } from './routes/api/core'
+import { Route as DashboardAdminIndexRouteImport } from './routes/_dashboard/admin/index'
 import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard/dashboard/index'
 import { Route as AuthForgotPasswordIndexRouteImport } from './routes/auth/forgot-password/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 import { Route as AuthLogoutIndexRouteImport } from './routes/auth/logout/index'
 import { Route as DashboardInternalLaboratoryIndexRouteImport } from './routes/_dashboard/_internal/laboratory/index'
+import { Route as DashboardAdminAccessIndexRouteImport } from './routes/_dashboard/admin/access/index'
+import { Route as DashboardAdminRolesIndexRouteImport } from './routes/_dashboard/admin/roles/index'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
@@ -44,6 +48,11 @@ const DashboardInternalRoute = DashboardInternalRouteImport.update({
   id: '/_internal',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAdminRouteRoute = DashboardAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const SiteIndexRoute = SiteIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -58,6 +67,11 @@ const ApiCoreRoute = ApiCoreRouteImport.update({
   id: '/api/core',
   path: '/api/core',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAdminRouteRoute,
 } as any)
 const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
   id: '/dashboard/',
@@ -85,28 +99,47 @@ const DashboardInternalLaboratoryIndexRoute =
     path: '/laboratory/',
     getParentRoute: () => DashboardInternalRoute,
   } as any)
+const DashboardAdminAccessIndexRoute =
+  DashboardAdminAccessIndexRouteImport.update({
+    id: '/access/',
+    path: '/access/',
+    getParentRoute: () => DashboardAdminRouteRoute,
+  } as any)
+const DashboardAdminRolesIndexRoute =
+  DashboardAdminRolesIndexRouteImport.update({
+    id: '/roles/',
+    path: '/roles/',
+    getParentRoute: () => DashboardAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof SiteIndexRoute
+  '/admin': typeof DashboardAdminRouteRouteWithChildren
   '/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
+  '/admin/': typeof DashboardAdminIndexRoute
   '/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/logout/': typeof AuthLogoutIndexRoute
   '/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
+  '/admin/access/': typeof DashboardAdminAccessIndexRoute
+  '/admin/roles/': typeof DashboardAdminRolesIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof SiteIndexRoute
   '/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
+  '/admin': typeof DashboardAdminIndexRoute
   '/dashboard': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/logout': typeof AuthLogoutIndexRoute
   '/laboratory': typeof DashboardInternalLaboratoryIndexRoute
+  '/admin/access': typeof DashboardAdminAccessIndexRoute
+  '/admin/roles': typeof DashboardAdminRolesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,54 +147,69 @@ export interface FileRoutesById {
   '/_dashboard': typeof DashboardRouteWithChildren
   '/_site': typeof SiteRouteWithChildren
   '/_system': typeof SystemRouteWithChildren
+  '/_dashboard/admin': typeof DashboardAdminRouteRouteWithChildren
   '/_dashboard/_internal': typeof DashboardInternalRouteWithChildren
   '/_system/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
   '/_site/': typeof SiteIndexRoute
+  '/_dashboard/admin/': typeof DashboardAdminIndexRoute
   '/_dashboard/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/logout/': typeof AuthLogoutIndexRoute
   '/_dashboard/_internal/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
+  '/_dashboard/admin/access/': typeof DashboardAdminAccessIndexRoute
+  '/_dashboard/admin/roles/': typeof DashboardAdminRolesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/auth'
     | '/'
+    | '/admin'
     | '/not-found'
     | '/api/core'
+    | '/admin/'
     | '/dashboard/'
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/logout/'
     | '/laboratory/'
+    | '/admin/access/'
+    | '/admin/roles/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/'
     | '/not-found'
     | '/api/core'
+    | '/admin'
     | '/dashboard'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
     | '/laboratory'
+    | '/admin/access'
+    | '/admin/roles'
   id:
     | '__root__'
     | '/auth'
     | '/_dashboard'
     | '/_site'
     | '/_system'
+    | '/_dashboard/admin'
     | '/_dashboard/_internal'
     | '/_system/not-found'
     | '/api/core'
     | '/_site/'
+    | '/_dashboard/admin/'
     | '/_dashboard/dashboard/'
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/logout/'
     | '/_dashboard/_internal/laboratory/'
+    | '/_dashboard/admin/access/'
+    | '/_dashboard/admin/roles/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInternalRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/admin': {
+      id: '/_dashboard/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof DashboardAdminRouteRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_site/': {
       id: '/_site/'
       path: '/'
@@ -229,6 +284,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/core'
       preLoaderRoute: typeof ApiCoreRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard/admin/': {
+      id: '/_dashboard/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof DashboardAdminIndexRouteImport
+      parentRoute: typeof DashboardAdminRouteRoute
     }
     '/_dashboard/dashboard/': {
       id: '/_dashboard/dashboard/'
@@ -265,6 +327,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInternalLaboratoryIndexRouteImport
       parentRoute: typeof DashboardInternalRoute
     }
+    '/_dashboard/admin/access/': {
+      id: '/_dashboard/admin/access/'
+      path: '/access'
+      fullPath: '/admin/access/'
+      preLoaderRoute: typeof DashboardAdminAccessIndexRouteImport
+      parentRoute: typeof DashboardAdminRouteRoute
+    }
+    '/_dashboard/admin/roles/': {
+      id: '/_dashboard/admin/roles/'
+      path: '/roles'
+      fullPath: '/admin/roles/'
+      preLoaderRoute: typeof DashboardAdminRolesIndexRouteImport
+      parentRoute: typeof DashboardAdminRouteRoute
+    }
   }
 }
 
@@ -284,6 +360,21 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface DashboardAdminRouteRouteChildren {
+  DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
+  DashboardAdminAccessIndexRoute: typeof DashboardAdminAccessIndexRoute
+  DashboardAdminRolesIndexRoute: typeof DashboardAdminRolesIndexRoute
+}
+
+const DashboardAdminRouteRouteChildren: DashboardAdminRouteRouteChildren = {
+  DashboardAdminIndexRoute: DashboardAdminIndexRoute,
+  DashboardAdminAccessIndexRoute: DashboardAdminAccessIndexRoute,
+  DashboardAdminRolesIndexRoute: DashboardAdminRolesIndexRoute,
+}
+
+const DashboardAdminRouteRouteWithChildren =
+  DashboardAdminRouteRoute._addFileChildren(DashboardAdminRouteRouteChildren)
+
 interface DashboardInternalRouteChildren {
   DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
 }
@@ -296,11 +387,13 @@ const DashboardInternalRouteWithChildren =
   DashboardInternalRoute._addFileChildren(DashboardInternalRouteChildren)
 
 interface DashboardRouteChildren {
+  DashboardAdminRouteRoute: typeof DashboardAdminRouteRouteWithChildren
   DashboardInternalRoute: typeof DashboardInternalRouteWithChildren
   DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAdminRouteRoute: DashboardAdminRouteRouteWithChildren,
   DashboardInternalRoute: DashboardInternalRouteWithChildren,
   DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
 }

@@ -5,10 +5,10 @@ const fragment: NavFragment = {
   area: "admin",
   sectionLabelKey: "navigation.admin",
   items: [
-    { labelKey: "navigation.adminAccess", to: "/admin/acesso", icon: "bi-shield-lock", order: 1 },
+    { labelKey: "navigation.adminAccess", to: "/admin/access", icon: "bi-shield-lock", order: 1 },
     {
       labelKey: "navigation.adminAccessProfiles",
-      to: "/admin/acessos",
+      to: "/admin/roles",
       icon: "bi-shield-check",
       order: 2,
     },
