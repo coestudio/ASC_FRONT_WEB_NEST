@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Form, Spinner } from "react-bootstrap";
 
 import {
@@ -8,7 +9,15 @@ import {
   postApiAuthValidateResetCode,
   postApiAuthResetPassword,
 } from "@/api/generated/endpoints/auth/auth";
-import { PasswordField } from "@/components/ui/password-field";
+import { InputText, InputPassword } from "@/layouts/Form/Fields/Index";
+import {
+  forgotPasswordEmailSchema,
+  verificationCodeSchema,
+  newPasswordSchema,
+  type ForgotPasswordEmailInput,
+  type VerificationCodeInput,
+  type NewPasswordInput,
+} from "@/lib/validation/reset-password";
 
 export const Route = createFileRoute("/auth/forgot-password/")({
   head: () => ({ meta: [{ title: "Recuperar senha — ASC" }] }),
@@ -29,9 +38,16 @@ function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
 
-  const emailForm = useForm<{ email: string }>({ defaultValues: { email: "" } });
-  const codeForm = useForm<{ code: string }>({ defaultValues: { code: "" } });
-  const pwdForm = useForm<{ newPassword: string; confirmPassword: string }>({
+  const emailForm = useForm<ForgotPasswordEmailInput>({
+    resolver: zodResolver(forgotPasswordEmailSchema),
+    defaultValues: { email: "" },
+  });
+  const codeForm = useForm<VerificationCodeInput>({
+    resolver: zodResolver(verificationCodeSchema),
+    defaultValues: { code: "" },
+  });
+  const pwdForm = useForm<NewPasswordInput>({
+    resolver: zodResolver(newPasswordSchema),
     defaultValues: { newPassword: "", confirmPassword: "" },
   });
 
@@ -49,19 +65,13 @@ function ForgotPasswordPage() {
             setStep(2);
           })}
         >
-          <Form.Group className="mb-4">
-            <Form.Label>E-mail</Form.Label>
-            <Form.Control
-              type="email"
-              autoComplete="email"
-              placeholder="voce@empresa.com"
-              isInvalid={!!emailForm.formState.errors.email}
-              {...emailForm.register("email", { required: "Informe o e-mail" })}
-            />
-            <Form.Control.Feedback type="invalid">
-              {emailForm.formState.errors.email?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
+          <InputText
+            methods={emailForm}
+            fieldName="email"
+            label="E-mail"
+            placeholder="voce@empresa.com"
+            config={{ containerClass: "mb-4" }}
+          />
           <SubmitButton loading={emailForm.formState.isSubmitting}>Enviar código</SubmitButton>
         </Form>
       )}
@@ -78,22 +88,14 @@ function ForgotPasswordPage() {
           <p className="small text-body-secondary">
             Enviamos um código para <strong>{email}</strong>.
           </p>
-          <Form.Group className="mb-4">
-            <Form.Label>Código</Form.Label>
-            <Form.Control
-              inputMode="numeric"
-              maxLength={6}
-              placeholder="000000"
-              isInvalid={!!codeForm.formState.errors.code}
-              {...codeForm.register("code", {
-                required: "Informe o código",
-                pattern: { value: /^\d{6}$/, message: "O código tem 6 dígitos" },
-              })}
-            />
-            <Form.Control.Feedback type="invalid">
-              {codeForm.formState.errors.code?.message}
-            </Form.Control.Feedback>
-          </Form.Group>
+          <InputText
+            methods={codeForm}
+            fieldName="code"
+            label="Código"
+            placeholder="000000"
+            maxLength={6}
+            config={{ containerClass: "mb-4" }}
+          />
           <SubmitButton loading={codeForm.formState.isSubmitting}>Validar código</SubmitButton>
         </Form>
       )}
@@ -114,24 +116,12 @@ function ForgotPasswordPage() {
             navigate({ to: "/auth/login", replace: true });
           })}
         >
-          <PasswordField
-            label="Nova senha"
-            autoComplete="new-password"
-            isInvalid={!!pwdForm.formState.errors.newPassword}
-            feedback={pwdForm.formState.errors.newPassword?.message}
-            {...pwdForm.register("newPassword", {
-              required: "Informe a senha",
-              minLength: 6,
-              maxLength: 100,
-            })}
-          />
-          <PasswordField
+          <InputPassword methods={pwdForm} fieldName="newPassword" label="Nova senha" />
+          <InputPassword
+            methods={pwdForm}
+            fieldName="confirmPassword"
             label="Confirmar senha"
-            autoComplete="new-password"
-            className="mb-4"
-            isInvalid={!!pwdForm.formState.errors.confirmPassword}
-            feedback={pwdForm.formState.errors.confirmPassword?.message}
-            {...pwdForm.register("confirmPassword", { required: "Confirme a senha" })}
+            config={{ containerClass: "mb-4" }}
           />
           <SubmitButton loading={pwdForm.formState.isSubmitting}>Redefinir senha</SubmitButton>
         </Form>

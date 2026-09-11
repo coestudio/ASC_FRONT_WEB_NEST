@@ -11,6 +11,7 @@
 import ptBRAccess from "./dictionaries/pt-BR/access.json";
 import ptBRAuth from "./dictionaries/pt-BR/auth.json";
 import ptBRCommon from "./dictionaries/pt-BR/common.json";
+import ptBRCrud from "./dictionaries/pt-BR/crud.json";
 import ptBRHome from "./dictionaries/pt-BR/home.json";
 import ptBRNavigation from "./dictionaries/pt-BR/navigation.json";
 
@@ -22,6 +23,7 @@ const ptBR = {
   home: ptBRHome,
   auth: ptBRAuth,
   access: ptBRAccess,
+  crud: ptBRCrud,
 };
 
 export type Dictionary = typeof ptBR;

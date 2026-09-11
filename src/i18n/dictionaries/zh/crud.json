@@ -1,0 +1,17 @@
+{
+  "list": {
+    "new": "新建",
+    "searchPlaceholder": "搜索...",
+    "viewMode": "视图模式",
+    "error": "无法加载数据。",
+    "empty": "未找到记录。"
+  },
+  "recordModal": {
+    "cancel": "取消",
+    "close": "关闭",
+    "save": "保存"
+  },
+  "mockDataBanner": {
+    "message": "示例数据 — Core 尚无对应接口。"
+  }
+}

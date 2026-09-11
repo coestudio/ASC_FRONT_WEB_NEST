@@ -38,6 +38,7 @@ export { default as InputColorPicker } from "./InputColorPicker";
 //export { default as InputKeywords } from './InputKeywords';
 
 //* Files
+export { default as InputAvatar } from "./InputAvatar";
 
 type FieldExports = typeof import("./Index");
 export type FieldName = {

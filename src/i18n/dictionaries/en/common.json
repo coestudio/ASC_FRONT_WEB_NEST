@@ -20,6 +20,35 @@
     "viewModeList": "List",
     "underConstruction": "Under construction",
     "underConstructionDescription": "This screen is still being built.",
-    "areaWelcome": "Welcome to the {area} area."
+    "areaWelcome": "Welcome to the {area} area.",
+    "brand": "Brand",
+    "profileModal": {
+      "title": "My profile",
+      "avatar": "Avatar",
+      "uploadAvatar": "Save avatar",
+      "avatarSaved": "Avatar updated.",
+      "detailTab": "Details",
+      "addressTab": "Address",
+      "passwordTab": "Password",
+      "fullName": "Full name",
+      "userName": "Username",
+      "email": "Email",
+      "document": "Document",
+      "phone": "Phone",
+      "birthDate": "Birth date",
+      "postalCode": "ZIP code",
+      "state": "State",
+      "city": "City",
+      "neighborhood": "Neighborhood",
+      "street": "Street",
+      "number": "Number",
+      "complement": "Complement",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "save": "Save",
+      "saved": "Changes saved.",
+      "saveError": "Could not save. Please try again."
+    }
   }
 }

@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-02
 - **Nome:** app-shell-navigation
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/layouts/AppShell/**`, `src/layouts/Form/Fields/**`,
   `src/hooks/**`, `src/components/ui/**`, `src/components/crud/**`,
@@ -359,4 +359,78 @@ src/layouts/Form/Fields/
 
 ---
 
-**Próximo passo:** `APROVAR SPEC-02`.
+## Implementation Notes
+
+**Arquivos alterados/criados** — bate com a tabela §10 integralmente:
+- `src/layouts/AppShell/nav/{types,index,admin,administrativo,operacional,laboratorio,client}.ts` (novo)
+- `src/layouts/AppShell/index.tsx`, `UserMenu.tsx` (editados)
+- `src/components/profile/{profile-modal,detail-tab,address-tab,password-tab}.tsx` (novo)
+- `src/components/ui/{confirmation-modal,view-toggle,mock-data-banner}.tsx` (novo)
+- `src/lib/view-mode.ts`, `src/lib/validation/{login,reset-password}.ts` (novo)
+- `src/routes/auth/login/index.tsx`, `src/routes/auth/forgot-password/index.tsx` (editados —
+  `zodResolver` + `layouts/Form/Fields`)
+- `src/layouts/Form/Fields/InputPassword.tsx` (editado — prop `recurses` removida por inteiro,
+  não só `forgotPassword`, pra bater com CA11)
+- `src/layouts/Form/Fields/InputAvatar.tsx` (novo — não estava na tabela original, necessário pra
+  cobrir o upload de avatar do `ProfileModal` sem violar a regra 10; adicionado a `Fields/Index.ts`)
+- `src/components/crud/{crud-list-page,crud-record-modal}.tsx` (novo)
+- `.env`, `.env.exemple` (editados), `.env.local` (novo, gitignored, credencial real de dev)
+- `src/components/ui/{input,field,password-field}.tsx` (removidos)
+- `src/i18n/dictionaries/*/common.json` (4 locales, chaves `shell.brand`/`shell.profileModal.*`)
+- `src/i18n/dictionaries/*/crud.json` (4 locales, novo) + `src/i18n/dictionaries.ts` (registra o
+  namespace `crud` no shape `pt-BR`)
+
+**Comandos executados:**
+- `bun run check` (tsc --noEmit): sem erro nos arquivos desta SPEC. Restam 5 erros
+  pré-existentes em `src/components/site/SiteHeader.tsx` (rotas `/servicos`, `/politicas` etc. —
+  `src/routeTree.gen.ts` está desatualizado/stale, não regenerado desde antes desta sessão;
+  confirmado via `git stash` que os erros já existiam antes de qualquer mudança desta SPEC).
+  Fora do território de SPEC-02 (`src/components/site/**`, `routeTree.gen.ts` é gerado, nunca
+  editado à mão) — **NOT VERIFIED / débito pré-existente, não corrigido aqui**.
+- `bun run lint`: sem warning/erro novo em nenhum arquivo tocado por esta SPEC. Restam 3 erros
+  pré-existentes em `src/lib/session.server.ts` (`react-hooks/rules-of-hooks` sobre `useSession`
+  do TanStack Start) — arquivo não tocado por esta SPEC, confirmado via `git diff --stat`.
+- `just map` — não rodado: contrato do Core não mudou nesta SPEC (§8, só consome `Profile*` já
+  existente).
+
+**Critérios de aceitação:**
+
+| # | Resultado |
+| --- | --- |
+| CA1 | Código revisado: `GatedSection` usa `useCan(section.area)` → `getUserAreas` (regra inalterada). NOT VERIFIED em runtime (precisa de sessão real sem `isAdmin`). |
+| CA2 | NOT VERIFIED — precisa do Core rodando em dev; fora do alcance desta sessão (sem ambiente). |
+| CA3 | VERIFIED por leitura de código — `ConfirmationModal.onConfirm` roda em `try/finally` com `loading`, `onCancel` não chama `onConfirm`. |
+| CA4 | VERIFIED por leitura de código — `useViewMode` persiste em `localStorage["asc:view-mode"]`; `useResponsiveViewMode` força `"cards"` via `useIsMobile(767.98)`. |
+| CA5 | VERIFIED — ver comandos acima (limpo nos arquivos desta SPEC). |
+| CA6 | VERIFIED — `grep -n "required:\|minLength:\|maxLength:" src/routes/auth/{login,forgot-password}/index.tsx` → vazio. |
+| CA7 | NOT VERIFIED — só pode ser validado de fato quando a SPEC-04 (tela Terminal) for implementada contra `crud-list-page`/`crud-record-modal`. |
+| CA8 | VERIFIED — `grep -rln "<Alert" src/routes` e `grep -rn "MockDataBanner" src/routes` → ambos vazios (nenhuma rota de área existe ainda). |
+| CA9 | VERIFIED — `input.tsx`/`field.tsx`/`password-field.tsx` removidos; `grep -rn "<input\|Form.Control" src/routes/auth src/components/crud` → vazio (busca da lista virou `layouts/Form/Fields/InputText` via `ListSearchInput`). |
+| CA10 | VERIFIED por desenho — `nav/index.ts` faz `import.meta.glob('./*.ts', { eager: true })` filtrando `types.ts`/`index.ts`; um fragmento novo em `nav/<nome>.ts` entra automaticamente sem editar mais nada. |
+| CA11 | VERIFIED — `grep -n "recurses" src/layouts/Form/Fields/InputPassword.tsx` → vazio (prop inteira removida, não só `forgotPassword`); `grep -rn "SuperAdmin\|DayTVjjl2uV4" src` → vazio (só comentário em `validation/login.ts` citando o formato de usuário, sem credencial). |
+| CA12 | VERIFIED por desenho — `SECTION_ORDER` fixo em `nav/types.ts`; `buildSections()` em `nav/index.ts` faz `SECTION_ORDER.map(...)` no final, então a ordem de criação dos arquivos de fragmento não importa. |
+
+**Decisões tomadas durante a implementação:**
+- `InputAvatar.tsx` criado em `layouts/Form/Fields/` (não estava no §10 original) — necessário pra
+  não violar a regra 10 no upload de avatar do `ProfileModal`; é o único lugar do projeto com
+  `<input type="file">` cru, propositalmente dentro da biblioteca de Fields.
+- Busca da `crud-list-page` (`ListSearchInput`) usa um `useForm` local de 1 campo só pra poder
+  usar `InputText` em vez de `Form.Control` cru — exigido pelo CA9 grep cobrir `src/components/crud`.
+- `recurses` do `InputPassword` foi removido por inteiro (não só `forgotPassword`) pra bater com
+  o grep literal do CA11; `minLength`/`maxLength` viraram props de topo do componente.
+- Link "esqueceu a senha" em `auth/login` ficou abaixo do campo de senha (não visualmente "ao lado
+  do label", que exigiria alterar `InputPassword` pra aceitar um slot — fora do escopo, que só
+  pede a remoção de `recurses.forgotPassword`).
+
+**Limitações conhecidas:**
+- `src/routeTree.gen.ts` está stale (não referencia rotas do site público criadas depois da
+  última geração) — causa os 5 erros de `SiteHeader.tsx` em `bun run check`, pré-existentes,
+  fora do território desta SPEC. Regenerar é responsabilidade de quem tocar `src/routes/**`
+  publicamente (`bun run dev`/`build` regenera automaticamente).
+- `src/lib/session.server.ts` tem 3 erros de lint pré-existentes (`react-hooks/rules-of-hooks`
+  sobre `useSession`), não tocado por esta SPEC.
+- CA2 e CA7 exigem ambiente/SPEC seguinte pra validação real (Core rodando em dev; SPEC-04
+  implementada).
+
+**Próximo passo:** iniciar SPEC-03 a SPEC-09 consumindo `nav/*`, `ViewToggle`/`ConfirmationModal`
+e a biblioteca `crud-list-page`/`crud-record-modal`/`MockDataBanner`.
