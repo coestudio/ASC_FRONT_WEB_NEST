@@ -4,10 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,8 +17,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   DocumentDTO,
@@ -29,20 +26,17 @@ import type {
   EnumOptionDTO,
   GetApiOperationOperationIdDocumentParams,
   PagedDTOOfDocumentDTO,
-  PostApiOperationOperationIdDocumentBody
-} from '../../model';
+  PostApiOperationOperationIdDocumentBody,
+} from "../../model";
 
-import { apiRequest } from '../../../mutator.ts';
-
-
-
+import { apiRequest } from "../../../mutator.ts";
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -52,512 +46,710 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const getApiDocumentTypes = (
-
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<EnumOptionDTO[]>(
-      {url: `/api/document/types`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
+export const getApiDocumentTypes = (signal?: AbortSignal) => {
+  return apiRequest<EnumOptionDTO[]>({ url: `/api/document/types`, method: "GET", signal });
+};
 
 export const getGetApiDocumentTypesQueryKey = () => {
-    return [
-    `/api/document/types`
-    ] as const;
-    }
+  return [`/api/document/types`] as const;
+};
 
+export const getGetApiDocumentTypesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiDocumentTypes>>,
+  TError = void,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-export const getGetApiDocumentTypesQueryOptions = <TData = Awaited<ReturnType<typeof getApiDocumentTypes>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>>, }
-) => {
+  const queryKey = queryOptions?.queryKey ?? getGetApiDocumentTypesQueryKey();
 
-const {query: queryOptions} = options ?? {};
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiDocumentTypes>>> = ({ signal }) =>
+    getApiDocumentTypes(signal);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiDocumentTypesQueryKey();
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiDocumentTypes>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiDocumentTypesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiDocumentTypes>>
+>;
+export type GetApiDocumentTypesQueryError = void;
 
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiDocumentTypes>>> = ({ signal }) => getApiDocumentTypes(signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiDocumentTypesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiDocumentTypes>>>
-export type GetApiDocumentTypesQueryError = void
-
-
-export function useGetApiDocumentTypes<TData = Awaited<ReturnType<typeof getApiDocumentTypes>>, TError = void>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>> & Pick<
+export function useGetApiDocumentTypes<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypes>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiDocumentTypes>>,
           TError,
           Awaited<ReturnType<typeof getApiDocumentTypes>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiDocumentTypes<TData = Awaited<ReturnType<typeof getApiDocumentTypes>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiDocumentTypes<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypes>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiDocumentTypes>>,
           TError,
           Awaited<ReturnType<typeof getApiDocumentTypes>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiDocumentTypes<TData = Awaited<ReturnType<typeof getApiDocumentTypes>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiDocumentTypes<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypes>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiDocumentTypes<TData = Awaited<ReturnType<typeof getApiDocumentTypes>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiDocumentTypes<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypes>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypes>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiDocumentTypesQueryOptions(options);
 
-  const queryOptions = getGetApiDocumentTypesQueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const getApiDocumentTypesValue = (value: number, signal?: AbortSignal) => {
+  return apiRequest<EnumOptionDTO>({ url: `/api/document/types/${value}`, method: "GET", signal });
+};
 
+export const getGetApiDocumentTypesValueQueryKey = (value: number) => {
+  return [`/api/document/types/${value}`] as const;
+};
 
-
-
-
-export const getApiDocumentTypesValue = (
-    value: number,
- signal?: AbortSignal
+export const getGetApiDocumentTypesValueQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>,
+  TError = void,
+>(
+  value: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetApiDocumentTypesValueQueryKey(value);
 
-      return apiRequest<EnumOptionDTO>(
-      {url: `/api/document/types/${value}`, method: 'GET', signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiDocumentTypesValue>>> = ({
+    signal,
+  }) => getApiDocumentTypesValue(value, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: value !== null && value !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
 
+export type GetApiDocumentTypesValueQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiDocumentTypesValue>>
+>;
+export type GetApiDocumentTypesValueQueryError = void;
 
-
-export const getGetApiDocumentTypesValueQueryKey = (value: number,) => {
-    return [
-    `/api/document/types/${value}`
-    ] as const;
-    }
-
-
-export const getGetApiDocumentTypesValueQueryOptions = <TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError = void>(value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiDocumentTypesValueQueryKey(value);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiDocumentTypesValue>>> = ({ signal }) => getApiDocumentTypesValue(value, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: value !== null && value !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiDocumentTypesValueQueryResult = NonNullable<Awaited<ReturnType<typeof getApiDocumentTypesValue>>>
-export type GetApiDocumentTypesValueQueryError = void
-
-
-export function useGetApiDocumentTypesValue<TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError = void>(
- value: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>> & Pick<
+export function useGetApiDocumentTypesValue<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>,
+  TError = void,
+>(
+  value: number,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiDocumentTypesValue>>,
           TError,
           Awaited<ReturnType<typeof getApiDocumentTypesValue>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiDocumentTypesValue<TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError = void>(
- value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiDocumentTypesValue<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>,
+  TError = void,
+>(
+  value: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiDocumentTypesValue>>,
           TError,
           Awaited<ReturnType<typeof getApiDocumentTypesValue>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiDocumentTypesValue<TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError = void>(
- value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiDocumentTypesValue<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>,
+  TError = void,
+>(
+  value: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiDocumentTypesValue<TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError = void>(
- value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiDocumentTypesValue<
+  TData = Awaited<ReturnType<typeof getApiDocumentTypesValue>>,
+  TError = void,
+>(
+  value: number,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiDocumentTypesValue>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiDocumentTypesValueQueryOptions(value, options);
 
-  const queryOptions = getGetApiDocumentTypesValueQueryOptions(value,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const getApiOperationOperationIdDocument = (
-    operationId: string,
-    params?: GetApiOperationOperationIdDocumentParams,
- signal?: AbortSignal
+  operationId: string,
+  params?: GetApiOperationOperationIdDocumentParams,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<PagedDTOOfDocumentDTO>({
+    url: `/api/operation/${operationId}/document`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
 
-
-      return apiRequest<PagedDTOOfDocumentDTO>(
-      {url: `/api/operation/${operationId}/document`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiOperationOperationIdDocumentQueryKey = (operationId: string,
-    params?: GetApiOperationOperationIdDocumentParams,) => {
-    return [
-    `/api/operation/${operationId}/document`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdDocumentQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError = void>(operationId: string,
-    params?: GetApiOperationOperationIdDocumentParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>>, }
+export const getGetApiOperationOperationIdDocumentQueryKey = (
+  operationId: string,
+  params?: GetApiOperationOperationIdDocumentParams,
 ) => {
+  return [`/api/operation/${operationId}/document`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions} = options ?? {};
+export const getGetApiOperationOperationIdDocumentQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdDocumentParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdDocumentQueryKey(operationId,params);
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiOperationOperationIdDocumentQueryKey(operationId, params);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>> = ({
+    signal,
+  }) => getApiOperationOperationIdDocument(operationId, params, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: operationId !== null && operationId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>> = ({ signal }) => getApiOperationOperationIdDocument(operationId,params, signal);
+export type GetApiOperationOperationIdDocumentQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>
+>;
+export type GetApiOperationOperationIdDocumentQueryError = void;
 
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdDocumentQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>>
-export type GetApiOperationOperationIdDocumentQueryError = void
-
-
-export function useGetApiOperationOperationIdDocument<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError = void>(
- operationId: string,
-    params: undefined |  GetApiOperationOperationIdDocumentParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>> & Pick<
+export function useGetApiOperationOperationIdDocument<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
+  TError = void,
+>(
+  operationId: string,
+  params: undefined | GetApiOperationOperationIdDocumentParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdDocument<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdDocumentParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdDocument<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdDocumentParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdDocument<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdDocumentParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdDocument<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdDocumentParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdDocument<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdDocumentParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdDocument<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdDocumentParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocument>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdDocumentQueryOptions(
+    operationId,
+    params,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdDocumentQueryOptions(operationId,params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const postApiOperationOperationIdDocument = (
-    operationId: string,
-    postApiOperationOperationIdDocumentBody: PostApiOperationOperationIdDocumentBody,
- signal?: AbortSignal
+  operationId: string,
+  postApiOperationOperationIdDocumentBody: PostApiOperationOperationIdDocumentBody,
+  signal?: AbortSignal,
 ) => {
+  const formData = new FormData();
+  if (postApiOperationOperationIdDocumentBody.File !== undefined) {
+    formData.append(`File`, postApiOperationOperationIdDocumentBody.File);
+  }
+  if (postApiOperationOperationIdDocumentBody.Title !== undefined) {
+    formData.append(`Title`, postApiOperationOperationIdDocumentBody.Title);
+  }
+  if (postApiOperationOperationIdDocumentBody.Type !== undefined) {
+    formData.append(`Type`, postApiOperationOperationIdDocumentBody.Type.toString());
+  }
+  if (postApiOperationOperationIdDocumentBody.Observation !== undefined) {
+    formData.append(`Observation`, postApiOperationOperationIdDocumentBody.Observation);
+  }
+  if (postApiOperationOperationIdDocumentBody.InvoiceId !== undefined) {
+    formData.append(`InvoiceId`, postApiOperationOperationIdDocumentBody.InvoiceId);
+  }
+  if (postApiOperationOperationIdDocumentBody.InvoiceItemId !== undefined) {
+    formData.append(`InvoiceItemId`, postApiOperationOperationIdDocumentBody.InvoiceItemId);
+  }
+  if (postApiOperationOperationIdDocumentBody.CargoUnitId !== undefined) {
+    formData.append(`CargoUnitId`, postApiOperationOperationIdDocumentBody.CargoUnitId);
+  }
+  if (postApiOperationOperationIdDocumentBody.RomaneioId !== undefined) {
+    formData.append(`RomaneioId`, postApiOperationOperationIdDocumentBody.RomaneioId);
+  }
 
-      const formData = new FormData();
-if(postApiOperationOperationIdDocumentBody.File !== undefined) {
- formData.append(`File`, postApiOperationOperationIdDocumentBody.File);
- }
-if(postApiOperationOperationIdDocumentBody.Title !== undefined) {
- formData.append(`Title`, postApiOperationOperationIdDocumentBody.Title);
- }
-if(postApiOperationOperationIdDocumentBody.Type !== undefined) {
- formData.append(`Type`, postApiOperationOperationIdDocumentBody.Type.toString())
- }
-if(postApiOperationOperationIdDocumentBody.Observation !== undefined) {
- formData.append(`Observation`, postApiOperationOperationIdDocumentBody.Observation);
- }
-if(postApiOperationOperationIdDocumentBody.InvoiceId !== undefined) {
- formData.append(`InvoiceId`, postApiOperationOperationIdDocumentBody.InvoiceId);
- }
-if(postApiOperationOperationIdDocumentBody.InvoiceItemId !== undefined) {
- formData.append(`InvoiceItemId`, postApiOperationOperationIdDocumentBody.InvoiceItemId);
- }
-if(postApiOperationOperationIdDocumentBody.CargoUnitId !== undefined) {
- formData.append(`CargoUnitId`, postApiOperationOperationIdDocumentBody.CargoUnitId);
- }
-if(postApiOperationOperationIdDocumentBody.RomaneioId !== undefined) {
- formData.append(`RomaneioId`, postApiOperationOperationIdDocumentBody.RomaneioId);
- }
+  return apiRequest<DocumentDTO>({
+    url: `/api/operation/${operationId}/document`,
+    method: "POST",
+    headers: { "Content-Type": "multipart/form-data" },
+    data: formData,
+    signal,
+  });
+};
 
-      return apiRequest<DocumentDTO>(
-      {url: `/api/operation/${operationId}/document`, method: 'POST',
-      headers: {'Content-Type': 'multipart/form-data', },
-       data: formData, signal
-    },
-      );
-    }
+export const getPostApiOperationOperationIdDocumentMutationKey = () =>
+  ["postApiOperationOperationIdDocument"] as const;
 
+export const getPostApiOperationOperationIdDocumentMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>,
+    TError,
+    PostApiOperationOperationIdDocumentMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>,
+  TError,
+  PostApiOperationOperationIdDocumentMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiOperationOperationIdDocumentMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>,
+    PostApiOperationOperationIdDocumentMutationVariables
+  > = (props) => {
+    const { operationId, data } = props ?? {};
 
+    return postApiOperationOperationIdDocument(operationId, data);
+  };
 
-export const getPostApiOperationOperationIdDocumentMutationKey = () => ['postApiOperationOperationIdDocument'] as const;
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPostApiOperationOperationIdDocumentMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>, TError,PostApiOperationOperationIdDocumentMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>, TError,PostApiOperationOperationIdDocumentMutationVariables, TContext> => {
+export type PostApiOperationOperationIdDocumentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>
+>;
+export type PostApiOperationOperationIdDocumentMutationBody =
+  PostApiOperationOperationIdDocumentBody;
+export type PostApiOperationOperationIdDocumentMutationError = void;
+export type PostApiOperationOperationIdDocumentMutationVariables = {
+  operationId: string;
+  data: PostApiOperationOperationIdDocumentBody;
+};
 
-const mutationKey = getPostApiOperationOperationIdDocumentMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export const usePostApiOperationOperationIdDocument = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>,
+      TError,
+      PostApiOperationOperationIdDocumentMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>,
+  TError,
+  PostApiOperationOperationIdDocumentMutationVariables,
+  TContext
+> => {
+  return useMutation(getPostApiOperationOperationIdDocumentMutationOptions(options), queryClient);
+};
+export const getApiOperationOperationIdDocumentId = (
+  operationId: string,
+  id: string,
+  signal?: AbortSignal,
+) => {
+  return apiRequest<DocumentDTO>({
+    url: `/api/operation/${operationId}/document/${id}`,
+    method: "GET",
+    signal,
+  });
+};
 
+export const getGetApiOperationOperationIdDocumentIdQueryKey = (
+  operationId: string,
+  id: string,
+) => {
+  return [`/api/operation/${operationId}/document/${id}`] as const;
+};
 
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>, PostApiOperationOperationIdDocumentMutationVariables> = (props) => {
-          const {operationId,data} = props ?? {};
-
-          return  postApiOperationOperationIdDocument(operationId,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiOperationOperationIdDocumentMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>>
-    export type PostApiOperationOperationIdDocumentMutationBody = PostApiOperationOperationIdDocumentBody
-    export type PostApiOperationOperationIdDocumentMutationError = void
-    export type PostApiOperationOperationIdDocumentMutationVariables = {operationId: string;data: PostApiOperationOperationIdDocumentBody}
-
-    export const usePostApiOperationOperationIdDocument = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>, TError,PostApiOperationOperationIdDocumentMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiOperationOperationIdDocument>>,
+export const getGetApiOperationOperationIdDocumentIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
         TError,
-        PostApiOperationOperationIdDocumentMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiOperationOperationIdDocumentMutationOptions(options), queryClient);
-    }
-    export const getApiOperationOperationIdDocumentId = (
-    operationId: string,
-    id: string,
- signal?: AbortSignal
+        TData
+      >
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiOperationOperationIdDocumentIdQueryKey(operationId, id);
 
-      return apiRequest<DocumentDTO>(
-      {url: `/api/operation/${operationId}/document/${id}`, method: 'GET', signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>
+  > = ({ signal }) => getApiOperationOperationIdDocumentId(operationId, id, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: operationId !== null && operationId !== undefined && id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiOperationOperationIdDocumentIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>
+>;
+export type GetApiOperationOperationIdDocumentIdQueryError = void;
 
-
-export const getGetApiOperationOperationIdDocumentIdQueryKey = (operationId: string,
-    id: string,) => {
-    return [
-    `/api/operation/${operationId}/document/${id}`
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdDocumentIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError = void>(operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdDocumentIdQueryKey(operationId,id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>> = ({ signal }) => getApiOperationOperationIdDocumentId(operationId,id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdDocumentIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>>
-export type GetApiOperationOperationIdDocumentIdQueryError = void
-
-
-export function useGetApiOperationOperationIdDocumentId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError = void>(
- operationId: string,
-    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError, TData>> & Pick<
+export function useGetApiOperationOperationIdDocumentId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdDocumentId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError = void>(
- operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdDocumentId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdDocumentId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError = void>(
- operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdDocumentId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdDocumentId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError = void>(
- operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdDocumentId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdDocumentId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdDocumentIdQueryOptions(
+    operationId,
+    id,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdDocumentIdQueryOptions(operationId,id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 export const putApiOperationOperationIdDocumentId = (
-    operationId: string,
-    id: string,
-    documentUpdate: DocumentUpdate,
- signal?: AbortSignal
+  operationId: string,
+  id: string,
+  documentUpdate: DocumentUpdate,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<DocumentDTO>({
+    url: `/api/operation/${operationId}/document/${id}`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: documentUpdate,
+    signal,
+  });
+};
 
+export const getPutApiOperationOperationIdDocumentIdMutationKey = () =>
+  ["putApiOperationOperationIdDocumentId"] as const;
 
-      return apiRequest<DocumentDTO>(
-      {url: `/api/operation/${operationId}/document/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: documentUpdate, signal
-    },
-      );
-    }
+export const getPutApiOperationOperationIdDocumentIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>,
+    TError,
+    PutApiOperationOperationIdDocumentIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>,
+  TError,
+  PutApiOperationOperationIdDocumentIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPutApiOperationOperationIdDocumentIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>,
+    PutApiOperationOperationIdDocumentIdMutationVariables
+  > = (props) => {
+    const { operationId, id, data } = props ?? {};
 
+    return putApiOperationOperationIdDocumentId(operationId, id, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPutApiOperationOperationIdDocumentIdMutationKey = () => ['putApiOperationOperationIdDocumentId'] as const;
+export type PutApiOperationOperationIdDocumentIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>
+>;
+export type PutApiOperationOperationIdDocumentIdMutationBody = DocumentUpdate;
+export type PutApiOperationOperationIdDocumentIdMutationError = void;
+export type PutApiOperationOperationIdDocumentIdMutationVariables = {
+  operationId: string;
+  id: string;
+  data: DocumentUpdate;
+};
 
-export const getPutApiOperationOperationIdDocumentIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>, TError,PutApiOperationOperationIdDocumentIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>, TError,PutApiOperationOperationIdDocumentIdMutationVariables, TContext> => {
-
-const mutationKey = getPutApiOperationOperationIdDocumentIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>, PutApiOperationOperationIdDocumentIdMutationVariables> = (props) => {
-          const {operationId,id,data} = props ?? {};
-
-          return  putApiOperationOperationIdDocumentId(operationId,id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutApiOperationOperationIdDocumentIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>>
-    export type PutApiOperationOperationIdDocumentIdMutationBody = DocumentUpdate
-    export type PutApiOperationOperationIdDocumentIdMutationError = void
-    export type PutApiOperationOperationIdDocumentIdMutationVariables = {operationId: string;id: string;data: DocumentUpdate}
-
-    export const usePutApiOperationOperationIdDocumentId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>, TError,PutApiOperationOperationIdDocumentIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>,
-        TError,
-        PutApiOperationOperationIdDocumentIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPutApiOperationOperationIdDocumentIdMutationOptions(options), queryClient);
-    }
+export const usePutApiOperationOperationIdDocumentId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>,
+      TError,
+      PutApiOperationOperationIdDocumentIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putApiOperationOperationIdDocumentId>>,
+  TError,
+  PutApiOperationOperationIdDocumentIdMutationVariables,
+  TContext
+> => {
+  return useMutation(getPutApiOperationOperationIdDocumentIdMutationOptions(options), queryClient);
+};

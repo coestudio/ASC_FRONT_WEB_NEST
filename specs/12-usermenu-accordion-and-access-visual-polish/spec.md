@@ -7,7 +7,7 @@
   pedido do usuário — registro de fato consumado, não fluxo normal de
   aprovação prévia)
 - **Área:** `src/layouts/AppShell/UserMenu.tsx`, `src/layouts/AppShell/
-  index.tsx`, `src/layouts/AppShell/index.module.css`,
+index.tsx`, `src/layouts/AppShell/index.module.css`,
   `src/components/theme/brand-switcher.tsx`, `src/styles/globals/base.css`,
   `src/components/crud/crud-list-page.tsx` (+ `crud-list-page.module.css`
   novo), `src/routes/_dashboard/admin/access/index.tsx` (+ `index.module.css`
@@ -175,7 +175,7 @@ equivalente, o cabeçalho ficou sem cor de fundo, só uppercase + hairline):
 
 - Header uppercase, `font-size: 0.72rem`, `letter-spacing: 0.07em`,
   `color: var(--ink-muted)`, hairline (`border-bottom: 1px solid
-  var(--bs-border-color)`).
+var(--bs-border-color)`).
 - Corpo com hairline entre linhas (`tbody td { border-bottom: ... }`,
   removido na última linha), `vertical-align: middle`, padding lateral de
   `1.25rem` na primeira/última coluna.
@@ -185,8 +185,8 @@ equivalente, o cabeçalho ficou sem cor de fundo, só uppercase + hairline):
 
 A prop `borderless` do react-bootstrap zera a borda padrão do Bootstrap
 (`.table-borderless > :not(caption) > * > * { border-bottom-width: 0; }`,
-especificidade CSS ~(0,1,1)); o hairline customizado de `.crudTable
-tbody td`/`.crudTable thead th` tem especificidade maior (~(0,1,2), classe +
+especificidade CSS ~~(0,1,1)); o hairline customizado de `.crudTable
+tbody td`/`.crudTable thead th` tem especificidade maior (~~(0,1,2), classe +
 2 seletores de tag) e sobrepõe corretamente — confirmado por inspeção do
 CSS gerado do Bootstrap, não só por leitura visual.
 
@@ -199,7 +199,7 @@ A view "cards" (grid de `Card`) não foi alterada por este item.
 - **Colunas.** Durante a implementação inicial desta rodada, as colunas
   foram trocadas de `nome, usuário, email, perfil, status, tipo, criado em`
   (contrato original da SPEC-03 §3.2) para `nome, usuário, email, telefone,
-  documento, status, ações` (perfil/tipo/criado em removidos; telefone/
+documento, status, ações` (perfil/tipo/criado em removidos; telefone/
   documento adicionados, ambos campos reais de `ProfileDTO`, não
   inventados). **Essa troca foi revertida** depois que o usuário decidiu o
   `D1` (§6/§8): a tabela e o card voltaram ao conjunto de colunas do
@@ -219,7 +219,7 @@ A view "cards" (grid de `Card`) não foi alterada por este item.
   `--bs-danger`). Cada botão é um `<button>` circular
   (`border-radius: 999px`, `width/height: 2rem`) com fundo "soft" da cor
   correspondente — classes novas em `src/routes/_dashboard/admin/access/
-  index.module.css` (`.actionBtn`, `.actionBtnNeutral`, `.actionBtnSuccess`,
+index.module.css` (`.actionBtn`, `.actionBtnNeutral`, `.actionBtnSuccess`,
   `.actionBtnDanger`), usando `--brand-primary`/`--brand-primary-soft`/
   `--ink-muted`/`--sidebar-hover`/`--bs-danger` — nenhuma cor hex fixa fora
   do fallback `rgba(220, 53, 69, 0.12)` da variante danger (aproximação de
@@ -290,9 +290,11 @@ telefone/documento como referência — ele não está mais em produção.
 ## 9. Comandos executados
 
 **Sessão de registro (escrita inicial da SPEC, sem código):**
+
 - `bun run check` → **VERIFIED**, `tsc --noEmit` sem erro.
 
 **Sessão de reversão de `D1` (`src/routes/_dashboard/admin/access/index.tsx`):**
+
 - `bun run check` → **VERIFIED**, `tsc --noEmit` sem erro.
 - `bunx eslint src/routes/_dashboard/admin/access/index.tsx` → **VERIFIED**,
   0 erros/warnings.
@@ -304,13 +306,13 @@ telefone/documento como referência — ele não está mais em produção.
 
 ## 10. Critérios de aceitação
 
-| # | Critério | Status |
-| --- | --- | --- |
-| CA1 | SPEC documenta os 5 itens implementados com base no diff real (`git show 835be31`), não só no resumo do usuário | PASS |
-| CA2 | Divergência do item 4 contra a SPEC-03 foi registrada como pendência explícita antes de ser resolvida (não aprovada retroativamente por conta própria) | PASS |
-| CA3 | `D1` resolvido por decisão explícita do usuário, código revertido pro contrato da SPEC-03, visual novo preservado | PASS |
-| CA4 | `bun run check` + lint limpos nos arquivos tocados pela reversão | PASS |
-| CA5 | Numeração sequencial respeitada (`12`, próximo livre depois de `11`) | PASS |
+| #   | Critério                                                                                                                                               | Status |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| CA1 | SPEC documenta os 5 itens implementados com base no diff real (`git show 835be31`), não só no resumo do usuário                                        | PASS   |
+| CA2 | Divergência do item 4 contra a SPEC-03 foi registrada como pendência explícita antes de ser resolvida (não aprovada retroativamente por conta própria) | PASS   |
+| CA3 | `D1` resolvido por decisão explícita do usuário, código revertido pro contrato da SPEC-03, visual novo preservado                                      | PASS   |
+| CA4 | `bun run check` + lint limpos nos arquivos tocados pela reversão                                                                                       | PASS   |
+| CA5 | Numeração sequencial respeitada (`12`, próximo livre depois de `11`)                                                                                   | PASS   |
 
 ---
 

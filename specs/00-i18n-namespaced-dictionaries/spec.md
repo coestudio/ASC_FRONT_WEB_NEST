@@ -126,6 +126,7 @@ Cada arquivo de namespace tem como raiz o **conteúdo** daquele namespace
 (sem repetir a chave de topo):
 
 `dictionaries/pt-BR/auth.json`
+
 ```json
 { "loginTitle": "Login", "email": "Email", "...": "..." }
 ```
@@ -171,7 +172,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
 > montado em runtime só dá o shape `Record<string, NsRecord>` — o `DeepKeys`
 > perde a tipagem literal das chaves. Alternativas:
 > (a) `import` estático explícito de cada `pt-BR/<ns>.json` para o tipo
->     (glob só para os outros locales) — mantém `TranslationKey` forte;
+> (glob só para os outros locales) — mantém `TranslationKey` forte;
 > (b) aceitar `TranslationKey = string` e confiar no warn de runtime;
 > (c) gerar um `.d.ts` de chaves no `just`-like step.
 > **Recomendação: (a)** — pt-BR importado explícito por namespace (a lista
@@ -188,30 +189,30 @@ export const locales = ["pt-BR", "en", "es", "zh"] as const;
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/i18n/config.ts` | editar — `es` em `locales` + `LOCALE_LABELS` |
-| `src/i18n/dictionaries.ts` | reescrever — merge por namespace |
-| `src/i18n/dictionaries/pt-BR/{common,navigation,home,auth,access}.json` | criar (a partir do `pt-BR.json`) |
-| `src/i18n/dictionaries/en/{...}.json` | criar (a partir do `en.json`) |
-| `src/i18n/dictionaries/es/{...}.json` | criar — **tradução nova** |
-| `src/i18n/dictionaries/zh/{...}.json` | criar (a partir do `zh.json`) |
-| `src/i18n/dictionaries/{pt-BR,en,zh}.json` | remover |
-| `src/i18n/translate.ts` | revisar (idealmente inalterado) |
-| `src/components/i18n/language-switcher.tsx` | revisar (deve funcionar sem mudança) |
+| Arquivo                                                                 | Ação                                         |
+| ----------------------------------------------------------------------- | -------------------------------------------- |
+| `src/i18n/config.ts`                                                    | editar — `es` em `locales` + `LOCALE_LABELS` |
+| `src/i18n/dictionaries.ts`                                              | reescrever — merge por namespace             |
+| `src/i18n/dictionaries/pt-BR/{common,navigation,home,auth,access}.json` | criar (a partir do `pt-BR.json`)             |
+| `src/i18n/dictionaries/en/{...}.json`                                   | criar (a partir do `en.json`)                |
+| `src/i18n/dictionaries/es/{...}.json`                                   | criar — **tradução nova**                    |
+| `src/i18n/dictionaries/zh/{...}.json`                                   | criar (a partir do `zh.json`)                |
+| `src/i18n/dictionaries/{pt-BR,en,zh}.json`                              | remover                                      |
+| `src/i18n/translate.ts`                                                 | revisar (idealmente inalterado)              |
+| `src/components/i18n/language-switcher.tsx`                             | revisar (deve funcionar sem mudança)         |
 
 ## 11. Critérios de aceitação
 
-| # | Critério | Verificação |
-| --- | --- | --- |
-| CA1 | `bun run check` passa | comando |
-| CA2 | `bun run lint` passa | comando |
-| CA3 | `bun run build` passa (glob resolve no build SSR) | comando |
+| #   | Critério                                                                                                          | Verificação         |
+| --- | ----------------------------------------------------------------------------------------------------------------- | ------------------- |
+| CA1 | `bun run check` passa                                                                                             | comando             |
+| CA2 | `bun run lint` passa                                                                                              | comando             |
+| CA3 | `bun run build` passa (glob resolve no build SSR)                                                                 | comando             |
 | CA4 | App em `pt-BR` renderiza todas as telas atuais (login, forgot-password, dashboard, access) sem chave crua visível | manual, rota a rota |
-| CA5 | Trocar para `en`, `es`, `zh` no switcher troca o texto na hora | manual |
-| CA6 | Remover uma chave de `en/auth.json` → build ainda passa, tela mostra fallback + warn em dev | manual |
-| CA7 | Remover `es/access.json` inteiro → `bun run check` **falha** (shape incompleto) | manual |
-| CA8 | Nenhum call-site de `t(...)` foi alterado | `git diff` |
+| CA5 | Trocar para `en`, `es`, `zh` no switcher troca o texto na hora                                                    | manual              |
+| CA6 | Remover uma chave de `en/auth.json` → build ainda passa, tela mostra fallback + warn em dev                       | manual              |
+| CA7 | Remover `es/access.json` inteiro → `bun run check` **falha** (shape incompleto)                                   | manual              |
+| CA8 | Nenhum call-site de `t(...)` foi alterado                                                                         | `git diff`          |
 
 ## 12. Riscos
 
@@ -305,16 +306,16 @@ nome do arquivo = chave de topo. Isso preserva 100% o shape anterior
     (Nitro/preset azure-swa-compatível).
 - **Critérios de aceitação:**
 
-| # | Critério | Resultado |
-| --- | --- | --- |
-| CA1 | `bun run check` passa | PARCIAL — passa para o escopo desta SPEC (0 erros novos); 9 erros pré-existentes e não relacionados permanecem no repositório |
-| CA2 | `bun run lint` passa | PARCIAL — mesmo caso: 0 problemas novos; 3 erros + 60 warnings pré-existentes permanecem |
-| CA3 | `bun run build` passa | PASS |
-| CA4 | Renderização pt-BR sem chave crua | NOT VERIFIED — nenhuma verificação manual de UI rodada nesta sessão (sem servidor dev ativo); risco baixo pois só `theme.*` tem call-site real hoje e seu valor foi preservado |
-| CA5 | Troca de idioma no switcher | NOT VERIFIED — idem, requer app rodando |
-| CA6 | Fallback de chave ausente | NOT VERIFIED — comportamento de `translate.ts` inalterado (mesma lógica), risco baixo |
+| #   | Critério                              | Resultado                                                                                                                                                                                                                                                                                            |
+| --- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1 | `bun run check` passa                 | PARCIAL — passa para o escopo desta SPEC (0 erros novos); 9 erros pré-existentes e não relacionados permanecem no repositório                                                                                                                                                                        |
+| CA2 | `bun run lint` passa                  | PARCIAL — mesmo caso: 0 problemas novos; 3 erros + 60 warnings pré-existentes permanecem                                                                                                                                                                                                             |
+| CA3 | `bun run build` passa                 | PASS                                                                                                                                                                                                                                                                                                 |
+| CA4 | Renderização pt-BR sem chave crua     | NOT VERIFIED — nenhuma verificação manual de UI rodada nesta sessão (sem servidor dev ativo); risco baixo pois só `theme.*` tem call-site real hoje e seu valor foi preservado                                                                                                                       |
+| CA5 | Troca de idioma no switcher           | NOT VERIFIED — idem, requer app rodando                                                                                                                                                                                                                                                              |
+| CA6 | Fallback de chave ausente             | NOT VERIFIED — comportamento de `translate.ts` inalterado (mesma lógica), risco baixo                                                                                                                                                                                                                |
 | CA7 | Remover `es/access.json` quebra `tsc` | NOT VERIFIED manualmente, mas garantido por construção: `Dictionary` é derivado de `pt-BR` (todas as 5 chaves obrigatórias) e `buildLocale` retorna `Dictionary`; faltar o arquivo deixa `out.access` `undefined`, e o cast final `as Dictionary` mascara isso em runtime — **ver limitação abaixo** |
-| CA8 | Nenhum call-site de `t(...)` alterado | PASS — `git diff` mostra zero mudança em `src/layouts/AppShell/index.tsx` (único call-site real) |
+| CA8 | Nenhum call-site de `t(...)` alterado | PASS — `git diff` mostra zero mudança em `src/layouts/AppShell/index.tsx` (único call-site real)                                                                                                                                                                                                     |
 
 - **Decisões tomadas durante a implementação:** ver §15 acima (caso especial
   do namespace `common` para preservar RF1/CA8).

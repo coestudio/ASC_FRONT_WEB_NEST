@@ -4,17 +4,17 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ClientDTO } from './clientDTO.ts';
-import type { ContainerOperationDTO } from './containerOperationDTO.ts';
-import type { DocumentDTO } from './documentDTO.ts';
-import type { OperationService } from './operationService.ts';
-import type { OperationStatus } from './operationStatus.ts';
-import type { OperationType } from './operationType.ts';
-import type { ProductDTO } from './productDTO.ts';
-import type { ResponsibleDTO } from './responsibleDTO.ts';
-import type { RomaneioDTO } from './romaneioDTO.ts';
-import type { RomaneioImportDTO } from './romaneioImportDTO.ts';
-import type { VesselDTO } from './vesselDTO.ts';
+import type { ClientDTO } from "./clientDTO.ts";
+import type { ContainerOperationDTO } from "./containerOperationDTO.ts";
+import type { DocumentDTO } from "./documentDTO.ts";
+import type { OperationService } from "./operationService.ts";
+import type { OperationStatus } from "./operationStatus.ts";
+import type { OperationType } from "./operationType.ts";
+import type { ProductDTO } from "./productDTO.ts";
+import type { ResponsibleDTO } from "./responsibleDTO.ts";
+import type { RomaneioDTO } from "./romaneioDTO.ts";
+import type { RomaneioImportDTO } from "./romaneioImportDTO.ts";
+import type { VesselDTO } from "./vesselDTO.ts";
 
 export interface OperationDetailDTO {
   client: ClientDTO;

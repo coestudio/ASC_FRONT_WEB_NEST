@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ContainerPhotoSlot } from './containerPhotoSlot.ts';
+import type { ContainerPhotoSlot } from "./containerPhotoSlot.ts";
 
 export type PostApiOperationOperationIdContainerIdPhotoBody = {
   file?: Blob | File;

@@ -70,7 +70,7 @@ legado **não é portado como padrão**, só a forma da tela.
 - **RF4** — Harbor mostra terminais relacionados via consulta separada
   (`TerminalDTO.harborId` é quem referencia o Harbor, não o inverso — não
   existe campo de terminais no `HarborDTO`): `getApiTerminal({ HarborId:
-  harbor.id })` disparado dentro do `extraContent` do `crud-record-modal`
+harbor.id })` disparado dentro do `extraContent` do `crud-record-modal`
   (mesmo mecanismo já usado pela SPEC-05), mesmo que só leitura nesta SPEC —
   vínculo editável é `[NEEDS_DECISION]`, ver D2.
 
@@ -83,13 +83,13 @@ legado **não é portado como padrão**, só a forma da tela.
 
 ## 7. Contrato de rota
 
-| Rota | Componente |
-| --- | --- |
-| `/administrative/registry/terminal` | lista+form Terminal |
-| `/administrative/registry/harbor` | lista+form Harbor |
+| Rota                                 | Componente           |
+| ------------------------------------ | -------------------- |
+| `/administrative/registry/terminal`  | lista+form Terminal  |
+| `/administrative/registry/harbor`    | lista+form Harbor    |
 | `/administrative/registry/container` | lista+form Container |
-| `/administrative/registry/vessel` | lista+form Vessel |
-| `/administrative/registry/product` | lista+form Produto |
+| `/administrative/registry/vessel`    | lista+form Vessel    |
+| `/administrative/registry/product`   | lista+form Produto   |
 
 Nomes de segmento em inglês por regra do projeto (regra 6, aplicada a URL
 também — decisão confirmada, D3 resolvido): `administrativo`→`administrative`,
@@ -137,23 +137,23 @@ SPEC-02.
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/.../administrative/registry/{terminal,harbor,container,vessel,product}/index.tsx` | criar (5) |
-| `src/layouts/AppShell/nav/administrative-registry.ts` | criar (fragmento, SPEC-02 §3.1) |
-| `src/i18n/dictionaries/*/administrative-registry.json` | criar (4 locales) |
-| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover os 5 itens de registry (`administrativoVessel`, `administrativoContainer`, `administrativoTerminal`, `administrativoHarbor`, `administrativoProduct`) hoje hard-coded com rotas antigas em PT; migram pro fragmento novo acima. Não mexer nos demais itens (`administrativoClients`, `administrativoOperations` — escopo de SPEC-05/07. `administrativoLog`/`administrativoOccurrences` **não têm mais spec que os remova** — SPEC-06 cancelada; ficam órfãos no fragmento legado, apontando pra rota antiga, até decisão futura) |
+| Arquivo                                                                                       | Ação                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/.../administrative/registry/{terminal,harbor,container,vessel,product}/index.tsx` | criar (5)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `src/layouts/AppShell/nav/administrative-registry.ts`                                         | criar (fragmento, SPEC-02 §3.1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `src/i18n/dictionaries/*/administrative-registry.json`                                        | criar (4 locales)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `src/layouts/AppShell/nav/administrativo.ts`                                                  | editar — remover os 5 itens de registry (`administrativoVessel`, `administrativoContainer`, `administrativoTerminal`, `administrativoHarbor`, `administrativoProduct`) hoje hard-coded com rotas antigas em PT; migram pro fragmento novo acima. Não mexer nos demais itens (`administrativoClients`, `administrativoOperations` — escopo de SPEC-05/07. `administrativoLog`/`administrativoOccurrences` **não têm mais spec que os remova** — SPEC-06 cancelada; ficam órfãos no fragmento legado, apontando pra rota antiga, até decisão futura) |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | As 5 telas fazem CRUD real contra o Core (dev) |
-| CA2 | Nenhuma valida com Zod escrito à mão |
-| CA3 | As 5 telas reusam `crud-list-page`/`crud-record-modal` da SPEC-02 (não criam nem copiam componente próprio) |
-| CA4 | `bun run check` + `lint` passam |
+| #   | Critério                                                                                                           |
+| --- | ------------------------------------------------------------------------------------------------------------------ |
+| CA1 | As 5 telas fazem CRUD real contra o Core (dev)                                                                     |
+| CA2 | Nenhuma valida com Zod escrito à mão                                                                               |
+| CA3 | As 5 telas reusam `crud-list-page`/`crud-record-modal` da SPEC-02 (não criam nem copiam componente próprio)        |
+| CA4 | `bun run check` + `lint` passam                                                                                    |
 | CA5 | Form de Terminal resolve `harborId` via `SelectAsync` (SPEC-SHARE-01), não `<select>` estático populado de uma vez |
-| CA6 | Form de Harbor resolve `address` via `AddressGroup` (SPEC-SHARE-01), não campos `Input*` soltos repetidos |
+| CA6 | Form de Harbor resolve `address` via `AddressGroup` (SPEC-SHARE-01), não campos `Input*` soltos repetidos          |
 
 ## 12. Riscos
 

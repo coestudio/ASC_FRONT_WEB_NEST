@@ -4,21 +4,21 @@ import type { EnumOptionDTO } from "../model";
 
 export const getApiUserTypes: EnumOptionDTO[] = [
   {
-    "value": 0,
-    "name": {
-      "pt": "Interno",
-      "en": "Internal",
-      "es": "Interno",
-      "zh": "内部"
-    }
+    value: 0,
+    name: {
+      pt: "Interno",
+      en: "Internal",
+      es: "Interno",
+      zh: "内部",
+    },
   },
   {
-    "value": 1,
-    "name": {
-      "pt": "Externo",
-      "en": "External",
-      "es": "Externo",
-      "zh": "外部"
-    }
-  }
+    value: 1,
+    name: {
+      pt: "Externo",
+      en: "External",
+      es: "Externo",
+      zh: "外部",
+    },
+  },
 ];

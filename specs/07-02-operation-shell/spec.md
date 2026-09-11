@@ -59,9 +59,9 @@ silent-fail** aqui, ver RF2).
 
 ## 7. Contrato de rota
 
-| Rota | Dado |
-| --- | --- |
-| `/administrative/operations/$id` (redirect → `details`) | — |
+| Rota                                                    | Dado |
+| ------------------------------------------------------- | ---- |
+| `/administrative/operations/$id` (redirect → `details`) | —    |
 
 (As 7 sub-rotas de aba são contrato das respectivas sub-SPECs 07-03..09.)
 
@@ -80,17 +80,17 @@ src/routes/_dashboard/_internal/administrative/operations/
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
+| Arquivo                                                  | Ação  |
+| -------------------------------------------------------- | ----- |
 | `src/routes/.../administrative/operations/$id/route.tsx` | criar |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | Acessar `/administrative/operations/$id` sem sub-rota redireciona pra `details` |
+| #   | Critério                                                                                  |
+| --- | ----------------------------------------------------------------------------------------- |
+| CA1 | Acessar `/administrative/operations/$id` sem sub-rota redireciona pra `details`           |
 | CA2 | `id` inexistente/inválido mostra estado de erro visível, nunca desaparece silenciosamente |
-| CA3 | `bun run check` + `lint` passam |
+| CA3 | `bun run check` + `lint` passam                                                           |
 
 ## 12. Riscos
 

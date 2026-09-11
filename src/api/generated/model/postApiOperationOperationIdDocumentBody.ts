@@ -4,14 +4,14 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { DocumentType } from './documentType.ts';
+import type { DocumentType } from "./documentType.ts";
 
 export type PostApiOperationOperationIdDocumentBody = {
   File?: Blob | File;
   /**
-     * @minLength 3
-     * @maxLength 150
-     */
+   * @minLength 3
+   * @maxLength 150
+   */
   Title?: string;
   Type?: DocumentType;
   Observation?: string;

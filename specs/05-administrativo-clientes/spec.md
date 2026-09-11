@@ -50,11 +50,11 @@ endpoint (histórico de relatórios, por exemplo).
    padrão confirmado (listagem + criar/editar/detalhes tudo em modal, exceto
    Operações). O conteúdo do modal em modo `view` tem 2 seções:
    - Dados cadastrais: **real**, via `ClientDetailDTO` (`GET
-     /api/client/{id}`) — os mesmos campos do form, só read-only.
+/api/client/{id}`) — os mesmos campos do form, só read-only.
    - Relatórios/histórico associados: **UI-only**, array mockado, dentro do
      slot de conteúdo extra do modal (§9 da SPEC-02), com
      `mock-data-banner` (SPEC-02) acima, comentário `// MOCK — sem endpoint
-     no Core, ver specs/05-administrativo-clientes/spec.md`.
+no Core, ver specs/05-administrativo-clientes/spec.md`.
 
 ## 4. Fora do escopo
 
@@ -79,8 +79,8 @@ endpoint (histórico de relatórios, por exemplo).
 
 ## 7. Contrato de rota
 
-| Rota | Dado |
-| --- | --- |
+| Rota                      | Dado                                  |
+| ------------------------- | ------------------------------------- |
 | `/administrative/clients` | real (lista + modal create/edit/view) |
 
 Sem rota `$id` — detalhe é o modal em modo `view`, aberto por clique na
@@ -112,23 +112,23 @@ SPEC-SHARE-01 no cabeçalho, em vez de SPEC-04 (que também só consome, não
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/.../administrative/clients/index.tsx` | criar |
-| `src/layouts/AppShell/nav/administrative-clients.ts` | criar (fragmento, SPEC-02 §3.1) |
-| `src/i18n/dictionaries/*/administrative-clients.json` | criar (4 locales) |
-| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover o item `administrativoClients` (rota antiga `/administrativo/clientes`) hoje hard-coded; item equivalente passa a viver em `administrative-clients.ts`. Não mexer nos demais itens (escopo de SPEC-04/06/07) |
-| `src/layouts/Form/Fields/Index.ts` / `map.tsx` | **reusar** `AddressGroup` (SPEC-SHARE-01, não recriar) |
+| Arquivo                                               | Ação                                                                                                                                                                                                                          |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/.../administrative/clients/index.tsx`     | criar                                                                                                                                                                                                                         |
+| `src/layouts/AppShell/nav/administrative-clients.ts`  | criar (fragmento, SPEC-02 §3.1)                                                                                                                                                                                               |
+| `src/i18n/dictionaries/*/administrative-clients.json` | criar (4 locales)                                                                                                                                                                                                             |
+| `src/layouts/AppShell/nav/administrativo.ts`          | editar — remover o item `administrativoClients` (rota antiga `/administrativo/clientes`) hoje hard-coded; item equivalente passa a viver em `administrative-clients.ts`. Não mexer nos demais itens (escopo de SPEC-04/06/07) |
+| `src/layouts/Form/Fields/Index.ts` / `map.tsx`        | **reusar** `AddressGroup` (SPEC-SHARE-01, não recriar)                                                                                                                                                                        |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | Lista faz CRUD real |
-| CA2 | Detalhe: seção de cadastro é real, seção de relatórios é visivelmente mock e comentada como tal |
+| #   | Critério                                                                                                  |
+| --- | --------------------------------------------------------------------------------------------------------- |
+| CA1 | Lista faz CRUD real                                                                                       |
+| CA2 | Detalhe: seção de cadastro é real, seção de relatórios é visivelmente mock e comentada como tal           |
 | CA3 | `grep -n "MOCK"` em `administrative/clients/index.tsx` aponta exatamente a seção de relatórios, nada mais |
-| CA4 | `bun run check` + `lint` passam |
-| CA5 | Não existe `clients/$id.tsx` — detalhe é só o modo `view` do modal |
+| CA4 | `bun run check` + `lint` passam                                                                           |
+| CA5 | Não existe `clients/$id.tsx` — detalhe é só o modo `view` do modal                                        |
 
 ## 12. Riscos
 
@@ -140,7 +140,7 @@ SPEC-SHARE-01 no cabeçalho, em vez de SPEC-04 (que também só consome, não
 ## 13. Decisões pendentes
 
 - **D1** — Resolvido: `ClientDetailDTO` confirmado — tem `address:
-  AddressDTO` (obrigatório, mesma situação de campo "grupo" do Harbor, ver
+AddressDTO` (obrigatório, mesma situação de campo "grupo" do Harbor, ver
   §9) e `collaborations?: CollaboratorDTO[]`. `collaborations` existe na
   resposta mas fica **fora de escopo** desta SPEC (é SPEC-09, §4) — o modal
   `view` desta SPEC ignora esse campo deliberadamente, não precisa filtrar

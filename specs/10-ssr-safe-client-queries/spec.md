@@ -112,7 +112,7 @@ Não há indício de bug próprio em `roles/index.tsx` — é o mesmo erro do
 
 **Opção C escolhida**, isolada (sem combinar com A): a correção acontece
 na base compartilhada — `CrudListPage` (SPEC-02) passa a aceitar
-*queryOptions* em vez de receber `items`/`isLoading` prontos da rota, e
+_queryOptions_ em vez de receber `items`/`isLoading` prontos da rota, e
 ele mesmo decide como/quando buscar o dado, com o guard de SSR embutido.
 Isso emenda a SPEC-02 (já `IMPLEMENTED`) e evita que qualquer consumidor
 futuro (SPEC-04 a SPEC-09) precise lembrar de tratar SSR manualmente —
@@ -144,7 +144,7 @@ um helper `useClientOnlyQuery`/wrapper que padroniza isso.
 **Opção C — mover a responsabilidade pra dentro de `crud-list-page`.**
 `CrudListPage` já centraliza toda tela de lista — mas hoje ele recebe
 `items`/`isLoading` como props (quem busca o dado é a rota, não o
-componente). Mudar isso pra `CrudListPage` aceitar a *queryOptions* em vez
+componente). Mudar isso pra `CrudListPage` aceitar a _queryOptions_ em vez
 dos dados prontos, e ele mesmo decidir como/quando buscar (com o guard de
 SSR embutido), seria a correção mais à prova de erro — ninguém mais
 precisaria lembrar de nada. Custo: muda o contrato de `CrudListPage`
@@ -165,27 +165,27 @@ interno de `CrudListPage`.
 
 ## 9. Camada de dados
 
-Sem mudança de endpoint/contrato do Core. Muda só *como* o client chama os
+Sem mudança de endpoint/contrato do Core. Muda só _como_ o client chama os
 hooks já existentes (`useGetApiUser`, `useGetApiUserRoles`).
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/components/crud/crud-list-page.tsx` | editar — aceita *queryOptions* (ou uma prop equivalente que encapsule `queryKey`+`queryFn`) em vez de `items`/`isLoading` prontos; embute o guard de SSR (ex.: `enabled`/checagem client-only) internamente, então nenhum consumidor precisa lembrar disso |
-| `src/routes/_dashboard/admin/access/index.tsx` | editar — adaptado pro novo contrato de `CrudListPage` |
-| `src/routes/_dashboard/admin/roles/index.tsx` | editar, só se a validação (R1) mostrar que precisa de correção própria — expectativa é que não precise |
-| `specs/02-app-shell-navigation/spec.md` | editar — nota de emenda pós-`IMPLEMENTED` registrando essa mudança de contrato, com referência a esta SPEC |
+| Arquivo                                        | Ação                                                                                                                                                                                                                                                       |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/crud/crud-list-page.tsx`       | editar — aceita _queryOptions_ (ou uma prop equivalente que encapsule `queryKey`+`queryFn`) em vez de `items`/`isLoading` prontos; embute o guard de SSR (ex.: `enabled`/checagem client-only) internamente, então nenhum consumidor precisa lembrar disso |
+| `src/routes/_dashboard/admin/access/index.tsx` | editar — adaptado pro novo contrato de `CrudListPage`                                                                                                                                                                                                      |
+| `src/routes/_dashboard/admin/roles/index.tsx`  | editar, só se a validação (R1) mostrar que precisa de correção própria — expectativa é que não precise                                                                                                                                                     |
+| `specs/02-app-shell-navigation/spec.md`        | editar — nota de emenda pós-`IMPLEMENTED` registrando essa mudança de contrato, com referência a esta SPEC                                                                                                                                                 |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | `/admin/access` carrega sem erro no primeiro load (SSR), sem "Try again" |
-| CA2 | `/admin/roles` idem |
-| CA3 | `bun run check` + `lint` passam |
+| #   | Critério                                                                                                                                                     |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| CA1 | `/admin/access` carrega sem erro no primeiro load (SSR), sem "Try again"                                                                                     |
+| CA2 | `/admin/roles` idem                                                                                                                                          |
+| CA3 | `bun run check` + `lint` passam                                                                                                                              |
 | CA4 | Uma leitura rápida do `crud-list-page.tsx` documenta claramente como uma SPEC futura (04+) deve usá-lo sem repetir o bug — nenhum `useGetApiXxx` cru na rota |
-| CA5 | `specs/02-app-shell-navigation/spec.md` tem nota de emenda referenciando a SPEC-10 |
+| CA5 | `specs/02-app-shell-navigation/spec.md` tem nota de emenda referenciando a SPEC-10                                                                           |
 
 ## 12. Riscos
 
@@ -230,6 +230,7 @@ usado por `profileMeQueryOptions`/`fetchMeFn` no `__root.tsx`. Esse fix
   esse hook).
 
 **Arquivos alterados/criados:**
+
 - `src/lib/queries/use-ssr-safe-query.ts` (novo) — wrapper de `useQuery`
   com o guard de SSR (`enabled: typeof window !== "undefined"`).
 - `src/components/crud/crud-list-page.tsx` (editado) — contrato novo
@@ -253,6 +254,7 @@ render. `enabled: false` sozinho não é suficiente.
 **Correção (por sugestão do usuário — "trabalhar com loading até os
 dados estarem prontos"):** em vez de só desabilitar a query, o hook que
 busca o dado **não existe mais na árvore durante o SSR**:
+
 - `CrudListPage` foi dividido em componente externo (casca: título, busca,
   `ViewToggle`, sem hook de dado) + `CrudListPageBody` (chama
   `useSsrSafeQuery`), montado só depois de um `useEffect` marcar
@@ -271,12 +273,14 @@ sempre que uma tela chamar `useSsrSafeQuery`/`useQuery` fora do
 `CrudListPage` (ex.: lookups de enum pra campos de formulário).
 
 **Arquivos adicionais (Round 2):**
+
 - `src/components/crud/crud-list-page.tsx` — reestruturado (`CrudListPage`
-  + `CrudListPageBody` internos).
+  - `CrudListPageBody` internos).
 - `src/routes/_dashboard/admin/access/index.tsx` — `AdminAccessPage` +
   `AdminAccessPageContent`.
 
 **Comandos executados:**
+
 - `bun run check` → **VERIFIED**, 0 erros (rodado depois das duas rodadas).
 - `bun run lint` → **VERIFIED**, mesmo baseline de antes (65 problems, 3
   errors pré-existentes em `session.server.ts`) — zero novo, nas duas
@@ -288,13 +292,14 @@ sempre que uma tela chamar `useSsrSafeQuery`/`useQuery` fora do
   Precisa do usuário confirmar no navegador com sessão real.
 
 **Critérios de aceitação:**
-| # | Critério | Status |
-| --- | --- | --- |
-| CA1 | `/admin/access` sem erro no primeiro load | Implementado (round 2, hook nunca existe no SSR); NOT VERIFIED autenticado — pedir confirmação do usuário |
-| CA2 | `/admin/roles` idem | Implementado; NOT VERIFIED autenticado |
-| CA3 | `bun run check` + `lint` passam | PASS |
-| CA4 | `crud-list-page.tsx` documenta o padrão pra SPEC-04+ | PASS — JSDoc do componente + emenda na SPEC-02 |
-| CA5 | SPEC-02 com nota de emenda | PASS |
+
+| #   | Critério                                             | Status                                                                                                    |
+| --- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| CA1 | `/admin/access` sem erro no primeiro load            | Implementado (round 2, hook nunca existe no SSR); NOT VERIFIED autenticado — pedir confirmação do usuário |
+| CA2 | `/admin/roles` idem                                  | Implementado; NOT VERIFIED autenticado                                                                    |
+| CA3 | `bun run check` + `lint` passam                      | PASS                                                                                                      |
+| CA4 | `crud-list-page.tsx` documenta o padrão pra SPEC-04+ | PASS — JSDoc do componente + emenda na SPEC-02                                                            |
+| CA5 | SPEC-02 com nota de emenda                           | PASS                                                                                                      |
 
 Status mantido `IN_PROGRESS` até CA1/CA2 serem confirmados no navegador
 pelo usuário (sessão autenticada real, branch `spec-10-ssr-safe-client-

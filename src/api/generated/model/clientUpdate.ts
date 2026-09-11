@@ -4,49 +4,49 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { AddressUpdate } from './addressUpdate.ts';
+import type { AddressUpdate } from "./addressUpdate.ts";
 
 export interface ClientUpdate {
   address?: AddressUpdate;
   /**
-     * @minLength 3
-     * @maxLength 100
-     */
+   * @minLength 3
+   * @maxLength 100
+   */
   fullName: string;
   /**
-     * @minLength 3
-     * @maxLength 50
-     * @nullable
-     */
+   * @minLength 3
+   * @maxLength 50
+   * @nullable
+   */
   shortName?: string | null;
   /**
-     * @minLength 14
-     * @maxLength 14
-     */
+   * @minLength 14
+   * @maxLength 14
+   */
   document: string;
   /**
-     * @maxLength 150
-     * @nullable
-     */
+   * @maxLength 150
+   * @nullable
+   */
   razaoSocial?: string | null;
   /**
-     * @maxLength 20
-     * @nullable
-     */
+   * @maxLength 20
+   * @nullable
+   */
   ie?: string | null;
   /**
-     * @maxLength 20
-     * @nullable
-     */
+   * @maxLength 20
+   * @nullable
+   */
   phone?: string | null;
   /**
-     * @maxLength 320
-     * @nullable
-     */
+   * @maxLength 320
+   * @nullable
+   */
   email?: string | null;
   /**
-     * @maxLength 1000
-     * @nullable
-     */
+   * @maxLength 1000
+   * @nullable
+   */
   observations?: string | null;
 }

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { OperationDTO } from './operationDTO.ts';
+import type { OperationDTO } from "./operationDTO.ts";
 
 export interface PagedDTOOfOperationDTO {
   items: OperationDTO[];

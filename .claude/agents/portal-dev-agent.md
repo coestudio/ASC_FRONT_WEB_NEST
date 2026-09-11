@@ -151,6 +151,7 @@ DRAFT → WAITING_APPROVAL → APPROVED → IN_PROGRESS → IMPLEMENTED
                                   ↓
                                BLOCKED
 ```
+
 (ou `CANCELLED`, com aprovação explícita a qualquer momento).
 
 Implementável: `APPROVED`, `IN_PROGRESS`. Todo o resto: **PARE**.
@@ -181,6 +182,7 @@ Aguardando decisão do usuário.
 ```
 
 Decisões que **sempre** são NEEDS_DECISION neste projeto:
+
 - Qualquer coisa que toque uma das regras invioláveis (§0).
 - Criar/editar schema Zod, ou mudar regra de validação → resposta padrão:
   "isso muda no DTO do Core".
@@ -218,6 +220,7 @@ você não escreve, não edita, não roda `just map`.
 ```
 
 Regras que não se negociam:
+
 - As 5 regras invioláveis do §0 (TanStack+Azure SWA, zero Zod à mão, bun
   padrão, npm compatível, `.env` versionado).
 - `src/api/generated/**` e `src/routeTree.gen.ts` **nunca** são editados à mão.
@@ -257,6 +260,7 @@ Nunca declare uma verificação como passada sem rodar.
 - `FAILED` — rodou e falhou.
 
 Antes de marcar `IMPLEMENTED`, rode e cole o resultado de:
+
 - `bun run check` (tsc) — e, se plausível regressão de runtime, `npm run check`
 - `bun run lint`
 - `just map` **se** a feature dependia de mudança no contrato do Core

@@ -1,6 +1,6 @@
 ---
-applyTo: 'src/routes/**'
-description: 'Use ao criar ou editar rotas do TanStack Router no NewPortal. Fixa o roteamento file-based, os grupos pathless, o padrão de guard em beforeLoad e o seed de dados no loader.'
+applyTo: "src/routes/**"
+description: "Use ao criar ou editar rotas do TanStack Router no NewPortal. Fixa o roteamento file-based, os grupos pathless, o padrão de guard em beforeLoad e o seed de dados no loader."
 ---
 
 # Routes Instructions
@@ -23,15 +23,15 @@ description: 'Use ao criar ou editar rotas do TanStack Router no NewPortal. Fixa
 
 ## Grupos existentes (não inventar novos sem SPEC)
 
-| Prefixo | Papel | Guard |
-| --- | --- | --- |
-| `__root` | shell: head, providers, `<Outlet/>`, toasts | `isAuthedFn` (cookie) → `context.authed` |
-| `_dashboard` | área autenticada, aplica `AppShell` | `context.authed` senão `redirect` p/ `/auth/login` |
-| `_dashboard/_internal` | áreas internas (lab/adm/op) | `getUserAreas` via `ensureQueryData` |
-| `_site` | site público | nenhum |
-| `_system` | 404 / erro / manutenção | nenhum |
-| `auth` | login / logout / forgot-password | layout próprio em `auth/route.tsx` |
-| `api/*` | server handlers (proxy BFF) | ver `api-data.instructions.md` |
+| Prefixo                | Papel                                       | Guard                                              |
+| ---------------------- | ------------------------------------------- | -------------------------------------------------- |
+| `__root`               | shell: head, providers, `<Outlet/>`, toasts | `isAuthedFn` (cookie) → `context.authed`           |
+| `_dashboard`           | área autenticada, aplica `AppShell`         | `context.authed` senão `redirect` p/ `/auth/login` |
+| `_dashboard/_internal` | áreas internas (lab/adm/op)                 | `getUserAreas` via `ensureQueryData`               |
+| `_site`                | site público                                | nenhum                                             |
+| `_system`              | 404 / erro / manutenção                     | nenhum                                             |
+| `auth`                 | login / logout / forgot-password            | layout próprio em `auth/route.tsx`                 |
+| `api/*`                | server handlers (proxy BFF)                 | ver `api-data.instructions.md`                     |
 
 Prefixo `_` = pathless (não entra na URL). Uma página de área interna nova
 vai em `src/routes/_dashboard/_internal/<area>/index.tsx`.
@@ -40,7 +40,7 @@ vai em `src/routes/_dashboard/_internal/<area>/index.tsx`.
 
 - O guard vive no `beforeLoad`, **nunca** no componente.
 - Checagem barata primeiro: `context.authed` (booleano do cookie, resolvido
-  uma vez no `__root`). Só quando precisa do usuário: 
+  uma vez no `__root`). Só quando precisa do usuário:
   `const user = await context.queryClient.ensureQueryData(profileMeQueryOptions())`
   — bate no cache re-hidratado do SSR, sem round-trip extra.
 - Negar acesso = `throw redirect({ to: "...", search: { redirect: location.href } })`.

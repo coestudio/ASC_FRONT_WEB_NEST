@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { FileDTO } from './fileDTO.ts';
+import type { FileDTO } from "./fileDTO.ts";
 
 export interface ProfileDTO {
   fullName?: string;

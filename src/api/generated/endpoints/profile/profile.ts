@@ -4,10 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,8 +17,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   AddressDTO,
@@ -33,20 +30,17 @@ import type {
   ProfileUpdate,
   UserAdminDTO,
   UserDetailDTO,
-  UserUpdate
-} from '../../model';
+  UserUpdate,
+} from "../../model";
 
-import { apiRequest } from '../../../mutator.ts';
-
-
-
+import { apiRequest } from "../../../mutator.ts";
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -56,570 +50,661 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const getApiProfileMe = (
-
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<UserDetailDTO>(
-      {url: `/api/profile/me`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
+export const getApiProfileMe = (signal?: AbortSignal) => {
+  return apiRequest<UserDetailDTO>({ url: `/api/profile/me`, method: "GET", signal });
+};
 
 export const getGetApiProfileMeQueryKey = () => {
-    return [
-    `/api/profile/me`
-    ] as const;
-    }
+  return [`/api/profile/me`] as const;
+};
 
+export const getGetApiProfileMeQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProfileMe>>,
+  TError = void,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-export const getGetApiProfileMeQueryOptions = <TData = Awaited<ReturnType<typeof getApiProfileMe>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>>, }
-) => {
+  const queryKey = queryOptions?.queryKey ?? getGetApiProfileMeQueryKey();
 
-const {query: queryOptions} = options ?? {};
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileMe>>> = ({ signal }) =>
+    getApiProfileMe(signal);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiProfileMeQueryKey();
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProfileMe>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiProfileMeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiProfileMe>>>;
+export type GetApiProfileMeQueryError = void;
 
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileMe>>> = ({ signal }) => getApiProfileMe(signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiProfileMeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiProfileMe>>>
-export type GetApiProfileMeQueryError = void
-
-
-export function useGetApiProfileMe<TData = Awaited<ReturnType<typeof getApiProfileMe>>, TError = void>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>> & Pick<
+export function useGetApiProfileMe<
+  TData = Awaited<ReturnType<typeof getApiProfileMe>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>> &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiProfileMe>>,
           TError,
           Awaited<ReturnType<typeof getApiProfileMe>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileMe<TData = Awaited<ReturnType<typeof getApiProfileMe>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiProfileMe<
+  TData = Awaited<ReturnType<typeof getApiProfileMe>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>> &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiProfileMe>>,
           TError,
           Awaited<ReturnType<typeof getApiProfileMe>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileMe<TData = Awaited<ReturnType<typeof getApiProfileMe>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiProfileMe<
+  TData = Awaited<ReturnType<typeof getApiProfileMe>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiProfileMe<TData = Awaited<ReturnType<typeof getApiProfileMe>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiProfileMe<
+  TData = Awaited<ReturnType<typeof getApiProfileMe>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileMe>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiProfileMeQueryOptions(options);
 
-  const queryOptions = getGetApiProfileMeQueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const postApiProfileMe = (userUpdate: UserUpdate, signal?: AbortSignal) => {
+  return apiRequest<UserDetailDTO>({
+    url: `/api/profile/me`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: userUpdate,
+    signal,
+  });
+};
 
+export const getPostApiProfileMeMutationKey = () => ["postApiProfileMe"] as const;
 
+export const getPostApiProfileMeMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiProfileMe>>,
+    TError,
+    PostApiProfileMeMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiProfileMe>>,
+  TError,
+  PostApiProfileMeMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiProfileMeMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiProfileMe>>,
+    PostApiProfileMeMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return postApiProfileMe(data);
+  };
 
-export const postApiProfileMe = (
-    userUpdate: UserUpdate,
- signal?: AbortSignal
-) => {
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiProfileMeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiProfileMe>>
+>;
+export type PostApiProfileMeMutationBody = UserUpdate;
+export type PostApiProfileMeMutationError = void;
+export type PostApiProfileMeMutationVariables = { data: UserUpdate };
 
-      return apiRequest<UserDetailDTO>(
-      {url: `/api/profile/me`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: userUpdate, signal
-    },
-      );
-    }
-
-
-
-
-export const getPostApiProfileMeMutationKey = () => ['postApiProfileMe'] as const;
-
-export const getPostApiProfileMeMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileMe>>, TError,PostApiProfileMeMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiProfileMe>>, TError,PostApiProfileMeMutationVariables, TContext> => {
-
-const mutationKey = getPostApiProfileMeMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiProfileMe>>, PostApiProfileMeMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiProfileMe(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiProfileMeMutationResult = NonNullable<Awaited<ReturnType<typeof postApiProfileMe>>>
-    export type PostApiProfileMeMutationBody = UserUpdate
-    export type PostApiProfileMeMutationError = void
-    export type PostApiProfileMeMutationVariables = {data: UserUpdate}
-
-    export const usePostApiProfileMe = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileMe>>, TError,PostApiProfileMeMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiProfileMe>>,
-        TError,
-        PostApiProfileMeMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiProfileMeMutationOptions(options), queryClient);
-    }
-    export const getApiProfileInfo = (
-
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<ProfileDTO>(
-      {url: `/api/profile/info`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
+export const usePostApiProfileMe = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiProfileMe>>,
+      TError,
+      PostApiProfileMeMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiProfileMe>>,
+  TError,
+  PostApiProfileMeMutationVariables,
+  TContext
+> => {
+  return useMutation(getPostApiProfileMeMutationOptions(options), queryClient);
+};
+export const getApiProfileInfo = (signal?: AbortSignal) => {
+  return apiRequest<ProfileDTO>({ url: `/api/profile/info`, method: "GET", signal });
+};
 
 export const getGetApiProfileInfoQueryKey = () => {
-    return [
-    `/api/profile/info`
-    ] as const;
-    }
+  return [`/api/profile/info`] as const;
+};
 
+export const getGetApiProfileInfoQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProfileInfo>>,
+  TError = void,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-export const getGetApiProfileInfoQueryOptions = <TData = Awaited<ReturnType<typeof getApiProfileInfo>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>>, }
-) => {
+  const queryKey = queryOptions?.queryKey ?? getGetApiProfileInfoQueryKey();
 
-const {query: queryOptions} = options ?? {};
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileInfo>>> = ({ signal }) =>
+    getApiProfileInfo(signal);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiProfileInfoQueryKey();
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProfileInfo>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiProfileInfoQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProfileInfo>>
+>;
+export type GetApiProfileInfoQueryError = void;
 
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileInfo>>> = ({ signal }) => getApiProfileInfo(signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiProfileInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getApiProfileInfo>>>
-export type GetApiProfileInfoQueryError = void
-
-
-export function useGetApiProfileInfo<TData = Awaited<ReturnType<typeof getApiProfileInfo>>, TError = void>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>> & Pick<
+export function useGetApiProfileInfo<
+  TData = Awaited<ReturnType<typeof getApiProfileInfo>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>> &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiProfileInfo>>,
           TError,
           Awaited<ReturnType<typeof getApiProfileInfo>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileInfo<TData = Awaited<ReturnType<typeof getApiProfileInfo>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiProfileInfo<
+  TData = Awaited<ReturnType<typeof getApiProfileInfo>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>> &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiProfileInfo>>,
           TError,
           Awaited<ReturnType<typeof getApiProfileInfo>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileInfo<TData = Awaited<ReturnType<typeof getApiProfileInfo>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiProfileInfo<
+  TData = Awaited<ReturnType<typeof getApiProfileInfo>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiProfileInfo<TData = Awaited<ReturnType<typeof getApiProfileInfo>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiProfileInfo<
+  TData = Awaited<ReturnType<typeof getApiProfileInfo>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileInfo>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiProfileInfoQueryOptions(options);
 
-  const queryOptions = getGetApiProfileInfoQueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const postApiProfileInfo = (profileUpdate: ProfileUpdate, signal?: AbortSignal) => {
+  return apiRequest<ProfileDTO>({
+    url: `/api/profile/info`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: profileUpdate,
+    signal,
+  });
+};
 
+export const getPostApiProfileInfoMutationKey = () => ["postApiProfileInfo"] as const;
 
+export const getPostApiProfileInfoMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiProfileInfo>>,
+    TError,
+    PostApiProfileInfoMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiProfileInfo>>,
+  TError,
+  PostApiProfileInfoMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiProfileInfoMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiProfileInfo>>,
+    PostApiProfileInfoMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return postApiProfileInfo(data);
+  };
 
-export const postApiProfileInfo = (
-    profileUpdate: ProfileUpdate,
- signal?: AbortSignal
-) => {
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PostApiProfileInfoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiProfileInfo>>
+>;
+export type PostApiProfileInfoMutationBody = ProfileUpdate;
+export type PostApiProfileInfoMutationError = void;
+export type PostApiProfileInfoMutationVariables = { data: ProfileUpdate };
 
-      return apiRequest<ProfileDTO>(
-      {url: `/api/profile/info`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: profileUpdate, signal
-    },
-      );
-    }
-
-
-
-
-export const getPostApiProfileInfoMutationKey = () => ['postApiProfileInfo'] as const;
-
-export const getPostApiProfileInfoMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileInfo>>, TError,PostApiProfileInfoMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiProfileInfo>>, TError,PostApiProfileInfoMutationVariables, TContext> => {
-
-const mutationKey = getPostApiProfileInfoMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiProfileInfo>>, PostApiProfileInfoMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiProfileInfo(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiProfileInfoMutationResult = NonNullable<Awaited<ReturnType<typeof postApiProfileInfo>>>
-    export type PostApiProfileInfoMutationBody = ProfileUpdate
-    export type PostApiProfileInfoMutationError = void
-    export type PostApiProfileInfoMutationVariables = {data: ProfileUpdate}
-
-    export const usePostApiProfileInfo = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileInfo>>, TError,PostApiProfileInfoMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiProfileInfo>>,
-        TError,
-        PostApiProfileInfoMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiProfileInfoMutationOptions(options), queryClient);
-    }
-    export const getApiProfileAddress = (
-
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<AddressDTO>(
-      {url: `/api/profile/address`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
+export const usePostApiProfileInfo = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiProfileInfo>>,
+      TError,
+      PostApiProfileInfoMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiProfileInfo>>,
+  TError,
+  PostApiProfileInfoMutationVariables,
+  TContext
+> => {
+  return useMutation(getPostApiProfileInfoMutationOptions(options), queryClient);
+};
+export const getApiProfileAddress = (signal?: AbortSignal) => {
+  return apiRequest<AddressDTO>({ url: `/api/profile/address`, method: "GET", signal });
+};
 
 export const getGetApiProfileAddressQueryKey = () => {
-    return [
-    `/api/profile/address`
-    ] as const;
-    }
+  return [`/api/profile/address`] as const;
+};
 
+export const getGetApiProfileAddressQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProfileAddress>>,
+  TError = void,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>>;
+}) => {
+  const { query: queryOptions } = options ?? {};
 
-export const getGetApiProfileAddressQueryOptions = <TData = Awaited<ReturnType<typeof getApiProfileAddress>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>>, }
-) => {
+  const queryKey = queryOptions?.queryKey ?? getGetApiProfileAddressQueryKey();
 
-const {query: queryOptions} = options ?? {};
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileAddress>>> = ({ signal }) =>
+    getApiProfileAddress(signal);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiProfileAddressQueryKey();
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProfileAddress>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiProfileAddressQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProfileAddress>>
+>;
+export type GetApiProfileAddressQueryError = void;
 
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileAddress>>> = ({ signal }) => getApiProfileAddress(signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiProfileAddressQueryResult = NonNullable<Awaited<ReturnType<typeof getApiProfileAddress>>>
-export type GetApiProfileAddressQueryError = void
-
-
-export function useGetApiProfileAddress<TData = Awaited<ReturnType<typeof getApiProfileAddress>>, TError = void>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>> & Pick<
+export function useGetApiProfileAddress<
+  TData = Awaited<ReturnType<typeof getApiProfileAddress>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiProfileAddress>>,
           TError,
           Awaited<ReturnType<typeof getApiProfileAddress>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileAddress<TData = Awaited<ReturnType<typeof getApiProfileAddress>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiProfileAddress<
+  TData = Awaited<ReturnType<typeof getApiProfileAddress>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiProfileAddress>>,
           TError,
           Awaited<ReturnType<typeof getApiProfileAddress>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileAddress<TData = Awaited<ReturnType<typeof getApiProfileAddress>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiProfileAddress<
+  TData = Awaited<ReturnType<typeof getApiProfileAddress>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiProfileAddress<TData = Awaited<ReturnType<typeof getApiProfileAddress>>, TError = void>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiProfileAddress<
+  TData = Awaited<ReturnType<typeof getApiProfileAddress>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiProfileAddress>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiProfileAddressQueryOptions(options);
 
-  const queryOptions = getGetApiProfileAddressQueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const putApiProfileAddress = (addressUpdate: AddressUpdate, signal?: AbortSignal) => {
+  return apiRequest<AddressDTO>({
+    url: `/api/profile/address`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: addressUpdate,
+    signal,
+  });
+};
 
+export const getPutApiProfileAddressMutationKey = () => ["putApiProfileAddress"] as const;
 
+export const getPutApiProfileAddressMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiProfileAddress>>,
+    TError,
+    PutApiProfileAddressMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiProfileAddress>>,
+  TError,
+  PutApiProfileAddressMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPutApiProfileAddressMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiProfileAddress>>,
+    PutApiProfileAddressMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return putApiProfileAddress(data);
+  };
 
-export const putApiProfileAddress = (
-    addressUpdate: AddressUpdate,
- signal?: AbortSignal
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiProfileAddressMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiProfileAddress>>
+>;
+export type PutApiProfileAddressMutationBody = AddressUpdate;
+export type PutApiProfileAddressMutationError = void;
+export type PutApiProfileAddressMutationVariables = { data: AddressUpdate };
+
+export const usePutApiProfileAddress = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putApiProfileAddress>>,
+      TError,
+      PutApiProfileAddressMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putApiProfileAddress>>,
+  TError,
+  PutApiProfileAddressMutationVariables,
+  TContext
+> => {
+  return useMutation(getPutApiProfileAddressMutationOptions(options), queryClient);
+};
+export const patchApiProfileAvatar = (
+  patchApiProfileAvatarBody: PatchApiProfileAvatarBody,
+  signal?: AbortSignal,
 ) => {
+  const formData = new FormData();
+  if (patchApiProfileAvatarBody.avatarFile !== undefined) {
+    formData.append(`avatarFile`, patchApiProfileAvatarBody.avatarFile);
+  }
 
+  return apiRequest<UserAdminDTO>({
+    url: `/api/profile/avatar`,
+    method: "PATCH",
+    headers: { "Content-Type": "multipart/form-data" },
+    data: formData,
+    signal,
+  });
+};
 
-      return apiRequest<AddressDTO>(
-      {url: `/api/profile/address`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: addressUpdate, signal
-    },
-      );
-    }
+export const getPatchApiProfileAvatarMutationKey = () => ["patchApiProfileAvatar"] as const;
 
+export const getPatchApiProfileAvatarMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof patchApiProfileAvatar>>,
+    TError,
+    PatchApiProfileAvatarMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof patchApiProfileAvatar>>,
+  TError,
+  PatchApiProfileAvatarMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPatchApiProfileAvatarMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof patchApiProfileAvatar>>,
+    PatchApiProfileAvatarMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return patchApiProfileAvatar(data);
+  };
 
-export const getPutApiProfileAddressMutationKey = () => ['putApiProfileAddress'] as const;
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPutApiProfileAddressMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiProfileAddress>>, TError,PutApiProfileAddressMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiProfileAddress>>, TError,PutApiProfileAddressMutationVariables, TContext> => {
+export type PatchApiProfileAvatarMutationResult = NonNullable<
+  Awaited<ReturnType<typeof patchApiProfileAvatar>>
+>;
+export type PatchApiProfileAvatarMutationBody = PatchApiProfileAvatarBody;
+export type PatchApiProfileAvatarMutationError = void;
+export type PatchApiProfileAvatarMutationVariables = { data: PatchApiProfileAvatarBody };
 
-const mutationKey = getPutApiProfileAddressMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiProfileAddress>>, PutApiProfileAddressMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  putApiProfileAddress(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutApiProfileAddressMutationResult = NonNullable<Awaited<ReturnType<typeof putApiProfileAddress>>>
-    export type PutApiProfileAddressMutationBody = AddressUpdate
-    export type PutApiProfileAddressMutationError = void
-    export type PutApiProfileAddressMutationVariables = {data: AddressUpdate}
-
-    export const usePutApiProfileAddress = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiProfileAddress>>, TError,PutApiProfileAddressMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiProfileAddress>>,
-        TError,
-        PutApiProfileAddressMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPutApiProfileAddressMutationOptions(options), queryClient);
-    }
-    export const patchApiProfileAvatar = (
-    patchApiProfileAvatarBody: PatchApiProfileAvatarBody,
- signal?: AbortSignal
+export const usePatchApiProfileAvatar = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof patchApiProfileAvatar>>,
+      TError,
+      PatchApiProfileAvatarMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof patchApiProfileAvatar>>,
+  TError,
+  PatchApiProfileAvatarMutationVariables,
+  TContext
+> => {
+  return useMutation(getPatchApiProfileAvatarMutationOptions(options), queryClient);
+};
+export const putApiProfilePassword = (
+  profileControllerChangePasswordRequest: ProfileControllerChangePasswordRequest,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<MessageDTO>({
+    url: `/api/profile/password`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: profileControllerChangePasswordRequest,
+    signal,
+  });
+};
 
-      const formData = new FormData();
-if(patchApiProfileAvatarBody.avatarFile !== undefined) {
- formData.append(`avatarFile`, patchApiProfileAvatarBody.avatarFile);
- }
+export const getPutApiProfilePasswordMutationKey = () => ["putApiProfilePassword"] as const;
 
-      return apiRequest<UserAdminDTO>(
-      {url: `/api/profile/avatar`, method: 'PATCH',
-      headers: {'Content-Type': 'multipart/form-data', },
-       data: formData, signal
-    },
-      );
-    }
+export const getPutApiProfilePasswordMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiProfilePassword>>,
+    TError,
+    PutApiProfilePasswordMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiProfilePassword>>,
+  TError,
+  PutApiProfilePasswordMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPutApiProfilePasswordMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiProfilePassword>>,
+    PutApiProfilePasswordMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return putApiProfilePassword(data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPatchApiProfileAvatarMutationKey = () => ['patchApiProfileAvatar'] as const;
+export type PutApiProfilePasswordMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiProfilePassword>>
+>;
+export type PutApiProfilePasswordMutationBody = ProfileControllerChangePasswordRequest;
+export type PutApiProfilePasswordMutationError = void;
+export type PutApiProfilePasswordMutationVariables = {
+  data: ProfileControllerChangePasswordRequest;
+};
 
-export const getPatchApiProfileAvatarMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiProfileAvatar>>, TError,PatchApiProfileAvatarMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof patchApiProfileAvatar>>, TError,PatchApiProfileAvatarMutationVariables, TContext> => {
-
-const mutationKey = getPatchApiProfileAvatarMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiProfileAvatar>>, PatchApiProfileAvatarMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  patchApiProfileAvatar(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PatchApiProfileAvatarMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiProfileAvatar>>>
-    export type PatchApiProfileAvatarMutationBody = PatchApiProfileAvatarBody
-    export type PatchApiProfileAvatarMutationError = void
-    export type PatchApiProfileAvatarMutationVariables = {data: PatchApiProfileAvatarBody}
-
-    export const usePatchApiProfileAvatar = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiProfileAvatar>>, TError,PatchApiProfileAvatarMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchApiProfileAvatar>>,
-        TError,
-        PatchApiProfileAvatarMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPatchApiProfileAvatarMutationOptions(options), queryClient);
-    }
-    export const putApiProfilePassword = (
-    profileControllerChangePasswordRequest: ProfileControllerChangePasswordRequest,
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<MessageDTO>(
-      {url: `/api/profile/password`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: profileControllerChangePasswordRequest, signal
-    },
-      );
-    }
-
-
-
-
-export const getPutApiProfilePasswordMutationKey = () => ['putApiProfilePassword'] as const;
-
-export const getPutApiProfilePasswordMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiProfilePassword>>, TError,PutApiProfilePasswordMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiProfilePassword>>, TError,PutApiProfilePasswordMutationVariables, TContext> => {
-
-const mutationKey = getPutApiProfilePasswordMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiProfilePassword>>, PutApiProfilePasswordMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  putApiProfilePassword(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutApiProfilePasswordMutationResult = NonNullable<Awaited<ReturnType<typeof putApiProfilePassword>>>
-    export type PutApiProfilePasswordMutationBody = ProfileControllerChangePasswordRequest
-    export type PutApiProfilePasswordMutationError = void
-    export type PutApiProfilePasswordMutationVariables = {data: ProfileControllerChangePasswordRequest}
-
-    export const usePutApiProfilePassword = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiProfilePassword>>, TError,PutApiProfilePasswordMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiProfilePassword>>,
-        TError,
-        PutApiProfilePasswordMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPutApiProfilePasswordMutationOptions(options), queryClient);
-    }
+export const usePutApiProfilePassword = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putApiProfilePassword>>,
+      TError,
+      PutApiProfilePasswordMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putApiProfilePassword>>,
+  TError,
+  PutApiProfilePasswordMutationVariables,
+  TContext
+> => {
+  return useMutation(getPutApiProfilePasswordMutationOptions(options), queryClient);
+};

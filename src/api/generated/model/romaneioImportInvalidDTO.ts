@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioImportRowDTO } from './romaneioImportRowDTO.ts';
+import type { RomaneioImportRowDTO } from "./romaneioImportRowDTO.ts";
 
 export interface RomaneioImportInvalidDTO {
   /** @pattern ^-?(?:0|[1-9]\d*)$ */

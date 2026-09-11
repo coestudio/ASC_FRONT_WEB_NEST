@@ -7,9 +7,9 @@
 
 export interface TerminalCreate {
   /**
-     * @minLength 3
-     * @maxLength 100
-     */
+   * @minLength 3
+   * @maxLength 100
+   */
   name: string;
   harborId: string;
 }

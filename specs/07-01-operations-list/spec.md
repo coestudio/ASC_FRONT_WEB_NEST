@@ -73,8 +73,8 @@ correspondente no Core, não portar, mesmo corte do legado).
 
 ## 7. Contrato de rota
 
-| Rota | Dado |
-| --- | --- |
+| Rota                         | Dado |
+| ---------------------------- | ---- |
 | `/administrative/operations` | real |
 
 ## 8. Camada de dados
@@ -101,20 +101,20 @@ Operações fica mesmo como componente à parte.
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/components/operations/operations-list.tsx` | criar |
-| `src/routes/.../administrative/operations/index.tsx` | criar |
-| `src/layouts/AppShell/nav/administrative-operations.ts` | criar (fragmento, SPEC-02 §3.1) |
-| `src/i18n/dictionaries/*/administrative-operations.json` | criar (4 locales) — namespace único de toda a feature Operações; sub-SPECs de aba editam, não recriam |
-| `src/layouts/AppShell/nav/administrativo.ts` | editar — remover o item `administrativoOperations` (rota antiga `/operacoes`) hoje hard-coded; item equivalente passa a viver em `administrative-operations.ts`. Não mexer nos demais itens (escopo de SPEC-04/05; `administrativoLog`/`administrativoOccurrences` ficam órfãos — SPEC-06 cancelada, ver nota em SPEC-04) |
+| Arquivo                                                  | Ação                                                                                                                                                                                                                                                                                                                      |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/components/operations/operations-list.tsx`          | criar                                                                                                                                                                                                                                                                                                                     |
+| `src/routes/.../administrative/operations/index.tsx`     | criar                                                                                                                                                                                                                                                                                                                     |
+| `src/layouts/AppShell/nav/administrative-operations.ts`  | criar (fragmento, SPEC-02 §3.1)                                                                                                                                                                                                                                                                                           |
+| `src/i18n/dictionaries/*/administrative-operations.json` | criar (4 locales) — namespace único de toda a feature Operações; sub-SPECs de aba editam, não recriam                                                                                                                                                                                                                     |
+| `src/layouts/AppShell/nav/administrativo.ts`             | editar — remover o item `administrativoOperations` (rota antiga `/operacoes`) hoje hard-coded; item equivalente passa a viver em `administrative-operations.ts`. Não mexer nos demais itens (escopo de SPEC-04/05; `administrativoLog`/`administrativoOccurrences` ficam órfãos — SPEC-06 cancelada, ver nota em SPEC-04) |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | Lista faz CRUD/paginação real contra o Core (dev) |
-| CA2 | `bun run check` + `lint` passam |
+| #   | Critério                                                                                                          |
+| --- | ----------------------------------------------------------------------------------------------------------------- |
+| CA1 | Lista faz CRUD/paginação real contra o Core (dev)                                                                 |
+| CA2 | `bun run check` + `lint` passam                                                                                   |
 | CA3 | `operations-list.tsx` é importável e funciona em modo `readOnly` sem editar o arquivo — é o que a SPEC-08 consome |
 
 ## 12. Riscos

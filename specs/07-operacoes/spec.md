@@ -24,16 +24,16 @@ aceitação/riscos vive em cada sub-SPEC, não aqui.
 
 **Real vs UI-only** (por aba do detalhe):
 
-| Aba | Legado | Aqui | Sub-SPEC |
-| --- | --- | --- | --- |
-| Lista | real (`OperationApi`) | real | SPEC-07-01 |
-| Detalhes | real (`OperationApi`) | real | SPEC-07-03 |
-| Romaneio | real (`OperationRomaneioReal`) | real | SPEC-07-04 |
-| Containers | real (`OperationContainersReal`) | real | SPEC-07-05 |
-| Documentos | real (`OperationDocumentosReal`) | real | SPEC-07-06 |
-| Relatórios | mock | **UI-only** | SPEC-07-07 |
+| Aba          | Legado                                                 | Aqui                                                                  | Sub-SPEC   |
+| ------------ | ------------------------------------------------------ | --------------------------------------------------------------------- | ---------- |
+| Lista        | real (`OperationApi`)                                  | real                                                                  | SPEC-07-01 |
+| Detalhes     | real (`OperationApi`)                                  | real                                                                  | SPEC-07-03 |
+| Romaneio     | real (`OperationRomaneioReal`)                         | real                                                                  | SPEC-07-04 |
+| Containers   | real (`OperationContainersReal`)                       | real                                                                  | SPEC-07-05 |
+| Documentos   | real (`OperationDocumentosReal`)                       | real                                                                  | SPEC-07-06 |
+| Relatórios   | mock                                                   | **UI-only**                                                           | SPEC-07-07 |
 | Responsáveis | mock (API `Responsible` existe, gerada, nunca chamada) | **UI-only nesta leva** (candidata a virar real, ver D1 na SPEC-07-08) | SPEC-07-08 |
-| Log | mock | **UI-only** | SPEC-07-09 |
+| Log          | mock                                                   | **UI-only**                                                           | SPEC-07-09 |
 
 Fields compartilhados (Select/SelectAsync, upload): SPEC-SHARE-01, fora
 da árvore de SPEC-07 (biblioteca cross-feature, ver `specs/share-01-
@@ -59,17 +59,17 @@ Segmentos de rota em inglês (regra 6): `administrativo`→`administrative`,
 `relatorios`→`reports`, `responsaveis`→`responsible`. `romaneio` fica em
 português (nome do domínio no Core, ver SPEC-07-04 §3).
 
-| Sub-SPEC | Nome | Depende de | Bloqueia |
-| --- | --- | --- | --- |
-| SPEC-07-01 | `operations-list` | SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`/`SelectAsync`) | SPEC-08, SPEC-07-03/05/06 (namespace i18n) |
-| SPEC-07-02 | `operation-shell` | SPEC-00, SPEC-02 | SPEC-07-03 a SPEC-07-09 |
-| SPEC-07-03 | `operation-details` | SPEC-SHARE-01 (`Select`), SPEC-07-01 (namespace), SPEC-07-02 | — |
-| SPEC-07-04 | `operation-romaneio` | SPEC-SHARE-01 (`InputFileSingle`), SPEC-07-02 | — |
-| SPEC-07-05 | `operation-containers` | SPEC-SHARE-01 (`Select`, `InputPhotoMulti`), SPEC-07-01 (namespace), SPEC-07-02 | — |
-| SPEC-07-06 | `operation-documents` | SPEC-SHARE-01 (`Select`, `InputFileSingle`), SPEC-07-01 (namespace), SPEC-07-02 | — |
-| SPEC-07-07 | `operation-reports` | SPEC-07-02 | — |
-| SPEC-07-08 | `operation-responsible` | SPEC-07-02 | — |
-| SPEC-07-09 | `operation-log` | SPEC-07-02 | — |
+| Sub-SPEC   | Nome                    | Depende de                                                                      | Bloqueia                                   |
+| ---------- | ----------------------- | ------------------------------------------------------------------------------- | ------------------------------------------ |
+| SPEC-07-01 | `operations-list`       | SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`/`SelectAsync`)                        | SPEC-08, SPEC-07-03/05/06 (namespace i18n) |
+| SPEC-07-02 | `operation-shell`       | SPEC-00, SPEC-02                                                                | SPEC-07-03 a SPEC-07-09                    |
+| SPEC-07-03 | `operation-details`     | SPEC-SHARE-01 (`Select`), SPEC-07-01 (namespace), SPEC-07-02                    | —                                          |
+| SPEC-07-04 | `operation-romaneio`    | SPEC-SHARE-01 (`InputFileSingle`), SPEC-07-02                                   | —                                          |
+| SPEC-07-05 | `operation-containers`  | SPEC-SHARE-01 (`Select`, `InputPhotoMulti`), SPEC-07-01 (namespace), SPEC-07-02 | —                                          |
+| SPEC-07-06 | `operation-documents`   | SPEC-SHARE-01 (`Select`, `InputFileSingle`), SPEC-07-01 (namespace), SPEC-07-02 | —                                          |
+| SPEC-07-07 | `operation-reports`     | SPEC-07-02                                                                      | —                                          |
+| SPEC-07-08 | `operation-responsible` | SPEC-07-02                                                                      | —                                          |
+| SPEC-07-09 | `operation-log`         | SPEC-07-02                                                                      | —                                          |
 
 > `SPEC-07-00` (`operations-upload-fields`) foi absorvida por
 > `SPEC-SHARE-01` (`shared-form-fields`) — os Fields de upload que criava
@@ -78,7 +78,7 @@ português (nome do domínio no Core, ver SPEC-07-04 §3).
 > nasciam aqui em SPEC-07-01, e `AddressGroup`, que nascia em SPEC-04,
 > tinham o mesmo problema) e foram consolidados numa SPEC compartilhada
 > única, fora da árvore de SPEC-07 — ver `specs/share-01-shared-form-
-> fields/spec.md` §1.
+fields/spec.md` §1.
 
 Cada sub-SPEC nasce de `wave-2-parallel-areas` (ver `specs/BRANCHING.md`
 para a árvore completa de branches e ordem de merge) e tem seu próprio

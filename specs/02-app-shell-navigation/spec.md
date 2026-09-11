@@ -51,11 +51,12 @@ modal.
 ## 2. Contexto
 
 NewPortal hoje:
+
 - `src/layouts/AppShell/index.tsx` — shell básico (sidebar + topbar), sem nav
   config por área ainda; usa `useT`, `AreaId` de `permissions.ts`.
 - `src/hooks/useCan.ts`/`useUser.ts` já existem.
 - `src/lib/permissions.ts` já define `AreaId` = `admin | administrativo |
-  operacional | client | laboratorio`.
+operacional | client | laboratorio`.
 - `view-mode.ts` e `view-toggle.tsx` foram **apagados** por não terem
   consumidor (sessão anterior de limpeza) — revividos aqui porque a SPEC-03+
   precisa deles em toda lista CRUD.
@@ -69,6 +70,7 @@ NewPortal hoje:
   aqui, agora **conectada** ao form.
 
 Legado (`warren/Portal`):
+
 - `Layouts/SideBar/index.tsx` — seções colapsáveis por área, `SidebarSection`,
   estado ativo por rota, visibilidade via `Can`/`useCan`.
 - `Layouts/SideBar/BrandSwitcher.tsx`, `LanguageSwitcher.tsx`, `UserMenu.tsx`
@@ -90,7 +92,7 @@ Legado (`warren/Portal`):
    particionado da SPEC-00, pra evitar que toda SPEC de área conflite no
    mesmo arquivo quando implementadas em paralelo):
    - `src/layouts/AppShell/nav/types.ts` — `NavItem { labelKey, to, icon?,
-     order? }` (**decidido, D1:** `icon` é `string` — nome da classe
+order? }` (**decidido, D1:** `icon` é `string` — nome da classe
      `bootstrap-icons`, ex. `"bi-house-door"`, renderizado como
      `<i className={`bi ${icon}`} aria-hidden />`; é o que já predomina no
      repo — `UserMenu.tsx`, `AppShell/index.tsx`, `InputPassword.tsx` — e já
@@ -98,17 +100,17 @@ Legado (`warren/Portal`):
      `router.tsx`. `react-bootstrap-icons`, usado hoje em `theme-toggle.tsx`
      e `password-field.tsx`, não migra — fica como débito pra depois, fora
      do escopo desta SPEC), `NavFragment { area: AreaId, sectionLabelKey,
-     items: NavItem[] }`, e `SECTION_ORDER: AreaId[]` — lista **fixa** (não
+items: NavItem[] }`, e `SECTION_ORDER: AreaId[]` — lista **fixa** (não
      descoberta por glob) com a ordem das seções entre si
      (`["admin", "administrativo", "operacional", "laboratorio",
-     "client"]`, igual ao objetivo do §1). `getNavSections` ordena o
+"client"]`, igual ao objetivo do §1). `getNavSections` ordena o
      resultado do merge por essa lista antes de retornar — sem ela, a
      ordem das seções seria a ordem alfabética dos nomes de arquivo em
      `nav/`, que não bate com o objetivo. SPEC de área nova que introduz
      uma seção ainda não listada precisa adicionar 1 linha aqui, além do
      próprio arquivo de fragmento.
    - `src/layouts/AppShell/nav/index.ts` — `import.meta.glob('./*.ts',
-     { eager: true })` sobre a pasta, mas **filtra** o resultado excluindo
+{ eager: true })` sobre a pasta, mas **filtra** o resultado excluindo
      `types.ts` e o próprio `index.ts` antes de tratar o resto como
      fragmento (`path.endsWith('/types.ts')` / `'/index.ts'`) — o glob
      também casa com esses dois arquivos, que não exportam `NavFragment`;
@@ -273,48 +275,48 @@ src/layouts/Form/Fields/
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/layouts/AppShell/nav/types.ts` | criar |
-| `src/layouts/AppShell/nav/index.ts` | criar |
-| `src/layouts/AppShell/index.tsx` | editar |
-| `src/layouts/AppShell/UserMenu.tsx` | editar |
-| `src/components/profile/*.tsx` | criar |
-| `src/components/ui/confirmation-modal.tsx` | criar |
-| `src/components/ui/view-toggle.tsx` | criar |
-| `src/lib/view-mode.ts` | criar |
-| `src/lib/validation/login.ts` | criar (recriado, conectado ao form) |
-| `src/lib/validation/reset-password.ts` | criar (recriado, conectado ao form) |
-| `src/routes/auth/login/index.tsx` | editar — `zodResolver` + `layouts/Form/Fields` (`InputText` + `InputPassword`), link "esqueceu a senha" fora do campo, Super login lê credenciais de `import.meta.env.VITE_SUPER_LOGIN_USER`/`VITE_SUPER_LOGIN_PASSWORD` |
-| `src/routes/auth/forgot-password/index.tsx` | editar — `zodResolver` por etapa + `layouts/Form/Fields` |
-| `src/layouts/Form/Fields/InputPassword.tsx` | editar — remove prop `recurses.forgotPassword` (link quebrado, apontava pra rota inexistente) |
-| `.env` | editar — adiciona `VITE_SUPER_LOGIN_USER=` / `VITE_SUPER_LOGIN_PASSWORD=` (nomes só, valor vazio) |
-| `.env.local` (não versionado) | doc apenas — dev preenche com credencial real do SuperAdmin |
-| `src/components/ui/input.tsx` | remover (superado por `layouts/Form/Fields`) |
-| `src/components/ui/field.tsx` | remover (idem) |
-| `src/components/ui/password-field.tsx` | remover (idem, `InputPassword` já cobre) |
-| `src/components/crud/crud-list-page.tsx` | criar |
-| `src/components/crud/crud-record-modal.tsx` | criar |
-| `src/components/ui/mock-data-banner.tsx` | criar |
-| `src/i18n/dictionaries/*/common.json` | editar (4 locales) — nome do namespace é o que sair de SPEC-00 D1, não decidir de novo aqui |
-| `src/i18n/dictionaries/*/crud.json` | criar (4 locales) — strings de `crud-list-page`/`crud-record-modal`/`mock-data-banner` |
+| Arquivo                                     | Ação                                                                                                                                                                                                                     |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/layouts/AppShell/nav/types.ts`         | criar                                                                                                                                                                                                                    |
+| `src/layouts/AppShell/nav/index.ts`         | criar                                                                                                                                                                                                                    |
+| `src/layouts/AppShell/index.tsx`            | editar                                                                                                                                                                                                                   |
+| `src/layouts/AppShell/UserMenu.tsx`         | editar                                                                                                                                                                                                                   |
+| `src/components/profile/*.tsx`              | criar                                                                                                                                                                                                                    |
+| `src/components/ui/confirmation-modal.tsx`  | criar                                                                                                                                                                                                                    |
+| `src/components/ui/view-toggle.tsx`         | criar                                                                                                                                                                                                                    |
+| `src/lib/view-mode.ts`                      | criar                                                                                                                                                                                                                    |
+| `src/lib/validation/login.ts`               | criar (recriado, conectado ao form)                                                                                                                                                                                      |
+| `src/lib/validation/reset-password.ts`      | criar (recriado, conectado ao form)                                                                                                                                                                                      |
+| `src/routes/auth/login/index.tsx`           | editar — `zodResolver` + `layouts/Form/Fields` (`InputText` + `InputPassword`), link "esqueceu a senha" fora do campo, Super login lê credenciais de `import.meta.env.VITE_SUPER_LOGIN_USER`/`VITE_SUPER_LOGIN_PASSWORD` |
+| `src/routes/auth/forgot-password/index.tsx` | editar — `zodResolver` por etapa + `layouts/Form/Fields`                                                                                                                                                                 |
+| `src/layouts/Form/Fields/InputPassword.tsx` | editar — remove prop `recurses.forgotPassword` (link quebrado, apontava pra rota inexistente)                                                                                                                            |
+| `.env`                                      | editar — adiciona `VITE_SUPER_LOGIN_USER=` / `VITE_SUPER_LOGIN_PASSWORD=` (nomes só, valor vazio)                                                                                                                        |
+| `.env.local` (não versionado)               | doc apenas — dev preenche com credencial real do SuperAdmin                                                                                                                                                              |
+| `src/components/ui/input.tsx`               | remover (superado por `layouts/Form/Fields`)                                                                                                                                                                             |
+| `src/components/ui/field.tsx`               | remover (idem)                                                                                                                                                                                                           |
+| `src/components/ui/password-field.tsx`      | remover (idem, `InputPassword` já cobre)                                                                                                                                                                                 |
+| `src/components/crud/crud-list-page.tsx`    | criar                                                                                                                                                                                                                    |
+| `src/components/crud/crud-record-modal.tsx` | criar                                                                                                                                                                                                                    |
+| `src/components/ui/mock-data-banner.tsx`    | criar                                                                                                                                                                                                                    |
+| `src/i18n/dictionaries/*/common.json`       | editar (4 locales) — nome do namespace é o que sair de SPEC-00 D1, não decidir de novo aqui                                                                                                                              |
+| `src/i18n/dictionaries/*/crud.json`         | criar (4 locales) — strings de `crud-list-page`/`crud-record-modal`/`mock-data-banner`                                                                                                                                   |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | Usuário `Internal` sem `isAdmin` não vê seção "Admin" na sidebar |
-| CA2 | `ProfileModal` salva as 3 abas contra o Core real (ambiente de dev) |
-| CA3 | `ConfirmationModal` cancela sem side-effect e confirma disparando `onConfirm` |
-| CA4 | `useViewMode` sobrevive a reload (localStorage) e força `cards` <768px |
-| CA5 | `bun run check` + `bun run lint` passam |
-| CA6 | `grep -n "required:\|minLength:\|maxLength:" src/routes/auth/{login,forgot-password}/index.tsx` não acha regra de validação solta — só `zodResolver` |
-| CA7 | `crud-list-page`/`crud-record-modal` conseguem cobrir a tela Terminal (o caso mais simples da SPEC-04) só com config, sem editar o componente genérico — valida que a abstração não nasceu forte demais nem fraca demais |
-| CA8 | Nenhuma rota monta um aviso de "dados de exemplo" à mão: `grep -rln "<Alert" src/routes` só acha `Alert` legítimo (erro/aviso real da tela), nunca substituindo `MockDataBanner`; o aviso de dado mock só existe via `<MockDataBanner />` (`grep -rn "MockDataBanner" src/routes` lista exatamente as telas que usam dados mock) — critério resiste a mudança de texto/capitalização entre locales/SPECs, ao contrário de checar a string literal |
-| CA9 | `src/components/ui/{input,field,password-field}.tsx` não existem mais; `grep -rn "<input\|Form.Control" src/routes/auth src/components/crud` não acha input cru — só componentes de `layouts/Form/Fields` |
-| CA10 | Criar um `nav/<qualquer-nome>.ts` novo com um `NavFragment` e nada mais faz aparecer a seção na sidebar — sem editar `nav/index.ts` nem nenhum outro fragmento |
-| CA11 | `grep -n "recurses" src/layouts/Form/Fields/InputPassword.tsx` não acha nada; `grep -rn "SuperAdmin\|DayTVjjl2uV4" src` não acha credencial hard-coded — Super login lê de `import.meta.env.VITE_SUPER_LOGIN_*` e some do form quando as vars não estão definidas |
-| CA12 | Com fragmentos de todas as áreas presentes (mock de teste cobrindo os 5 `AreaId`), a ordem das seções na sidebar bate exatamente com `SECTION_ORDER`, mesmo se os arquivos de fragmento forem criados fora dessa ordem alfabética |
+| #    | Critério                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1  | Usuário `Internal` sem `isAdmin` não vê seção "Admin" na sidebar                                                                                                                                                                                                                                                                                                                                                                                  |
+| CA2  | `ProfileModal` salva as 3 abas contra o Core real (ambiente de dev)                                                                                                                                                                                                                                                                                                                                                                               |
+| CA3  | `ConfirmationModal` cancela sem side-effect e confirma disparando `onConfirm`                                                                                                                                                                                                                                                                                                                                                                     |
+| CA4  | `useViewMode` sobrevive a reload (localStorage) e força `cards` <768px                                                                                                                                                                                                                                                                                                                                                                            |
+| CA5  | `bun run check` + `bun run lint` passam                                                                                                                                                                                                                                                                                                                                                                                                           |
+| CA6  | `grep -n "required:\|minLength:\|maxLength:" src/routes/auth/{login,forgot-password}/index.tsx` não acha regra de validação solta — só `zodResolver`                                                                                                                                                                                                                                                                                              |
+| CA7  | `crud-list-page`/`crud-record-modal` conseguem cobrir a tela Terminal (o caso mais simples da SPEC-04) só com config, sem editar o componente genérico — valida que a abstração não nasceu forte demais nem fraca demais                                                                                                                                                                                                                          |
+| CA8  | Nenhuma rota monta um aviso de "dados de exemplo" à mão: `grep -rln "<Alert" src/routes` só acha `Alert` legítimo (erro/aviso real da tela), nunca substituindo `MockDataBanner`; o aviso de dado mock só existe via `<MockDataBanner />` (`grep -rn "MockDataBanner" src/routes` lista exatamente as telas que usam dados mock) — critério resiste a mudança de texto/capitalização entre locales/SPECs, ao contrário de checar a string literal |
+| CA9  | `src/components/ui/{input,field,password-field}.tsx` não existem mais; `grep -rn "<input\|Form.Control" src/routes/auth src/components/crud` não acha input cru — só componentes de `layouts/Form/Fields`                                                                                                                                                                                                                                         |
+| CA10 | Criar um `nav/<qualquer-nome>.ts` novo com um `NavFragment` e nada mais faz aparecer a seção na sidebar — sem editar `nav/index.ts` nem nenhum outro fragmento                                                                                                                                                                                                                                                                                    |
+| CA11 | `grep -n "recurses" src/layouts/Form/Fields/InputPassword.tsx` não acha nada; `grep -rn "SuperAdmin\|DayTVjjl2uV4" src` não acha credencial hard-coded — Super login lê de `import.meta.env.VITE_SUPER_LOGIN_*` e some do form quando as vars não estão definidas                                                                                                                                                                                 |
+| CA12 | Com fragmentos de todas as áreas presentes (mock de teste cobrindo os 5 `AreaId`), a ordem das seções na sidebar bate exatamente com `SECTION_ORDER`, mesmo se os arquivos de fragmento forem criados fora dessa ordem alfabética                                                                                                                                                                                                                 |
 
 ## 12. Riscos
 
@@ -323,7 +325,7 @@ src/layouts/Form/Fields/
   `content-type: application/json`) e o proxy BFF (`src/routes/api/core.ts`)
   repassa `request.body` como stream (`duplex: "half"`) com todos os
   headers exceto hop-by-hop, então o `content-type: multipart/form-data;
-  boundary=...` chega intacto no Core. Risco rebaixado a checklist de fumaça
+boundary=...` chega intacto no Core. Risco rebaixado a checklist de fumaça
   (testar 1 upload real em dev), não bloqueio de design.
 - **R2** — Nav config crescer sem limite conforme SPEC-03+ entram; manter
   como dado declarativo simples, não lógica.
@@ -362,6 +364,7 @@ src/layouts/Form/Fields/
 ## Implementation Notes
 
 **Arquivos alterados/criados** — bate com a tabela §10 integralmente:
+
 - `src/layouts/AppShell/nav/{types,index,admin,administrativo,operacional,laboratorio,client}.ts` (novo)
 - `src/layouts/AppShell/index.tsx`, `UserMenu.tsx` (editados)
 - `src/components/profile/{profile-modal,detail-tab,address-tab,password-tab}.tsx` (novo)
@@ -381,6 +384,7 @@ src/layouts/Form/Fields/
   namespace `crud` no shape `pt-BR`)
 
 **Comandos executados:**
+
 - `bun run check` (tsc --noEmit): sem erro nos arquivos desta SPEC. Restam 5 erros
   pré-existentes em `src/components/site/SiteHeader.tsx` (rotas `/servicos`, `/politicas` etc. —
   `src/routeTree.gen.ts` está desatualizado/stale, não regenerado desde antes desta sessão;
@@ -395,22 +399,23 @@ src/layouts/Form/Fields/
 
 **Critérios de aceitação:**
 
-| # | Resultado |
-| --- | --- |
-| CA1 | Código revisado: `GatedSection` usa `useCan(section.area)` → `getUserAreas` (regra inalterada). NOT VERIFIED em runtime (precisa de sessão real sem `isAdmin`). |
-| CA2 | NOT VERIFIED — precisa do Core rodando em dev; fora do alcance desta sessão (sem ambiente). |
-| CA3 | VERIFIED por leitura de código — `ConfirmationModal.onConfirm` roda em `try/finally` com `loading`, `onCancel` não chama `onConfirm`. |
-| CA4 | VERIFIED por leitura de código — `useViewMode` persiste em `localStorage["asc:view-mode"]`; `useResponsiveViewMode` força `"cards"` via `useIsMobile(767.98)`. |
-| CA5 | VERIFIED — ver comandos acima (limpo nos arquivos desta SPEC). |
-| CA6 | VERIFIED — `grep -n "required:\|minLength:\|maxLength:" src/routes/auth/{login,forgot-password}/index.tsx` → vazio. |
-| CA7 | NOT VERIFIED — só pode ser validado de fato quando a SPEC-04 (tela Terminal) for implementada contra `crud-list-page`/`crud-record-modal`. |
-| CA8 | VERIFIED — `grep -rln "<Alert" src/routes` e `grep -rn "MockDataBanner" src/routes` → ambos vazios (nenhuma rota de área existe ainda). |
-| CA9 | VERIFIED — `input.tsx`/`field.tsx`/`password-field.tsx` removidos; `grep -rn "<input\|Form.Control" src/routes/auth src/components/crud` → vazio (busca da lista virou `layouts/Form/Fields/InputText` via `ListSearchInput`). |
-| CA10 | VERIFIED por desenho — `nav/index.ts` faz `import.meta.glob('./*.ts', { eager: true })` filtrando `types.ts`/`index.ts`; um fragmento novo em `nav/<nome>.ts` entra automaticamente sem editar mais nada. |
+| #    | Resultado                                                                                                                                                                                                                                                                    |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1  | Código revisado: `GatedSection` usa `useCan(section.area)` → `getUserAreas` (regra inalterada). NOT VERIFIED em runtime (precisa de sessão real sem `isAdmin`).                                                                                                              |
+| CA2  | NOT VERIFIED — precisa do Core rodando em dev; fora do alcance desta sessão (sem ambiente).                                                                                                                                                                                  |
+| CA3  | VERIFIED por leitura de código — `ConfirmationModal.onConfirm` roda em `try/finally` com `loading`, `onCancel` não chama `onConfirm`.                                                                                                                                        |
+| CA4  | VERIFIED por leitura de código — `useViewMode` persiste em `localStorage["asc:view-mode"]`; `useResponsiveViewMode` força `"cards"` via `useIsMobile(767.98)`.                                                                                                               |
+| CA5  | VERIFIED — ver comandos acima (limpo nos arquivos desta SPEC).                                                                                                                                                                                                               |
+| CA6  | VERIFIED — `grep -n "required:\|minLength:\|maxLength:" src/routes/auth/{login,forgot-password}/index.tsx` → vazio.                                                                                                                                                          |
+| CA7  | NOT VERIFIED — só pode ser validado de fato quando a SPEC-04 (tela Terminal) for implementada contra `crud-list-page`/`crud-record-modal`.                                                                                                                                   |
+| CA8  | VERIFIED — `grep -rln "<Alert" src/routes` e `grep -rn "MockDataBanner" src/routes` → ambos vazios (nenhuma rota de área existe ainda).                                                                                                                                      |
+| CA9  | VERIFIED — `input.tsx`/`field.tsx`/`password-field.tsx` removidos; `grep -rn "<input\|Form.Control" src/routes/auth src/components/crud` → vazio (busca da lista virou `layouts/Form/Fields/InputText` via `ListSearchInput`).                                               |
+| CA10 | VERIFIED por desenho — `nav/index.ts` faz `import.meta.glob('./*.ts', { eager: true })` filtrando `types.ts`/`index.ts`; um fragmento novo em `nav/<nome>.ts` entra automaticamente sem editar mais nada.                                                                    |
 | CA11 | VERIFIED — `grep -n "recurses" src/layouts/Form/Fields/InputPassword.tsx` → vazio (prop inteira removida, não só `forgotPassword`); `grep -rn "SuperAdmin\|DayTVjjl2uV4" src` → vazio (só comentário em `validation/login.ts` citando o formato de usuário, sem credencial). |
-| CA12 | VERIFIED por desenho — `SECTION_ORDER` fixo em `nav/types.ts`; `buildSections()` em `nav/index.ts` faz `SECTION_ORDER.map(...)` no final, então a ordem de criação dos arquivos de fragmento não importa. |
+| CA12 | VERIFIED por desenho — `SECTION_ORDER` fixo em `nav/types.ts`; `buildSections()` em `nav/index.ts` faz `SECTION_ORDER.map(...)` no final, então a ordem de criação dos arquivos de fragmento não importa.                                                                    |
 
 **Decisões tomadas durante a implementação:**
+
 - `InputAvatar.tsx` criado em `layouts/Form/Fields/` (não estava no §10 original) — necessário pra
   não violar a regra 10 no upload de avatar do `ProfileModal`; é o único lugar do projeto com
   `<input type="file">` cru, propositalmente dentro da biblioteca de Fields.
@@ -423,6 +428,7 @@ src/layouts/Form/Fields/
   pede a remoção de `recurses.forgotPassword`).
 
 **Limitações conhecidas:**
+
 - `src/routeTree.gen.ts` está stale (não referencia rotas do site público criadas depois da
   última geração) — causa os 5 erros de `SiteHeader.tsx` em `bun run check`, pré-existentes,
   fora do território desta SPEC. Regenerar é responsabilidade de quem tocar `src/routes/**`
@@ -447,11 +453,12 @@ SPEC-03) quebrava no SSR — `CrudListPage` recebia `items`/`isLoading`/
 no componente sem seed, batendo na trava de `mutator.ts`.
 
 **Mudança de contrato:**
+
 - **Antes:** `items: T[]`, `isLoading?: boolean`, `isError?: boolean`,
   `total: number` — a rota buscava o dado e passava pronto.
 - **Depois:** `queryOptions: UseQueryOptions<TQueryData, TError, TQueryData, any>`
   (onde `TQueryData extends CrudPagedResult<T> = { items: T[]; total:
-  number | string }`) — `CrudListPage` busca o próprio dado internamente via
+number | string }`) — `CrudListPage` busca o próprio dado internamente via
   `useSsrSafeQuery` (`src/lib/queries/use-ssr-safe-query.ts`, novo em
   SPEC-10), que nunca deixa o `queryFn` rodar no servidor.
 

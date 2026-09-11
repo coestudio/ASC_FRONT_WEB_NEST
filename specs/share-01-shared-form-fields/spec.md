@@ -156,29 +156,29 @@ corpo `Blob | File` já usado nos endpoints gerados (ex.:
 
 ## 7. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/layouts/Form/Fields/Select.tsx` | criar (implementa o stub vazio `Fields/make/Select.tsx`) |
-| `src/layouts/Form/Fields/SelectAsync.tsx` | criar |
-| `src/layouts/Form/Fields/AddressGroup.tsx` | criar |
-| `src/layouts/Form/Fields/InputFileSingle.tsx` | criar |
-| `src/layouts/Form/Fields/InputPhotoSingle.tsx` | criar |
-| `src/layouts/Form/Fields/InputFileMulti.tsx` | criar |
-| `src/layouts/Form/Fields/InputPhotoMulti.tsx` | criar |
-| `src/layouts/Form/Fields/Index.ts` | editar — exportar os 7 novos Fields |
+| Arquivo                                                                                   | Ação                                                                           |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `src/layouts/Form/Fields/Select.tsx`                                                      | criar (implementa o stub vazio `Fields/make/Select.tsx`)                       |
+| `src/layouts/Form/Fields/SelectAsync.tsx`                                                 | criar                                                                          |
+| `src/layouts/Form/Fields/AddressGroup.tsx`                                                | criar                                                                          |
+| `src/layouts/Form/Fields/InputFileSingle.tsx`                                             | criar                                                                          |
+| `src/layouts/Form/Fields/InputPhotoSingle.tsx`                                            | criar                                                                          |
+| `src/layouts/Form/Fields/InputFileMulti.tsx`                                              | criar                                                                          |
+| `src/layouts/Form/Fields/InputPhotoMulti.tsx`                                             | criar                                                                          |
+| `src/layouts/Form/Fields/Index.ts`                                                        | editar — exportar os 7 novos Fields                                            |
 | `src/layouts/Form/Fields/map.tsx` (ou onde `RenderFields` resolve `FieldName`→componente) | editar — suportar `Select`/`SelectAsync`/`AddressGroup` além dos `Input*` flat |
 
 ## 8. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
+| #   | Critério                                                                                        |
+| --- | ----------------------------------------------------------------------------------------------- |
 | CA1 | Os 7 Fields são exportados em `Fields/Index.ts` e usáveis como qualquer `LayoutField` existente |
-| CA2 | `SelectAsync` busca por digitação com debounce, não recarrega a lista inteira a cada tecla |
-| CA3 | `AddressGroup` cobre todos os campos de `AddressCreate` sem `any`/cast |
-| CA4 | `InputPhotoSingle`/`InputPhotoMulti` mostram preview antes do envio |
-| CA5 | `InputFileMulti`/`InputPhotoMulti` permitem remover item individual da seleção |
-| CA6 | `bun run check` + `lint` passam |
-| CA7 | Nenhum novo Field faz crop de imagem (isso continua exclusivo de `InputAvatar`) |
+| CA2 | `SelectAsync` busca por digitação com debounce, não recarrega a lista inteira a cada tecla      |
+| CA3 | `AddressGroup` cobre todos os campos de `AddressCreate` sem `any`/cast                          |
+| CA4 | `InputPhotoSingle`/`InputPhotoMulti` mostram preview antes do envio                             |
+| CA5 | `InputFileMulti`/`InputPhotoMulti` permitem remover item individual da seleção                  |
+| CA6 | `bun run check` + `lint` passam                                                                 |
+| CA7 | Nenhum novo Field faz crop de imagem (isso continua exclusivo de `InputAvatar`)                 |
 
 ## 9. Riscos
 
@@ -244,15 +244,15 @@ corpo `Blob | File` já usado nos endpoints gerados (ex.:
     gerou erro ou warning novo.
 - **Critérios de aceitação:**
 
-  | # | Critério | Status |
-  | --- | --- | --- |
-  | CA1 | 7 Fields exportados em `Index.ts`, usáveis como `LayoutField` | PASS |
-  | CA2 | `SelectAsync` busca com debounce, não recarrega a cada tecla | PASS |
-  | CA3 | `AddressGroup` cobre todos os campos de `AddressCreate` sem `any` solto (só o cast `as Path<T>`, idiom padrão do RHF pra path dinâmico, documentado em comentário) | PASS |
-  | CA4 | `InputPhotoSingle`/`InputPhotoMulti` mostram preview antes do envio | PASS |
-  | CA5 | `InputFileMulti`/`InputPhotoMulti` permitem remover item individual | PASS |
-  | CA6 | `bun run check` + `lint` passam (sem novos erros/warnings) | PASS |
-  | CA7 | Nenhum novo Field faz crop de imagem | PASS |
+  | #   | Critério                                                                                                                                                           | Status |
+  | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+  | CA1 | 7 Fields exportados em `Index.ts`, usáveis como `LayoutField`                                                                                                      | PASS   |
+  | CA2 | `SelectAsync` busca com debounce, não recarrega a cada tecla                                                                                                       | PASS   |
+  | CA3 | `AddressGroup` cobre todos os campos de `AddressCreate` sem `any` solto (só o cast `as Path<T>`, idiom padrão do RHF pra path dinâmico, documentado em comentário) | PASS   |
+  | CA4 | `InputPhotoSingle`/`InputPhotoMulti` mostram preview antes do envio                                                                                                | PASS   |
+  | CA5 | `InputFileMulti`/`InputPhotoMulti` permitem remover item individual                                                                                                | PASS   |
+  | CA6 | `bun run check` + `lint` passam (sem novos erros/warnings)                                                                                                         | PASS   |
+  | CA7 | Nenhum novo Field faz crop de imagem                                                                                                                               | PASS   |
 
 - **Decisões tomadas durante a implementação:**
   - `Select` recebe `enumOptions: EnumOptionDTO[]` (snapshot bruto) como via

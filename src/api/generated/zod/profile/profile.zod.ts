@@ -4,13 +4,11 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from 'zod';
-
+import * as zod from "zod";
 
 export const getApiProfileMeResponseAddressCountryMax = 2;
 
-
-export const getApiProfileMeResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const getApiProfileMeResponseAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
 export const getApiProfileMeResponseAddressPostalCodeMax = 20;
 
 export const getApiProfileMeResponseAddressStateMax = 2;
@@ -25,47 +23,54 @@ export const getApiProfileMeResponseAddressComplementMax = 100;
 
 export const getApiProfileMeResponseAddressCityMax = 100;
 
-
-
 export const GetApiProfileMeResponse = zod.object({
-  "address": zod.object({
-  "country": zod.string().max(getApiProfileMeResponseAddressCountryMax).regex(getApiProfileMeResponseAddressCountryRegExp).nullish(),
-  "postalCode": zod.string().max(getApiProfileMeResponseAddressPostalCodeMax).nullish(),
-  "state": zod.string().max(getApiProfileMeResponseAddressStateMax).nullish(),
-  "neighborhood": zod.string().max(getApiProfileMeResponseAddressNeighborhoodMax).nullish(),
-  "street": zod.string().max(getApiProfileMeResponseAddressStreetMax).nullish(),
-  "number": zod.string().max(getApiProfileMeResponseAddressNumberMax).nullish(),
-  "complement": zod.string().max(getApiProfileMeResponseAddressComplementMax).nullish(),
-  "city": zod.string().max(getApiProfileMeResponseAddressCityMax).nullish(),
-  "fullAddress": zod.string().optional()
-}),
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  address: zod.object({
+    country: zod
+      .string()
+      .max(getApiProfileMeResponseAddressCountryMax)
+      .regex(getApiProfileMeResponseAddressCountryRegExp)
+      .nullish(),
+    postalCode: zod.string().max(getApiProfileMeResponseAddressPostalCodeMax).nullish(),
+    state: zod.string().max(getApiProfileMeResponseAddressStateMax).nullish(),
+    neighborhood: zod.string().max(getApiProfileMeResponseAddressNeighborhoodMax).nullish(),
+    street: zod.string().max(getApiProfileMeResponseAddressStreetMax).nullish(),
+    number: zod.string().max(getApiProfileMeResponseAddressNumberMax).nullish(),
+    complement: zod.string().max(getApiProfileMeResponseAddressComplementMax).nullish(),
+    city: zod.string().max(getApiProfileMeResponseAddressCityMax).nullish(),
+    fullAddress: zod.string().optional(),
+  }),
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const postApiProfileMeBodyProfileFullNameMin = 3;
 export const postApiProfileMeBodyProfileFullNameMax = 150;
@@ -82,23 +87,34 @@ export const postApiProfileMeBodyProfilePhoneMax = 20;
 export const postApiProfileMeBodyUserNameMin = 3;
 export const postApiProfileMeBodyUserNameMax = 150;
 
-
-
 export const PostApiProfileMeBody = zod.object({
-  "profile": zod.object({
-  "fullName": zod.string().min(postApiProfileMeBodyProfileFullNameMin).max(postApiProfileMeBodyProfileFullNameMax),
-  "document": zod.string().min(postApiProfileMeBodyProfileDocumentMin).max(postApiProfileMeBodyProfileDocumentMax).nullish(),
-  "email": zod.string().min(postApiProfileMeBodyProfileEmailMin).max(postApiProfileMeBodyProfileEmailMax),
-  "phone": zod.string().min(postApiProfileMeBodyProfilePhoneMin).max(postApiProfileMeBodyProfilePhoneMax).nullish(),
-  "birthDate": zod.iso.date().nullish()
-}),
-  "userName": zod.string().min(postApiProfileMeBodyUserNameMin).max(postApiProfileMeBodyUserNameMax)
-})
+  profile: zod.object({
+    fullName: zod
+      .string()
+      .min(postApiProfileMeBodyProfileFullNameMin)
+      .max(postApiProfileMeBodyProfileFullNameMax),
+    document: zod
+      .string()
+      .min(postApiProfileMeBodyProfileDocumentMin)
+      .max(postApiProfileMeBodyProfileDocumentMax)
+      .nullish(),
+    email: zod
+      .string()
+      .min(postApiProfileMeBodyProfileEmailMin)
+      .max(postApiProfileMeBodyProfileEmailMax),
+    phone: zod
+      .string()
+      .min(postApiProfileMeBodyProfilePhoneMin)
+      .max(postApiProfileMeBodyProfilePhoneMax)
+      .nullish(),
+    birthDate: zod.iso.date().nullish(),
+  }),
+  userName: zod.string().min(postApiProfileMeBodyUserNameMin).max(postApiProfileMeBodyUserNameMax),
+});
 
 export const postApiProfileMeResponseAddressCountryMax = 2;
 
-
-export const postApiProfileMeResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const postApiProfileMeResponseAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
 export const postApiProfileMeResponseAddressPostalCodeMax = 20;
 
 export const postApiProfileMeResponseAddressStateMax = 2;
@@ -113,66 +129,78 @@ export const postApiProfileMeResponseAddressComplementMax = 100;
 
 export const postApiProfileMeResponseAddressCityMax = 100;
 
-
-
 export const PostApiProfileMeResponse = zod.object({
-  "address": zod.object({
-  "country": zod.string().max(postApiProfileMeResponseAddressCountryMax).regex(postApiProfileMeResponseAddressCountryRegExp).nullish(),
-  "postalCode": zod.string().max(postApiProfileMeResponseAddressPostalCodeMax).nullish(),
-  "state": zod.string().max(postApiProfileMeResponseAddressStateMax).nullish(),
-  "neighborhood": zod.string().max(postApiProfileMeResponseAddressNeighborhoodMax).nullish(),
-  "street": zod.string().max(postApiProfileMeResponseAddressStreetMax).nullish(),
-  "number": zod.string().max(postApiProfileMeResponseAddressNumberMax).nullish(),
-  "complement": zod.string().max(postApiProfileMeResponseAddressComplementMax).nullish(),
-  "city": zod.string().max(postApiProfileMeResponseAddressCityMax).nullish(),
-  "fullAddress": zod.string().optional()
-}),
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  address: zod.object({
+    country: zod
+      .string()
+      .max(postApiProfileMeResponseAddressCountryMax)
+      .regex(postApiProfileMeResponseAddressCountryRegExp)
+      .nullish(),
+    postalCode: zod.string().max(postApiProfileMeResponseAddressPostalCodeMax).nullish(),
+    state: zod.string().max(postApiProfileMeResponseAddressStateMax).nullish(),
+    neighborhood: zod.string().max(postApiProfileMeResponseAddressNeighborhoodMax).nullish(),
+    street: zod.string().max(postApiProfileMeResponseAddressStreetMax).nullish(),
+    number: zod.string().max(postApiProfileMeResponseAddressNumberMax).nullish(),
+    complement: zod.string().max(postApiProfileMeResponseAddressComplementMax).nullish(),
+    city: zod.string().max(postApiProfileMeResponseAddressCityMax).nullish(),
+    fullAddress: zod.string().optional(),
+  }),
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const GetApiProfileInfoResponse = zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-})
+  fullName: zod.string().optional(),
+  document: zod.string().nullish(),
+  email: zod.string().nullish(),
+  phone: zod.string().nullish(),
+  birthDate: zod.iso.date().nullish(),
+  avatarFile: zod
+    .union([
+      zod.null(),
+      zod.object({
+        name: zod.string().optional(),
+        extension: zod.string().optional(),
+        url: zod.string().optional(),
+        contentType: zod.string().nullish(),
+        id: zod.uuid(),
+        createdAt: zod.iso.datetime({ offset: true }),
+        updatedAt: zod.iso.datetime({ offset: true }),
+      }),
+    ])
+    .optional(),
+  firstName: zod.string().optional(),
+  lastName: zod.string().optional(),
+});
 
 export const postApiProfileInfoBodyFullNameMin = 3;
 export const postApiProfileInfoBodyFullNameMax = 150;
@@ -186,39 +214,52 @@ export const postApiProfileInfoBodyEmailMax = 320;
 export const postApiProfileInfoBodyPhoneMin = 3;
 export const postApiProfileInfoBodyPhoneMax = 20;
 
-
-
 export const PostApiProfileInfoBody = zod.object({
-  "fullName": zod.string().min(postApiProfileInfoBodyFullNameMin).max(postApiProfileInfoBodyFullNameMax),
-  "document": zod.string().min(postApiProfileInfoBodyDocumentMin).max(postApiProfileInfoBodyDocumentMax).nullish(),
-  "email": zod.string().min(postApiProfileInfoBodyEmailMin).max(postApiProfileInfoBodyEmailMax),
-  "phone": zod.string().min(postApiProfileInfoBodyPhoneMin).max(postApiProfileInfoBodyPhoneMax).nullish(),
-  "birthDate": zod.iso.date().nullish()
-})
+  fullName: zod
+    .string()
+    .min(postApiProfileInfoBodyFullNameMin)
+    .max(postApiProfileInfoBodyFullNameMax),
+  document: zod
+    .string()
+    .min(postApiProfileInfoBodyDocumentMin)
+    .max(postApiProfileInfoBodyDocumentMax)
+    .nullish(),
+  email: zod.string().min(postApiProfileInfoBodyEmailMin).max(postApiProfileInfoBodyEmailMax),
+  phone: zod
+    .string()
+    .min(postApiProfileInfoBodyPhoneMin)
+    .max(postApiProfileInfoBodyPhoneMax)
+    .nullish(),
+  birthDate: zod.iso.date().nullish(),
+});
 
 export const PostApiProfileInfoResponse = zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-})
+  fullName: zod.string().optional(),
+  document: zod.string().nullish(),
+  email: zod.string().nullish(),
+  phone: zod.string().nullish(),
+  birthDate: zod.iso.date().nullish(),
+  avatarFile: zod
+    .union([
+      zod.null(),
+      zod.object({
+        name: zod.string().optional(),
+        extension: zod.string().optional(),
+        url: zod.string().optional(),
+        contentType: zod.string().nullish(),
+        id: zod.uuid(),
+        createdAt: zod.iso.datetime({ offset: true }),
+        updatedAt: zod.iso.datetime({ offset: true }),
+      }),
+    ])
+    .optional(),
+  firstName: zod.string().optional(),
+  lastName: zod.string().optional(),
+});
 
 export const getApiProfileAddressResponseCountryMax = 2;
 
-
-export const getApiProfileAddressResponseCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const getApiProfileAddressResponseCountryRegExp = new RegExp("^[A-Z]{2}$");
 export const getApiProfileAddressResponsePostalCodeMax = 20;
 
 export const getApiProfileAddressResponseStateMax = 2;
@@ -233,24 +274,25 @@ export const getApiProfileAddressResponseComplementMax = 100;
 
 export const getApiProfileAddressResponseCityMax = 100;
 
-
-
 export const GetApiProfileAddressResponse = zod.object({
-  "country": zod.string().max(getApiProfileAddressResponseCountryMax).regex(getApiProfileAddressResponseCountryRegExp).nullish(),
-  "postalCode": zod.string().max(getApiProfileAddressResponsePostalCodeMax).nullish(),
-  "state": zod.string().max(getApiProfileAddressResponseStateMax).nullish(),
-  "neighborhood": zod.string().max(getApiProfileAddressResponseNeighborhoodMax).nullish(),
-  "street": zod.string().max(getApiProfileAddressResponseStreetMax).nullish(),
-  "number": zod.string().max(getApiProfileAddressResponseNumberMax).nullish(),
-  "complement": zod.string().max(getApiProfileAddressResponseComplementMax).nullish(),
-  "city": zod.string().max(getApiProfileAddressResponseCityMax).nullish(),
-  "fullAddress": zod.string().optional()
-})
+  country: zod
+    .string()
+    .max(getApiProfileAddressResponseCountryMax)
+    .regex(getApiProfileAddressResponseCountryRegExp)
+    .nullish(),
+  postalCode: zod.string().max(getApiProfileAddressResponsePostalCodeMax).nullish(),
+  state: zod.string().max(getApiProfileAddressResponseStateMax).nullish(),
+  neighborhood: zod.string().max(getApiProfileAddressResponseNeighborhoodMax).nullish(),
+  street: zod.string().max(getApiProfileAddressResponseStreetMax).nullish(),
+  number: zod.string().max(getApiProfileAddressResponseNumberMax).nullish(),
+  complement: zod.string().max(getApiProfileAddressResponseComplementMax).nullish(),
+  city: zod.string().max(getApiProfileAddressResponseCityMax).nullish(),
+  fullAddress: zod.string().optional(),
+});
 
 export const putApiProfileAddressBodyCountryMax = 2;
 
-
-export const putApiProfileAddressBodyCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const putApiProfileAddressBodyCountryRegExp = new RegExp("^[A-Z]{2}$");
 export const putApiProfileAddressBodyPostalCodeMax = 10;
 
 export const putApiProfileAddressBodyStateMax = -1;
@@ -265,23 +307,24 @@ export const putApiProfileAddressBodyComplementMax = 100;
 
 export const putApiProfileAddressBodyCityMax = 100;
 
-
-
 export const PutApiProfileAddressBody = zod.object({
-  "country": zod.string().max(putApiProfileAddressBodyCountryMax).regex(putApiProfileAddressBodyCountryRegExp).nullish(),
-  "postalCode": zod.string().max(putApiProfileAddressBodyPostalCodeMax).nullable(),
-  "state": zod.string().max(putApiProfileAddressBodyStateMax).nullish(),
-  "neighborhood": zod.string().max(putApiProfileAddressBodyNeighborhoodMax).nullish(),
-  "street": zod.string().max(putApiProfileAddressBodyStreetMax).nullish(),
-  "number": zod.string().max(putApiProfileAddressBodyNumberMax).nullish(),
-  "complement": zod.string().max(putApiProfileAddressBodyComplementMax).nullish(),
-  "city": zod.string().max(putApiProfileAddressBodyCityMax).nullish()
-})
+  country: zod
+    .string()
+    .max(putApiProfileAddressBodyCountryMax)
+    .regex(putApiProfileAddressBodyCountryRegExp)
+    .nullish(),
+  postalCode: zod.string().max(putApiProfileAddressBodyPostalCodeMax).nullable(),
+  state: zod.string().max(putApiProfileAddressBodyStateMax).nullish(),
+  neighborhood: zod.string().max(putApiProfileAddressBodyNeighborhoodMax).nullish(),
+  street: zod.string().max(putApiProfileAddressBodyStreetMax).nullish(),
+  number: zod.string().max(putApiProfileAddressBodyNumberMax).nullish(),
+  complement: zod.string().max(putApiProfileAddressBodyComplementMax).nullish(),
+  city: zod.string().max(putApiProfileAddressBodyCityMax).nullish(),
+});
 
 export const putApiProfileAddressResponseCountryMax = 2;
 
-
-export const putApiProfileAddressResponseCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const putApiProfileAddressResponseCountryRegExp = new RegExp("^[A-Z]{2}$");
 export const putApiProfileAddressResponsePostalCodeMax = 20;
 
 export const putApiProfileAddressResponseStateMax = 2;
@@ -296,28 +339,29 @@ export const putApiProfileAddressResponseComplementMax = 100;
 
 export const putApiProfileAddressResponseCityMax = 100;
 
-
-
 export const PutApiProfileAddressResponse = zod.object({
-  "country": zod.string().max(putApiProfileAddressResponseCountryMax).regex(putApiProfileAddressResponseCountryRegExp).nullish(),
-  "postalCode": zod.string().max(putApiProfileAddressResponsePostalCodeMax).nullish(),
-  "state": zod.string().max(putApiProfileAddressResponseStateMax).nullish(),
-  "neighborhood": zod.string().max(putApiProfileAddressResponseNeighborhoodMax).nullish(),
-  "street": zod.string().max(putApiProfileAddressResponseStreetMax).nullish(),
-  "number": zod.string().max(putApiProfileAddressResponseNumberMax).nullish(),
-  "complement": zod.string().max(putApiProfileAddressResponseComplementMax).nullish(),
-  "city": zod.string().max(putApiProfileAddressResponseCityMax).nullish(),
-  "fullAddress": zod.string().optional()
-})
+  country: zod
+    .string()
+    .max(putApiProfileAddressResponseCountryMax)
+    .regex(putApiProfileAddressResponseCountryRegExp)
+    .nullish(),
+  postalCode: zod.string().max(putApiProfileAddressResponsePostalCodeMax).nullish(),
+  state: zod.string().max(putApiProfileAddressResponseStateMax).nullish(),
+  neighborhood: zod.string().max(putApiProfileAddressResponseNeighborhoodMax).nullish(),
+  street: zod.string().max(putApiProfileAddressResponseStreetMax).nullish(),
+  number: zod.string().max(putApiProfileAddressResponseNumberMax).nullish(),
+  complement: zod.string().max(putApiProfileAddressResponseComplementMax).nullish(),
+  city: zod.string().max(putApiProfileAddressResponseCityMax).nullish(),
+  fullAddress: zod.string().optional(),
+});
 
 export const PatchApiProfileAvatarBody = zod.object({
-  "avatarFile": zod.instanceof(Blob).optional()
-})
+  avatarFile: zod.instanceof(Blob).optional(),
+});
 
 export const patchApiProfileAvatarResponseAddressCountryMax = 2;
 
-
-export const patchApiProfileAvatarResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const patchApiProfileAvatarResponseAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
 export const patchApiProfileAvatarResponseAddressPostalCodeMax = 20;
 
 export const patchApiProfileAvatarResponseAddressStateMax = 2;
@@ -332,82 +376,99 @@ export const patchApiProfileAvatarResponseAddressComplementMax = 100;
 
 export const patchApiProfileAvatarResponseAddressCityMax = 100;
 
-
-
 export const PatchApiProfileAvatarResponse = zod.object({
-  "collaborator": zod.union([zod.null(),zod.object({
-  "clientId": zod.uuid(),
-  "userId": zod.uuid(),
-  "user": zod.object({
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-}),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "address": zod.object({
-  "country": zod.string().max(patchApiProfileAvatarResponseAddressCountryMax).regex(patchApiProfileAvatarResponseAddressCountryRegExp).nullish(),
-  "postalCode": zod.string().max(patchApiProfileAvatarResponseAddressPostalCodeMax).nullish(),
-  "state": zod.string().max(patchApiProfileAvatarResponseAddressStateMax).nullish(),
-  "neighborhood": zod.string().max(patchApiProfileAvatarResponseAddressNeighborhoodMax).nullish(),
-  "street": zod.string().max(patchApiProfileAvatarResponseAddressStreetMax).nullish(),
-  "number": zod.string().max(patchApiProfileAvatarResponseAddressNumberMax).nullish(),
-  "complement": zod.string().max(patchApiProfileAvatarResponseAddressComplementMax).nullish(),
-  "city": zod.string().max(patchApiProfileAvatarResponseAddressCityMax).nullish(),
-  "fullAddress": zod.string().optional()
-}),
-  "userName": zod.string(),
-  "profile": zod.object({
-  "fullName": zod.string().optional(),
-  "document": zod.string().nullish(),
-  "email": zod.string().nullish(),
-  "phone": zod.string().nullish(),
-  "birthDate": zod.iso.date().nullish(),
-  "avatarFile": zod.union([zod.null(),zod.object({
-  "name": zod.string().optional(),
-  "extension": zod.string().optional(),
-  "url": zod.string().optional(),
-  "contentType": zod.string().nullish(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})]).optional(),
-  "firstName": zod.string().optional(),
-  "lastName": zod.string().optional()
-}),
-  "isActive": zod.boolean(),
-  "isAdmin": zod.boolean(),
-  "type": zod.int(),
-  "roles": zod.array(zod.int()),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
+  collaborator: zod
+    .union([
+      zod.null(),
+      zod.object({
+        clientId: zod.uuid(),
+        userId: zod.uuid(),
+        user: zod.object({
+          userName: zod.string(),
+          profile: zod.object({
+            fullName: zod.string().optional(),
+            document: zod.string().nullish(),
+            email: zod.string().nullish(),
+            phone: zod.string().nullish(),
+            birthDate: zod.iso.date().nullish(),
+            avatarFile: zod
+              .union([
+                zod.null(),
+                zod.object({
+                  name: zod.string().optional(),
+                  extension: zod.string().optional(),
+                  url: zod.string().optional(),
+                  contentType: zod.string().nullish(),
+                  id: zod.uuid(),
+                  createdAt: zod.iso.datetime({ offset: true }),
+                  updatedAt: zod.iso.datetime({ offset: true }),
+                }),
+              ])
+              .optional(),
+            firstName: zod.string().optional(),
+            lastName: zod.string().optional(),
+          }),
+          isActive: zod.boolean(),
+          isAdmin: zod.boolean(),
+          type: zod.int(),
+          roles: zod.array(zod.int()),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+        id: zod.uuid(),
+        createdAt: zod.iso.datetime({ offset: true }),
+        updatedAt: zod.iso.datetime({ offset: true }),
+      }),
+    ])
+    .optional(),
+  address: zod.object({
+    country: zod
+      .string()
+      .max(patchApiProfileAvatarResponseAddressCountryMax)
+      .regex(patchApiProfileAvatarResponseAddressCountryRegExp)
+      .nullish(),
+    postalCode: zod.string().max(patchApiProfileAvatarResponseAddressPostalCodeMax).nullish(),
+    state: zod.string().max(patchApiProfileAvatarResponseAddressStateMax).nullish(),
+    neighborhood: zod.string().max(patchApiProfileAvatarResponseAddressNeighborhoodMax).nullish(),
+    street: zod.string().max(patchApiProfileAvatarResponseAddressStreetMax).nullish(),
+    number: zod.string().max(patchApiProfileAvatarResponseAddressNumberMax).nullish(),
+    complement: zod.string().max(patchApiProfileAvatarResponseAddressComplementMax).nullish(),
+    city: zod.string().max(patchApiProfileAvatarResponseAddressCityMax).nullish(),
+    fullAddress: zod.string().optional(),
+  }),
+  userName: zod.string(),
+  profile: zod.object({
+    fullName: zod.string().optional(),
+    document: zod.string().nullish(),
+    email: zod.string().nullish(),
+    phone: zod.string().nullish(),
+    birthDate: zod.iso.date().nullish(),
+    avatarFile: zod
+      .union([
+        zod.null(),
+        zod.object({
+          name: zod.string().optional(),
+          extension: zod.string().optional(),
+          url: zod.string().optional(),
+          contentType: zod.string().nullish(),
+          id: zod.uuid(),
+          createdAt: zod.iso.datetime({ offset: true }),
+          updatedAt: zod.iso.datetime({ offset: true }),
+        }),
+      ])
+      .optional(),
+    firstName: zod.string().optional(),
+    lastName: zod.string().optional(),
+  }),
+  isActive: zod.boolean(),
+  isAdmin: zod.boolean(),
+  type: zod.int(),
+  roles: zod.array(zod.int()),
+  id: zod.uuid(),
+  createdAt: zod.iso.datetime({ offset: true }),
+  updatedAt: zod.iso.datetime({ offset: true }),
+});
 
 export const putApiProfilePasswordBodyCurrentPasswordMin = 6;
 export const putApiProfilePasswordBodyCurrentPasswordMax = 100;
@@ -418,15 +479,21 @@ export const putApiProfilePasswordBodyNewPasswordMax = 100;
 export const putApiProfilePasswordBodyNewPasswordConfirmMin = 6;
 export const putApiProfilePasswordBodyNewPasswordConfirmMax = 100;
 
-
-
 export const PutApiProfilePasswordBody = zod.object({
-  "currentPassword": zod.string().min(putApiProfilePasswordBodyCurrentPasswordMin).max(putApiProfilePasswordBodyCurrentPasswordMax),
-  "newPassword": zod.string().min(putApiProfilePasswordBodyNewPasswordMin).max(putApiProfilePasswordBodyNewPasswordMax),
-  "newPasswordConfirm": zod.string().min(putApiProfilePasswordBodyNewPasswordConfirmMin).max(putApiProfilePasswordBodyNewPasswordConfirmMax)
-})
+  currentPassword: zod
+    .string()
+    .min(putApiProfilePasswordBodyCurrentPasswordMin)
+    .max(putApiProfilePasswordBodyCurrentPasswordMax),
+  newPassword: zod
+    .string()
+    .min(putApiProfilePasswordBodyNewPasswordMin)
+    .max(putApiProfilePasswordBodyNewPasswordMax),
+  newPasswordConfirm: zod
+    .string()
+    .min(putApiProfilePasswordBodyNewPasswordConfirmMin)
+    .max(putApiProfilePasswordBodyNewPasswordConfirmMax),
+});
 
 export const PutApiProfilePasswordResponse = zod.object({
-  "message": zod.string().optional()
-})
-
+  message: zod.string().optional(),
+});

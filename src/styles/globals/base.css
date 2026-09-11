@@ -47,7 +47,7 @@ a {
   width: 44px;
   height: 44px;
   object-fit: contain;
-  border-radius: 0.75rem;
+  border-radius: var(--bs-border-radius-sm);
   flex-shrink: 0;
 }
 /* Badge circular (variant="badge") — selo tipo emblema usado no card de
@@ -159,7 +159,7 @@ a {
    por padrão, troca pra brand + pill arredondado pra combinar com o resto
    da UI. */
 .dropdown-item {
-  border-radius: 0.7rem;
+  border-radius: var(--bs-border-radius-sm);
 }
 .dropdown-item:hover,
 .dropdown-item:focus {

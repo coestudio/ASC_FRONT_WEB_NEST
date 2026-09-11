@@ -26,12 +26,13 @@ nunca ter sido chamada — aqui vira **real**, corrigindo essa lacuna),
 Relatório Final e Acompanhamento (UI-only, hoje mock no legado).
 
 **Real vs UI-only:**
-| Tela | Legado | Aqui |
-| --- | --- | --- |
-| Home | sem dado | sem dado |
-| Colaboradores | mock (API real nunca chamada, colisão de nome) | **real** |
+
+| Tela            | Legado                                                               | Aqui                               |
+| --------------- | -------------------------------------------------------------------- | ---------------------------------- |
+| Home            | sem dado                                                             | sem dado                           |
+| Colaboradores   | mock (API real nunca chamada, colisão de nome)                       | **real**                           |
 | Relatório Final | mock (`OPERATIONS` + `OperationRomaneio`/`OperationRelatorios` mock) | **UI-only**, mock solto local (D2) |
-| Acompanhamento | mock (steps sintetizados de `OPERATIONS`) | **UI-only**, idem D2 |
+| Acompanhamento  | mock (steps sintetizados de `OPERATIONS`)                            | **UI-only**, idem D2               |
 
 ## 2. Contexto
 
@@ -50,8 +51,8 @@ reinventar dado mock quando existe API real — Colaboradores vira real aqui.
 ## 3. Escopo
 
 1. `client/index.tsx` — Home, grid de 3 links (mesmo desenho do legado).
-Segmentos de rota em inglês: `colaboradores`→`collaborators`,
-`relatorio-final`→`final-report`, `acompanhamento`→`tracking`.
+   Segmentos de rota em inglês: `colaboradores`→`collaborators`,
+   `relatorio-final`→`final-report`, `acompanhamento`→`tracking`.
 
 2. `client/collaborators/index.tsx` — `crud-list-page` + `crud-record-modal`
    (SPEC-02, 3 modos) configurados pra `Collaborator` API — mesmo padrão de
@@ -96,12 +97,12 @@ Segmentos de rota em inglês: `colaboradores`→`collaborators`,
 
 ## 7. Contrato de rota
 
-| Rota | Guard | Dado |
-| --- | --- | --- |
-| `/client` | `authed` + área `client` | — |
-| `/client/collaborators` | idem | real |
-| `/client/final-report` | idem | UI-only, mock (D2) |
-| `/client/tracking` | idem | UI-only, mock (D2) |
+| Rota                    | Guard                    | Dado               |
+| ----------------------- | ------------------------ | ------------------ |
+| `/client`               | `authed` + área `client` | —                  |
+| `/client/collaborators` | idem                     | real               |
+| `/client/final-report`  | idem                     | UI-only, mock (D2) |
+| `/client/tracking`      | idem                     | UI-only, mock (D2) |
 
 ## 8. Camada de dados
 
@@ -121,7 +122,7 @@ Segmentos de rota em inglês: `colaboradores`→`collaborators`,
   (`/api/profile/me`, fonte de `useUser()`) **não** tem `collaborator` —
   por isso o valor precisa ser persistido no login, não relido depois.
 - Schema de criação: `CollaboratorCreate` é `{ userName, profile:
-  ProfileCreate }` — objeto aninhado, mas **não** precisa de `AddressGroup`
+ProfileCreate }` — objeto aninhado, mas **não** precisa de `AddressGroup`
   (SPEC-SHARE-01, resolve especificamente o bloco `address` de
   `AddressCreate` — `ProfileCreate` não é um endereço). Segue o mesmo
   padrão já usado por `src/components/profile/detail-tab.tsx` (aba
@@ -150,29 +151,29 @@ src/routes/_dashboard/client/
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/_dashboard/client/route.tsx` | criar |
-| `src/routes/_dashboard/client/index.tsx` | criar |
-| `src/routes/_dashboard/client/collaborators/index.tsx` | criar |
-| `src/routes/_dashboard/client/final-report/index.tsx` | criar |
-| `src/routes/_dashboard/client/tracking/index.tsx` | criar |
-| `src/lib/validation/collaborator.ts` | criar — schema achatado (remapeia `PostApiClientClientIdCollaboratorBody`, ver §8) |
-| `src/lib/session.server.ts` | editar — campo `clientId?: string` no shape da sessão selada |
-| `src/lib/auth-fns.ts` | editar — `loginFn` grava `user.collaborator?.clientId` na sessão (ver D1/§8) |
-| `src/layouts/AppShell/nav/client.ts` | **editar** (D3 — já existe, criado como placeholder pela SPEC-02 com URLs em português: `to: "/client/relatorio-final"`, `/client/acompanhamento`, `/client/colaboradores`; troca os 3 `to:` para `/client/final-report`, `/client/tracking`, `/client/collaborators`, inglês conforme §3. `labelKey`s ficam como estão — `navigation.client*` já existe e já está traduzido nos 4 locales, mesmo tratamento da SPEC-03 D4) |
-| `src/i18n/dictionaries/*/client.json` | criar (4 locales) — conteúdo das telas (Home, colunas/campos de Colaboradores, textos de Relatório Final/Acompanhamento); **não** duplica as chaves `navigation.client*` que já existem em `navigation.json` |
+| Arquivo                                                | Ação                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/_dashboard/client/route.tsx`               | criar                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/routes/_dashboard/client/index.tsx`               | criar                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/routes/_dashboard/client/collaborators/index.tsx` | criar                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/routes/_dashboard/client/final-report/index.tsx`  | criar                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/routes/_dashboard/client/tracking/index.tsx`      | criar                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/lib/validation/collaborator.ts`                   | criar — schema achatado (remapeia `PostApiClientClientIdCollaboratorBody`, ver §8)                                                                                                                                                                                                                                                                                                                                          |
+| `src/lib/session.server.ts`                            | editar — campo `clientId?: string` no shape da sessão selada                                                                                                                                                                                                                                                                                                                                                                |
+| `src/lib/auth-fns.ts`                                  | editar — `loginFn` grava `user.collaborator?.clientId` na sessão (ver D1/§8)                                                                                                                                                                                                                                                                                                                                                |
+| `src/layouts/AppShell/nav/client.ts`                   | **editar** (D3 — já existe, criado como placeholder pela SPEC-02 com URLs em português: `to: "/client/relatorio-final"`, `/client/acompanhamento`, `/client/colaboradores`; troca os 3 `to:` para `/client/final-report`, `/client/tracking`, `/client/collaborators`, inglês conforme §3. `labelKey`s ficam como estão — `navigation.client*` já existe e já está traduzido nos 4 locales, mesmo tratamento da SPEC-03 D4) |
+| `src/i18n/dictionaries/*/client.json`                  | criar (4 locales) — conteúdo das telas (Home, colunas/campos de Colaboradores, textos de Relatório Final/Acompanhamento); **não** duplica as chaves `navigation.client*` que já existem em `navigation.json`                                                                                                                                                                                                                |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
+| #   | Critério                                                                                                                                                                                                                                                                            |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CA1 | Colaboradores faz criar/listar/detalhar/excluir real contra o Core (dev), escopado ao `clientId` persistido na sessão no login (D1) — confirma que a API `Collaborator` funciona de ponta a ponta, coisa que o legado nunca validou. **Sem** ação de editar (Core não expõe update) |
-| CA2 | Usuário `Internal` não acessa `/client/*` (guard de área) |
-| CA3 | Relatório Final/Acompanhamento não têm write real, e o array mockado local está comentado como tal no código (D2) |
-| CA4 | `bun run check` + `lint` passam |
-| CA5 | `grep -n "PUT\|PATCH" src/routes/_dashboard/client/collaborators/index.tsx` não acha nada — nenhuma tentativa de "editar" Colaborador |
-| CA6 | `src/layouts/AppShell/nav/client.ts` aponta pras 3 rotas em inglês (`final-report`, `tracking`, `collaborators`), nenhum `to:` em português sobrevive |
+| CA2 | Usuário `Internal` não acessa `/client/*` (guard de área)                                                                                                                                                                                                                           |
+| CA3 | Relatório Final/Acompanhamento não têm write real, e o array mockado local está comentado como tal no código (D2)                                                                                                                                                                   |
+| CA4 | `bun run check` + `lint` passam                                                                                                                                                                                                                                                     |
+| CA5 | `grep -n "PUT\|PATCH" src/routes/_dashboard/client/collaborators/index.tsx` não acha nada — nenhuma tentativa de "editar" Colaborador                                                                                                                                               |
+| CA6 | `src/layouts/AppShell/nav/client.ts` aponta pras 3 rotas em inglês (`final-report`, `tracking`, `collaborators`), nenhum `to:` em português sobrevive                                                                                                                               |
 
 ## 12. Riscos
 

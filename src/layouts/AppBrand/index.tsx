@@ -35,7 +35,9 @@ const BRAND_INITIALS: Record<Brand, string> = {
 /**
  * Logo + título/subtítulo da marca ativa. Fonte da brand = `useBrand()`
  * (cookie `asc_brand`, ver @/lib/ui-prefs) — troca em runtime junto com o
- * switcher, sem reload. Classes `.app-brand*` vêm de src/assets/css/base.css.
+ * switcher, sem reload. Classes `.app-brand*` vêm de
+ * src/styles/globals/base.css (SPEC-14: o `src/assets/css/base.css` legado
+ * que este comentário citava nunca foi importado no bundle e foi apagado).
  */
 export function AppBrand({
   as = "div",

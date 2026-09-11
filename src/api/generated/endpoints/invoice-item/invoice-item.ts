@@ -4,10 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,8 +17,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
@@ -30,20 +27,17 @@ import type {
   InvoiceItemDTO,
   InvoiceItemLinkCargoUnit,
   InvoiceItemUpdate,
-  PagedDTOOfInvoiceItemDTO
-} from '../../model';
+  PagedDTOOfInvoiceItemDTO,
+} from "../../model";
 
-import { apiRequest } from '../../../mutator.ts';
-
-
-
+import { apiRequest } from "../../../mutator.ts";
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -54,458 +48,724 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export const getApiOperationOperationIdInvoiceInvoiceIdItems = (
-    operationId: string,
-    invoiceId: string,
-    params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
- signal?: AbortSignal
+  operationId: string,
+  invoiceId: string,
+  params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<PagedDTOOfInvoiceItemDTO>({
+    url: `/api/operation/${operationId}/invoice/${invoiceId}/items`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
 
-
-      return apiRequest<PagedDTOOfInvoiceItemDTO>(
-      {url: `/api/operation/${operationId}/invoice/${invoiceId}/items`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryKey = (operationId: string,
-    invoiceId: string,
-    params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,) => {
-    return [
-    `/api/operation/${operationId}/invoice/${invoiceId}/items`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError = void>(operationId: string,
-    invoiceId: string,
-    params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError, TData>>, }
+export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryKey = (
+  operationId: string,
+  invoiceId: string,
+  params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
 ) => {
+  return [
+    `/api/operation/${operationId}/invoice/${invoiceId}/items`,
+    ...(params ? [params] : []),
+  ] as const;
+};
 
-const {query: queryOptions} = options ?? {};
+export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryKey(operationId,invoiceId,params);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryKey(operationId, invoiceId, params);
 
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>
+  > = ({ signal }) =>
+    getApiOperationOperationIdInvoiceInvoiceIdItems(operationId, invoiceId, params, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled:
+      operationId !== null &&
+      operationId !== undefined &&
+      invoiceId !== null &&
+      invoiceId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>> = ({ signal }) => getApiOperationOperationIdInvoiceInvoiceIdItems(operationId,invoiceId,params, signal);
+export type GetApiOperationOperationIdInvoiceInvoiceIdItemsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>
+>;
+export type GetApiOperationOperationIdInvoiceInvoiceIdItemsQueryError = void;
 
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && invoiceId !== null && invoiceId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdInvoiceInvoiceIdItemsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>>
-export type GetApiOperationOperationIdInvoiceInvoiceIdItemsQueryError = void
-
-
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    params: undefined |  GetApiOperationOperationIdInvoiceInvoiceIdItemsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError, TData>> & Pick<
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  params: undefined | GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItems<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  params?: GetApiOperationOperationIdInvoiceInvoiceIdItemsParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItems>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryOptions(
+    operationId,
+    invoiceId,
+    params,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdInvoiceInvoiceIdItemsQueryOptions(operationId,invoiceId,params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const postApiOperationOperationIdInvoiceInvoiceIdItems = (
-    operationId: string,
-    invoiceId: string,
-    invoiceItemCreate: InvoiceItemCreate,
- signal?: AbortSignal
+  operationId: string,
+  invoiceId: string,
+  invoiceItemCreate: InvoiceItemCreate,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<InvoiceItemDTO>({
+    url: `/api/operation/${operationId}/invoice/${invoiceId}/items`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: invoiceItemCreate,
+    signal,
+  });
+};
 
+export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationKey = () =>
+  ["postApiOperationOperationIdInvoiceInvoiceIdItems"] as const;
 
-      return apiRequest<InvoiceItemDTO>(
-      {url: `/api/operation/${operationId}/invoice/${invoiceId}/items`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: invoiceItemCreate, signal
-    },
-      );
-    }
+export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>,
+    TError,
+    PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>,
+  TError,
+  PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>,
+    PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables
+  > = (props) => {
+    const { operationId, invoiceId, data } = props ?? {};
 
+    return postApiOperationOperationIdInvoiceInvoiceIdItems(operationId, invoiceId, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationKey = () => ['postApiOperationOperationIdInvoiceInvoiceIdItems'] as const;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>
+>;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationBody = InvoiceItemCreate;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationError = void;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables = {
+  operationId: string;
+  invoiceId: string;
+  data: InvoiceItemCreate;
+};
 
-export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables, TContext> => {
+export const usePostApiOperationOperationIdInvoiceInvoiceIdItems = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>,
+      TError,
+      PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>,
+  TError,
+  PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationOptions(options),
+    queryClient,
+  );
+};
+export const getApiOperationOperationIdInvoiceInvoiceIdItemsId = (
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  signal?: AbortSignal,
+) => {
+  return apiRequest<InvoiceItemDTO>({
+    url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}`,
+    method: "GET",
+    signal,
+  });
+};
 
-const mutationKey = getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryKey = (
+  operationId: string,
+  invoiceId: string,
+  id: string,
+) => {
+  return [`/api/operation/${operationId}/invoice/${invoiceId}/items/${id}`] as const;
+};
 
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>, PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables> = (props) => {
-          const {operationId,invoiceId,data} = props ?? {};
-
-          return  postApiOperationOperationIdInvoiceInvoiceIdItems(operationId,invoiceId,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>>
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationBody = InvoiceItemCreate
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationError = void
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables = {operationId: string;invoiceId: string;data: InvoiceItemCreate}
-
-    export const usePostApiOperationOperationIdInvoiceInvoiceIdItems = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItems>>,
+export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
         TError,
-        PostApiOperationOperationIdInvoiceInvoiceIdItemsMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiOperationOperationIdInvoiceInvoiceIdItemsMutationOptions(options), queryClient);
-    }
-    export const getApiOperationOperationIdInvoiceInvoiceIdItemsId = (
-    operationId: string,
-    invoiceId: string,
-    id: string,
- signal?: AbortSignal
+        TData
+      >
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryKey(operationId, invoiceId, id);
 
-      return apiRequest<InvoiceItemDTO>(
-      {url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}`, method: 'GET', signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>
+  > = ({ signal }) =>
+    getApiOperationOperationIdInvoiceInvoiceIdItemsId(operationId, invoiceId, id, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled:
+      operationId !== null &&
+      operationId !== undefined &&
+      invoiceId !== null &&
+      invoiceId !== undefined &&
+      id !== null &&
+      id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>
+>;
+export type GetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryError = void;
 
-
-export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryKey = (operationId: string,
-    invoiceId: string,
-    id: string,) => {
-    return [
-    `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}`
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError = void>(operationId: string,
-    invoiceId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryKey(operationId,invoiceId,id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>> = ({ signal }) => getApiOperationOperationIdInvoiceInvoiceIdItemsId(operationId,invoiceId,id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && invoiceId !== null && invoiceId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>>
-export type GetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryError = void
-
-
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError, TData>> & Pick<
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError = void>(
- operationId: string,
-    invoiceId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdInvoiceInvoiceIdItemsId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+  TError = void,
+>(
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryOptions(
+    operationId,
+    invoiceId,
+    id,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdInvoiceInvoiceIdItemsIdQueryOptions(operationId,invoiceId,id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 export const putApiOperationOperationIdInvoiceInvoiceIdItemsId = (
-    operationId: string,
-    invoiceId: string,
-    id: string,
-    invoiceItemUpdate: InvoiceItemUpdate,
- signal?: AbortSignal
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  invoiceItemUpdate: InvoiceItemUpdate,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<InvoiceItemDTO>({
+    url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: invoiceItemUpdate,
+    signal,
+  });
+};
 
+export const getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationKey = () =>
+  ["putApiOperationOperationIdInvoiceInvoiceIdItemsId"] as const;
 
-      return apiRequest<InvoiceItemDTO>(
-      {url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: invoiceItemUpdate, signal
-    },
-      );
-    }
+export const getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+    TError,
+    PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+  TError,
+  PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+    PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables
+  > = (props) => {
+    const { operationId, invoiceId, id, data } = props ?? {};
 
+    return putApiOperationOperationIdInvoiceInvoiceIdItemsId(operationId, invoiceId, id, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationKey = () => ['putApiOperationOperationIdInvoiceInvoiceIdItemsId'] as const;
+export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>
+>;
+export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationBody = InvoiceItemUpdate;
+export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationError = void;
+export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables = {
+  operationId: string;
+  invoiceId: string;
+  id: string;
+  data: InvoiceItemUpdate;
+};
 
-export const getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError,PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError,PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables, TContext> => {
-
-const mutationKey = getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>, PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables> = (props) => {
-          const {operationId,invoiceId,id,data} = props ?? {};
-
-          return  putApiOperationOperationIdInvoiceInvoiceIdItemsId(operationId,invoiceId,id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>>
-    export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationBody = InvoiceItemUpdate
-    export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationError = void
-    export type PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables = {operationId: string;invoiceId: string;id: string;data: InvoiceItemUpdate}
-
-    export const usePutApiOperationOperationIdInvoiceInvoiceIdItemsId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>, TError,PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
-        TError,
-        PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationOptions(options), queryClient);
-    }
-    export const postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo = (
-    operationId: string,
-    invoiceId: string,
-    id: string,
-    invoiceItemLinkCargoUnit: InvoiceItemLinkCargoUnit,
- signal?: AbortSignal
+export const usePutApiOperationOperationIdInvoiceInvoiceIdItemsId = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+      TError,
+      PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putApiOperationOperationIdInvoiceInvoiceIdItemsId>>,
+  TError,
+  PutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getPutApiOperationOperationIdInvoiceInvoiceIdItemsIdMutationOptions(options),
+    queryClient,
+  );
+};
+export const postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo = (
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  invoiceItemLinkCargoUnit: InvoiceItemLinkCargoUnit,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<InvoiceItemDTO>({
+    url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}/cargo`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: invoiceItemLinkCargoUnit,
+    signal,
+  });
+};
 
+export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationKey = () =>
+  ["postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo"] as const;
 
-      return apiRequest<InvoiceItemDTO>(
-      {url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}/cargo`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: invoiceItemLinkCargoUnit, signal
-    },
-      );
-    }
+export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>,
+    TError,
+    PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>,
+  TError,
+  PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>,
+    PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables
+  > = (props) => {
+    const { operationId, invoiceId, id, data } = props ?? {};
 
+    return postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo(
+      operationId,
+      invoiceId,
+      id,
+      data,
+    );
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationKey = () => ['postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo'] as const;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>
+>;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationBody =
+  InvoiceItemLinkCargoUnit;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationError = void;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables = {
+  operationId: string;
+  invoiceId: string;
+  id: string;
+  data: InvoiceItemLinkCargoUnit;
+};
 
-export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables, TContext> => {
-
-const mutationKey = getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>, PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables> = (props) => {
-          const {operationId,invoiceId,id,data} = props ?? {};
-
-          return  postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo(operationId,invoiceId,id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>>
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationBody = InvoiceItemLinkCargoUnit
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationError = void
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables = {operationId: string;invoiceId: string;id: string;data: InvoiceItemLinkCargoUnit}
-
-    export const usePostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>,
-        TError,
-        PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationOptions(options), queryClient);
-    }
-    export const postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel = (
-    operationId: string,
-    invoiceId: string,
-    id: string,
-    invoiceItemCancel: InvoiceItemCancel,
- signal?: AbortSignal
+export const usePostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>,
+      TError,
+      PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCargo>>,
+  TError,
+  PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCargoMutationOptions(options),
+    queryClient,
+  );
+};
+export const postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel = (
+  operationId: string,
+  invoiceId: string,
+  id: string,
+  invoiceItemCancel: InvoiceItemCancel,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<InvoiceItemDTO>({
+    url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}/cancel`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: invoiceItemCancel,
+    signal,
+  });
+};
 
+export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationKey = () =>
+  ["postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel"] as const;
 
-      return apiRequest<InvoiceItemDTO>(
-      {url: `/api/operation/${operationId}/invoice/${invoiceId}/items/${id}/cancel`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: invoiceItemCancel, signal
-    },
-      );
-    }
+export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>,
+    TError,
+    PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>,
+  TError,
+  PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>,
+    PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables
+  > = (props) => {
+    const { operationId, invoiceId, id, data } = props ?? {};
 
+    return postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel(
+      operationId,
+      invoiceId,
+      id,
+      data,
+    );
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationKey = () => ['postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel'] as const;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>
+>;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationBody =
+  InvoiceItemCancel;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationError = void;
+export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables = {
+  operationId: string;
+  invoiceId: string;
+  id: string;
+  data: InvoiceItemCancel;
+};
 
-export const getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables, TContext> => {
-
-const mutationKey = getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>, PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables> = (props) => {
-          const {operationId,invoiceId,id,data} = props ?? {};
-
-          return  postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel(operationId,invoiceId,id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>>
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationBody = InvoiceItemCancel
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationError = void
-    export type PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables = {operationId: string;invoiceId: string;id: string;data: InvoiceItemCancel}
-
-    export const usePostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>, TError,PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>,
-        TError,
-        PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationOptions(options), queryClient);
-    }
+export const usePostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>,
+      TError,
+      PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiOperationOperationIdInvoiceInvoiceIdItemsIdCancel>>,
+  TError,
+  PostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getPostApiOperationOperationIdInvoiceInvoiceIdItemsIdCancelMutationOptions(options),
+    queryClient,
+  );
+};

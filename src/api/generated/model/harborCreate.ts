@@ -4,13 +4,13 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { AddressCreate } from './addressCreate.ts';
+import type { AddressCreate } from "./addressCreate.ts";
 
 export interface HarborCreate {
   address?: AddressCreate;
   /**
-     * @minLength 3
-     * @maxLength 50
-     */
+   * @minLength 3
+   * @maxLength 50
+   */
   name: string;
 }

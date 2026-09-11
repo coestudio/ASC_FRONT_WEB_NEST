@@ -1,6 +1,6 @@
 ---
-applyTo: 'src/components/**,src/layouts/**'
-description: 'Use ao criar ou editar componentes de apresentação e layouts. Fixa React-Bootstrap como base de UI, o padrão de CSS e a regra de que todo input de formulário vem de layouts/Form/Fields.'
+applyTo: "src/components/**,src/layouts/**"
+description: "Use ao criar ou editar componentes de apresentação e layouts. Fixa React-Bootstrap como base de UI, o padrão de CSS e a regra de que todo input de formulário vem de layouts/Form/Fields."
 ---
 
 # Components / Layouts Instructions

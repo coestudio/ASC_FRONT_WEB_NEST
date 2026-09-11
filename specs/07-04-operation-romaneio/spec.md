@@ -65,8 +65,8 @@ Legado: `OperationRomaneioReal`. Fluxo de import documentado no
 
 ## 7. Contrato de rota
 
-| Rota | Dado |
-| --- | --- |
+| Rota                                      | Dado |
+| ----------------------------------------- | ---- |
 | `/administrative/operations/$id/romaneio` | real |
 
 ## 8. Camada de dados
@@ -82,19 +82,19 @@ src/routes/.../administrative/operations/$id/
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/.../administrative/operations/$id/romaneio/index.tsx` | criar |
-| `src/i18n/dictionaries/*/administrative-operations.json` | editar — adicionar chaves da aba Romaneio |
+| Arquivo                                                           | Ação                                      |
+| ----------------------------------------------------------------- | ----------------------------------------- |
+| `src/routes/.../administrative/operations/$id/romaneio/index.tsx` | criar                                     |
+| `src/i18n/dictionaries/*/administrative-operations.json`          | editar — adicionar chaves da aba Romaneio |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | Aba funciona ponta a ponta contra o Core (dev) |
-| CA2 | Import de romaneio respeita as 2 etapas (analyze → revisão → apply) |
+| #   | Critério                                                                                                  |
+| --- | --------------------------------------------------------------------------------------------------------- |
+| CA1 | Aba funciona ponta a ponta contra o Core (dev)                                                            |
+| CA2 | Import de romaneio respeita as 2 etapas (analyze → revisão → apply)                                       |
 | CA4 | Upload da planilha (etapa `analyze`) usa `InputFileSingle` (SPEC-SHARE-01), não `<input type="file">` cru |
-| CA3 | `bun run check` + `lint` passam |
+| CA3 | `bun run check` + `lint` passam                                                                           |
 
 ## 12. Riscos
 

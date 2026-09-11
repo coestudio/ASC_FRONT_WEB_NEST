@@ -65,14 +65,14 @@ Regras específicas vivem em `.github/instructions/*.instructions.md` (cada uma
 com um glob `applyTo`). Ao editar dentro de uma pasta coberta, siga o arquivo
 correspondente **antes** deste. Cobertura atual:
 
-| `applyTo` | Arquivo |
-| --- | --- |
-| `src/routes/**` | `routes.instructions.md` |
-| `src/api/**`, `src/lib/queries/**` | `api-data.instructions.md` |
-| `src/lib/**` | `lib.instructions.md` |
+| `applyTo`                             | Arquivo                      |
+| ------------------------------------- | ---------------------------- |
+| `src/routes/**`                       | `routes.instructions.md`     |
+| `src/api/**`, `src/lib/queries/**`    | `api-data.instructions.md`   |
+| `src/lib/**`                          | `lib.instructions.md`        |
 | `src/components/**`, `src/layouts/**` | `components.instructions.md` |
-| `src/i18n/**` | `i18n.instructions.md` |
-| `src/styles/**` | `theming.instructions.md` |
+| `src/i18n/**`                         | `i18n.instructions.md`       |
+| `src/styles/**`                       | `theming.instructions.md`    |
 
 ## Agente
 
@@ -178,7 +178,7 @@ Core mudou, rode `just map` e trate o diff como parte da feature.
 - Quatro locales: `pt-BR` (default e **fonte de verdade** do shape), `en`,
   `es`, `zh` — todos com exatamente as mesmas chaves.
 - Dicionário **particionado por namespace**: `src/i18n/dictionaries/<locale>/
-  <namespace>.json` (um arquivo por tela/feature + `common.json`), merjado num
+<namespace>.json` (um arquivo por tela/feature + `common.json`), merjado num
   objeto único no load. Detalhes e o estado da migração em
   `.github/instructions/i18n.instructions.md`.
 - Locale e tema são resolvidos no servidor (cookie / `Accept-Language`),
@@ -196,11 +196,11 @@ Duas dimensões **ortogonais** no `<html>`:
   (default **`asa`**), cookie `asc_brand`, e quando o Core expuser o campo,
   vinda de `/profile/me`. Só troca a **paleta**, nunca o layout.
 
-| Brand | Primária | Secundária/auxiliar |
-| --- | --- | --- |
-| `asa` — Alex Stewart Agriculture (**default**) | verde | amarelo |
-| `asi` — Alex Stewart Internacional | vermelho | marrom `rgb(188, 144, 90)` |
-| `asc` — Alex Stewart Core | azul | ciano |
+| Brand                                          | Primária | Secundária/auxiliar        |
+| ---------------------------------------------- | -------- | -------------------------- |
+| `asa` — Alex Stewart Agriculture (**default**) | verde    | amarelo                    |
+| `asi` — Alex Stewart Internacional             | vermelho | marrom `rgb(188, 144, 90)` |
+| `asc` — Alex Stewart Core                      | azul     | ciano                      |
 
 - Tokens ficam em `src/styles/globals/` mapeados nas CSS vars `--bs-*`, em
   blocos `[data-brand="X"][data-bs-theme="Y"]` (6 combinações + fallback).
@@ -226,15 +226,15 @@ Duas dimensões **ortogonais** no `<html>`:
 Bun é o runtime padrão; os comandos abaixo valem com `bun run …` e, como
 fallback, `npm run …`.
 
-| Comando | O quê |
-| --- | --- |
-| `bun run dev` / `just dev` | dev server (roda `check:api` antes) |
-| `bun run build` / `just build` | build de produção |
-| `bun run build:azure` | build + `scripts/patch-nitro-azure-swa.mjs` (deploy Azure SWA) |
-| `just map` | regenera `src/api/generated/**` do OpenAPI do Core no ar (Core precisa estar rodando; URL em `API_URL`) + `tsc --noEmit` |
-| `bun run check` / `type-check` | `tsc --noEmit` |
-| `bun run lint` | ESLint |
-| `bun run format` | Prettier |
+| Comando                        | O quê                                                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `bun run dev` / `just dev`     | dev server (roda `check:api` antes)                                                                                      |
+| `bun run build` / `just build` | build de produção                                                                                                        |
+| `bun run build:azure`          | build + `scripts/patch-nitro-azure-swa.mjs` (deploy Azure SWA)                                                           |
+| `just map`                     | regenera `src/api/generated/**` do OpenAPI do Core no ar (Core precisa estar rodando; URL em `API_URL`) + `tsc --noEmit` |
+| `bun run check` / `type-check` | `tsc --noEmit`                                                                                                           |
+| `bun run lint`                 | ESLint                                                                                                                   |
+| `bun run format`               | Prettier                                                                                                                 |
 
 `bun run check` e `bun run lint` são o gate mínimo antes de dar uma feature
 por pronta.
@@ -242,10 +242,16 @@ por pronta.
 ## Pendências conhecidas
 
 - **Resolvido** (regra 10): campo de formulário é sempre
-  `layouts/Form/Fields`. `src/components/ui/{input,field,password-field}.tsx`
-  são inputs raw que violam a regra — débito herdado de antes dela existir,
-  migração pra `layouts/Form/Fields` é escopo da `specs/02-app-shell-navigation/spec.md`
-  junto com o resto do formulário de auth (zodResolver).
+  `layouts/Form/Fields`. O débito raw que existia em
+  `src/components/ui/{button,ui.module.css}.tsx` foi **apagado**
+  (SPEC-14, código morto, zero consumidor) — `input.tsx`/`field.tsx`/
+  `password-field.tsx` citados numa versão antiga desta nota nunca
+  existiram nesse caminho (nota desatualizada, corrigida na SPEC-14).
+  O débito real que continua de pé é `src/routes/auth/{login,forgot-password}`
+  usando `<Form.Control>` cru inline (não um wrapper de `components/ui`) —
+  migração pra `layouts/Form/Fields` continua escopo de
+  `specs/02-app-shell-navigation/spec.md`, junto com o resto do formulário
+  de auth (zodResolver).
 - `specs/00` e `specs/01` estão `IMPLEMENTED`; `specs/02` a `09` estão
   `DRAFT`, aguardando aprovação (ver `specs/BRANCHING.md` pro plano de
   branch/onda). Código antigo ainda cita specs apagadas de antes desse fluxo

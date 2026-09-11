@@ -4,10 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,8 +17,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   GetApiOperationOperationIdRomaneioExportParams,
@@ -33,20 +30,17 @@ import type {
   RomaneioImportAnalysisDTO,
   RomaneioImportApply,
   RomaneioImportApplyResultDTO,
-  RomaneioUpdate
-} from '../../model';
+  RomaneioUpdate,
+} from "../../model";
 
-import { apiRequest } from '../../../mutator.ts';
-
-
-
+import { apiRequest } from "../../../mutator.ts";
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -57,689 +51,1047 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
 };
 
 export const getApiOperationOperationIdRomaneio = (
-    operationId: string,
-    params?: GetApiOperationOperationIdRomaneioParams,
- signal?: AbortSignal
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioParams,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<PagedDTOOfRomaneioDTO>({
+    url: `/api/operation/${operationId}/romaneio`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
 
-
-      return apiRequest<PagedDTOOfRomaneioDTO>(
-      {url: `/api/operation/${operationId}/romaneio`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiOperationOperationIdRomaneioQueryKey = (operationId: string,
-    params?: GetApiOperationOperationIdRomaneioParams,) => {
-    return [
-    `/api/operation/${operationId}/romaneio`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdRomaneioQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError = void>(operationId: string,
-    params?: GetApiOperationOperationIdRomaneioParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>>, }
+export const getGetApiOperationOperationIdRomaneioQueryKey = (
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioParams,
 ) => {
+  return [`/api/operation/${operationId}/romaneio`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions} = options ?? {};
+export const getGetApiOperationOperationIdRomaneioQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdRomaneioQueryKey(operationId,params);
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiOperationOperationIdRomaneioQueryKey(operationId, params);
 
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>> = ({
+    signal,
+  }) => getApiOperationOperationIdRomaneio(operationId, params, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: operationId !== null && operationId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>> = ({ signal }) => getApiOperationOperationIdRomaneio(operationId,params, signal);
+export type GetApiOperationOperationIdRomaneioQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>
+>;
+export type GetApiOperationOperationIdRomaneioQueryError = void;
 
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdRomaneioQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>>
-export type GetApiOperationOperationIdRomaneioQueryError = void
-
-
-export function useGetApiOperationOperationIdRomaneio<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError = void>(
- operationId: string,
-    params: undefined |  GetApiOperationOperationIdRomaneioParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>> & Pick<
+export function useGetApiOperationOperationIdRomaneio<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
+  TError = void,
+>(
+  operationId: string,
+  params: undefined | GetApiOperationOperationIdRomaneioParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneio<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdRomaneioParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneio<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneio<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdRomaneioParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneio<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdRomaneio<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdRomaneioParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdRomaneio<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneio>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdRomaneioQueryOptions(
+    operationId,
+    params,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdRomaneioQueryOptions(operationId,params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const postApiOperationOperationIdRomaneio = (
-    operationId: string,
-    romaneioCreate: RomaneioCreate,
- signal?: AbortSignal
+  operationId: string,
+  romaneioCreate: RomaneioCreate,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<RomaneioDTO>({
+    url: `/api/operation/${operationId}/romaneio`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: romaneioCreate,
+    signal,
+  });
+};
 
+export const getPostApiOperationOperationIdRomaneioMutationKey = () =>
+  ["postApiOperationOperationIdRomaneio"] as const;
 
-      return apiRequest<RomaneioDTO>(
-      {url: `/api/operation/${operationId}/romaneio`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: romaneioCreate, signal
-    },
-      );
-    }
+export const getPostApiOperationOperationIdRomaneioMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>,
+    TError,
+    PostApiOperationOperationIdRomaneioMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>,
+  TError,
+  PostApiOperationOperationIdRomaneioMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiOperationOperationIdRomaneioMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>,
+    PostApiOperationOperationIdRomaneioMutationVariables
+  > = (props) => {
+    const { operationId, data } = props ?? {};
 
+    return postApiOperationOperationIdRomaneio(operationId, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPostApiOperationOperationIdRomaneioMutationKey = () => ['postApiOperationOperationIdRomaneio'] as const;
+export type PostApiOperationOperationIdRomaneioMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>
+>;
+export type PostApiOperationOperationIdRomaneioMutationBody = RomaneioCreate;
+export type PostApiOperationOperationIdRomaneioMutationError = void;
+export type PostApiOperationOperationIdRomaneioMutationVariables = {
+  operationId: string;
+  data: RomaneioCreate;
+};
 
-export const getPostApiOperationOperationIdRomaneioMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>, TError,PostApiOperationOperationIdRomaneioMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>, TError,PostApiOperationOperationIdRomaneioMutationVariables, TContext> => {
+export const usePostApiOperationOperationIdRomaneio = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>,
+      TError,
+      PostApiOperationOperationIdRomaneioMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>,
+  TError,
+  PostApiOperationOperationIdRomaneioMutationVariables,
+  TContext
+> => {
+  return useMutation(getPostApiOperationOperationIdRomaneioMutationOptions(options), queryClient);
+};
+export const getApiOperationOperationIdRomaneioId = (
+  operationId: string,
+  id: string,
+  signal?: AbortSignal,
+) => {
+  return apiRequest<RomaneioDTO>({
+    url: `/api/operation/${operationId}/romaneio/${id}`,
+    method: "GET",
+    signal,
+  });
+};
 
-const mutationKey = getPostApiOperationOperationIdRomaneioMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export const getGetApiOperationOperationIdRomaneioIdQueryKey = (
+  operationId: string,
+  id: string,
+) => {
+  return [`/api/operation/${operationId}/romaneio/${id}`] as const;
+};
 
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>, PostApiOperationOperationIdRomaneioMutationVariables> = (props) => {
-          const {operationId,data} = props ?? {};
-
-          return  postApiOperationOperationIdRomaneio(operationId,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiOperationOperationIdRomaneioMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>>
-    export type PostApiOperationOperationIdRomaneioMutationBody = RomaneioCreate
-    export type PostApiOperationOperationIdRomaneioMutationError = void
-    export type PostApiOperationOperationIdRomaneioMutationVariables = {operationId: string;data: RomaneioCreate}
-
-    export const usePostApiOperationOperationIdRomaneio = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>, TError,PostApiOperationOperationIdRomaneioMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneio>>,
+export const getGetApiOperationOperationIdRomaneioIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
         TError,
-        PostApiOperationOperationIdRomaneioMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiOperationOperationIdRomaneioMutationOptions(options), queryClient);
-    }
-    export const getApiOperationOperationIdRomaneioId = (
-    operationId: string,
-    id: string,
- signal?: AbortSignal
+        TData
+      >
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiOperationOperationIdRomaneioIdQueryKey(operationId, id);
 
-      return apiRequest<RomaneioDTO>(
-      {url: `/api/operation/${operationId}/romaneio/${id}`, method: 'GET', signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>
+  > = ({ signal }) => getApiOperationOperationIdRomaneioId(operationId, id, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: operationId !== null && operationId !== undefined && id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiOperationOperationIdRomaneioIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>
+>;
+export type GetApiOperationOperationIdRomaneioIdQueryError = void;
 
-
-export const getGetApiOperationOperationIdRomaneioIdQueryKey = (operationId: string,
-    id: string,) => {
-    return [
-    `/api/operation/${operationId}/romaneio/${id}`
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdRomaneioIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError = void>(operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdRomaneioIdQueryKey(operationId,id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>> = ({ signal }) => getApiOperationOperationIdRomaneioId(operationId,id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdRomaneioIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>>
-export type GetApiOperationOperationIdRomaneioIdQueryError = void
-
-
-export function useGetApiOperationOperationIdRomaneioId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError = void>(
- operationId: string,
-    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError, TData>> & Pick<
+export function useGetApiOperationOperationIdRomaneioId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneioId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError = void>(
- operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneioId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneioId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError = void>(
- operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneioId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdRomaneioId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError = void>(
- operationId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdRomaneioId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+  TError = void,
+>(
+  operationId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdRomaneioIdQueryOptions(
+    operationId,
+    id,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdRomaneioIdQueryOptions(operationId,id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const putApiOperationOperationIdRomaneioId = (
-    operationId: string,
-    id: string,
-    romaneioUpdate: RomaneioUpdate,
- signal?: AbortSignal
+  operationId: string,
+  id: string,
+  romaneioUpdate: RomaneioUpdate,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<RomaneioDTO>({
+    url: `/api/operation/${operationId}/romaneio/${id}`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: romaneioUpdate,
+    signal,
+  });
+};
 
+export const getPutApiOperationOperationIdRomaneioIdMutationKey = () =>
+  ["putApiOperationOperationIdRomaneioId"] as const;
 
-      return apiRequest<RomaneioDTO>(
-      {url: `/api/operation/${operationId}/romaneio/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: romaneioUpdate, signal
-    },
-      );
-    }
+export const getPutApiOperationOperationIdRomaneioIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>,
+    TError,
+    PutApiOperationOperationIdRomaneioIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>,
+  TError,
+  PutApiOperationOperationIdRomaneioIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPutApiOperationOperationIdRomaneioIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>,
+    PutApiOperationOperationIdRomaneioIdMutationVariables
+  > = (props) => {
+    const { operationId, id, data } = props ?? {};
 
+    return putApiOperationOperationIdRomaneioId(operationId, id, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPutApiOperationOperationIdRomaneioIdMutationKey = () => ['putApiOperationOperationIdRomaneioId'] as const;
+export type PutApiOperationOperationIdRomaneioIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>
+>;
+export type PutApiOperationOperationIdRomaneioIdMutationBody = RomaneioUpdate;
+export type PutApiOperationOperationIdRomaneioIdMutationError = void;
+export type PutApiOperationOperationIdRomaneioIdMutationVariables = {
+  operationId: string;
+  id: string;
+  data: RomaneioUpdate;
+};
 
-export const getPutApiOperationOperationIdRomaneioIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>, TError,PutApiOperationOperationIdRomaneioIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>, TError,PutApiOperationOperationIdRomaneioIdMutationVariables, TContext> => {
+export const usePutApiOperationOperationIdRomaneioId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>,
+      TError,
+      PutApiOperationOperationIdRomaneioIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>,
+  TError,
+  PutApiOperationOperationIdRomaneioIdMutationVariables,
+  TContext
+> => {
+  return useMutation(getPutApiOperationOperationIdRomaneioIdMutationOptions(options), queryClient);
+};
+export const deleteApiOperationOperationIdRomaneioId = (
+  operationId: string,
+  id: string,
+  signal?: AbortSignal,
+) => {
+  return apiRequest<void>({
+    url: `/api/operation/${operationId}/romaneio/${id}`,
+    method: "DELETE",
+    signal,
+  });
+};
 
-const mutationKey = getPutApiOperationOperationIdRomaneioIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export const getDeleteApiOperationOperationIdRomaneioIdMutationKey = () =>
+  ["deleteApiOperationOperationIdRomaneioId"] as const;
 
+export const getDeleteApiOperationOperationIdRomaneioIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>,
+    TError,
+    DeleteApiOperationOperationIdRomaneioIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>,
+  TError,
+  DeleteApiOperationOperationIdRomaneioIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getDeleteApiOperationOperationIdRomaneioIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>,
+    DeleteApiOperationOperationIdRomaneioIdMutationVariables
+  > = (props) => {
+    const { operationId, id } = props ?? {};
 
+    return deleteApiOperationOperationIdRomaneioId(operationId, id);
+  };
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>, PutApiOperationOperationIdRomaneioIdMutationVariables> = (props) => {
-          const {operationId,id,data} = props ?? {};
+  return { mutationFn, ...mutationOptions };
+};
 
-          return  putApiOperationOperationIdRomaneioId(operationId,id,data,)
-        }
+export type DeleteApiOperationOperationIdRomaneioIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>
+>;
 
+export type DeleteApiOperationOperationIdRomaneioIdMutationError = void;
+export type DeleteApiOperationOperationIdRomaneioIdMutationVariables = {
+  operationId: string;
+  id: string;
+};
 
+export const useDeleteApiOperationOperationIdRomaneioId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>,
+      TError,
+      DeleteApiOperationOperationIdRomaneioIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>,
+  TError,
+  DeleteApiOperationOperationIdRomaneioIdMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getDeleteApiOperationOperationIdRomaneioIdMutationOptions(options),
+    queryClient,
+  );
+};
+export const postApiOperationOperationIdRomaneioImportAnalyze = (
+  operationId: string,
+  postApiOperationOperationIdRomaneioImportAnalyzeBody: PostApiOperationOperationIdRomaneioImportAnalyzeBody,
+  signal?: AbortSignal,
+) => {
+  const formData = new FormData();
+  if (postApiOperationOperationIdRomaneioImportAnalyzeBody.File !== undefined) {
+    formData.append(`File`, postApiOperationOperationIdRomaneioImportAnalyzeBody.File);
+  }
 
+  return apiRequest<RomaneioImportAnalysisDTO>({
+    url: `/api/operation/${operationId}/romaneio/import/analyze`,
+    method: "POST",
+    headers: { "Content-Type": "multipart/form-data" },
+    data: formData,
+    signal,
+  });
+};
 
+export const getPostApiOperationOperationIdRomaneioImportAnalyzeMutationKey = () =>
+  ["postApiOperationOperationIdRomaneioImportAnalyze"] as const;
 
+export const getPostApiOperationOperationIdRomaneioImportAnalyzeMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>,
+    TError,
+    PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>,
+  TError,
+  PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiOperationOperationIdRomaneioImportAnalyzeMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
-  return  { mutationFn, ...mutationOptions }}
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>,
+    PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables
+  > = (props) => {
+    const { operationId, data } = props ?? {};
 
-    export type PutApiOperationOperationIdRomaneioIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>>
-    export type PutApiOperationOperationIdRomaneioIdMutationBody = RomaneioUpdate
-    export type PutApiOperationOperationIdRomaneioIdMutationError = void
-    export type PutApiOperationOperationIdRomaneioIdMutationVariables = {operationId: string;id: string;data: RomaneioUpdate}
+    return postApiOperationOperationIdRomaneioImportAnalyze(operationId, data);
+  };
 
-    export const usePutApiOperationOperationIdRomaneioId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>, TError,PutApiOperationOperationIdRomaneioIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiOperationOperationIdRomaneioId>>,
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>
+>;
+export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationBody =
+  PostApiOperationOperationIdRomaneioImportAnalyzeBody;
+export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationError = void;
+export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables = {
+  operationId: string;
+  data: PostApiOperationOperationIdRomaneioImportAnalyzeBody;
+};
+
+export const usePostApiOperationOperationIdRomaneioImportAnalyze = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>,
+      TError,
+      PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>,
+  TError,
+  PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getPostApiOperationOperationIdRomaneioImportAnalyzeMutationOptions(options),
+    queryClient,
+  );
+};
+export const postApiOperationOperationIdRomaneioImportApply = (
+  operationId: string,
+  romaneioImportApply: RomaneioImportApply,
+  signal?: AbortSignal,
+) => {
+  return apiRequest<RomaneioImportApplyResultDTO>({
+    url: `/api/operation/${operationId}/romaneio/import/apply`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: romaneioImportApply,
+    signal,
+  });
+};
+
+export const getPostApiOperationOperationIdRomaneioImportApplyMutationKey = () =>
+  ["postApiOperationOperationIdRomaneioImportApply"] as const;
+
+export const getPostApiOperationOperationIdRomaneioImportApplyMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>,
+    TError,
+    PostApiOperationOperationIdRomaneioImportApplyMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>,
+  TError,
+  PostApiOperationOperationIdRomaneioImportApplyMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiOperationOperationIdRomaneioImportApplyMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>,
+    PostApiOperationOperationIdRomaneioImportApplyMutationVariables
+  > = (props) => {
+    const { operationId, data } = props ?? {};
+
+    return postApiOperationOperationIdRomaneioImportApply(operationId, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiOperationOperationIdRomaneioImportApplyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>
+>;
+export type PostApiOperationOperationIdRomaneioImportApplyMutationBody = RomaneioImportApply;
+export type PostApiOperationOperationIdRomaneioImportApplyMutationError = void;
+export type PostApiOperationOperationIdRomaneioImportApplyMutationVariables = {
+  operationId: string;
+  data: RomaneioImportApply;
+};
+
+export const usePostApiOperationOperationIdRomaneioImportApply = <
+  TError = void,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>,
+      TError,
+      PostApiOperationOperationIdRomaneioImportApplyMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>,
+  TError,
+  PostApiOperationOperationIdRomaneioImportApplyMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getPostApiOperationOperationIdRomaneioImportApplyMutationOptions(options),
+    queryClient,
+  );
+};
+export const getApiOperationOperationIdRomaneioImportImportId = (
+  operationId: string,
+  importId: string,
+  signal?: AbortSignal,
+) => {
+  return apiRequest<RomaneioImportAnalysisDTO>({
+    url: `/api/operation/${operationId}/romaneio/import/${importId}`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetApiOperationOperationIdRomaneioImportImportIdQueryKey = (
+  operationId: string,
+  importId: string,
+) => {
+  return [`/api/operation/${operationId}/romaneio/import/${importId}`] as const;
+};
+
+export const getGetApiOperationOperationIdRomaneioImportImportIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+  TError = void,
+>(
+  operationId: string,
+  importId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
         TError,
-        PutApiOperationOperationIdRomaneioIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPutApiOperationOperationIdRomaneioIdMutationOptions(options), queryClient);
-    }
-    export const deleteApiOperationOperationIdRomaneioId = (
-    operationId: string,
-    id: string,
- signal?: AbortSignal
+        TData
+      >
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApiOperationOperationIdRomaneioImportImportIdQueryKey(operationId, importId);
 
-      return apiRequest<void>(
-      {url: `/api/operation/${operationId}/romaneio/${id}`, method: 'DELETE', signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>
+  > = ({ signal }) =>
+    getApiOperationOperationIdRomaneioImportImportId(operationId, importId, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled:
+      operationId !== null &&
+      operationId !== undefined &&
+      importId !== null &&
+      importId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiOperationOperationIdRomaneioImportImportIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>
+>;
+export type GetApiOperationOperationIdRomaneioImportImportIdQueryError = void;
 
-
-export const getDeleteApiOperationOperationIdRomaneioIdMutationKey = () => ['deleteApiOperationOperationIdRomaneioId'] as const;
-
-export const getDeleteApiOperationOperationIdRomaneioIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>, TError,DeleteApiOperationOperationIdRomaneioIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>, TError,DeleteApiOperationOperationIdRomaneioIdMutationVariables, TContext> => {
-
-const mutationKey = getDeleteApiOperationOperationIdRomaneioIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>, DeleteApiOperationOperationIdRomaneioIdMutationVariables> = (props) => {
-          const {operationId,id} = props ?? {};
-
-          return  deleteApiOperationOperationIdRomaneioId(operationId,id,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteApiOperationOperationIdRomaneioIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>>
-
-    export type DeleteApiOperationOperationIdRomaneioIdMutationError = void
-    export type DeleteApiOperationOperationIdRomaneioIdMutationVariables = {operationId: string;id: string}
-
-    export const useDeleteApiOperationOperationIdRomaneioId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>, TError,DeleteApiOperationOperationIdRomaneioIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiOperationOperationIdRomaneioId>>,
+export function useGetApiOperationOperationIdRomaneioImportImportId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+  TError = void,
+>(
+  operationId: string,
+  importId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
         TError,
-        DeleteApiOperationOperationIdRomaneioIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getDeleteApiOperationOperationIdRomaneioIdMutationOptions(options), queryClient);
-    }
-    export const postApiOperationOperationIdRomaneioImportAnalyze = (
-    operationId: string,
-    postApiOperationOperationIdRomaneioImportAnalyzeBody: PostApiOperationOperationIdRomaneioImportAnalyzeBody,
- signal?: AbortSignal
-) => {
-
-      const formData = new FormData();
-if(postApiOperationOperationIdRomaneioImportAnalyzeBody.File !== undefined) {
- formData.append(`File`, postApiOperationOperationIdRomaneioImportAnalyzeBody.File);
- }
-
-      return apiRequest<RomaneioImportAnalysisDTO>(
-      {url: `/api/operation/${operationId}/romaneio/import/analyze`, method: 'POST',
-      headers: {'Content-Type': 'multipart/form-data', },
-       data: formData, signal
-    },
-      );
-    }
-
-
-
-
-export const getPostApiOperationOperationIdRomaneioImportAnalyzeMutationKey = () => ['postApiOperationOperationIdRomaneioImportAnalyze'] as const;
-
-export const getPostApiOperationOperationIdRomaneioImportAnalyzeMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>, TError,PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>, TError,PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables, TContext> => {
-
-const mutationKey = getPostApiOperationOperationIdRomaneioImportAnalyzeMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>, PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables> = (props) => {
-          const {operationId,data} = props ?? {};
-
-          return  postApiOperationOperationIdRomaneioImportAnalyze(operationId,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>>
-    export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationBody = PostApiOperationOperationIdRomaneioImportAnalyzeBody
-    export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationError = void
-    export type PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables = {operationId: string;data: PostApiOperationOperationIdRomaneioImportAnalyzeBody}
-
-    export const usePostApiOperationOperationIdRomaneioImportAnalyze = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>, TError,PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportAnalyze>>,
-        TError,
-        PostApiOperationOperationIdRomaneioImportAnalyzeMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiOperationOperationIdRomaneioImportAnalyzeMutationOptions(options), queryClient);
-    }
-    export const postApiOperationOperationIdRomaneioImportApply = (
-    operationId: string,
-    romaneioImportApply: RomaneioImportApply,
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<RomaneioImportApplyResultDTO>(
-      {url: `/api/operation/${operationId}/romaneio/import/apply`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: romaneioImportApply, signal
-    },
-      );
-    }
-
-
-
-
-export const getPostApiOperationOperationIdRomaneioImportApplyMutationKey = () => ['postApiOperationOperationIdRomaneioImportApply'] as const;
-
-export const getPostApiOperationOperationIdRomaneioImportApplyMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>, TError,PostApiOperationOperationIdRomaneioImportApplyMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>, TError,PostApiOperationOperationIdRomaneioImportApplyMutationVariables, TContext> => {
-
-const mutationKey = getPostApiOperationOperationIdRomaneioImportApplyMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>, PostApiOperationOperationIdRomaneioImportApplyMutationVariables> = (props) => {
-          const {operationId,data} = props ?? {};
-
-          return  postApiOperationOperationIdRomaneioImportApply(operationId,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiOperationOperationIdRomaneioImportApplyMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>>
-    export type PostApiOperationOperationIdRomaneioImportApplyMutationBody = RomaneioImportApply
-    export type PostApiOperationOperationIdRomaneioImportApplyMutationError = void
-    export type PostApiOperationOperationIdRomaneioImportApplyMutationVariables = {operationId: string;data: RomaneioImportApply}
-
-    export const usePostApiOperationOperationIdRomaneioImportApply = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>, TError,PostApiOperationOperationIdRomaneioImportApplyMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportApply>>,
-        TError,
-        PostApiOperationOperationIdRomaneioImportApplyMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiOperationOperationIdRomaneioImportApplyMutationOptions(options), queryClient);
-    }
-    export const getApiOperationOperationIdRomaneioImportImportId = (
-    operationId: string,
-    importId: string,
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<RomaneioImportAnalysisDTO>(
-      {url: `/api/operation/${operationId}/romaneio/import/${importId}`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiOperationOperationIdRomaneioImportImportIdQueryKey = (operationId: string,
-    importId: string,) => {
-    return [
-    `/api/operation/${operationId}/romaneio/import/${importId}`
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdRomaneioImportImportIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError = void>(operationId: string,
-    importId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdRomaneioImportImportIdQueryKey(operationId,importId);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>> = ({ signal }) => getApiOperationOperationIdRomaneioImportImportId(operationId,importId, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && importId !== null && importId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdRomaneioImportImportIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>>
-export type GetApiOperationOperationIdRomaneioImportImportIdQueryError = void
-
-
-export function useGetApiOperationOperationIdRomaneioImportImportId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError = void>(
- operationId: string,
-    importId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError, TData>> & Pick<
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneioImportImportId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError = void>(
- operationId: string,
-    importId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneioImportImportId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+  TError = void,
+>(
+  operationId: string,
+  importId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneioImportImportId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError = void>(
- operationId: string,
-    importId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneioImportImportId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+  TError = void,
+>(
+  operationId: string,
+  importId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdRomaneioImportImportId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError = void>(
- operationId: string,
-    importId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdRomaneioImportImportId<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+  TError = void,
+>(
+  operationId: string,
+  importId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioImportImportId>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdRomaneioImportImportIdQueryOptions(
+    operationId,
+    importId,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdRomaneioImportImportIdQueryOptions(operationId,importId,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const getApiOperationOperationIdRomaneioExport = (
-    operationId: string,
-    params?: GetApiOperationOperationIdRomaneioExportParams,
- signal?: AbortSignal
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioExportParams,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<void>({
+    url: `/api/operation/${operationId}/romaneio/export`,
+    method: "GET",
+    params,
+    signal,
+  });
+};
 
-
-      return apiRequest<void>(
-      {url: `/api/operation/${operationId}/romaneio/export`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiOperationOperationIdRomaneioExportQueryKey = (operationId: string,
-    params?: GetApiOperationOperationIdRomaneioExportParams,) => {
-    return [
-    `/api/operation/${operationId}/romaneio/export`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetApiOperationOperationIdRomaneioExportQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError = void>(operationId: string,
-    params?: GetApiOperationOperationIdRomaneioExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError, TData>>, }
+export const getGetApiOperationOperationIdRomaneioExportQueryKey = (
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioExportParams,
 ) => {
+  return [`/api/operation/${operationId}/romaneio/export`, ...(params ? [params] : [])] as const;
+};
 
-const {query: queryOptions} = options ?? {};
+export const getGetApiOperationOperationIdRomaneioExportQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioExportParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+        TError,
+        TData
+      >
+    >;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdRomaneioExportQueryKey(operationId,params);
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApiOperationOperationIdRomaneioExportQueryKey(operationId, params);
 
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>
+  > = ({ signal }) => getApiOperationOperationIdRomaneioExport(operationId, params, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: operationId !== null && operationId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>> = ({ signal }) => getApiOperationOperationIdRomaneioExport(operationId,params, signal);
+export type GetApiOperationOperationIdRomaneioExportQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>
+>;
+export type GetApiOperationOperationIdRomaneioExportQueryError = void;
 
-
-
-
-
-   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiOperationOperationIdRomaneioExportQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>>
-export type GetApiOperationOperationIdRomaneioExportQueryError = void
-
-
-export function useGetApiOperationOperationIdRomaneioExport<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError = void>(
- operationId: string,
-    params: undefined |  GetApiOperationOperationIdRomaneioExportParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError, TData>> & Pick<
+export function useGetApiOperationOperationIdRomaneioExport<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+  TError = void,
+>(
+  operationId: string,
+  params: undefined | GetApiOperationOperationIdRomaneioExportParams,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneioExport<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdRomaneioExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneioExport<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioExportParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
           TError,
           Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiOperationOperationIdRomaneioExport<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdRomaneioExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiOperationOperationIdRomaneioExport<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioExportParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiOperationOperationIdRomaneioExport<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError = void>(
- operationId: string,
-    params?: GetApiOperationOperationIdRomaneioExportParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiOperationOperationIdRomaneioExport<
+  TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+  TError = void,
+>(
+  operationId: string,
+  params?: GetApiOperationOperationIdRomaneioExportParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioExport>>,
+        TError,
+        TData
+      >
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiOperationOperationIdRomaneioExportQueryOptions(
+    operationId,
+    params,
+    options,
+  );
 
-  const queryOptions = getGetApiOperationOperationIdRomaneioExportQueryOptions(operationId,params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
-

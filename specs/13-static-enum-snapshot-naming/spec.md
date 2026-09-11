@@ -52,12 +52,12 @@ reimplementa.
    `get`/`use` no nome (não é ação, é dado) e sem qualquer chance de
    colidir com nome de hook do Orval (que sempre carrega o verbo).
 2. **Mapa por `Key`, não só array** — `export const userTypeOptionsByKey:
-   Record<string, EnumOptionDTO> = { Internal: {...}, External: {...} }`,
+Record<string, EnumOptionDTO> = { Internal: {...}, External: {...} }`,
    construído a partir do array (`Object.fromEntries(list.map(o =>
-   [o.key, o]))`) — resolve lookup O(1) em vez de `.find()` em toda tela.
+[o.key, o]))`) — resolve lookup O(1) em vez de `.find()` em toda tela.
 3. **Helper de resolução gerado junto** —
    `export function resolveUserTypeLabel(key: string, locale: Locale):
-   string { return userTypeOptionsByKey[key]?.name[locale] ?? key; }`
+string { return userTypeOptionsByKey[key]?.name[locale] ?? key; }`
    (`Locale` importado de `@/i18n/config`, já que as chaves de `name`
    batem 1:1 com `Locale` depois de `warren/Core/specs/00-enum-contract`
    alinhar `Langs`). Elimina a necessidade de qualquer tela reimplementar
@@ -115,6 +115,7 @@ const body =
   `  return ${name}ByKey[key]?.name[locale] ?? key;\n` +
   `}\n`;
 ```
+
 Se `x-enum-name` estiver ausente (Core ainda não implementou
 `00-enum-contract`, ou uma rota `x-snapshot` sem enum por trás — não deveria
 existir, mas defensivo): cair de volta no nome por path atual
@@ -131,21 +132,21 @@ N/A.
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `scripts/staticSnapshots.ts` | editar — nova função de nome, mapa `ByKey`, helper de resolução |
-| `src/api/generated/static/*.ts` | regenerado (saída do script, não editar à mão) |
-| `src/routes/_dashboard/admin/access/index.tsx` | editar — remove `resolveEnumOptionName`, usa o helper gerado |
+| Arquivo                                        | Ação                                                            |
+| ---------------------------------------------- | --------------------------------------------------------------- |
+| `scripts/staticSnapshots.ts`                   | editar — nova função de nome, mapa `ByKey`, helper de resolução |
+| `src/api/generated/static/*.ts`                | regenerado (saída do script, não editar à mão)                  |
+| `src/routes/_dashboard/admin/access/index.tsx` | editar — remove `resolveEnumOptionName`, usa o helper gerado    |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
+| #   | Critério                                                                                                                                                 |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CA1 | Depois de `just map` contra um Core com `00-enum-contract` implementado, `src/api/generated/static/userTypeOptions.ts` existe (não `getApiUserTypes.ts`) |
-| CA2 | `grep -rn "export const getApiUserTypes" src/api/generated/static` → vazio (zero colisão de nome com o hook do Orval) |
-| CA3 | `userTypeOptionsByKey["Internal"]` resolve o objeto certo, `resolveUserTypeLabel("Internal", "en")` devolve `"Internal"` |
-| CA4 | `grep -rn "resolveEnumOptionName" src` → vazio |
-| CA5 | `bun run check` + `bun run lint` passam |
+| CA2 | `grep -rn "export const getApiUserTypes" src/api/generated/static` → vazio (zero colisão de nome com o hook do Orval)                                    |
+| CA3 | `userTypeOptionsByKey["Internal"]` resolve o objeto certo, `resolveUserTypeLabel("Internal", "en")` devolve `"Internal"`                                 |
+| CA4 | `grep -rn "resolveEnumOptionName" src` → vazio                                                                                                           |
+| CA5 | `bun run check` + `bun run lint` passam                                                                                                                  |
 
 ## 12. Riscos
 

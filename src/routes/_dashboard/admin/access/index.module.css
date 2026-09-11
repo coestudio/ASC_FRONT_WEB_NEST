@@ -1,3 +1,14 @@
+/* Card da view "cards" — mesma profundidade bento do `.tableCard`
+   (border + shadow-soft), que tinha ficado pra trás na importação do
+   Portal: `<Card>` puro do react-bootstrap não carrega essas duas coisas
+   sozinho. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  box-shadow: var(--shadow-soft);
+}
+
 /* Botões de ação em pílula/círculo colorido — referência de design (print
    da tela de Acesso, SPEC-11 escopo expandido): editar/redefinir senha em
    verde (brand), excluir em vermelho, resto neutro. */
@@ -32,7 +43,9 @@
   color: var(--on-brand, #fff);
 }
 .actionBtnDanger {
-  background-color: rgba(220, 53, 69, 0.12);
+  /* SPEC-14: token dedicado, substitui a aproximação em rgba() documentada
+     na SPEC-12 (não existia --bs-danger-soft até então). */
+  background-color: var(--bs-danger-soft);
   color: var(--bs-danger);
 }
 .actionBtnDanger:hover:not(:disabled) {

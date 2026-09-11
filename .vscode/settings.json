@@ -1,7 +1,7 @@
 {
-    "dotnetAcquisitionExtension.sharedExistingDotnetPath": "/mnt/reze/home/osvetnik/.local/share/mise/shims/dotnet",
-    "debug.javascript.defaultRuntimeExecutable": {
-        "pwa-node": "/mnt/reze/home/osvetnik/.local/share/mise/shims/node"
-    },
-    "python.defaultInterpreterPath": "/mnt/reze/home/osvetnik/.local/share/mise/installs/python/3.12/bin/python"
+  "dotnetAcquisitionExtension.sharedExistingDotnetPath": "/mnt/reze/home/osvetnik/.local/share/mise/shims/dotnet",
+  "debug.javascript.defaultRuntimeExecutable": {
+    "pwa-node": "/mnt/reze/home/osvetnik/.local/share/mise/shims/node"
+  },
+  "python.defaultInterpreterPath": "/mnt/reze/home/osvetnik/.local/share/mise/installs/python/3.12/bin/python"
 }

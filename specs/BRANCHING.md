@@ -101,26 +101,26 @@ main                                          (4 commits atrás de SPECS-LEGADO)
 
 ## Regra de base de cada branch
 
-| Branch | Cria a partir de | Quando criar |
-| --- | --- | --- |
-| `SPECS-LEGADO` | `main` | **já existe** — nada a fazer aqui |
-| `spec-02-app-shell-navigation` | `SPECS-LEGADO` | ao aprovar SPEC-02 (`APROVAR SPEC-02`) |
-| `wave-2-parallel-areas` | `SPECS-LEGADO` | depois que `spec-02-app-shell-navigation` já foi mergeada em `SPECS-LEGADO` — **nunca antes**, essa onda inteira depende de SPEC-02 |
-| `spec-share-01-shared-form-fields` | `wave-2-parallel-areas` | ao aprovar SPEC-SHARE-01 — sem outra dependência além de SPEC-00 (já satisfeita); é a primeira a nascer dentro da onda |
-| `spec-03-admin-access` | `wave-2-parallel-areas` | ao aprovar SPEC-03 |
-| `spec-04-administrativo-cadastros` | `wave-2-parallel-areas` | ao aprovar SPEC-04 **e** depois que `spec-share-01-shared-form-fields` já estiver mergeada em `wave-2-parallel-areas` (precisa de `AddressGroup`/`SelectAsync` reais — ver "Exceção de ordem" abaixo) |
-| `spec-05-administrativo-clientes` | `wave-2-parallel-areas` | ao aprovar SPEC-05 **e** depois que `spec-share-01-shared-form-fields` já estiver mergeada em `wave-2-parallel-areas` (precisa de `AddressGroup`; **não** depende mais de `spec-04-administrativo-cadastros` — ver "Exceção de ordem" abaixo) |
-| `spec-09-client-area` | `wave-2-parallel-areas` | ao aprovar SPEC-09 |
-| `spec-07-01-operations-list` | `wave-2-parallel-areas` | ao aprovar SPEC-07-01 **e** depois que `spec-share-01-shared-form-fields` já estiver mergeada (precisa de `Select`/`SelectAsync` reais pros filtros) |
-| `spec-07-02-operation-shell` | `wave-2-parallel-areas` | ao aprovar SPEC-07-02 |
-| `spec-07-03-operation-details` | `wave-2-parallel-areas` | ao aprovar SPEC-07-03 **e** depois que `spec-07-01` e `spec-07-02` já estiverem mergeadas em `wave-2-parallel-areas` (`spec-share-01` já estará lá por transitividade, já que `spec-07-01` depende dela) |
-| `spec-07-04-operation-romaneio` | `wave-2-parallel-areas` | ao aprovar SPEC-07-04 **e** depois que `spec-07-02` e `spec-share-01-shared-form-fields` já estiverem mergeadas (`InputFileSingle` pro upload da planilha de import) |
-| `spec-07-05-operation-containers` | `wave-2-parallel-areas` | ao aprovar SPEC-07-05 **e** depois que `spec-07-01` e `spec-07-02` já estiverem mergeadas |
-| `spec-07-06-operation-documents` | `wave-2-parallel-areas` | ao aprovar SPEC-07-06 **e** depois que `spec-07-01` e `spec-07-02` já estiverem mergeadas |
-| `spec-07-07-operation-reports` | `wave-2-parallel-areas` | ao aprovar SPEC-07-07 **e** depois que `spec-07-02` já estiver mergeada |
-| `spec-07-08-operation-responsible` | `wave-2-parallel-areas` | ao aprovar SPEC-07-08 **e** depois que `spec-07-02` já estiver mergeada |
-| `spec-07-09-operation-log` | `wave-2-parallel-areas` | ao aprovar SPEC-07-09 **e** depois que `spec-07-02` já estiver mergeada |
-| `spec-08-operacional` | `wave-2-parallel-areas` | só depois que `spec-07-01-operations-list` já foi mergeada em `wave-2-parallel-areas` (precisa do `operations-list.tsx` real, não só aprovado) — não depende das demais sub-branches de SPEC-07 |
+| Branch                             | Cria a partir de        | Quando criar                                                                                                                                                                                                                                  |
+| ---------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SPECS-LEGADO`                     | `main`                  | **já existe** — nada a fazer aqui                                                                                                                                                                                                             |
+| `spec-02-app-shell-navigation`     | `SPECS-LEGADO`          | ao aprovar SPEC-02 (`APROVAR SPEC-02`)                                                                                                                                                                                                        |
+| `wave-2-parallel-areas`            | `SPECS-LEGADO`          | depois que `spec-02-app-shell-navigation` já foi mergeada em `SPECS-LEGADO` — **nunca antes**, essa onda inteira depende de SPEC-02                                                                                                           |
+| `spec-share-01-shared-form-fields` | `wave-2-parallel-areas` | ao aprovar SPEC-SHARE-01 — sem outra dependência além de SPEC-00 (já satisfeita); é a primeira a nascer dentro da onda                                                                                                                        |
+| `spec-03-admin-access`             | `wave-2-parallel-areas` | ao aprovar SPEC-03                                                                                                                                                                                                                            |
+| `spec-04-administrativo-cadastros` | `wave-2-parallel-areas` | ao aprovar SPEC-04 **e** depois que `spec-share-01-shared-form-fields` já estiver mergeada em `wave-2-parallel-areas` (precisa de `AddressGroup`/`SelectAsync` reais — ver "Exceção de ordem" abaixo)                                         |
+| `spec-05-administrativo-clientes`  | `wave-2-parallel-areas` | ao aprovar SPEC-05 **e** depois que `spec-share-01-shared-form-fields` já estiver mergeada em `wave-2-parallel-areas` (precisa de `AddressGroup`; **não** depende mais de `spec-04-administrativo-cadastros` — ver "Exceção de ordem" abaixo) |
+| `spec-09-client-area`              | `wave-2-parallel-areas` | ao aprovar SPEC-09                                                                                                                                                                                                                            |
+| `spec-07-01-operations-list`       | `wave-2-parallel-areas` | ao aprovar SPEC-07-01 **e** depois que `spec-share-01-shared-form-fields` já estiver mergeada (precisa de `Select`/`SelectAsync` reais pros filtros)                                                                                          |
+| `spec-07-02-operation-shell`       | `wave-2-parallel-areas` | ao aprovar SPEC-07-02                                                                                                                                                                                                                         |
+| `spec-07-03-operation-details`     | `wave-2-parallel-areas` | ao aprovar SPEC-07-03 **e** depois que `spec-07-01` e `spec-07-02` já estiverem mergeadas em `wave-2-parallel-areas` (`spec-share-01` já estará lá por transitividade, já que `spec-07-01` depende dela)                                      |
+| `spec-07-04-operation-romaneio`    | `wave-2-parallel-areas` | ao aprovar SPEC-07-04 **e** depois que `spec-07-02` e `spec-share-01-shared-form-fields` já estiverem mergeadas (`InputFileSingle` pro upload da planilha de import)                                                                          |
+| `spec-07-05-operation-containers`  | `wave-2-parallel-areas` | ao aprovar SPEC-07-05 **e** depois que `spec-07-01` e `spec-07-02` já estiverem mergeadas                                                                                                                                                     |
+| `spec-07-06-operation-documents`   | `wave-2-parallel-areas` | ao aprovar SPEC-07-06 **e** depois que `spec-07-01` e `spec-07-02` já estiverem mergeadas                                                                                                                                                     |
+| `spec-07-07-operation-reports`     | `wave-2-parallel-areas` | ao aprovar SPEC-07-07 **e** depois que `spec-07-02` já estiver mergeada                                                                                                                                                                       |
+| `spec-07-08-operation-responsible` | `wave-2-parallel-areas` | ao aprovar SPEC-07-08 **e** depois que `spec-07-02` já estiver mergeada                                                                                                                                                                       |
+| `spec-07-09-operation-log`         | `wave-2-parallel-areas` | ao aprovar SPEC-07-09 **e** depois que `spec-07-02` já estiver mergeada                                                                                                                                                                       |
+| `spec-08-operacional`              | `wave-2-parallel-areas` | só depois que `spec-07-01-operations-list` já foi mergeada em `wave-2-parallel-areas` (precisa do `operations-list.tsx` real, não só aprovado) — não depende das demais sub-branches de SPEC-07                                               |
 
 `spec-share-01-shared-form-fields` nasce primeiro dentro da onda — só
 depende de SPEC-00, já satisfeita quando `wave-2-parallel-areas` existe.
@@ -216,7 +216,7 @@ sub-branches de SPEC-07:
 2. **Dependem de 07-02 (shell) estar mergeada:**
    `spec-07-07-operation-reports`, `spec-07-08-operation-responsible`,
    `spec-07-09-operation-log`.
-2b. **Dependem de 07-02 (shell) e `spec-share-01` estarem mergeadas:**
+   2b. **Dependem de 07-02 (shell) e `spec-share-01` estarem mergeadas:**
    `spec-07-04-operation-romaneio` (usa `InputFileSingle` de
    `spec-share-01` pro upload da planilha de import — não depende de
    07-01, só de 07-02 e `spec-share-01`).

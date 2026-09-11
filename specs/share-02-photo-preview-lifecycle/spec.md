@@ -61,7 +61,7 @@ não depois.
 ## 3. Escopo
 
 1. **`src/hooks/useObjectUrl.ts`** — hook `useObjectUrl(file: File | null |
-   undefined): string | null`. Memoiza a URL pela identidade do `File`
+undefined): string | null`. Memoiza a URL pela identidade do `File`
    (`useEffect` com `file` na dependência — `File` é imutável, a mesma
    instância nunca muda de conteúdo, então comparar por referência é
    suficiente); cria a URL só quando `file` muda, chama
@@ -85,7 +85,7 @@ não depois.
   aqui e em SPEC-SHARE-01.
 - Qualquer outro uso de `URL.createObjectURL` no projeto fora desses 3
   componentes (nenhum outro encontrado na revisão — `grep -rn
-  createObjectURL src/` só retorna os 3 arquivos acima).
+createObjectURL src/` só retorna os 3 arquivos acima).
 
 ## 5. Requisitos funcionais
 
@@ -132,23 +132,23 @@ só trocam a linha que gera a URL.
 
 ## 8. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/hooks/useObjectUrl.ts` | criar |
-| `src/layouts/Form/Fields/InputAvatar.tsx` | editar — usa `useObjectUrl` |
-| `src/layouts/Form/Fields/InputPhotoSingle.tsx` | editar — usa `useObjectUrl` |
-| `src/layouts/Form/Fields/InputPhotoMulti.tsx` | editar — usa `useObjectUrls` |
+| Arquivo                                        | Ação                         |
+| ---------------------------------------------- | ---------------------------- |
+| `src/hooks/useObjectUrl.ts`                    | criar                        |
+| `src/layouts/Form/Fields/InputAvatar.tsx`      | editar — usa `useObjectUrl`  |
+| `src/layouts/Form/Fields/InputPhotoSingle.tsx` | editar — usa `useObjectUrl`  |
+| `src/layouts/Form/Fields/InputPhotoMulti.tsx`  | editar — usa `useObjectUrls` |
 
 ## 9. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | `grep -rn "createObjectURL" src/` só aparece dentro de `src/hooks/useObjectUrl.ts` — nenhum dos 3 Fields chama direto |
-| CA2 | `grep -rn "revokeObjectURL" src/hooks/useObjectUrl.ts` confirma cleanup nos dois hooks (`useObjectUrl` e `useObjectUrls`) |
-| CA3 | Trocar a foto em `InputPhotoSingle`/`InputAvatar` várias vezes seguidas (manual, dev) não deixa `<img src="blob:...">` órfã — sempre uma URL ativa por vez |
+| #   | Critério                                                                                                                                                                                                  |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1 | `grep -rn "createObjectURL" src/` só aparece dentro de `src/hooks/useObjectUrl.ts` — nenhum dos 3 Fields chama direto                                                                                     |
+| CA2 | `grep -rn "revokeObjectURL" src/hooks/useObjectUrl.ts` confirma cleanup nos dois hooks (`useObjectUrl` e `useObjectUrls`)                                                                                 |
+| CA3 | Trocar a foto em `InputPhotoSingle`/`InputAvatar` várias vezes seguidas (manual, dev) não deixa `<img src="blob:...">` órfã — sempre uma URL ativa por vez                                                |
 | CA4 | Adicionar/remover fotos em `InputPhotoMulti` não recria a URL das fotos que permaneceram na lista (verificável comparando a string da URL antes/depois de um re-render provocado por outro campo do form) |
-| CA5 | Nenhuma prop pública de `InputAvatar`/`InputPhotoSingle`/`InputPhotoMulti` muda de nome/tipo |
-| CA6 | `bun run check` + `lint` passam |
+| CA5 | Nenhuma prop pública de `InputAvatar`/`InputPhotoSingle`/`InputPhotoMulti` muda de nome/tipo                                                                                                              |
+| CA6 | `bun run check` + `lint` passam                                                                                                                                                                           |
 
 ## 10. Riscos
 

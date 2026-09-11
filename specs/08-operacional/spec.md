@@ -73,11 +73,11 @@ descuido.
 
 ## 7. Contrato de rota
 
-| Rota | Dado |
-| --- | --- |
-| `/operational` | — (Home, só links) |
-| `/operational/operations` | real, read-only |
-| `/operational/operations/$id` | UI-only |
+| Rota                          | Dado               |
+| ----------------------------- | ------------------ |
+| `/operational`                | — (Home, só links) |
+| `/operational/operations`     | real, read-only    |
+| `/operational/operations/$id` | UI-only            |
 
 Guard: `_dashboard/_internal` já cobre a área `operacional` (nome da área em
 `permissions.ts`/`getUserAreas` não muda — só a URL da rota).
@@ -102,21 +102,21 @@ src/routes/_dashboard/_internal/operational/
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/.../operational/index.tsx` | criar |
-| `src/routes/.../operational/operations/index.tsx` | criar |
-| `src/routes/.../operational/operations/$id/index.tsx` | criar |
-| `src/layouts/AppShell/nav/operacional.ts` | **editar** (D2 — já existe, criado como placeholder pela SPEC-02 com URLs em português: `to: "/operacional"`, `/operacional/operacoes`; troca os 2 `to:` para `/operational`, `/operational/operations`, inglês conforme §3. `labelKey`s ficam como estão — `navigation.operacional*` já existe e já está traduzido nos 4 locales, mesmo tratamento da SPEC-03 D4/SPEC-09 D3). Arquivo continua se chamando `operacional.ts` (nome de arquivo não muda, só as rotas dentro) |
-| `src/i18n/dictionaries/*/operational.json` | criar (4 locales) |
+| Arquivo                                               | Ação                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/.../operational/index.tsx`                | criar                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/routes/.../operational/operations/index.tsx`     | criar                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/routes/.../operational/operations/$id/index.tsx` | criar                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/layouts/AppShell/nav/operacional.ts`             | **editar** (D2 — já existe, criado como placeholder pela SPEC-02 com URLs em português: `to: "/operacional"`, `/operacional/operacoes`; troca os 2 `to:` para `/operational`, `/operational/operations`, inglês conforme §3. `labelKey`s ficam como estão — `navigation.operacional*` já existe e já está traduzido nos 4 locales, mesmo tratamento da SPEC-03 D4/SPEC-09 D3). Arquivo continua se chamando `operacional.ts` (nome de arquivo não muda, só as rotas dentro) |
+| `src/i18n/dictionaries/*/operational.json`            | criar (4 locales)                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | Lista real em modo leitura (sem botão criar/editar/deletar visível) |
+| #   | Critério                                                                      |
+| --- | ----------------------------------------------------------------------------- |
+| CA1 | Lista real em modo leitura (sem botão criar/editar/deletar visível)           |
 | CA2 | Detalhe claramente marcado como mock, independente do detalhe real da SPEC-07 |
-| CA3 | `bun run check` + `lint` passam |
+| CA3 | `bun run check` + `lint` passam                                               |
 
 ## 12. Riscos
 

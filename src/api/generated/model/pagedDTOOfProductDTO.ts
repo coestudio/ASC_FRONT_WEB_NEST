@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ProductDTO } from './productDTO.ts';
+import type { ProductDTO } from "./productDTO.ts";
 
 export interface PagedDTOOfProductDTO {
   items: ProductDTO[];

@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { OperationService } from './operationService.ts';
-import type { OperationType } from './operationType.ts';
+import type { OperationService } from "./operationService.ts";
+import type { OperationType } from "./operationType.ts";
 
 export interface OperationCreate {
   /** @maxLength 100 */
@@ -25,8 +25,8 @@ export interface OperationCreate {
   /** @nullable */
   startDate?: string | null;
   /**
-     * @maxLength 500
-     * @nullable
-     */
+   * @maxLength 500
+   * @nullable
+   */
   observation?: string | null;
 }

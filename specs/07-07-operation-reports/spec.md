@@ -48,8 +48,8 @@ Legado: aba "Relatórios" mock, usa `OPERATIONS` de `data.ts`.
 
 ## 7. Contrato de rota
 
-| Rota | Dado |
-| --- | --- |
+| Rota                                     | Dado    |
+| ---------------------------------------- | ------- |
 | `/administrative/operations/$id/reports` | UI-only |
 
 ## 8. Camada de dados
@@ -65,17 +65,17 @@ src/routes/.../administrative/operations/$id/
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/.../administrative/operations/$id/reports/index.tsx` | criar |
-| `src/i18n/dictionaries/*/administrative-operations.json` | editar — adicionar chaves da aba Relatórios |
+| Arquivo                                                          | Ação                                        |
+| ---------------------------------------------------------------- | ------------------------------------------- |
+| `src/routes/.../administrative/operations/$id/reports/index.tsx` | criar                                       |
+| `src/i18n/dictionaries/*/administrative-operations.json`         | editar — adicionar chaves da aba Relatórios |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
+| #   | Critério                                           |
+| --- | -------------------------------------------------- |
 | CA1 | Aba claramente marcada como mock, sem chamada real |
-| CA2 | `bun run check` + `lint` passam |
+| CA2 | `bun run check` + `lint` passam                    |
 
 ## 12. Riscos
 

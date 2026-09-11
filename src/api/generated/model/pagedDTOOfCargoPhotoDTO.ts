@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoPhotoDTO } from './cargoPhotoDTO.ts';
+import type { CargoPhotoDTO } from "./cargoPhotoDTO.ts";
 
 export interface PagedDTOOfCargoPhotoDTO {
   items: CargoPhotoDTO[];

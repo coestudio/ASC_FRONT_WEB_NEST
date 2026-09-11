@@ -4,30 +4,30 @@ import type { EnumOptionDTO } from "../model";
 
 export const getApiUserRoles: EnumOptionDTO[] = [
   {
-    "value": 100,
-    "name": {
-      "pt": "Agente",
-      "en": "Agent",
-      "es": "Agente",
-      "zh": "代理"
-    }
+    value: 100,
+    name: {
+      pt: "Agente",
+      en: "Agent",
+      es: "Agente",
+      zh: "代理",
+    },
   },
   {
-    "value": 200,
-    "name": {
-      "pt": "Supervisor",
-      "en": "Supervisor",
-      "es": "Supervisor",
-      "zh": "主管"
-    }
+    value: 200,
+    name: {
+      pt: "Supervisor",
+      en: "Supervisor",
+      es: "Supervisor",
+      zh: "主管",
+    },
   },
   {
-    "value": 300,
-    "name": {
-      "pt": "Laboratório",
-      "en": "Laboratory",
-      "es": "Laboratorio",
-      "zh": "实验室"
-    }
-  }
+    value: 300,
+    name: {
+      pt: "Laboratório",
+      en: "Laboratory",
+      es: "Laboratorio",
+      zh: "实验室",
+    },
+  },
 ];

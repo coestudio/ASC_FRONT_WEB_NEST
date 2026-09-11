@@ -58,7 +58,7 @@ muda.
    roles contra o enum `InternalRole` do Core antes de escrever o texto
    (ver R1).
 6. Campo `roles: InternalRole[]` no form de criar/editar usuário (`crud-
-   record-modal`) usa um **multi-select dropdown novo**
+record-modal`) usa um **multi-select dropdown novo**
    (`layouts/Form/Fields/InputMultiSelect.tsx`, decisão D3) — um único
    dropdown com seleção múltipla, populado via `useGetApiUserRoles()`
    (`EnumOptionDTO[]`, label vindo do Core).
@@ -95,11 +95,11 @@ muda.
 
 ## 7. Contrato de rota
 
-| Rota | Guard | Componente |
-| --- | --- | --- |
+| Rota                | Guard                   | Componente        |
+| ------------------- | ----------------------- | ----------------- |
 | `/admin` (redirect) | `authed` + área `admin` | → `/admin/access` |
-| `/admin/access` | idem | lista |
-| `/admin/roles` | idem | estática |
+| `/admin/access`     | idem                    | lista             |
+| `/admin/roles`      | idem                    | estática          |
 
 ## 8. Camada de dados
 
@@ -124,24 +124,24 @@ src/routes/_dashboard/admin/
 
 ## 10. Arquivos esperados
 
-| Arquivo | Ação |
-| --- | --- |
-| `src/routes/_dashboard/admin/route.tsx` | criar |
-| `src/routes/_dashboard/admin/access/index.tsx` | criar |
-| `src/routes/_dashboard/admin/roles/index.tsx` | criar |
-| `src/layouts/Form/Fields/InputMultiSelect.tsx` | criar (decisão D3 — dropdown único, seleção múltipla, wrapper `react-hook-form`/`Controller` igual aos demais Fields) |
-| `src/layouts/Form/Fields/Index.ts` | editar (exportar `InputMultiSelect`) |
-| `src/layouts/AppShell/nav/admin.ts` | **editar** (já existe, portado como placeholder pela SPEC-02 com URLs em português e um link quebrado — trocar `to: "/admin/acesso"` → `/admin/access` e `to: "/admin/acessos"` → `/admin/roles`, decisão D4) |
-| `src/i18n/dictionaries/*/admin.json` | criar (4 locales) |
+| Arquivo                                        | Ação                                                                                                                                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/routes/_dashboard/admin/route.tsx`        | criar                                                                                                                                                                                                         |
+| `src/routes/_dashboard/admin/access/index.tsx` | criar                                                                                                                                                                                                         |
+| `src/routes/_dashboard/admin/roles/index.tsx`  | criar                                                                                                                                                                                                         |
+| `src/layouts/Form/Fields/InputMultiSelect.tsx` | criar (decisão D3 — dropdown único, seleção múltipla, wrapper `react-hook-form`/`Controller` igual aos demais Fields)                                                                                         |
+| `src/layouts/Form/Fields/Index.ts`             | editar (exportar `InputMultiSelect`)                                                                                                                                                                          |
+| `src/layouts/AppShell/nav/admin.ts`            | **editar** (já existe, portado como placeholder pela SPEC-02 com URLs em português e um link quebrado — trocar `to: "/admin/acesso"` → `/admin/access` e `to: "/admin/acessos"` → `/admin/roles`, decisão D4) |
+| `src/i18n/dictionaries/*/admin.json`           | criar (4 locales)                                                                                                                                                                                             |
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA1 | Usuário sem `admin` em `getUserAreas` recebe redirect ao acessar `/admin/*` |
-| CA2 | Criar/editar/desativar/reset de senha funcionam contra o Core real |
-| CA3 | `grep` não acha `z.object`/`.refine` novo em `admin/**` (zero Zod à mão) |
-| CA4 | `bun run check` + `lint` passam |
+| #   | Critério                                                                                                                                  |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1 | Usuário sem `admin` em `getUserAreas` recebe redirect ao acessar `/admin/*`                                                               |
+| CA2 | Criar/editar/desativar/reset de senha funcionam contra o Core real                                                                        |
+| CA3 | `grep` não acha `z.object`/`.refine` novo em `admin/**` (zero Zod à mão)                                                                  |
+| CA4 | `bun run check` + `lint` passam                                                                                                           |
 | CA5 | `admin/access/**` não define nenhum componente de lista/form próprio — só config passada a `crud-list-page`/`crud-record-modal` (SPEC-02) |
 
 ## 12. Riscos
@@ -171,7 +171,7 @@ src/routes/_dashboard/admin/
   - **Não** implementar exibição de senha gerada nem botão de copiar — o
     valor não trafega pro front.
   - Linha/registro sem `profile.email` preenchido (campo `email?: string |
-    null` em `ProfileDTO`): a ação de reset deve ficar desabilitada (tooltip
+null` em `ProfileDTO`): a ação de reset deve ficar desabilitada (tooltip
     explicando "usuário sem e-mail cadastrado") em vez de disparar a mutation
     e deixar o Core falhar — evita erro genérico sem contexto pro
     administrador.
@@ -202,6 +202,7 @@ Branch: `spec-03-admin-access` (a partir de `wave-2-parallel-areas`, a partir
 de `SPECS-LEGADO`).
 
 **Arquivos alterados/criados:**
+
 - `src/routes/_dashboard/admin/route.tsx` (guard `admin`), `index.tsx`
   (redirect), `access/index.tsx` (lista + CRUD real), `roles/index.tsx`
   (estática, ver limitação abaixo).
@@ -231,6 +232,7 @@ de `SPECS-LEGADO`).
   desta SPEC.
 
 **Comandos executados:**
+
 - `bun run check` → **VERIFIED**, 0 erros.
 - `bun run lint` → **VERIFIED** só quanto a não ter introduzido erro/warning
   novo: baseline do repo (antes desta SPEC, com tudo stashed) já falha com
@@ -242,14 +244,15 @@ de `SPECS-LEGADO`).
 - `just map` — não rodado (contrato do Core não mudou nesta SPEC).
 
 **Critérios de aceitação:**
-| # | Critério | Status |
-| --- | --- | --- |
-| CA1 | Redirect de `/admin/*` sem área `admin` | PASS — guard em `route.tsx`; não testado contra Core rodando nesta sessão |
-| CA2 | Criar/editar/desativar/reset de senha reais | PASS — hooks Orval reais; não testado end-to-end contra Core rodando |
-| CA3 | Zero `z.object`/`.refine` novo em `admin/**` | PASS — `grep` não encontra |
-| CA4 | `bun run check` + `lint` passam | PASS — `check` limpo; `lint` sem regressão (baseline pré-existente do repo já falhava, confirmado via `git stash -u`) |
-| CA5 | `admin/access/**` só configura `crud-list-page`/`crud-record-modal` | PASS |
-| RF5 | `admin/roles` renderiza sem chamada ao Core | PASS — nomes/valores reais (snapshot estático `getApiUserRoles.ts`, D1), descrição por perfil é débito documentado (§15), não bloqueio |
+
+| #   | Critério                                                            | Status                                                                                                                                 |
+| --- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1 | Redirect de `/admin/*` sem área `admin`                             | PASS — guard em `route.tsx`; não testado contra Core rodando nesta sessão                                                              |
+| CA2 | Criar/editar/desativar/reset de senha reais                         | PASS — hooks Orval reais; não testado end-to-end contra Core rodando                                                                   |
+| CA3 | Zero `z.object`/`.refine` novo em `admin/**`                        | PASS — `grep` não encontra                                                                                                             |
+| CA4 | `bun run check` + `lint` passam                                     | PASS — `check` limpo; `lint` sem regressão (baseline pré-existente do repo já falhava, confirmado via `git stash -u`)                  |
+| CA5 | `admin/access/**` só configura `crud-list-page`/`crud-record-modal` | PASS                                                                                                                                   |
+| RF5 | `admin/roles` renderiza sem chamada ao Core                         | PASS — nomes/valores reais (snapshot estático `getApiUserRoles.ts`, D1), descrição por perfil é débito documentado (§15), não bloqueio |
 
 **Histórico da lacuna de `admin/roles` (resolvida como débito, não bloqueio):**
 O usuário rodou `just map` contra o Core de dev real durante a sessão, o

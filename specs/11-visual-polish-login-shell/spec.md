@@ -69,6 +69,7 @@ pontos):
 ## Itens
 
 ### 1. Logo no sidebar menu
+
 Ajustar `AppBrand` (`src/layouts/AppShell/index.tsx` consumindo
 `src/layouts/AppBrand/index.tsx`) — tamanho/proporção/alinhamento do
 `app-brand__logo` dentro do sidebar (colapsado e expandido). Hoje classes
@@ -76,12 +77,14 @@ Ajustar `AppBrand` (`src/layouts/AppShell/index.tsx` consumindo
 `size` prop (`sm|md|lg`) passado errado no `AppShell`.
 
 ### 2. Logo no form de login
+
 Mesmo componente `AppBrand`, instância usada em `src/routes/auth/route.tsx`
 ou `login/index.tsx`. Ajustar tamanho/espaçamento no contexto do card de
 login (fundo diferente do sidebar — conferir contraste da logo import PNG
 por brand em `src/assets/{ASA,ASI,ASC}/logo.png`).
 
 ### 3. Cor do botão → verde
+
 Botão de submit do login (e onde mais usar a cor errada) deve puxar
 `--bs-primary` do brand ativo, não uma cor hard-coded. Brand `asa` (default)
 = verde primário — conferir se algum `<Button variant="...">` ou CSS local
@@ -89,6 +92,7 @@ está sobrescrevendo com cor fixa em vez do token semântico (regra de
 theming: nunca hard-codar cor).
 
 ### 4. Ícones no input de email e senha (login)
+
 `src/routes/auth/login/index.tsx` usa input raw (débito conhecido, fora do
 padrão `layouts/Form/Fields` — não migrar aqui, só adicionar ícone dentro do
 padrão atual: `input-group` Bootstrap com ícone à esquerda, sem trocar pra
@@ -96,9 +100,11 @@ padrão atual: `input-group` Bootstrap com ícone à esquerda, sem trocar pra
 envelope pro campo email, cadeado pro campo senha.
 
 ### 5. Ícone no input de email (esquece a senha)
+
 Mesmo tratamento do item 4, em `src/routes/auth/forgot-password/index.tsx`.
 
 ### 6. Botões do header — idioma (dropdown) e theme switch
+
 Em `src/layouts/AppShell/` (UserMenu.tsx ou topbar, a localizar) — polish
 visual dos dois controles: dropdown de idioma e switch de tema. Não mexe em
 lógica (`useLocale`/`useSetLocale`, `useThemeMode` já existem) — só
@@ -106,6 +112,7 @@ aparência (ícone, alinhamento, hover state, espaçamento consistente com o
 resto do header).
 
 ### 7. Footer do menu aberto (sidebar expandido)
+
 Ajustar/criar footer do sidebar quando expandido (rodapé com versão, ou
 user info reduzido, a definir com usuário — hoje `AppShell` não tem essa
 seção ou está incompleta). **Precisa decisão do usuário sobre o que entra

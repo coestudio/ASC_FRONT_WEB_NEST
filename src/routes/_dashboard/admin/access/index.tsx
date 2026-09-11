@@ -411,7 +411,7 @@ function AdminAccessPageContent() {
           queryOptions={listQueryOptions}
           columns={columns}
           renderCard={(u) => (
-            <Card>
+            <Card className={styles.card}>
               <Card.Body>
                 <Card.Title className="h6">{u.profile.fullName}</Card.Title>
                 <Card.Subtitle className="text-body-secondary small mb-2">
