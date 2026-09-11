@@ -4,7 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from "zod";
+import * as zod from 'zod';
+
 
 export const postApiAuthLoginBodyUserNameMin = 3;
 export const postApiAuthLoginBodyUserNameMax = 150;
@@ -12,14 +13,17 @@ export const postApiAuthLoginBodyUserNameMax = 150;
 export const postApiAuthLoginBodyPasswordMin = 6;
 export const postApiAuthLoginBodyPasswordMax = 100;
 
+
+
 export const PostApiAuthLoginBody = zod.object({
-  userName: zod.string().min(postApiAuthLoginBodyUserNameMin).max(postApiAuthLoginBodyUserNameMax),
-  password: zod.string().min(postApiAuthLoginBodyPasswordMin).max(postApiAuthLoginBodyPasswordMax),
-});
+  "userName": zod.string().min(postApiAuthLoginBodyUserNameMin).max(postApiAuthLoginBodyUserNameMax),
+  "password": zod.string().min(postApiAuthLoginBodyPasswordMin).max(postApiAuthLoginBodyPasswordMax)
+})
 
 export const postApiAuthLoginResponseUserAddressCountryMax = 2;
 
-export const postApiAuthLoginResponseUserAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
+
+export const postApiAuthLoginResponseUserAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiAuthLoginResponseUserAddressPostalCodeMax = 20;
 
 export const postApiAuthLoginResponseUserAddressStateMax = 2;
@@ -34,93 +38,115 @@ export const postApiAuthLoginResponseUserAddressComplementMax = 100;
 
 export const postApiAuthLoginResponseUserAddressCityMax = 100;
 
-export const postApiAuthLoginResponseTokenDataExpiresInRegExpTwo = new RegExp(
-  "^-?(?:0|[1-9]\\d*)$",
-);
+export const postApiAuthLoginResponseTokenDataExpiresInRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const PostApiAuthLoginResponse = zod.object({
-  user: zod.object({
-    address: zod.object({
-      country: zod
-        .string()
-        .max(postApiAuthLoginResponseUserAddressCountryMax)
-        .regex(postApiAuthLoginResponseUserAddressCountryRegExp)
-        .nullish(),
-      postalCode: zod.string().max(postApiAuthLoginResponseUserAddressPostalCodeMax).nullish(),
-      state: zod.string().max(postApiAuthLoginResponseUserAddressStateMax).nullish(),
-      neighborhood: zod.string().max(postApiAuthLoginResponseUserAddressNeighborhoodMax).nullish(),
-      street: zod.string().max(postApiAuthLoginResponseUserAddressStreetMax).nullish(),
-      number: zod.string().max(postApiAuthLoginResponseUserAddressNumberMax).nullish(),
-      complement: zod.string().max(postApiAuthLoginResponseUserAddressComplementMax).nullish(),
-      city: zod.string().max(postApiAuthLoginResponseUserAddressCityMax).nullish(),
-      fullAddress: zod.string().optional(),
-    }),
-    userName: zod.string(),
-    profile: zod.object({
-      fullName: zod.string().optional(),
-      document: zod.string().nullish(),
-      email: zod.string().nullish(),
-      phone: zod.string().nullish(),
-      birthDate: zod.iso.date().nullish(),
-      avatarFile: zod
-        .union([
-          zod.null(),
-          zod.object({
-            name: zod.string().optional(),
-            extension: zod.string().optional(),
-            url: zod.string().optional(),
-            contentType: zod.string().nullish(),
-            id: zod.uuid(),
-            createdAt: zod.iso.datetime({ offset: true }),
-            updatedAt: zod.iso.datetime({ offset: true }),
-          }),
-        ])
-        .optional(),
-      firstName: zod.string().optional(),
-      lastName: zod.string().optional(),
-    }),
-    isActive: zod.boolean(),
-    isAdmin: zod.boolean(),
-    type: zod.int(),
-    roles: zod.array(zod.int()),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  tokenData: zod.object({
-    accessToken: zod.string(),
-    refreshToken: zod.string().nullish(),
-    expiresAt: zod.iso.datetime({ offset: true }),
-    expiresIn: zod.union([
-      zod.int(),
-      zod.stringFormat("int32", postApiAuthLoginResponseTokenDataExpiresInRegExpTwo),
-    ]),
-  }),
-});
+  "user": zod.object({
+  "collaborator": zod.union([zod.null(),zod.object({
+  "clientId": zod.uuid(),
+  "userId": zod.uuid(),
+  "user": zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.int(),
+  "roles": zod.array(zod.int()),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "address": zod.object({
+  "country": zod.string().max(postApiAuthLoginResponseUserAddressCountryMax).regex(postApiAuthLoginResponseUserAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(postApiAuthLoginResponseUserAddressPostalCodeMax).nullish(),
+  "state": zod.string().max(postApiAuthLoginResponseUserAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(postApiAuthLoginResponseUserAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(postApiAuthLoginResponseUserAddressStreetMax).nullish(),
+  "number": zod.string().max(postApiAuthLoginResponseUserAddressNumberMax).nullish(),
+  "complement": zod.string().max(postApiAuthLoginResponseUserAddressComplementMax).nullish(),
+  "city": zod.string().max(postApiAuthLoginResponseUserAddressCityMax).nullish(),
+  "fullAddress": zod.string().optional()
+}),
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.int(),
+  "roles": zod.array(zod.int()),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "tokenData": zod.object({
+  "accessToken": zod.string(),
+  "refreshToken": zod.string().nullish(),
+  "expiresAt": zod.iso.datetime({"offset":true}),
+  "expiresIn": zod.union([zod.int(),zod.stringFormat('int32', postApiAuthLoginResponseTokenDataExpiresInRegExpTwo)])
+})
+})
 
 export const PostApiAuthForgotPasswordBody = zod.object({
-  email: zod.string(),
-});
+  "email": zod.string()
+})
 
 export const PostApiAuthForgotPasswordResponse = zod.object({
-  message: zod.string().optional(),
-});
+  "message": zod.string().optional()
+})
 
 export const PostApiAuthResendCodeBody = zod.object({
-  email: zod.string(),
-});
+  "email": zod.string()
+})
 
 export const PostApiAuthResendCodeResponse = zod.object({
-  message: zod.string().optional(),
-});
+  "message": zod.string().optional()
+})
 
 export const PostApiAuthValidateResetCodeBody = zod.object({
-  token: zod.string(),
-});
+  "token": zod.string()
+})
 
 export const PostApiAuthValidateResetCodeResponse = zod.object({
-  message: zod.string().optional(),
-});
+  "message": zod.string().optional()
+})
 
 export const postApiAuthResetPasswordBodyNewPasswordMin = 6;
 export const postApiAuthResetPasswordBodyNewPasswordMax = 100;
@@ -128,18 +154,15 @@ export const postApiAuthResetPasswordBodyNewPasswordMax = 100;
 export const postApiAuthResetPasswordBodyNewPasswordConfirmMin = 6;
 export const postApiAuthResetPasswordBodyNewPasswordConfirmMax = 100;
 
+
+
 export const PostApiAuthResetPasswordBody = zod.object({
-  token: zod.string(),
-  newPassword: zod
-    .string()
-    .min(postApiAuthResetPasswordBodyNewPasswordMin)
-    .max(postApiAuthResetPasswordBodyNewPasswordMax),
-  newPasswordConfirm: zod
-    .string()
-    .min(postApiAuthResetPasswordBodyNewPasswordConfirmMin)
-    .max(postApiAuthResetPasswordBodyNewPasswordConfirmMax),
-});
+  "token": zod.string(),
+  "newPassword": zod.string().min(postApiAuthResetPasswordBodyNewPasswordMin).max(postApiAuthResetPasswordBodyNewPasswordMax),
+  "newPasswordConfirm": zod.string().min(postApiAuthResetPasswordBodyNewPasswordConfirmMin).max(postApiAuthResetPasswordBodyNewPasswordConfirmMax)
+})
 
 export const PostApiAuthResetPasswordResponse = zod.object({
-  message: zod.string().optional(),
-});
+  "message": zod.string().optional()
+})
+

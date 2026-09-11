@@ -37,6 +37,9 @@ export { default as InputPassword } from "./InputPassword";
 export { default as InputColorPicker } from "./InputColorPicker";
 //export { default as InputKeywords } from './InputKeywords';
 
+//* Seleção
+export { default as InputMultiSelect } from "./InputMultiSelect";
+
 //* Files
 export { default as InputAvatar } from "./InputAvatar";
 
@@ -58,5 +61,7 @@ export type LayoutField = {
   config?: {
     containerClass?: string;
     className?: string;
+    /** Opções de campo de seleção (ex.: `InputMultiSelect`) — SPEC-03 D3. */
+    options?: { value: string | number; label: string }[];
   };
 };

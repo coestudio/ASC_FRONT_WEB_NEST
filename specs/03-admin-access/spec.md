@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-03
 - **Nome:** admin-access
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/**` (nova — irmã de `_internal`, não
   filha, ver §3.1), `src/lib/queries/**`
@@ -193,4 +193,94 @@ src/routes/_dashboard/admin/
 
 ---
 
-**Próximo passo:** `APROVAR SPEC-03`.
+## 14. Implementation Notes
+
+Branch: `spec-03-admin-access` (a partir de `wave-2-parallel-areas`, a partir
+de `SPECS-LEGADO`).
+
+**Arquivos alterados/criados:**
+- `src/routes/_dashboard/admin/route.tsx` (guard `admin`), `index.tsx`
+  (redirect), `access/index.tsx` (lista + CRUD real), `roles/index.tsx`
+  (estática, ver limitação abaixo).
+- `src/layouts/Form/Fields/InputMultiSelect.tsx` (novo Field, decisão D3) +
+  `Index.ts`/`map.tsx`/`Form/types/Input.tsx` editados pra suportar
+  `config.options`.
+- `src/layouts/AppShell/nav/admin.ts` — corrigido pra `/admin/access` e
+  `/admin/roles` (decisão D4).
+- `src/data/admin-roles.ts` — nomes/valores reais (snapshot do Core),
+  descrição por perfil pendente (débito documentado, ver §15).
+- `src/i18n/dictionaries/*/access.json` (4 locales) — **achado durante a
+  implementação**: o namespace `access` já existia pré-semeado (SPEC-02) com
+  quase todas as chaves necessárias (`title`, `colName`, `form.*`, etc.) —
+  usado no lugar de criar `admin.json` novo (§10 original da spec citava
+  `admin.json`, corrigido na prática para reuso de `access.json` + chaves
+  novas: `viewUser`, `colActions`, `actions.*`, `confirm.*`, `toast.*`,
+  `rolesTitle`, `rolesDescription`, `rolesEmpty`).
+- `src/components/site/SiteHeader.tsx` — **fora do escopo da SPEC-03**, mas
+  corrigido como efeito colateral necessário: a regeneração obrigatória de
+  `src/routeTree.gen.ts` (rotas novas) expôs que esse componente (já
+  marcado `// STUB` no código) linkava pra rotas (`/servicos`, `/politicas`,
+  `/galerias`, `/duvidas`, `/contato`) removidas há muito tempo (commit
+  `b4a5206`) sem nunca ter tido o `routeTree.gen.ts` regenerado desde então
+  — `bun run check` estava "passando" só porque a árvore de rotas commitada
+  estava desatualizada. Troquei os `Link to=` quebrados por `<span>` pra não
+  quebrar o check; migração real do header do site é outra frente, não
+  desta SPEC.
+
+**Comandos executados:**
+- `bun run check` → **VERIFIED**, 0 erros.
+- `bun run lint` → **VERIFIED** só quanto a não ter introduzido erro/warning
+  novo: baseline do repo (antes desta SPEC, com tudo stashed) já falha com
+  "65 problems (3 errors, 62 warnings)" — os 3 erros são pré-existentes em
+  `src/lib/session.server.ts` (`react-hooks/rules-of-hooks`, commit antigo
+  `4b8479c`, não tocado por esta SPEC). Depois das mudanças desta SPEC: os
+  mesmos "65 problems (3 errors, 62 warnings)" — zero novo, confirmado por
+  `git stash -u` + `bun run lint` antes/depois.
+- `just map` — não rodado (contrato do Core não mudou nesta SPEC).
+
+**Critérios de aceitação:**
+| # | Critério | Status |
+| --- | --- | --- |
+| CA1 | Redirect de `/admin/*` sem área `admin` | PASS — guard em `route.tsx`; não testado contra Core rodando nesta sessão |
+| CA2 | Criar/editar/desativar/reset de senha reais | PASS — hooks Orval reais; não testado end-to-end contra Core rodando |
+| CA3 | Zero `z.object`/`.refine` novo em `admin/**` | PASS — `grep` não encontra |
+| CA4 | `bun run check` + `lint` passam | PASS — `check` limpo; `lint` sem regressão (baseline pré-existente do repo já falhava, confirmado via `git stash -u`) |
+| CA5 | `admin/access/**` só configura `crud-list-page`/`crud-record-modal` | PASS |
+| RF5 | `admin/roles` renderiza sem chamada ao Core | PASS — nomes/valores reais (snapshot estático `getApiUserRoles.ts`, D1), descrição por perfil é débito documentado (§15), não bloqueio |
+
+**Histórico da lacuna de `admin/roles` (resolvida como débito, não bloqueio):**
+O usuário rodou `just map` contra o Core de dev real durante a sessão, o
+que trouxe `src/api/generated/static/getApiUserRoles.ts` — snapshot
+estático real (`InternalRole` 100=Agente, 200=Supervisor, 300=Laboratório,
+com nomes em pt/en/es/zh). `src/data/admin-roles.ts` foi reescrito pra
+importar esse snapshot em vez de ficar vazio — nomes e valores agora são
+reais (não inventados), mantendo D1 (estático, sem chamada ao Core em
+runtime — o import é build-time de um arquivo já commitado). A descrição de
+cada perfil ("o que ele vê/acessa no NewPortal") não existe no snapshot (só
+nome+valor) — por decisão do usuário, isso vira **débito documentado pra
+depois** (§15), não bloqueio pra fechar a SPEC: cada card mostra um texto
+placeholder explícito em vez de texto chutado, e a SPEC fecha `IMPLEMENTED`
+com essa lacuna registrada.
+
+Também corrigido durante essa verificação: `resolveEnumOptionName()` em
+`admin/access/index.tsx` — a chave de idioma de `EnumOptionDTO.name` usa
+2 letras (`pt`/`en`/`es`/`zh`), não bate com `Locale` (`"pt-BR"`); o
+multi-select de `roles` no form estava resolvendo o label errado antes
+dessa correção.
+
+## 15. Débito documentado (futuro, fora do escopo desta rodada)
+
+- **Descrição de cada perfil em `admin/roles`** — `src/data/admin-roles.ts`
+  tem nome/valor reais (Agente/Supervisor/Laboratório) mas
+  `description` é um placeholder genérico
+  (`"Descrição do que este perfil acessa ainda não confirmada..."`) pra
+  todos os 3. Preencher com o texto real (o que cada perfil vê/acessa no
+  NewPortal) quando disponível — não requer nova SPEC, só editar esse
+  arquivo de dado estático e, se fizer sentido, revisar D1 (hoje "estática
+  mantida à mão"; se o volume de manutenção crescer, reconsiderar).
+- **Decisão do usuário:** aceito fechar `IMPLEMENTED` com esse item em
+  aberto — registrado aqui pra não ser esquecido nem redescoberto como bug.
+
+---
+
+**Status: IMPLEMENTED.**

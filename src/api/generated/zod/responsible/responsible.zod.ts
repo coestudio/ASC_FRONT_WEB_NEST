@@ -4,154 +4,139 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from "zod";
+import * as zod from 'zod';
+
 
 export const GetApiOperationOperationIdResponsibleParams = zod.object({
-  operationId: zod.uuid(),
-});
+  "operationId": zod.uuid()
+})
 
 export const GetApiOperationOperationIdResponsibleResponseItem = zod.object({
-  operationId: zod.uuid(),
-  userId: zod.uuid(),
-  user: zod.object({
-    userName: zod.string(),
-    profile: zod.object({
-      fullName: zod.string().optional(),
-      document: zod.string().nullish(),
-      email: zod.string().nullish(),
-      phone: zod.string().nullish(),
-      birthDate: zod.iso.date().nullish(),
-      avatarFile: zod
-        .union([
-          zod.null(),
-          zod.object({
-            name: zod.string().optional(),
-            extension: zod.string().optional(),
-            url: zod.string().optional(),
-            contentType: zod.string().nullish(),
-            id: zod.uuid(),
-            createdAt: zod.iso.datetime({ offset: true }),
-            updatedAt: zod.iso.datetime({ offset: true }),
-          }),
-        ])
-        .optional(),
-      firstName: zod.string().optional(),
-      lastName: zod.string().optional(),
-    }),
-    isActive: zod.boolean(),
-    isAdmin: zod.boolean(),
-    type: zod.int(),
-    roles: zod.array(zod.int()),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
-export const GetApiOperationOperationIdResponsibleResponse = zod.array(
-  GetApiOperationOperationIdResponsibleResponseItem,
-);
+  "operationId": zod.uuid(),
+  "userId": zod.uuid(),
+  "user": zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.int(),
+  "roles": zod.array(zod.int()),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+export const GetApiOperationOperationIdResponsibleResponse = zod.array(GetApiOperationOperationIdResponsibleResponseItem)
 
 export const PostApiOperationOperationIdResponsibleParams = zod.object({
-  operationId: zod.uuid(),
-});
+  "operationId": zod.uuid()
+})
 
 export const PostApiOperationOperationIdResponsibleBody = zod.object({
-  userId: zod.uuid(),
-});
+  "userId": zod.uuid()
+})
 
 export const PostApiOperationOperationIdResponsibleResponse = zod.object({
-  operationId: zod.uuid(),
-  userId: zod.uuid(),
-  user: zod.object({
-    userName: zod.string(),
-    profile: zod.object({
-      fullName: zod.string().optional(),
-      document: zod.string().nullish(),
-      email: zod.string().nullish(),
-      phone: zod.string().nullish(),
-      birthDate: zod.iso.date().nullish(),
-      avatarFile: zod
-        .union([
-          zod.null(),
-          zod.object({
-            name: zod.string().optional(),
-            extension: zod.string().optional(),
-            url: zod.string().optional(),
-            contentType: zod.string().nullish(),
-            id: zod.uuid(),
-            createdAt: zod.iso.datetime({ offset: true }),
-            updatedAt: zod.iso.datetime({ offset: true }),
-          }),
-        ])
-        .optional(),
-      firstName: zod.string().optional(),
-      lastName: zod.string().optional(),
-    }),
-    isActive: zod.boolean(),
-    isAdmin: zod.boolean(),
-    type: zod.int(),
-    roles: zod.array(zod.int()),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "userId": zod.uuid(),
+  "user": zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.int(),
+  "roles": zod.array(zod.int()),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const GetApiOperationOperationIdResponsibleIdParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
 
 export const GetApiOperationOperationIdResponsibleIdResponse = zod.object({
-  operationId: zod.uuid(),
-  userId: zod.uuid(),
-  user: zod.object({
-    userName: zod.string(),
-    profile: zod.object({
-      fullName: zod.string().optional(),
-      document: zod.string().nullish(),
-      email: zod.string().nullish(),
-      phone: zod.string().nullish(),
-      birthDate: zod.iso.date().nullish(),
-      avatarFile: zod
-        .union([
-          zod.null(),
-          zod.object({
-            name: zod.string().optional(),
-            extension: zod.string().optional(),
-            url: zod.string().optional(),
-            contentType: zod.string().nullish(),
-            id: zod.uuid(),
-            createdAt: zod.iso.datetime({ offset: true }),
-            updatedAt: zod.iso.datetime({ offset: true }),
-          }),
-        ])
-        .optional(),
-      firstName: zod.string().optional(),
-      lastName: zod.string().optional(),
-    }),
-    isActive: zod.boolean(),
-    isAdmin: zod.boolean(),
-    type: zod.int(),
-    roles: zod.array(zod.int()),
-    id: zod.uuid(),
-    createdAt: zod.iso.datetime({ offset: true }),
-    updatedAt: zod.iso.datetime({ offset: true }),
-  }),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "operationId": zod.uuid(),
+  "userId": zod.uuid(),
+  "user": zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.int(),
+  "roles": zod.array(zod.int()),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const DeleteApiOperationOperationIdResponsibleIdParams = zod.object({
-  operationId: zod.uuid(),
-  id: zod.uuid(),
-});
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
 
-export const DeleteApiOperationOperationIdResponsibleIdResponse = zod.unknown();
+export const DeleteApiOperationOperationIdResponsibleIdResponse = zod.unknown()
+

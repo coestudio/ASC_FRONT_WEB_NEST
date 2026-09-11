@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoPhotoSlot } from "./cargoPhotoSlot";
-import type { FileDTO } from "./fileDTO";
+import type { CargoPhotoSlot } from './cargoPhotoSlot.ts';
+import type { FileDTO } from './fileDTO.ts';
 
 export interface CargoPhotoDTO {
   cargoUnitId?: string;

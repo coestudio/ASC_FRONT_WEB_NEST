@@ -11,14 +11,14 @@ export interface RomaneioUpdate {
   /** @maxLength 100 */
   itemCode: string;
   /**
-   * @maxLength 50
-   * @nullable
-   */
+     * @maxLength 50
+     * @nullable
+     */
   tipo?: string | null;
   /**
-   * @maxLength 100
-   * @nullable
-   */
+     * @maxLength 100
+     * @nullable
+     */
   contrato?: string | null;
   /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
   peso?: number | string;
@@ -27,17 +27,17 @@ export interface RomaneioUpdate {
   /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
   pesoBruto?: number | string;
   /**
-   * @minLength 3
-   * @maxLength 50
-   */
+     * @minLength 3
+     * @maxLength 50
+     */
   instruction: string;
   /** @maxLength 50 */
   notaFiscal?: string;
   /** @maxLength 50 */
   lote: string;
   /**
-   * @maxLength 50
-   * @nullable
-   */
+     * @maxLength 50
+     * @nullable
+     */
   pilha?: string | null;
 }

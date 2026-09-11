@@ -5,6 +5,7 @@
   "searchPlaceholder": "Search by name, username or email...",
   "newUser": "New user",
   "editUser": "Edit user",
+  "viewUser": "User details",
   "emptyState": "No users found.",
   "colName": "Name",
   "colUsername": "Username",
@@ -13,6 +14,7 @@
   "colStatus": "Status",
   "colType": "Type",
   "colCreatedAt": "Created at",
+  "colActions": "Actions",
   "active": "Active",
   "inactive": "Inactive",
   "internal": "Internal",
@@ -33,5 +35,34 @@
     "cancel": "Cancel",
     "creating": "Creating...",
     "saving": "Saving..."
-  }
+  },
+  "actions": {
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "resetPassword": "Reset password",
+    "delete": "Delete",
+    "noEmailTooltip": "User has no email registered — cannot reset password."
+  },
+  "confirm": {
+    "activateTitle": "Activate user",
+    "activateMessage": "Activate \"{name}\"?",
+    "deactivateTitle": "Deactivate user",
+    "deactivateMessage": "Deactivate \"{name}\"?",
+    "resetPasswordTitle": "Reset password",
+    "resetPasswordMessage": "A new password will be emailed to \"{name}\". Continue?",
+    "deleteTitle": "Delete user",
+    "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+  },
+  "toast": {
+    "created": "User created successfully.",
+    "updated": "User updated successfully.",
+    "activated": "User activated.",
+    "deactivated": "User deactivated.",
+    "deleted": "User deleted.",
+    "resetPasswordSent": "New password sent by email.",
+    "error": "Could not complete the action. Please try again."
+  },
+  "rolesTitle": "Roles",
+  "rolesDescription": "Reference of access roles and what each one can see in the system.",
+  "rolesEmpty": "Content not registered yet — role descriptions pending confirmation."
 }

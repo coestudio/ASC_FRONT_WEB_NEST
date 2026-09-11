@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { DocumentDTO } from "./documentDTO";
+import type { DocumentDTO } from './documentDTO.ts';
 
 export interface PagedDTOOfDocumentDTO {
   items: DocumentDTO[];

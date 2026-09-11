@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { FileDTO } from "./fileDTO";
-import type { SealName } from "./sealName";
+import type { FileDTO } from './fileDTO.ts';
+import type { SealName } from './sealName.ts';
 
 export interface SealDTO {
   label?: string;

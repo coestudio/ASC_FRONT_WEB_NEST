@@ -7,13 +7,13 @@
 
 export interface ContainerUpdate {
   /**
-   * @minLength 3
-   * @maxLength 150
-   */
+     * @minLength 3
+     * @maxLength 150
+     */
   identifier: string;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
   tara?: number | string | null;
 }
