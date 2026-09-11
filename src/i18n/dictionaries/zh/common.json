@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "title": "ASC",
+    "description": "ASC 应用"
+  },
+  "theme": {
+    "light": "浅色主题",
+    "dark": "深色主题",
+    "system": "跟随系统"
+  },
+  "shell": {
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "profile": "个人资料",
+    "preferences": "偏好设置",
+    "theme": "主题",
+    "language": "语言",
+    "viewMode": "视图",
+    "viewModeCards": "卡片视图",
+    "viewModeList": "列表视图",
+    "underConstruction": "建设中",
+    "underConstructionDescription": "此页面仍在开发中。",
+    "areaWelcome": "欢迎来到{area}区域。"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "title": "ASC",
+    "description": "Aplicação ASC"
+  },
+  "theme": {
+    "light": "Tema claro",
+    "dark": "Tema escuro",
+    "system": "Tema do sistema"
+  },
+  "shell": {
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "profile": "Perfil",
+    "preferences": "Preferências",
+    "theme": "Tema",
+    "language": "Idioma",
+    "viewMode": "Visualização",
+    "viewModeCards": "Cards",
+    "viewModeList": "Lista",
+    "underConstruction": "Em construção",
+    "underConstructionDescription": "Esta tela ainda está em desenvolvimento.",
+    "areaWelcome": "Bem-vindo(a) à área {area}."
+  }
+}

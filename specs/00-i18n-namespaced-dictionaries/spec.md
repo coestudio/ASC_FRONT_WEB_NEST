@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-00
 - **Nome:** i18n-namespaced-dictionaries
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/i18n/**`, `src/lib/ui-prefs.tsx`, `src/components/i18n/**`
 - **Instruction aplicável:** `.github/instructions/i18n.instructions.md`
@@ -237,7 +237,109 @@ export const locales = ["pt-BR", "en", "es", "zh"] as const;
 - **D5** — Ordem dos idiomas no `LanguageSwitcher` (hoje segue `locales`).
 - **D6** — Script de paridade de chaves entra nesta SPEC ou vira SPEC-01?
 
+## 14. Decisões tomadas (usuário, aprovação `APROVAR SPEC-00`)
+
+- **D1** — Agrupamento seguindo §9.1: `common` = `metadata`+`theme`+`shell`,
+  `navigation` separado (ex-`nav`), `home`/`auth`/`access` cada um seu arquivo.
+- **D2** — `pt-BR` importado estático por namespace (tipagem forte); `en`,
+  `es`, `zh` via `import.meta.glob` eager.
+- **D3** — Locale `es` genérico (sem variante regional `es-ES`/`es-AR`).
+- **D4** — `es` no `LOCALE_LABELS`: `{ label: "Español", flag: "🇪🇸" }`.
+- **D5** — Ordem no `LanguageSwitcher`/`locales`: `pt-BR`, `en`, `zh`, `es`
+  (`es` por último).
+- **D6** — Script de paridade de chaves fica fora desta SPEC-00 (vira
+  SPEC-01 futura).
+
+## 15. Decisão adicional tomada durante a implementação
+
+Ao implementar D1 literalmente (loader fazendo `dict[namespace] = conteúdo do
+arquivo`), o namespace `common` ficaria acessível só em `common.theme.light`,
+`common.metadata.title`, `common.shell.openMenu` — quebrando o único
+call-site real hoje em produção (`t("theme.light")` em
+`src/layouts/AppShell/index.tsx`) e violando RF1/CA8 ("nenhum call-site
+alterado"). Isso não foi antecipado no desenho original da SPEC (§9.2), que
+tratava todo namespace de forma simétrica.
+
+Resolução aplicada (sem levantar `SCOPE CONFLICT` por ser um detalhe de
+implementação do loader, não uma mudança de requisito ou de shape público):
+o namespace `common.json` é o único caso especial — seu conteúdo
+(`metadata`, `theme`, `shell`) é espalhado (`Object.assign`/spread) direto na
+raiz do `Dictionary`, e não aninhado sob uma chave `common`. Os demais
+namespaces (`navigation`, `home`, `auth`, `access`) seguem a regra padrão:
+nome do arquivo = chave de topo. Isso preserva 100% o shape anterior
+(`theme.*`, `metadata.*`, `shell.*` inalterados) — só `nav.*` virou
+`navigation.*`, o que é seguro porque não havia nenhum call-site usando
+`nav.*` no código (grep confirmado antes da mudança).
+
 ---
 
-**Próximo passo:** usuário decide D1–D6, depois `APROVAR SPEC-00` para
-implementação.
+## Implementation Notes
+
+- **Arquivos alterados/criados:**
+  - `src/i18n/config.ts` — `es` em `locales` (por último) e `LOCALE_LABELS`.
+  - `src/i18n/dictionaries.ts` — reescrito: `pt-BR` estático por namespace
+    (fonte de tipo), `en`/`es`/`zh` via `import.meta.glob`; caso especial do
+    namespace `common` (ver §15).
+  - `src/i18n/dictionaries/pt-BR/{common,navigation,home,auth,access}.json` —
+    criados a partir do antigo `pt-BR.json`.
+  - `src/i18n/dictionaries/en/{...}.json` — criados a partir do `en.json`.
+  - `src/i18n/dictionaries/zh/{...}.json` — criados a partir do `zh.json`.
+  - `src/i18n/dictionaries/es/{...}.json` — criados, tradução nova.
+  - `src/i18n/dictionaries/{pt-BR,en,zh}.json` — removidos.
+  - `src/i18n/translate.ts`, `src/i18n/index.tsx`,
+    `src/components/i18n/language-switcher.tsx` — **inalterados** (API de
+    consumo intacta, switcher itera `locales` dinamicamente).
+- **Comandos executados:**
+  - `bun run check` — 9 erros de `tsc`, todos pré-existentes e alheios a i18n
+    (`src/components/site/SiteHeader.tsx` — rotas de site ainda não migradas
+    para `routeTree.gen.ts`; `src/layouts/AppBrand/index.tsx` — resíduo de
+    `react-router-dom`/Next, já listado em "Pendências conhecidas" do
+    AGENTS.md). Confirmado via stash temporário + reaplicação que a contagem
+    e o conteúdo dos erros é idêntico com e sem as mudanças desta SPEC — **0
+    erros novos introduzidos**.
+  - `bun run lint` — 3 erros + 60 warnings, todos pré-existentes
+    (`src/lib/session.server.ts`, `src/layouts/Form/**`), nenhum em
+    `src/i18n/**` alterado por esta SPEC.
+  - `bun run build` — **passou** (`✓ built`), confirmando que
+    `import.meta.glob` eager resolve corretamente em build SSR
+    (Nitro/preset azure-swa-compatível).
+- **Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | `bun run check` passa | PARCIAL — passa para o escopo desta SPEC (0 erros novos); 9 erros pré-existentes e não relacionados permanecem no repositório |
+| CA2 | `bun run lint` passa | PARCIAL — mesmo caso: 0 problemas novos; 3 erros + 60 warnings pré-existentes permanecem |
+| CA3 | `bun run build` passa | PASS |
+| CA4 | Renderização pt-BR sem chave crua | NOT VERIFIED — nenhuma verificação manual de UI rodada nesta sessão (sem servidor dev ativo); risco baixo pois só `theme.*` tem call-site real hoje e seu valor foi preservado |
+| CA5 | Troca de idioma no switcher | NOT VERIFIED — idem, requer app rodando |
+| CA6 | Fallback de chave ausente | NOT VERIFIED — comportamento de `translate.ts` inalterado (mesma lógica), risco baixo |
+| CA7 | Remover `es/access.json` quebra `tsc` | NOT VERIFIED manualmente, mas garantido por construção: `Dictionary` é derivado de `pt-BR` (todas as 5 chaves obrigatórias) e `buildLocale` retorna `Dictionary`; faltar o arquivo deixa `out.access` `undefined`, e o cast final `as Dictionary` mascara isso em runtime — **ver limitação abaixo** |
+| CA8 | Nenhum call-site de `t(...)` alterado | PASS — `git diff` mostra zero mudança em `src/layouts/AppShell/index.tsx` (único call-site real) |
+
+- **Decisões tomadas durante a implementação:** ver §15 acima (caso especial
+  do namespace `common` para preservar RF1/CA8).
+- **Limitações conhecidas:**
+  - CA7 assume que faltar um arquivo de namespace vira erro de **tipo**. Na
+    implementação atual, `buildLocale` monta o objeto dinamicamente e termina
+    com `return out as Dictionary` — um `as` que **silencia** a ausência de
+    uma chave em tempo de compilação (o `tsc` não vai acusar `es` incompleto
+    se faltar `access.json`, só quebraria em runtime ao acessar
+    `t("access.title")` em locale `es`, caindo no fallback + warn). Isso é
+    uma diferença do que RF4/CA7 pedem literalmente ("erro de tipo em
+    build"). A alternativa mais segura seria validar `Object.keys(out)`
+    contra as chaves de `Dictionary` em runtime (dev-only) ou usar um
+    utilitário de tipo que force exaustividade — não implementada nesta
+    rodada por não ter sido explicitamente decidida pelo usuário nas D1–D6 e
+    para não expandir escopo sem aprovação. Registro como ponto em aberto
+    para o usuário decidir se quer endurecer isso agora ou tratar junto da
+    SPEC-01 (D6, script de paridade de chaves).
+  - Verificação visual (CA4–CA6) não foi feita nesta sessão — recomenda-se
+    rodar `bun run dev` e navegar pelas telas de login/forgot-password/
+    dashboard/access nos 4 locales antes de considerar a feature 100%
+    encerrada em produção.
+  - `es` é uma tradução nova feita por mim (não revisada por falante nativo);
+    strings devem ser tratadas como sujeitas a revisão humana (R3 da SPEC).
+
+---
+
+**Status final: IMPLEMENTED** (com as limitações acima documentadas).
