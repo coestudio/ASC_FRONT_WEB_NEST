@@ -201,7 +201,7 @@ mascaravam o defeito até agora.
   `opt.name.pt` → `opt.name["pt-BR"]` (achado adicional, ver nota abaixo).
 - `src/routes/_dashboard/admin/access/index.tsx` — `resolveEnumOptionName`
   (shim local) removido (RF5); call-site usa `resolveInternalRoleLabel(opt.key,
-  locale)` importado do snapshot gerado; import de `Locale`
+locale)` importado do snapshot gerado; import de `Locale`
   (`@/i18n/config`) removido por ficar sem uso.
 - `src/layouts/Form/Fields/Select.tsx` — **achado adicional, fora do §10
   original, corrigido na mesma rodada por ser regressão real da mesma causa
@@ -216,7 +216,7 @@ mascaravam o defeito até agora.
   1:1 com `Locale` agora, sem tradução) — não é bind por `key` em vez de
   `value` (essa parte, `Select.tsx` ainda passa o `Value` numérico pro
   formulário, é escopo de `specs/15-enum-string-contract-and-locale-messages/
-  spec.md`, RF4 lá).
+spec.md`, RF4 lá).
 
 **Comandos executados e resultado:**
 
@@ -235,19 +235,21 @@ mascaravam o defeito até agora.
 - CA3 — **VERIFIED** por leitura de código (`userTypeOptionsByKey["Internal"]`
   presente com `name.en === "Internal"`, `resolve${x}Label` segue o mesmo
   padrão em todos os 14 arquivos).
-- CA5 (`bun run check` + `bun run lint`) — **NOT VERIFIED** nesta sessão
-  (sem `bun` disponível no ambiente). Recomenda-se rodar localmente antes de
-  dar a SPEC por fechada em definitivo.
+- CA5 (`bun run check` + `bun run lint`) — **VERIFIED em sessão posterior**
+  (runtime disponível): `bun run check` limpo, zero erro. `bun run lint`
+  falha por 3 erros pré-existentes em `src/lib/session.server.ts`
+  (`react-hooks/rules-of-hooks`, fora da área desta SPEC, não introduzidos
+  por ela) — nenhum erro/warning nos arquivos tocados por SPEC-13.
 
 **Critérios de aceitação:**
 
-| # | Critério | Status |
-| --- | --- | --- |
-| CA1 | `userTypeOptions.ts` existe, não `getApiUserTypes.ts` | PASS |
-| CA2 | zero colisão de nome com hook do Orval | PASS |
-| CA3 | `ByKey`/`resolveXxxLabel` corretos | PASS (leitura de código) |
-| CA4 | `resolveEnumOptionName` não existe mais em `src` | PASS |
-| CA5 | `bun run check` + `bun run lint` | NOT VERIFIED — sem `bun` no ambiente desta sessão |
+| #   | Critério                                              | Status                                                                                      |
+| --- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| CA1 | `userTypeOptions.ts` existe, não `getApiUserTypes.ts` | PASS                                                                                        |
+| CA2 | zero colisão de nome com hook do Orval                | PASS                                                                                        |
+| CA3 | `ByKey`/`resolveXxxLabel` corretos                    | PASS (leitura de código)                                                                    |
+| CA4 | `resolveEnumOptionName` não existe mais em `src`      | PASS                                                                                        |
+| CA5 | `bun run check` + `bun run lint`                      | PASS — check limpo; lint sem erro novo (3 pré-existentes fora de área, `session.server.ts`) |
 
 **Achado fora do §10 original, corrigido na mesma rodada:** `Select.tsx` e
 `src/data/admin-roles.ts` também liam `opt.name.pt` (chave antiga) — mesma
