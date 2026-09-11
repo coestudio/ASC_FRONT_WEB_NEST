@@ -30,6 +30,7 @@ import type {
   MessageDTO,
   PagedDTOOfUserDTO,
   PatchApiUserIdAvatarBody,
+  UserAdminDTO,
   UserCreate,
   UserDTO,
   UserUpdate
@@ -730,7 +731,7 @@ const {mutation: mutationOptions} = options ?
 ) => {
 
 
-      return apiRequest<UserDTO>(
+      return apiRequest<UserAdminDTO>(
       {url: `/api/user/${id}`, method: 'GET', signal
     },
       );

@@ -1,14 +1,12 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge, Button, Card } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
   useDeleteApiUserId,
-  useGetApiUser,
-  useGetApiUserRoles,
   usePatchApiUserIdActivate,
   usePatchApiUserIdDeactivate,
   usePostApiUser,
@@ -22,6 +20,8 @@ import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page"
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
+import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user";
+import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { Locale } from "@/i18n/config";
 
@@ -34,8 +34,28 @@ function resolveEnumOptionName(name: Record<string, string>, locale: Locale): st
   return name[key] ?? name.pt ?? Object.values(name)[0] ?? "";
 }
 
+const PAGE_SIZE = 20;
+
 export const Route = createFileRoute("/_dashboard/admin/access/")({
   head: () => ({ meta: [{ title: "Acesso — ASC" }] }),
+  // Semeia o cache do React Query pra primeira página (sem busca) + roles.
+  // No SSR busca server→Core com o cookie (fetchUserListFn/fetchUserRolesFn,
+  // ver src/lib/user-fns.ts); o client re-hidrata sem refetch. Mesmo padrão
+  // do profileMeQueryOptions/fetchMeFn no __root — os hooks gerados
+  // (mutator.ts) recusam chamada autenticada no SSR.
+  loader: async ({ context }) => {
+    const firstPageParams = { Offset: 0, Limit: PAGE_SIZE };
+    const [users, roles] = await Promise.all([
+      fetchUserListFn({ data: firstPageParams }),
+      fetchUserRolesFn(),
+    ]);
+    if (users) {
+      context.queryClient.setQueryData(userListQueryOptions(firstPageParams).queryKey, users);
+    }
+    if (roles) {
+      context.queryClient.setQueryData(userRolesQueryOptions().queryKey, roles);
+    }
+  },
   component: AdminAccessPage,
 });
 
@@ -53,8 +73,6 @@ const userFormSchema = z.object({
   roles: PostApiUserBody.shape.roles,
 });
 type UserFormValues = z.infer<typeof userFormSchema>;
-
-const PAGE_SIZE = 20;
 
 type PendingAction = {
   kind: "activate" | "deactivate" | "resetPassword" | "delete";
@@ -84,12 +102,14 @@ function AdminAccessPage() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
-  const { data, isLoading, isError } = useGetApiUser({
-    Search: search || undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-  });
-  const { data: roleOptions } = useGetApiUserRoles();
+  const { data, isLoading, isError } = useQuery(
+    userListQueryOptions({
+      Search: search || undefined,
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+    }),
+  );
+  const { data: roleOptions } = useQuery(userRolesQueryOptions());
 
   const roleFieldOptions = useMemo(
     () =>

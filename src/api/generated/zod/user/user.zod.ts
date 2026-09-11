@@ -242,7 +242,73 @@ export const GetApiUserIdParams = zod.object({
   "id": zod.uuid()
 })
 
+export const getApiUserIdResponseAddressCountryMax = 2;
+
+
+export const getApiUserIdResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const getApiUserIdResponseAddressPostalCodeMax = 20;
+
+export const getApiUserIdResponseAddressStateMax = 2;
+
+export const getApiUserIdResponseAddressNeighborhoodMax = 100;
+
+export const getApiUserIdResponseAddressStreetMax = 200;
+
+export const getApiUserIdResponseAddressNumberMax = 20;
+
+export const getApiUserIdResponseAddressComplementMax = 100;
+
+export const getApiUserIdResponseAddressCityMax = 100;
+
+
+
 export const GetApiUserIdResponse = zod.object({
+  "collaborator": zod.union([zod.null(),zod.object({
+  "clientId": zod.uuid(),
+  "userId": zod.uuid(),
+  "user": zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.int(),
+  "roles": zod.array(zod.int()),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "address": zod.object({
+  "country": zod.string().max(getApiUserIdResponseAddressCountryMax).regex(getApiUserIdResponseAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(getApiUserIdResponseAddressPostalCodeMax).nullish(),
+  "state": zod.string().max(getApiUserIdResponseAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(getApiUserIdResponseAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(getApiUserIdResponseAddressStreetMax).nullish(),
+  "number": zod.string().max(getApiUserIdResponseAddressNumberMax).nullish(),
+  "complement": zod.string().max(getApiUserIdResponseAddressComplementMax).nullish(),
+  "city": zod.string().max(getApiUserIdResponseAddressCityMax).nullish(),
+  "fullAddress": zod.string().optional()
+}),
   "userName": zod.string(),
   "profile": zod.object({
   "fullName": zod.string().optional(),

@@ -5,11 +5,13 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AddressDTO } from './addressDTO.ts';
+import type { CollaboratorDTO } from './collaboratorDTO.ts';
 import type { InternalRole } from './internalRole.ts';
 import type { ProfileDTO } from './profileDTO.ts';
 import type { UserType } from './userType.ts';
 
 export interface UserAdminDTO {
+  collaborator?: null | CollaboratorDTO;
   address: AddressDTO;
   userName: string;
   profile: ProfileDTO;

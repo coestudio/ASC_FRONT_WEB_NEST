@@ -43,6 +43,41 @@ export const postApiAuthLoginResponseTokenDataExpiresInRegExpTwo = new RegExp('^
 
 export const PostApiAuthLoginResponse = zod.object({
   "user": zod.object({
+  "collaborator": zod.union([zod.null(),zod.object({
+  "clientId": zod.uuid(),
+  "userId": zod.uuid(),
+  "user": zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.int(),
+  "roles": zod.array(zod.int()),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
   "address": zod.object({
   "country": zod.string().max(postApiAuthLoginResponseUserAddressCountryMax).regex(postApiAuthLoginResponseUserAddressCountryRegExp).nullish(),
   "postalCode": zod.string().max(postApiAuthLoginResponseUserAddressPostalCodeMax).nullish(),
