@@ -1,11 +1,11 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Pagination, Spinner } from "react-bootstrap";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
 import { useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
-import { useResponsiveViewMode } from "@/lib/view-mode";
+import { useResponsiveViewMode, type ViewMode } from "@/lib/view-mode";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { InputText } from "@/layouts/Form/Fields/Index";
@@ -75,9 +75,9 @@ export type CrudListPageProps<
    * loader da rota via server fn — ver `src/lib/queries/user.ts` +
    * `admin/access/index.tsx` como referência). `TQueryData` é o
    * `PagedDTOOfXxxDTO` gerado (só precisa ter `items`/`total`, o resto do
-   * shape passa direto). O `CrudListPage` decide *como e quando* buscar (via
-   * `useSsrSafeQuery`, SPEC-10) — a rota nunca chama `useQuery`/
-   * `useGetApiXxx` direto pro dado da lista.
+   * shape passa direto). O `CrudListPage` decide *como e quando* buscar
+   * (SPEC-10) — a rota nunca chama `useQuery`/`useGetApiXxx` direto pro
+   * dado da lista.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   queryOptions: UseQueryOptions<TQueryData, TError, TQueryData, any>;
@@ -96,79 +96,46 @@ export type CrudListPageProps<
 };
 
 /**
- * Lista genérica: título, busca, colunas (tabela) ou card (via `ViewToggle`),
- * paginação, estado vazio/erro, botão "novo". Config por módulo — nunca
- * reimplementada por SPEC de área (SPEC-02 §3.7). Busca o próprio dado via
- * `queryOptions` (SPEC-10) — nunca recebe `items` prontos da rota, pra
- * nenhum consumidor futuro esquecer o guard de SSR.
+ * Corpo da lista — só é montado depois que o `CrudListPage` confirma que já
+ * está rodando no client (ver componente pai). É aqui que `useSsrSafeQuery`
+ * roda de verdade: como este componente **nunca existe na árvore durante o
+ * SSR** (só monta via `useEffect` do pai, que não roda no servidor), o hook
+ * de busca nunca é registrado nem desidratado durante o SSR — não depende
+ * só de `enabled: false` (a integração de streaming SSR do TanStack Query
+ * pode ignorar `enabled` e buscar mesmo assim; a defesa real é o dado nunca
+ * existir na árvore, ver SPEC-10).
  */
-export function CrudListPage<
-  T,
-  TQueryData extends CrudPagedResult<T> = CrudPagedResult<T>,
-  TError = unknown,
->({
-  titleKey,
-  descriptionKey,
+function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   queryOptions,
   columns,
   renderCard,
   getItemKey,
-  search,
-  onSearchChange,
   page,
   pageSize,
   onPageChange,
-  onCreate,
   emptyMessageKey,
-  isMock,
-}: CrudListPageProps<T, TQueryData, TError>) {
+  viewMode,
+}: Pick<
+  CrudListPageProps<T, TQueryData, TError>,
+  | "queryOptions"
+  | "columns"
+  | "renderCard"
+  | "getItemKey"
+  | "page"
+  | "pageSize"
+  | "onPageChange"
+  | "emptyMessageKey"
+> & { viewMode: ViewMode }) {
   const t = useT();
-  const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
   const query = useSsrSafeQuery(queryOptions);
-  const isClient = typeof window !== "undefined";
-  // No SSR a query fica `enabled: false` (sem dado, sem erro) — trata como
-  // "carregando" pra não piscar estado vazio antes da hidratação.
-  const isLoading = !isClient || query.isLoading;
+  const isLoading = query.isLoading;
   const isError = query.isError;
   const items = query.data?.items ?? [];
   const total = Number(query.data?.total ?? 0);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div>
-      <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <div>
-          <h1 className="h4 mb-0">{t(titleKey)}</h1>
-          {descriptionKey ? <p className="text-body-secondary mb-0">{t(descriptionKey)}</p> : null}
-        </div>
-        {onCreate ? (
-          <Button variant="primary" onClick={onCreate}>
-            <i className="bi bi-plus-lg me-1" aria-hidden />
-            {t("crud.list.new")}
-          </Button>
-        ) : null}
-      </div>
-
-      {isMock ? <MockDataBanner className="mb-3" /> : null}
-
-      <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
-        {onSearchChange ? (
-          <div className="flex-grow-1" style={{ minWidth: 220 }}>
-            <ListSearchInput
-              value={search ?? ""}
-              onChange={onSearchChange}
-              placeholder={t("crud.list.searchPlaceholder")}
-            />
-          </div>
-        ) : null}
-        <ViewToggle
-          value={preferredMode}
-          onChange={setViewMode}
-          hidden={isMobile}
-          ariaLabel={t("crud.list.viewMode")}
-        />
-      </div>
-
+    <>
       {isLoading ? (
         <div className="d-flex justify-content-center py-5">
           <Spinner animation="border" />
@@ -219,6 +186,97 @@ export function CrudListPage<
           <Pagination.Next disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} />
         </Pagination>
       ) : null}
+    </>
+  );
+}
+
+/**
+ * Lista genérica: título, busca, colunas (tabela) ou card (via `ViewToggle`),
+ * paginação, estado vazio/erro, botão "novo". Config por módulo — nunca
+ * reimplementada por SPEC de área (SPEC-02 §3.7). Busca o próprio dado via
+ * `queryOptions` (SPEC-10) — nunca recebe `items` prontos da rota, pra
+ * nenhum consumidor futuro esquecer o guard de SSR. O corpo (que chama o
+ * hook de busca) só monta depois da hidratação (`mounted`), mostrando um
+ * spinner até lá — garante que o hook nunca existe durante o SSR, em vez de
+ * só ficar `enabled: false`.
+ */
+export function CrudListPage<
+  T,
+  TQueryData extends CrudPagedResult<T> = CrudPagedResult<T>,
+  TError = unknown,
+>({
+  titleKey,
+  descriptionKey,
+  queryOptions,
+  columns,
+  renderCard,
+  getItemKey,
+  search,
+  onSearchChange,
+  page,
+  pageSize,
+  onPageChange,
+  onCreate,
+  emptyMessageKey,
+  isMock,
+}: CrudListPageProps<T, TQueryData, TError>) {
+  const t = useT();
+  const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  return (
+    <div>
+      <div className="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <div>
+          <h1 className="h4 mb-0">{t(titleKey)}</h1>
+          {descriptionKey ? <p className="text-body-secondary mb-0">{t(descriptionKey)}</p> : null}
+        </div>
+        {onCreate ? (
+          <Button variant="primary" onClick={onCreate}>
+            <i className="bi bi-plus-lg me-1" aria-hidden />
+            {t("crud.list.new")}
+          </Button>
+        ) : null}
+      </div>
+
+      {isMock ? <MockDataBanner className="mb-3" /> : null}
+
+      <div className="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        {onSearchChange ? (
+          <div className="flex-grow-1" style={{ minWidth: 220 }}>
+            <ListSearchInput
+              value={search ?? ""}
+              onChange={onSearchChange}
+              placeholder={t("crud.list.searchPlaceholder")}
+            />
+          </div>
+        ) : null}
+        <ViewToggle
+          value={preferredMode}
+          onChange={setViewMode}
+          hidden={isMobile}
+          ariaLabel={t("crud.list.viewMode")}
+        />
+      </div>
+
+      {mounted ? (
+        <CrudListPageBody
+          queryOptions={queryOptions}
+          columns={columns}
+          renderCard={renderCard}
+          getItemKey={getItemKey}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={onPageChange}
+          emptyMessageKey={emptyMessageKey}
+          viewMode={viewMode}
+        />
+      ) : (
+        <div className="d-flex justify-content-center py-5">
+          <Spinner animation="border" />
+        </div>
+      )}
     </div>
   );
 }

@@ -233,40 +233,76 @@ usado por `profileMeQueryOptions`/`fetchMeFn` no `__root.tsx`. Esse fix
 - `src/lib/queries/use-ssr-safe-query.ts` (novo) — wrapper de `useQuery`
   com o guard de SSR (`enabled: typeof window !== "undefined"`).
 - `src/components/crud/crud-list-page.tsx` (editado) — contrato novo
-  (`queryOptions` em vez de `items`/`isLoading`/`isError`/`total`), busca
-  o próprio dado via `useSsrSafeQuery`.
+  (`queryOptions` em vez de `items`/`isLoading`/`isError`/`total`).
 - `src/routes/_dashboard/admin/access/index.tsx` (editado) — adaptado pro
-  novo contrato; `useSsrSafeQuery(userRolesQueryOptions())` no lugar do
-  `useQuery` cru pro lookup de roles.
+  novo contrato.
 - `specs/02-app-shell-navigation/spec.md` (editado) — nota de emenda
   registrando a mudança de contrato do `CrudListPage`.
 
+**Round 2 — `enabled: false` não foi suficiente:** depois do primeiro
+commit (`8273aff`), o usuário reportou o mesmo erro em produção (erro 500
+real do servidor, não cache velho — restart completo + `rm -rf
+node_modules/.vite` não resolveu). Causa provável: a integração de
+streaming SSR (`setupRouterSsrQueryIntegration`,
+`@tanstack/react-router-ssr-query`) pode buscar uma query encontrada na
+árvore durante o SSR **mesmo com `enabled: false`** — esse guard é um
+contrato do `useQuery`/observer, não do `Query` em si, e a integração de
+streaming parece ignorar isso pra poder desidratar tudo que aparece no
+render. `enabled: false` sozinho não é suficiente.
+
+**Correção (por sugestão do usuário — "trabalhar com loading até os
+dados estarem prontos"):** em vez de só desabilitar a query, o hook que
+busca o dado **não existe mais na árvore durante o SSR**:
+- `CrudListPage` foi dividido em componente externo (casca: título, busca,
+  `ViewToggle`, sem hook de dado) + `CrudListPageBody` (chama
+  `useSsrSafeQuery`), montado só depois de um `useEffect` marcar
+  `mounted = true` — `useEffect` nunca roda no servidor, então
+  `CrudListPageBody` nunca é instanciado, nunca registra o hook, nunca
+  pode ser encontrado pela integração de streaming durante o SSR. Mostra
+  um `Spinner` até lá.
+- `admin/access/index.tsx`: mesmo padrão — `AdminAccessPage` (rota) vira
+  um gate de montagem; o conteúdo real (`AdminAccessPageContent`, que
+  chama `useSsrSafeQuery(userRolesQueryOptions())` pro lookup de roles)
+  só monta depois de `mounted = true`.
+
+Esse padrão (não só `enabled: false`, mas o hook literalmente não
+existir na árvore durante SSR) é o que precisa ser seguido por SPEC-04+
+sempre que uma tela chamar `useSsrSafeQuery`/`useQuery` fora do
+`CrudListPage` (ex.: lookups de enum pra campos de formulário).
+
+**Arquivos adicionais (Round 2):**
+- `src/components/crud/crud-list-page.tsx` — reestruturado (`CrudListPage`
+  + `CrudListPageBody` internos).
+- `src/routes/_dashboard/admin/access/index.tsx` — `AdminAccessPage` +
+  `AdminAccessPageContent`.
+
 **Comandos executados:**
-- `bun run check` → **VERIFIED**, 0 erros.
+- `bun run check` → **VERIFIED**, 0 erros (rodado depois das duas rodadas).
 - `bun run lint` → **VERIFIED**, mesmo baseline de antes (65 problems, 3
-  errors pré-existentes em `session.server.ts`) — zero novo.
-- Validação em dev: subi `bun run dev` (porta 8081, a 8080 já estava em
-  uso — provavelmente a sessão do próprio usuário) só o tempo de checar
-  que não há crash no boot/log do servidor, depois encerrei o processo.
-  `curl` sem sessão em `/admin/access` recebeu `307` (redirect pro login,
-  guard funcionando) sem nenhum erro de `mutator` no log do servidor.
-  **NOT VERIFIED end-to-end autenticado** — precisa do usuário confirmar
-  no navegador (sessão real) que `/admin/access` e `/admin/roles` carregam
-  sem erro no primeiro load, sem precisar de "Try again" (CA1/CA2).
+  errors pré-existentes em `session.server.ts`) — zero novo, nas duas
+  rodadas.
+- Validação em dev: subi `bun run dev` (porta 8081) só o tempo de checar
+  boot limpo + `curl` sem sessão em `/admin/access` (307, sem erro no
+  log). **NOT VERIFIED end-to-end autenticado nesta sessão** — o agente
+  não tem uma sessão logada disponível pra testar via `curl`/`fetch`.
+  Precisa do usuário confirmar no navegador com sessão real.
 
 **Critérios de aceitação:**
 | # | Critério | Status |
 | --- | --- | --- |
-| CA1 | `/admin/access` sem erro no primeiro load | Implementado; NOT VERIFIED autenticado nesta sessão — pedir confirmação do usuário |
-| CA2 | `/admin/roles` idem | Implementado (dependia da mesma causa raiz); NOT VERIFIED autenticado |
+| CA1 | `/admin/access` sem erro no primeiro load | Implementado (round 2, hook nunca existe no SSR); NOT VERIFIED autenticado — pedir confirmação do usuário |
+| CA2 | `/admin/roles` idem | Implementado; NOT VERIFIED autenticado |
 | CA3 | `bun run check` + `lint` passam | PASS |
 | CA4 | `crud-list-page.tsx` documenta o padrão pra SPEC-04+ | PASS — JSDoc do componente + emenda na SPEC-02 |
 | CA5 | SPEC-02 com nota de emenda | PASS |
 
 Status mantido `IN_PROGRESS` até CA1/CA2 serem confirmados no navegador
-pelo usuário (sessão autenticada real) — só então viro `IMPLEMENTED`.
+pelo usuário (sessão autenticada real, branch `spec-10-ssr-safe-client-
+queries` atualizada nesse terminal) — só então viro `IMPLEMENTED`.
 
 ---
 
-**Próximo passo:** usuário confirmar em `http://localhost:8080/admin/access`
-e `/admin/roles` (sessão logada) que carregam sem erro, sem "Try again".
+**Próximo passo:** usuário confirmar, num terminal que garantidamente está
+em `spec-10-ssr-safe-client-queries` (branch atualizada + dev server
+reiniciado depois do pull), que `/admin/access` e `/admin/roles` carregam
+sem erro no primeiro load, sem "Try again".

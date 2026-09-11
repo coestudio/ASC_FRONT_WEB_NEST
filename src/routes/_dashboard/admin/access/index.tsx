@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card } from "react-bootstrap";
+import { Badge, Button, Card, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -93,7 +93,34 @@ function toFormValues(user?: UserDTO): UserFormValues {
   };
 }
 
+/**
+ * Gate de montagem: `AdminAccessPageContent` chama `useSsrSafeQuery` pro
+ * lookup de roles do form — pra esse hook nunca existir durante o SSR (não
+ * só ficar `enabled: false`, que a integração de streaming SSR do
+ * TanStack Query pode ignorar), o conteúdo real só monta depois que o
+ * componente já confirma que está rodando no client (SPEC-10, mesmo padrão
+ * do `CrudListPage`).
+ */
 function AdminAccessPage() {
+  const t = useT();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return (
+      <div>
+        <h1 className="h4 mb-3">{t("access.title")}</h1>
+        <div className="d-flex justify-content-center py-5">
+          <Spinner animation="border" />
+        </div>
+      </div>
+    );
+  }
+
+  return <AdminAccessPageContent />;
+}
+
+function AdminAccessPageContent() {
   const t = useT();
   const locale = useLocale();
   const queryClient = useQueryClient();
