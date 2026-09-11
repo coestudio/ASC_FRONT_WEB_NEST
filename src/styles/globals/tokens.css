@@ -1,20 +1,62 @@
 /*
  * Tokens de tema, mapeados na API de CSS variables do Bootstrap 5.3.
- * O atributo data-bs-theme ("light" | "dark") no <html> controla qual
- * bloco se aplica — setado por src/styles/globals/color-modes.ts.
+ *
+ * Duas dimensões ortogonais no <html>:
+ *   - data-brand    ("asa" | "asi" | "asc") — setado por
+ *     src/styles/globals/brand.ts / theme-store.ts.
+ *   - data-bs-theme ("light" | "dark")      — setado por
+ *     src/styles/globals/color-modes.ts / theme-store.ts.
+ *
+ * 6 blocos (3 brands × 2 modos) + fallback (:root = asa+light). Todo bloco
+ * redefine EXATAMENTE o mesmo conjunto de variáveis — checklist abaixo.
+ * Ver specs/01-brand-theming/spec.md (§9.2, §13/D1) para a paleta.
+ *
+ * Checklist de vars por bloco:
+ *   --brand-primary(-hover|-light|-soft|-muted), --brand-primary-rgb
+ *   --on-brand
+ *   --brand-accent, --brand-accent-rgb
+ *   --bs-primary(-rgb)          [alias de --brand-primary]
+ *   --bs-success(-rgb)          [alias de --brand-primary]
+ *   --bs-link-color(-rgb)       [alias de --brand-primary]
+ *   --bs-secondary(-rgb)        [cinza neutro de UI — NÃO é cor de marca]
+ *   --bs-danger(-rgb), --bs-warning, --bs-info
+ *   --sidebar-active-fg, --sidebar-bg, --sidebar-fg, --sidebar-fg-muted,
+ *     --sidebar-hover, --sidebar-border, --sidebar-active-bg
+ *   --ink-muted, --surface-translucent, --shadow-elegant,
+ *     --main-divider-color, --main-divider-shadow
+ *       (neutros de UI — mesmo valor nas 3 brands, variam só por modo)
  */
 
+/*
+ * Amostras (swatches) de cada brand, fixas e independentes da brand ativa —
+ * usadas só pelo BrandSwitcher para mostrar a cor de cada opção no menu
+ * (a opção "asi" precisa aparecer vermelha mesmo com "asa" ativo). Não
+ * variam por data-brand/data-bs-theme, por isso ficam fora dos 6 blocos.
+ */
+:root {
+  --brand-swatch-asa: #23ab79;
+  --brand-swatch-asi: #c41e2a;
+  --brand-swatch-asc: #2563eb;
+}
+
 :root,
-[data-bs-theme="light"] {
-  --bs-primary: #23ab79;
-  --bs-primary-rgb: 35, 171, 121;
+[data-brand="asa"][data-bs-theme="light"] {
+  --brand-primary: #23ab79;
+  --brand-primary-rgb: 35, 171, 121;
+  --brand-primary-hover: #1c8e64;
+  --brand-primary-light: #61ce70;
+  --brand-primary-soft: #e6f5ee;
+  --brand-primary-muted: #a6ddc6;
+  --on-brand: #ffffff;
+  --brand-accent: #f2ba3f;
+  --brand-accent-rgb: 242, 186, 63;
+
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
   --bs-secondary: #64748b;
   --bs-secondary-rgb: 100, 116, 139;
-  /* Verde de marca ASA (Alex Stewart Agriculture) — mesmo valor exato do
-     warren/Portal, ver src/Assets/css/themes/brands/asa.css (--brand-primary
-     em [data-brand="asa"][data-theme="light"]). */
-  --bs-success: #23ab79;
-  --bs-success-rgb: 35, 171, 121;
+  --bs-success: var(--brand-primary);
+  --bs-success-rgb: var(--brand-primary-rgb);
   --bs-danger: #dc2626;
   --bs-danger-rgb: 220, 38, 38;
   --bs-warning: #d97706;
@@ -22,40 +64,235 @@
   --bs-info: #0891b2;
   --bs-info-rgb: 8, 145, 178;
   --bs-body-font-family: Arial, Helvetica, sans-serif;
-  --bs-link-color: var(--bs-primary);
-  --bs-link-color-rgb: var(--bs-primary-rgb);
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
   --bs-border-radius: 0.5rem;
+
   /* Tokens do AppShell (sidebar do menu logado) — tema claro */
   --sidebar-active-fg: #ffffff;
+  --sidebar-active-bg: var(--brand-primary);
   --sidebar-bg: #ffffff;
   --sidebar-fg: #1e293b;
   --sidebar-fg-muted: #64748b;
   --sidebar-hover: rgba(0, 0, 0, 0.05);
   --sidebar-border: rgba(0, 0, 0, 0.08);
+
+  /* Neutros de UI (topbar, divisor da sidebar, sombra do drawer mobile) —
+     mesmo valor nas 3 brands, só varia por modo. */
+  --ink-muted: #64748b;
+  --surface-translucent: rgba(255, 255, 255, 0.72);
+  --shadow-elegant: 0 20px 45px -20px rgba(15, 23, 42, 0.35);
+  --main-divider-color: rgba(15, 23, 42, 0.08);
+  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.45);
 }
 
-[data-bs-theme="dark"] {
-  --bs-primary: #61ce70;
-  --bs-primary-rgb: 97, 206, 112;
+[data-brand="asa"][data-bs-theme="dark"] {
+  --brand-primary: #61ce70;
+  --brand-primary-rgb: 97, 206, 112;
+  --brand-primary-hover: #7cdc89;
+  --brand-primary-light: #8fe09a;
+  --brand-primary-soft: #14301f;
+  --brand-primary-muted: #2f6b45;
+  --on-brand: #0d2114;
+  --brand-accent: #e8bf5a;
+  --brand-accent-rgb: 232, 191, 90;
+
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
   --bs-secondary: #94a3b8;
   --bs-secondary-rgb: 148, 163, 184;
-  /* Verde de marca ASA no tema escuro — mesmo valor exato do warren/Portal
-     ([data-brand="asa"][data-theme="dark"] --brand-primary). */
-  --bs-success: #61ce70;
-  --bs-success-rgb: 97, 206, 112;
+  --bs-success: var(--brand-primary);
+  --bs-success-rgb: var(--brand-primary-rgb);
   --bs-danger: #f87171;
   --bs-danger-rgb: 248, 113, 113;
   --bs-warning: #fbbf24;
   --bs-warning-rgb: 251, 191, 36;
   --bs-info: #22d3ee;
   --bs-info-rgb: 34, 211, 238;
-  --bs-link-color: var(--bs-primary);
-  --bs-link-color-rgb: var(--bs-primary-rgb);
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
+
   /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
   --sidebar-active-fg: #0d2114;
+  --sidebar-active-bg: var(--brand-primary);
   --sidebar-bg: #1a2029;
   --sidebar-fg: #e8ecf3;
   --sidebar-fg-muted: #8b96ab;
   --sidebar-hover: rgba(255, 255, 255, 0.08);
   --sidebar-border: rgba(255, 255, 255, 0.1);
+
+  --ink-muted: #8b96ab;
+  --surface-translucent: rgba(26, 32, 41, 0.72);
+  --shadow-elegant: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
+  --main-divider-color: rgba(255, 255, 255, 0.08);
+  --main-divider-shadow: -12px 0 28px -24px rgba(0, 0, 0, 0.6);
+}
+
+[data-brand="asi"][data-bs-theme="light"] {
+  --brand-primary: #c41e2a;
+  --brand-primary-rgb: 196, 30, 42;
+  --brand-primary-hover: #a61924;
+  --brand-primary-light: #f2ba3f;
+  --brand-primary-soft: #f8e2e3;
+  --brand-primary-muted: #e2a3a8;
+  --on-brand: #3a0f12;
+  /* Accent ASI = marrom rgb(188,144,90), D-fixa-3 (não o amarelo do legado). */
+  --brand-accent: #bc905a;
+  --brand-accent-rgb: 188, 144, 90;
+
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
+  --bs-secondary: #64748b;
+  --bs-secondary-rgb: 100, 116, 139;
+  --bs-success: var(--brand-primary);
+  --bs-success-rgb: var(--brand-primary-rgb);
+  --bs-danger: #dc2626;
+  --bs-danger-rgb: 220, 38, 38;
+  --bs-warning: #d97706;
+  --bs-warning-rgb: 217, 119, 6;
+  --bs-info: #0891b2;
+  --bs-info-rgb: 8, 145, 178;
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
+
+  /* Tokens do AppShell (sidebar do menu logado) — tema claro */
+  --sidebar-active-fg: #3a0f12;
+  --sidebar-active-bg: var(--brand-primary-soft);
+  --sidebar-bg: #ffffff;
+  --sidebar-fg: #1e293b;
+  --sidebar-fg-muted: #64748b;
+  --sidebar-hover: rgba(0, 0, 0, 0.05);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+
+  --ink-muted: #64748b;
+  --surface-translucent: rgba(255, 255, 255, 0.72);
+  --shadow-elegant: 0 20px 45px -20px rgba(15, 23, 42, 0.35);
+  --main-divider-color: rgba(15, 23, 42, 0.08);
+  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.45);
+}
+
+[data-brand="asi"][data-bs-theme="dark"] {
+  --brand-primary: #ec1e26;
+  --brand-primary-rgb: 236, 30, 38;
+  --brand-primary-hover: #ff3b42;
+  --brand-primary-light: #f5c65c;
+  --brand-primary-soft: #331314;
+  --brand-primary-muted: #7a2b2f;
+  --on-brand: #240a0b;
+  --brand-accent: #bc905a;
+  --brand-accent-rgb: 188, 144, 90;
+
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
+  --bs-secondary: #94a3b8;
+  --bs-secondary-rgb: 148, 163, 184;
+  --bs-success: var(--brand-primary);
+  --bs-success-rgb: var(--brand-primary-rgb);
+  --bs-danger: #f87171;
+  --bs-danger-rgb: 248, 113, 113;
+  --bs-warning: #fbbf24;
+  --bs-warning-rgb: 251, 191, 36;
+  --bs-info: #22d3ee;
+  --bs-info-rgb: 34, 211, 238;
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
+
+  /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
+  --sidebar-active-fg: #240a0b;
+  --sidebar-active-bg: var(--brand-primary-soft);
+  --sidebar-bg: #1a2029;
+  --sidebar-fg: #e8ecf3;
+  --sidebar-fg-muted: #8b96ab;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+
+  --ink-muted: #8b96ab;
+  --surface-translucent: rgba(26, 32, 41, 0.72);
+  --shadow-elegant: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
+  --main-divider-color: rgba(255, 255, 255, 0.08);
+  --main-divider-shadow: -12px 0 28px -24px rgba(0, 0, 0, 0.6);
+}
+
+[data-brand="asc"][data-bs-theme="light"] {
+  --brand-primary: #2563eb;
+  --brand-primary-rgb: 37, 99, 235;
+  --brand-primary-hover: #1d4ed8;
+  --brand-primary-light: #60a5fa;
+  --brand-primary-soft: #e6edfc;
+  --brand-primary-muted: #a8c3f4;
+  --on-brand: #ffffff;
+  --brand-accent: #0e7490;
+  --brand-accent-rgb: 14, 116, 144;
+
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
+  --bs-secondary: #64748b;
+  --bs-secondary-rgb: 100, 116, 139;
+  --bs-success: var(--brand-primary);
+  --bs-success-rgb: var(--brand-primary-rgb);
+  --bs-danger: #dc2626;
+  --bs-danger-rgb: 220, 38, 38;
+  --bs-warning: #d97706;
+  --bs-warning-rgb: 217, 119, 6;
+  --bs-info: #0891b2;
+  --bs-info-rgb: 8, 145, 178;
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
+
+  /* Tokens do AppShell (sidebar do menu logado) — tema claro */
+  --sidebar-active-fg: #ffffff;
+  --sidebar-active-bg: var(--brand-primary);
+  --sidebar-bg: #ffffff;
+  --sidebar-fg: #1e293b;
+  --sidebar-fg-muted: #64748b;
+  --sidebar-hover: rgba(0, 0, 0, 0.05);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+
+  --ink-muted: #64748b;
+  --surface-translucent: rgba(255, 255, 255, 0.72);
+  --shadow-elegant: 0 20px 45px -20px rgba(15, 23, 42, 0.35);
+  --main-divider-color: rgba(15, 23, 42, 0.08);
+  --main-divider-shadow: -12px 0 28px -24px rgba(15, 25, 45, 0.45);
+}
+
+[data-brand="asc"][data-bs-theme="dark"] {
+  --brand-primary: #60a5fa;
+  --brand-primary-rgb: 96, 165, 250;
+  --brand-primary-hover: #7cb4fb;
+  --brand-primary-light: #93c5fd;
+  --brand-primary-soft: #152238;
+  --brand-primary-muted: #375b8f;
+  --on-brand: #0b1f33;
+  --brand-accent: #22d3ee;
+  --brand-accent-rgb: 34, 211, 238;
+
+  --bs-primary: var(--brand-primary);
+  --bs-primary-rgb: var(--brand-primary-rgb);
+  --bs-secondary: #94a3b8;
+  --bs-secondary-rgb: 148, 163, 184;
+  --bs-success: var(--brand-primary);
+  --bs-success-rgb: var(--brand-primary-rgb);
+  --bs-danger: #f87171;
+  --bs-danger-rgb: 248, 113, 113;
+  --bs-warning: #fbbf24;
+  --bs-warning-rgb: 251, 191, 36;
+  --bs-info: #22d3ee;
+  --bs-info-rgb: 34, 211, 238;
+  --bs-link-color: var(--brand-primary);
+  --bs-link-color-rgb: var(--brand-primary-rgb);
+
+  /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
+  --sidebar-active-fg: #0b1f33;
+  --sidebar-active-bg: var(--brand-primary-soft);
+  --sidebar-bg: #1a2029;
+  --sidebar-fg: #e8ecf3;
+  --sidebar-fg-muted: #8b96ab;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+
+  --ink-muted: #8b96ab;
+  --surface-translucent: rgba(26, 32, 41, 0.72);
+  --shadow-elegant: 0 20px 45px -20px rgba(0, 0, 0, 0.6);
+  --main-divider-color: rgba(255, 255, 255, 0.08);
+  --main-divider-shadow: -12px 0 28px -24px rgba(0, 0, 0, 0.6);
 }

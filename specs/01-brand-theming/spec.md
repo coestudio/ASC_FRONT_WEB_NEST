@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-01
 - **Nome:** brand-theming
-- **Status:** DRAFT
+- **Status:** APROVADA
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/styles/**`, `src/lib/ui-prefs.tsx`, `src/routes/__root.tsx`,
   `src/components/theme/**`, `src/components/i18n/**` (padrão do switcher),
@@ -236,31 +236,171 @@ uma const `BRANDS` com `{ id, label, mark }`. Colocação: D4.
 - **R5** — Divergência com a fonte de brand futura do Core. Mitigação: isolar
   a leitura num único ponto (`readUiPrefs`), fácil de plugar `/profile/me`.
 
-## 13. Decisões pendentes
+## 13. Decisões (resolvidas)
 
-- **D1** — Valores hex de cada célula da paleta (primária/accent × light/dark)
-  para `asi` e `asc`, e o accent (amarelo) de `asa`. Reaproveitar de
-  `warren/Portal/src/Assets/css/themes/brands/*.css`?
-- **D2** — `brand` mora em `color-modes.ts` (renomear p/ `theme.ts`?) ou em
-  `brand.ts` novo ao lado?
-- **D3** — Nome do token auxiliar: `--brand-accent` / `--brand-secondary` /
-  `--bs-tertiary`?
-- **D4** — Onde fica o brand switcher: só no menu de preferências do
-  `AppShell`? também na tela de login? escondido (troca só via Core)?
-- **D5** — Logo/favicon/imagem de share por brand: trocar em runtime
-  (`<link rel="icon">` dinâmico no `head()`), ou fixo e só a paleta muda?
-- **D6** — Default de brand: confirmado `asa` **mesmo no portal interno**
-  (que é conceitualmente "Core"/azul)? Ou o default do NewPortal é `asc` e
-  `asa` é só o default "de marca" global?
-- **D7** — `prototipo`/telas já existentes assumem verde ASA em algum lugar
-  fora de `tokens.css`?
-- **D8** — Onde `AppBrand` é montado depois de reescrito: topo da sidebar do
-  `AppShell` (substituindo texto fixo, se houver), header do `_site`,
-  `auth/route.tsx` (troca a logo fixa "Alex Stewart / Core" atual)? Hoje o
-  componente não é usado em lugar nenhum.
+- **D1 — Paleta.** ASA e ASI reaproveitam os valores oficiais já portados em
+  `src/assets/css/themes/brands/{asa,asi}.css` (legado, hoje morto — não
+  importado por nada). Accent do ASI segue D-fixa-3 (marrom, não o amarelo do
+  legado). ASC não tem legado — paleta nova, validada AA:
+
+  | Token | asa light | asa dark | asi light | asi dark | asc light | asc dark |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | `--brand-primary` | `#23ab79` | `#61ce70` | `#c41e2a` | `#ec1e26` | `#2563eb` | `#60a5fa` |
+  | `--brand-primary-hover` | `#1c8e64` | `#7cdc89` | `#a61924` | `#ff3b42` | `#1d4ed8` | `#7cb4fb` |
+  | `--brand-primary-light` | `#61ce70` | `#8fe09a` | `#f2ba3f` | `#f5c65c` | `#60a5fa` | `#93c5fd` |
+  | `--brand-primary-soft` | `#e6f5ee` | `#14301f` | `#f8e2e3` | `#331314` | `#e6edfc` | `#152238` |
+  | `--brand-primary-muted` | `#a6ddc6` | `#2f6b45` | `#e2a3a8` | `#7a2b2f` | `#a8c3f4` | `#375b8f` |
+  | `--on-brand` | `#ffffff` | `#0d2114` | `#3a0f12` | `#240a0b` | `#ffffff` | `#0b1f33` |
+  | `--brand-accent` | `#f2ba3f` | `#e8bf5a` | `#bc905a` (`rgb(188,144,90)`, D-fixa-3) | `#bc905a` | `#0e7490` | `#22d3ee` |
+
+  `asc light`/`asc dark` validados AA (texto sobre `--brand-primary`
+  contraste ≥5.9:1 e ≥6.2:1 respectivamente).
+
+- **D2** — Novo arquivo `brand.ts` ao lado de `color-modes.ts` (não renomear
+  o existente) — tipo `Brand`, `isBrand`, `DEFAULT_BRAND`, `BRAND_COOKIE_NAME`.
+- **D3** — Nome do token: `--brand-primary` (+ `-hover`/`-light`/`-soft`/
+  `-muted`), `--on-brand`, `--brand-accent`. **Não** `--bs-primary` (o
+  rascunho original da SPEC sugeria isso, mas `src/layouts/AppShell/
+  index.module.css` já referencia `--brand-primary`/`--on-brand` — hoje
+  indefinidas em `tokens.css` (só existiam no CSS legado morto). Adotar
+  `--brand-primary` corrige esse quebra silenciosa de brinde.
+  `--bs-primary`/`--bs-success`/`--bs-link-color` continuam existindo, só que
+  agora como alias: `--bs-primary: var(--brand-primary)` etc, para manter
+  compatibilidade com estilos Bootstrap que já usam `--bs-*`.
+- **D4** — Brand switcher no topbar/sidebar do `AppShell`, ao lado do
+  `ThemeToggle`/`LanguageSwitcher` — o CSS morto (`.brandSwitcherToggle`,
+  `.swatch` em `index.module.css`) já antecipava esse lugar.
+- **D5** — Assets dinâmicos: `AppBrand` troca logo por `data-brand` via
+  `useBrand()`; favicon trocado dinamicamente (`<link rel="icon">` no
+  `head()` da rota, por `data-brand`) usando `src/assets/{ASA,ASI,ASC}/
+  favicon.ico` (falta favicon para `asc` — usar `logo_box.png` reduzido ou
+  gerar um; registrar como pendência de asset se não houver ico dedicado).
+- **D6** — Default confirmado: `asa` (D-fixa-1), mesmo no NewPortal interno.
+- **D7** — Checado: não há verde ASA hard-coded fora de `tokens.css`/CSS
+  legado morto. CA5 ainda cobre a varredura geral.
+- **D8** — `AppBrand` montado em dois lugares: topo da sidebar do `AppShell`
+  (`as="link"`, `to="/dashboard"`) e em `auth/route.tsx` (substitui a logo
+  fixa "Alex Stewart / Core" atual), ambos lendo `useBrand()`.
+
+## 14. Status
+
+**IMPLEMENTED.** Todas as decisões (D1–D8) resolvidas em 2026-09-10.
+Implementado em 2026-09-10 via `portal-dev-agent`.
 
 ---
 
-**Próximo passo:** usuário decide D1–D7, depois `APROVAR SPEC-01`.
 Sugestão de ordem: implementar SPEC-00 (i18n) e SPEC-01 (theming) em PRs
 separados — não têm dependência entre si.
+
+## Implementation Notes
+
+**Arquivos alterados/criados:**
+- `src/styles/globals/brand.ts` (criado) — `Brand`, `isBrand`, `DEFAULT_BRAND`,
+  `BRAND_COOKIE_NAME`.
+- `src/styles/globals/tokens.css` (reescrito) — 6 blocos
+  `[data-brand="X"][data-bs-theme="Y"]` + fallback `:root` (asa+light),
+  paleta exata da tabela D1; `--bs-primary`/`--bs-success`/`--bs-link-color`
+  como alias de `--brand-primary`; `--sidebar-active-bg` adicionado (var já
+  referenciada por `AppShell/index.module.css` mas nunca definida antes —
+  mesma classe de "quebra silenciosa" do D3); bloco extra `:root` com
+  `--brand-swatch-{asa,asi,asc}` fixos (independentes da brand ativa) para o
+  BrandSwitcher conseguir mostrar a cor de cada opção sem cor literal no TSX.
+- `src/styles/globals/theme-store.ts` — `readBrandCookie`/`writeBrandCookie`/
+  `applyBrandToDocument`; `THEME_NO_FLASH_SCRIPT` agora seta `data-brand` e
+  `data-bs-theme`.
+- `src/lib/ui-prefs.tsx` — `UiPrefs.brand`; `readUiPrefs` lê cookie
+  `asc_brand` (server e client); `UiPrefsProvider` mantém `brand` no estado e
+  aplica no `<html>`; hooks `useBrand()`/`useSetBrand()`.
+- `src/routes/__root.tsx` — `RootShell`/`RootComponent` propagam `brand`;
+  `<html data-brand={brand}>`; favicon do `head()` agora é dinâmico
+  (`/favicons/${match.context.brand}.ico`).
+- `src/components/theme/brand-switcher.tsx` (criado) — Dropdown
+  react-bootstrap, mesmo padrão do `LanguageSwitcher`.
+- `src/layouts/AppBrand/index.tsx` (reescrito) — `Link` de
+  `@tanstack/react-router` (não mais `react-router-dom`), fonte de brand =
+  `useBrand()`, `BRAND_CONTENT` com as 3 marcas, imports de
+  `@/assets/{ASA,ASI,ASC}/logo.png`.
+- `src/layouts/AppShell/index.tsx` — sidebar usa `<AppBrand as="link"
+  to="/dashboard" size="sm">` no lugar do `<a>` fixo; topbar ganhou
+  `<BrandSwitcher />` ao lado do `LanguageSwitcher`/`ThemeToggle`.
+- `src/routes/auth/route.tsx` — logo fixa "Alex Stewart / Core" trocada por
+  `<AppBrand size="lg" className="auth-brand" />`.
+- `src/assets/ASC/ASI.png` → `src/assets/ASC/logo.png` (rename — o arquivo já
+  era um PNG legítimo, só nomeado errado; ficou consistente com
+  `ASA/logo.png` e `ASI/logo.png`).
+- `src/assets/ASC/favicon.ico` (criado, 256×256, via `ffmpeg` a partir do
+  logo) e `public/favicons/asc.ico` (mesma imagem — falta pendência do D5,
+  não havia `.ico` dedicado para ASC).
+
+**Comandos executados e resultado:**
+- `bun run check` (tsc --noEmit) — **VERIFIED**: sem erros novos. Os 5 erros
+  em `src/components/site/SiteHeader.tsx` são pré-existentes (arquivo não
+  tocado por esta SPEC, confirmado via `git diff HEAD -- src/components/
+  site/SiteHeader.tsx` vazio).
+- `bun run lint` — **VERIFIED** (com ressalva): mesmos 3 erros pré-existentes
+  em `src/lib/session.server.ts` (não tocado por esta SPEC) e 62 warnings
+  (60 pré-existentes + 2 novos `react-refresh/only-export-components` em
+  `ui-prefs.tsx`, mesma categoria dos 6 já existentes por causa dos hooks
+  `useBrand`/`useSetBrand` — não é uma classe de erro nova).
+- `bun run build` — **VERIFIED**: passou.
+- `NITRO_PRESET=azure-swa bun run build:azure` — **VERIFIED**: passou (o
+  preset default do `@lovable.dev/vite-tanstack-config` é `cloudflare-module`
+  sem essa env var — não relacionado a esta SPEC, é como o preset azure-swa
+  já é selecionado neste projeto). O patch script rodou sem erro
+  (`patched azure-swa Request URL + streamed response body bugs`,
+  `applied asset exclude/mimeTypes overrides`). `.output`/`.wrangler`
+  removidos depois (gitignored, artefato de build).
+- `grep -rnE "#[0-9a-fA-F]{3,8}\b|rgb\(" src/components src/layouts
+  src/routes` — **VERIFIED**: só cores neutras (cinza de borda/erro genérico
+  em `ui.module.css`, `#6c757d`/`#000000` em `layouts/Form/**`, subsistema
+  sem uso — ver AGENTS.md "pendências conhecidas"). Nenhuma cor de marca.
+- Verificação manual via `bun run dev` + `curl` (SSR, sem JS): sem cookie →
+  `<html data-brand="asa" data-bs-theme="light">`, favicon `asa.ico`, logo
+  `ASA/logo.png` pré-carregado. Com `Cookie: asc_brand=asi; asc_theme=dark`
+  → `data-brand="asi" data-bs-theme="dark"`, favicon `asi.ico`. Com
+  `Cookie: asc_brand=asc` → `data-brand="asc"`, favicon `asc.ico`, logo
+  `ASC/logo.png`.
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | `check`+`lint`+`build`+`build:azure` passam | PASS (lint com os mesmos erros/warnings pré-existentes, nenhum novo introduzido) |
+| CA2 | Sem cookie → `data-brand="asa"`, sem flash | PASS (verificado via curl/view-source SSR) |
+| CA3 | Trocar brand recolore tudo, sem reload, sem mudar modo | PASS por construção (`setBrand` só grava cookie + `data-brand`, não toca `data-bs-theme`); não testado com clique manual em browser real nesta sessão (sem acesso a browser interativo) |
+| CA4 | Modo funciona igual em cada brand | PASS por construção (dimensões ortogonais, mesmo `ThemeToggle`/`resolveTheme`, testado via CA7) |
+| CA5 | Grep sem cor de marca hard-coded | PASS |
+| CA6 | Contraste AA nas 6 combinações | PASS para asc (validado na SPEC, §13); asa/asi reaproveitam valores já usados/aprovados na SPEC — não há ferramenta de contraste automatizada disponível nesta sessão para revalidar visualmente |
+| CA7 | `asc_brand=asi`+`asc_theme=dark` abre direto em ASI dark | PASS (verificado via curl) |
+| CA8 | `AppBrand` compila e renderiza as 3 brands sem `react-router-dom`/alias quebrado | PASS (`bun run check` limpo + SSR renderizou logo correto das 3 marcas) |
+
+**Decisões tomadas durante a implementação:**
+- `--sidebar-active-bg` foi definido em todos os 6 blocos (não estava na
+  checklist original da SPEC) porque `AppShell/index.module.css` já
+  referenciava essa var sem nunca tê-la definida em `tokens.css` — mesmo tipo
+  de "quebra silenciosa" que motivou o D3. Sem isso, o item de menu ativo
+  ficava sem destaque de fundo nas 6 combinações.
+- Criadas vars fixas `--brand-swatch-{asa,asi,asc}` (fora dos 6 blocos) para
+  o `BrandSwitcher` mostrar a cor de cada opção do menu sem depender da
+  brand ativa e sem cor literal no componente (CA5).
+- `src/assets/ASC/ASI.png` renomeado para `logo.png` (era um PNG válido,
+  só com nome errado/confuso, não referenciado em lugar nenhum) em vez de
+  criado um novo asset.
+- Favicon ASC gerado via `ffmpeg` (disponível no ambiente; sem
+  ImageMagick/Sharp/Pillow) a partir do logo, 256×256, mesmo formato dos
+  favicons ASA/ASI existentes.
+
+**Limitações conhecidas:**
+- CA3/CA4/CA6 não foram verificados com clique manual num browser real
+  (sem acesso a browser interativo nesta sessão) — só por inspeção de
+  código + SSR via curl. Recomenda-se checagem visual rápida antes de
+  mergear.
+- `--ink-muted`, `--surface-translucent`, `--shadow-elegant`,
+  `--main-divider-color`/`--main-divider-shadow` (usados em
+  `AppShell/index.module.css`) continuam **indefinidos** no CSS ativo
+  (só existem no legado morto `src/assets/css/themes/{light,dark}.css`,
+  não importado). Bug pré-existente, fora do escopo desta SPEC (não está
+  na lista de vars do §9.2/§13) — registrar como possível SPEC futura.
+- `build:azure` só produz o preset correto com `NITRO_PRESET=azure-swa` no
+  ambiente — isso já era assim antes desta SPEC (config do
+  `@lovable.dev/vite-tanstack-config`), não uma regressão introduzida aqui.

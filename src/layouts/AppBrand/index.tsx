@@ -1,11 +1,15 @@
-import { Link } from "react-router-dom";
-import { useBrandStore } from "Hooks/useBrand";
-import asaLogo from "Assets/ASA/logo.png";
-import asiLogo from "Assets/ASI/logo_box.png";
+import { Link } from "@tanstack/react-router";
 
-const BRAND_CONTENT = {
+import asaLogo from "@/assets/ASA/logo.png";
+import asiLogo from "@/assets/ASI/logo.png";
+import ascLogo from "@/assets/ASC/logo.png";
+import { useBrand } from "@/lib/ui-prefs";
+import type { Brand } from "@/styles/globals/brand";
+
+const BRAND_CONTENT: Record<Brand, { logo: string; subtitle: string }> = {
   asa: { logo: asaLogo, subtitle: "Agriculture" },
   asi: { logo: asiLogo, subtitle: "International" },
+  asc: { logo: ascLogo, subtitle: "Core" },
 };
 
 interface AppBrandProps {
@@ -15,8 +19,13 @@ interface AppBrandProps {
   className?: string;
 }
 
+/**
+ * Logo + título/subtítulo da marca ativa. Fonte da brand = `useBrand()`
+ * (cookie `asc_brand`, ver @/lib/ui-prefs) — troca em runtime junto com o
+ * switcher, sem reload. Classes `.app-brand*` vêm de src/assets/css/base.css.
+ */
 export function AppBrand({ as = "div", to = "/", size = "md", className = "" }: AppBrandProps) {
-  const brand = useBrandStore((s) => s.brand);
+  const brand = useBrand();
   const { logo, subtitle } = BRAND_CONTENT[brand];
   const sizeClass = `app-brand--${size}`;
   const classes = `app-brand ${sizeClass} ${className}`.trim();
