@@ -45,6 +45,12 @@ function SidebarSection({
   const active = isChildActive(section.items, pathname);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  // Depois que a animação de abertura termina, solta o teto de altura
+  // (`max-height: none`) — daí em diante o acordeão nunca mais fica "com
+  // limite", mesmo que os itens mudem (ex.: permissão carregada depois) sem
+  // disparar um novo resize a tempo do próximo clique. Só volta a usar a
+  // altura medida enquanto está de fato animando a abertura.
+  const [settled, setSettled] = useState(false);
 
   useEffect(() => {
     const el = contentRef.current;
@@ -53,6 +59,10 @@ function SidebarSection({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!expanded) setSettled(false);
+  }, [expanded]);
 
   return (
     <div className="mb-1">
@@ -70,7 +80,13 @@ function SidebarSection({
           className={`bi bi-chevron-right ${styles.submenuCaret} ${expanded ? styles.submenuCaretOpen : ""}`}
         />
       </div>
-      <div className={styles.sidebarAccordionInner} style={{ maxHeight: expanded ? height : 0 }}>
+      <div
+        className={styles.sidebarAccordionInner}
+        style={{ maxHeight: expanded ? (settled ? "none" : height) : 0 }}
+        onTransitionEnd={() => {
+          if (expanded) setSettled(true);
+        }}
+      >
         <div ref={contentRef}>
           <Nav as="ul" className={`${styles.navSub} flex-column`}>
             {section.items.map((item) => {

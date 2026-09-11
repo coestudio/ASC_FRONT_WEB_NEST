@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card } from "react-bootstrap";
+import { useQueryClient } from "@tanstack/react-query";
+import { Badge, Card, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -22,8 +22,11 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user";
 import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
+import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { Locale } from "@/i18n/config";
+import type { TranslationKey } from "@/i18n/translate";
+import styles from "./index.module.css";
 
 // `EnumOptionDTO.name` usa chave de 2 letras (pt/en/es/zh, ver
 // src/api/generated/static/getApiUserRoles.ts) — não bate 1:1 com `Locale`
@@ -79,6 +82,66 @@ type PendingAction = {
   user: UserDTO;
 };
 
+/**
+ * Ações da linha/card — pílulas circulares coloridas (verde pra editar e
+ * redefinir senha, vermelho pra excluir, neutro pro resto), referência de
+ * design: print da tela de Acesso (SPEC-11 escopo expandido). Compartilhada
+ * entre a tabela e o card do `CrudListPage` pra não duplicar o markup.
+ */
+function RowActions({
+  user: u,
+  setModal,
+  setPending,
+  t,
+}: {
+  user: UserDTO;
+  setModal: (v: { mode: CrudRecordMode; user?: UserDTO } | null) => void;
+  setPending: (v: PendingAction | null) => void;
+  t: (key: TranslationKey) => string;
+}) {
+  return (
+    <div className="d-flex gap-1 flex-wrap">
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
+        onClick={() => setModal({ mode: "view", user: u })}
+      >
+        <i className="bi bi-eye" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
+        onClick={() => setModal({ mode: "edit", user: u })}
+      >
+        <i className="bi bi-pencil" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
+        onClick={() => setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })}
+      >
+        <i className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`} aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
+        disabled={!u.profile.email}
+        title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
+        onClick={() => setPending({ kind: "resetPassword", user: u })}
+      >
+        <i className="bi bi-key" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+        onClick={() => setPending({ kind: "delete", user: u })}
+      >
+        <i className="bi bi-trash" aria-hidden />
+      </button>
+    </div>
+  );
+}
+
 function toFormValues(user?: UserDTO): UserFormValues {
   return {
     userName: user?.userName ?? "",
@@ -92,7 +155,34 @@ function toFormValues(user?: UserDTO): UserFormValues {
   };
 }
 
+/**
+ * Gate de montagem: `AdminAccessPageContent` chama `useSsrSafeQuery` pro
+ * lookup de roles do form — pra esse hook nunca existir durante o SSR (não
+ * só ficar `enabled: false`, que a integração de streaming SSR do
+ * TanStack Query pode ignorar), o conteúdo real só monta depois que o
+ * componente já confirma que está rodando no client (SPEC-10, mesmo padrão
+ * do `CrudListPage`).
+ */
 function AdminAccessPage() {
+  const t = useT();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return (
+      <div>
+        <h1 className="h4 mb-3">{t("access.title")}</h1>
+        <div className="d-flex justify-content-center py-5">
+          <Spinner animation="border" />
+        </div>
+      </div>
+    );
+  }
+
+  return <AdminAccessPageContent />;
+}
+
+function AdminAccessPageContent() {
   const t = useT();
   const locale = useLocale();
   const queryClient = useQueryClient();
@@ -102,14 +192,15 @@ function AdminAccessPage() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
-  const { data, isLoading, isError } = useQuery(
-    userListQueryOptions({
-      Search: search || undefined,
-      Offset: (page - 1) * PAGE_SIZE,
-      Limit: PAGE_SIZE,
-    }),
-  );
-  const { data: roleOptions } = useQuery(userRolesQueryOptions());
+  const listQueryOptions = userListQueryOptions({
+    Search: search || undefined,
+    Offset: (page - 1) * PAGE_SIZE,
+    Limit: PAGE_SIZE,
+  });
+  // Lookup de roles pro multi-select do form (fora do CrudListPage) — mesmo
+  // guard de SSR via useSsrSafeQuery (SPEC-10); o cache já vem quente do
+  // loader acima na primeira renderização.
+  const { data: roleOptions } = useSsrSafeQuery(userRolesQueryOptions());
 
   const roleFieldOptions = useMemo(
     () =>
@@ -119,12 +210,6 @@ function AdminAccessPage() {
       })),
     [roleOptions, locale],
   );
-
-  const roleLabelByValue = useMemo(() => {
-    const map = new Map<string | number, string>();
-    roleFieldOptions.forEach((opt) => map.set(opt.value, opt.label));
-    return map;
-  }, [roleFieldOptions]);
 
   const invalidateList = () => queryClient.invalidateQueries({ queryKey: getGetApiUserQueryKey() });
 
@@ -177,79 +262,23 @@ function AdminAccessPage() {
     { key: "name", headerKey: "access.colName", render: (u) => u.profile.fullName },
     { key: "username", headerKey: "access.colUsername", render: (u) => u.userName },
     { key: "email", headerKey: "access.colEmail", render: (u) => u.profile.email ?? "—" },
-    {
-      key: "profile",
-      headerKey: "access.colProfile",
-      render: (u) => u.roles.map((r) => roleLabelByValue.get(r) ?? r).join(", ") || "—",
-    },
+    { key: "phone", headerKey: "access.colPhone", render: (u) => u.profile.phone ?? "—" },
+    { key: "document", headerKey: "access.colDocument", render: (u) => u.profile.document ?? "—" },
     {
       key: "status",
       headerKey: "access.colStatus",
       render: (u) => (
-        <Badge bg={u.isActive ? "success" : "secondary"}>
+        <Badge pill bg={u.isActive ? "success" : "secondary"}>
           {t(u.isActive ? "access.active" : "access.inactive")}
         </Badge>
       ),
     },
     {
-      key: "type",
-      headerKey: "access.colType",
-      render: (u) => t(u.type === 0 ? "access.internal" : "access.external"),
-    },
-    {
-      key: "createdAt",
-      headerKey: "access.colCreatedAt",
-      render: (u) => new Date(u.createdAt).toLocaleDateString(locale),
-    },
-    {
       key: "actions",
       headerKey: "access.colActions",
-      render: (u) => (
-        <div className="d-flex gap-1 flex-wrap">
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => setModal({ mode: "view", user: u })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => setModal({ mode: "edit", user: u })}
-          >
-            <i className="bi bi-pencil" aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            onClick={() => setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })}
-          >
-            <i className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`} aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-secondary"
-            disabled={!u.profile.email}
-            title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
-            onClick={() => setPending({ kind: "resetPassword", user: u })}
-          >
-            <i className="bi bi-key" aria-hidden />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline-danger"
-            onClick={() => setPending({ kind: "delete", user: u })}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </Button>
-        </div>
-      ),
+      render: (u) => <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />,
     },
   ];
-
-  const items = data?.items ?? [];
-  const total = Number(data?.total ?? 0);
 
   const handleSubmit = async (values: UserFormValues) => {
     try {
@@ -355,7 +384,7 @@ function AdminAccessPage() {
       <CrudListPage
         titleKey="access.title"
         descriptionKey="access.description"
-        items={items}
+        queryOptions={listQueryOptions}
         columns={columns}
         renderCard={(u) => (
           <Card>
@@ -363,60 +392,19 @@ function AdminAccessPage() {
               <Card.Title className="h6">{u.profile.fullName}</Card.Title>
               <Card.Subtitle className="text-body-secondary small mb-2">{u.userName}</Card.Subtitle>
               <div className="small text-body-secondary mb-2">{u.profile.email ?? "—"}</div>
-              <Badge bg={u.isActive ? "success" : "secondary"} className="me-1">
+              <Badge pill bg={u.isActive ? "success" : "secondary"} className="me-1">
                 {t(u.isActive ? "access.active" : "access.inactive")}
               </Badge>
-              <Badge bg="info">{t(u.type === 0 ? "access.internal" : "access.external")}</Badge>
-              <div className="d-flex gap-1 flex-wrap mt-2">
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={() => setModal({ mode: "view", user: u })}
-                >
-                  <i className="bi bi-eye" aria-hidden />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={() => setModal({ mode: "edit", user: u })}
-                >
-                  <i className="bi bi-pencil" aria-hidden />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={() =>
-                    setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })
-                  }
-                >
-                  <i
-                    className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`}
-                    aria-hidden
-                  />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  disabled={!u.profile.email}
-                  title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
-                  onClick={() => setPending({ kind: "resetPassword", user: u })}
-                >
-                  <i className="bi bi-key" aria-hidden />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-danger"
-                  onClick={() => setPending({ kind: "delete", user: u })}
-                >
-                  <i className="bi bi-trash" aria-hidden />
-                </Button>
+              <Badge pill bg="info">
+                {t(u.type === 0 ? "access.internal" : "access.external")}
+              </Badge>
+              <div className="mt-2">
+                <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />
               </div>
             </Card.Body>
           </Card>
         )}
         getItemKey={(u) => u.id}
-        isLoading={isLoading}
-        isError={isError}
         search={search}
         onSearchChange={(value) => {
           setSearch(value);
@@ -424,7 +412,6 @@ function AdminAccessPage() {
         }}
         page={page}
         pageSize={PAGE_SIZE}
-        total={total}
         onPageChange={setPage}
         onCreate={() => setModal({ mode: "create" })}
         emptyMessageKey="access.emptyState"

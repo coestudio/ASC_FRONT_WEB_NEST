@@ -10,6 +10,8 @@
   "colName": "姓名",
   "colUsername": "用户名",
   "colEmail": "邮箱",
+  "colPhone": "电话",
+  "colDocument": "证件",
   "colProfile": "配置",
   "colStatus": "状态",
   "colType": "类型",

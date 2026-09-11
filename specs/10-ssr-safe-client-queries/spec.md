@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-10
 - **Nome:** ssr-safe-client-queries
-- **Status:** APPROVED
+- **Status:** IN_PROGRESS
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/crud/**` (SPEC-02, já `IMPLEMENTED`), `src/routes/_dashboard/admin/access/index.tsx`
   (SPEC-03, já `IMPLEMENTED`), e por extensão toda SPEC 04–09 que ainda vai
@@ -202,6 +202,107 @@ hooks já existentes (`useGetApiUser`, `useGetApiUserRoles`).
 
 ---
 
-**Status: APPROVED — Opção C confirmada pelo usuário. Implementação ainda
-NÃO autorizada nesta sessão (usuário pediu explicitamente para não
-implementar ainda) — aguardando sinal pra começar.**
+## 13. Implementation Notes
+
+Branch: `spec-10-ssr-safe-client-queries` (a partir de `spec-03-admin-access`
+— único lugar que já tinha `admin/access/index.tsx`).
+
+**Achado no meio da implementação:** antes de eu começar a Opção C, o
+usuário já tinha corrigido o caso concreto (`admin/access`) manualmente
+num commit `Worktree SPEC-03` (`40f3e8b`, na branch `spec-03-admin-access`),
+usando um padrão **diferente**: seed do cache via `loader` da rota +
+server function (`src/lib/queries/user.ts` +
+`src/lib/user-fns.ts:fetchUserListFn/fetchUserRolesFn`), o mesmo desenho já
+usado por `profileMeQueryOptions`/`fetchMeFn` no `__root.tsx`. Esse fix
+**não foi descartado** — é complementar à Opção C, não concorrente:
+
+- O `loader` continua semeando o cache (primeira página, sem busca) —
+  evita loading flash na primeira renderização.
+- `CrudListPage` (Opção C) passou a buscar via `queryOptions` internamente
+  com `useSsrSafeQuery` (guard de SSR embutido) — se o cache já estiver
+  quente (seedado pelo loader), usa ele sem refetch; se não estiver (troca
+  de página/busca, ou uma rota futura sem loader próprio), busca com
+  segurança, sem quebrar no servidor.
+- O lookup de roles pro multi-select do form (`userRolesQueryOptions()`),
+  usado fora do `CrudListPage`, também passou a usar `useSsrSafeQuery`
+  diretamente (não estava no texto original da SPEC-10, que falava só do
+  `CrudListPage` — extensão necessária pro mesmo bug não continuar por
+  esse hook).
+
+**Arquivos alterados/criados:**
+- `src/lib/queries/use-ssr-safe-query.ts` (novo) — wrapper de `useQuery`
+  com o guard de SSR (`enabled: typeof window !== "undefined"`).
+- `src/components/crud/crud-list-page.tsx` (editado) — contrato novo
+  (`queryOptions` em vez de `items`/`isLoading`/`isError`/`total`).
+- `src/routes/_dashboard/admin/access/index.tsx` (editado) — adaptado pro
+  novo contrato.
+- `specs/02-app-shell-navigation/spec.md` (editado) — nota de emenda
+  registrando a mudança de contrato do `CrudListPage`.
+
+**Round 2 — `enabled: false` não foi suficiente:** depois do primeiro
+commit (`8273aff`), o usuário reportou o mesmo erro em produção (erro 500
+real do servidor, não cache velho — restart completo + `rm -rf
+node_modules/.vite` não resolveu). Causa provável: a integração de
+streaming SSR (`setupRouterSsrQueryIntegration`,
+`@tanstack/react-router-ssr-query`) pode buscar uma query encontrada na
+árvore durante o SSR **mesmo com `enabled: false`** — esse guard é um
+contrato do `useQuery`/observer, não do `Query` em si, e a integração de
+streaming parece ignorar isso pra poder desidratar tudo que aparece no
+render. `enabled: false` sozinho não é suficiente.
+
+**Correção (por sugestão do usuário — "trabalhar com loading até os
+dados estarem prontos"):** em vez de só desabilitar a query, o hook que
+busca o dado **não existe mais na árvore durante o SSR**:
+- `CrudListPage` foi dividido em componente externo (casca: título, busca,
+  `ViewToggle`, sem hook de dado) + `CrudListPageBody` (chama
+  `useSsrSafeQuery`), montado só depois de um `useEffect` marcar
+  `mounted = true` — `useEffect` nunca roda no servidor, então
+  `CrudListPageBody` nunca é instanciado, nunca registra o hook, nunca
+  pode ser encontrado pela integração de streaming durante o SSR. Mostra
+  um `Spinner` até lá.
+- `admin/access/index.tsx`: mesmo padrão — `AdminAccessPage` (rota) vira
+  um gate de montagem; o conteúdo real (`AdminAccessPageContent`, que
+  chama `useSsrSafeQuery(userRolesQueryOptions())` pro lookup de roles)
+  só monta depois de `mounted = true`.
+
+Esse padrão (não só `enabled: false`, mas o hook literalmente não
+existir na árvore durante SSR) é o que precisa ser seguido por SPEC-04+
+sempre que uma tela chamar `useSsrSafeQuery`/`useQuery` fora do
+`CrudListPage` (ex.: lookups de enum pra campos de formulário).
+
+**Arquivos adicionais (Round 2):**
+- `src/components/crud/crud-list-page.tsx` — reestruturado (`CrudListPage`
+  + `CrudListPageBody` internos).
+- `src/routes/_dashboard/admin/access/index.tsx` — `AdminAccessPage` +
+  `AdminAccessPageContent`.
+
+**Comandos executados:**
+- `bun run check` → **VERIFIED**, 0 erros (rodado depois das duas rodadas).
+- `bun run lint` → **VERIFIED**, mesmo baseline de antes (65 problems, 3
+  errors pré-existentes em `session.server.ts`) — zero novo, nas duas
+  rodadas.
+- Validação em dev: subi `bun run dev` (porta 8081) só o tempo de checar
+  boot limpo + `curl` sem sessão em `/admin/access` (307, sem erro no
+  log). **NOT VERIFIED end-to-end autenticado nesta sessão** — o agente
+  não tem uma sessão logada disponível pra testar via `curl`/`fetch`.
+  Precisa do usuário confirmar no navegador com sessão real.
+
+**Critérios de aceitação:**
+| # | Critério | Status |
+| --- | --- | --- |
+| CA1 | `/admin/access` sem erro no primeiro load | Implementado (round 2, hook nunca existe no SSR); NOT VERIFIED autenticado — pedir confirmação do usuário |
+| CA2 | `/admin/roles` idem | Implementado; NOT VERIFIED autenticado |
+| CA3 | `bun run check` + `lint` passam | PASS |
+| CA4 | `crud-list-page.tsx` documenta o padrão pra SPEC-04+ | PASS — JSDoc do componente + emenda na SPEC-02 |
+| CA5 | SPEC-02 com nota de emenda | PASS |
+
+Status mantido `IN_PROGRESS` até CA1/CA2 serem confirmados no navegador
+pelo usuário (sessão autenticada real, branch `spec-10-ssr-safe-client-
+queries` atualizada nesse terminal) — só então viro `IMPLEMENTED`.
+
+---
+
+**Próximo passo:** usuário confirmar, num terminal que garantidamente está
+em `spec-10-ssr-safe-client-queries` (branch atualizada + dev server
+reiniciado depois do pull), que `/admin/access` e `/admin/roles` carregam
+sem erro no primeiro load, sem "Try again".

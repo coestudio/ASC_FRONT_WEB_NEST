@@ -31,3 +31,143 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* AppBrand (logo + título/subtítulo da marca) — src/layouts/AppBrand.
+   Consumido pela sidebar (AppShell) e pelo card de login (auth/route.tsx).
+   SPEC-11: essas regras faltavam no pipeline ativo (só existiam num
+   base.css legado não importado), deixando a logo sem tamanho/alinhamento. */
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+.app-brand__logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+/* Badge circular (variant="badge") — selo tipo emblema usado no card de
+   login: fundo branco, anel na cor auxiliar da marca, sigla no centro.
+   SPEC-11 item 2/5. */
+.app-brand__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--bs-white);
+  border: 3px solid var(--brand-accent);
+  color: var(--brand-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.app-brand--sm .app-brand__badge {
+  width: 40px;
+  height: 40px;
+  font-size: 0.65rem;
+}
+.app-brand--lg .app-brand__badge {
+  width: 64px;
+  height: 64px;
+  font-size: 0.85rem;
+}
+.app-brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.app-brand__title {
+  font-weight: 600;
+  color: var(--bs-body-color);
+  font-size: 1.05rem;
+}
+.app-brand__subtitle {
+  font-size: 0.85rem;
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+.app-brand--sm .app-brand__logo {
+  width: 40px;
+  height: 40px;
+}
+.app-brand--sm .app-brand__title {
+  font-size: 1rem;
+}
+.app-brand--sm .app-brand__subtitle {
+  font-size: 0.8rem;
+}
+.app-brand--md .app-brand__logo {
+  width: 48px;
+  height: 48px;
+}
+.app-brand--md .app-brand__title {
+  font-size: 1.1rem;
+}
+.app-brand--md .app-brand__subtitle {
+  font-size: 0.9rem;
+}
+.app-brand--lg .app-brand__logo {
+  width: 64px;
+  height: 64px;
+}
+.app-brand--lg .app-brand__title {
+  font-size: 1.3rem;
+}
+.app-brand--lg .app-brand__subtitle {
+  font-size: 1rem;
+}
+
+/* Botões Bootstrap — o bootstrap.min.css pré-compilado fixa --bs-btn-bg/
+   --bs-btn-border-color em hex (o azul default do Bootstrap) por variante,
+   em vez de ler --bs-primary. Reforça aqui pra usar o token de marca ativo
+   (--bs-primary / --brand-primary-hover), como a regra de theming exige —
+   SPEC-11 item 3. */
+.btn-primary {
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: var(--brand-primary-hover, var(--bs-primary));
+  --bs-btn-hover-border-color: var(--brand-primary-hover, var(--bs-primary));
+  --bs-btn-active-bg: var(--brand-primary-hover, var(--bs-primary));
+  --bs-btn-active-border-color: var(--brand-primary-hover, var(--bs-primary));
+  --bs-btn-disabled-bg: var(--bs-primary);
+  --bs-btn-disabled-border-color: var(--bs-primary);
+  --bs-btn-color: var(--on-brand, #fff);
+  --bs-btn-hover-color: var(--on-brand, #fff);
+  --bs-btn-active-color: var(--on-brand, #fff);
+  --bs-btn-disabled-color: var(--on-brand, #fff);
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-bg: var(--bs-primary);
+  --bs-btn-hover-border-color: var(--bs-primary);
+  --bs-btn-hover-color: var(--on-brand, #fff);
+  --bs-btn-active-bg: var(--bs-primary);
+  --bs-btn-active-border-color: var(--bs-primary);
+  --bs-btn-active-color: var(--on-brand, #fff);
+}
+
+/* Item de dropdown (ex.: opções do submenu de preferências) — Bootstrap
+   não arredonda por padrão; item ativo usa azul (--bs-dropdown-link-active-bg)
+   por padrão, troca pra brand + pill arredondado pra combinar com o resto
+   da UI. */
+.dropdown-item {
+  border-radius: 0.7rem;
+}
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--brand-primary-soft);
+  color: var(--brand-primary);
+}
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--brand-primary);
+  color: var(--on-brand, #fff);
+}

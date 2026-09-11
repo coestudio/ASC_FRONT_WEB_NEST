@@ -22,7 +22,7 @@ function AuthLayout() {
       }}
     >
       <Card className="auth-card">
-        <AppBrand size="lg" className="auth-brand" />
+        <AppBrand size="sm" variant="badge" className="auth-brand" />
 
         <Outlet />
       </Card>

@@ -91,7 +91,11 @@
 }
 :global(.app-nav-link.active) {
   background-color: var(--sidebar-active-bg);
-  color: var(--brand-primary);
+  /* --sidebar-active-fg é o token calibrado por brand/modo pra contrastar
+     com --sidebar-active-bg (branco sobre verde sólido no asa, por ex.) —
+     usar var(--brand-primary) aqui deixava o texto invisível quando o bg
+     ativo é sólido (bug reportado: item selecionado sem texto visível). */
+  color: var(--sidebar-active-fg, var(--brand-primary));
   font-weight: 600;
 }
 .navLinkCount {
@@ -104,6 +108,10 @@
   margin: 0.25rem 0 0.5rem 0.9rem;
   padding-left: 0.65rem;
   border-left: 1px solid var(--sidebar-border);
+  /* Espaço entre os itens do submenu — pedido do usuário. */
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 .navSub a {
   display: block;
@@ -123,7 +131,7 @@
 }
 .navSub a:global(.active) {
   background-color: var(--sidebar-active-bg);
-  color: var(--brand-primary);
+  color: var(--sidebar-active-fg, var(--brand-primary));
   font-weight: 600;
   box-shadow: inset 2px 0 0 var(--brand-primary);
 }
@@ -290,7 +298,7 @@
 }
 .navItemToggle.active {
   background-color: var(--sidebar-active-bg);
-  color: var(--brand-primary);
+  color: var(--sidebar-active-fg, var(--brand-primary));
   font-weight: 600;
 }
 .navItemToggle .caret {

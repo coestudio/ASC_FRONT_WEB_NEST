@@ -50,5 +50,11 @@
       "saved": "Changes saved.",
       "saveError": "Could not save. Please try again."
     }
+  },
+  "devTools": {
+    "clearCacheButton": "Clear local cache (dev)",
+    "clearCacheTitle": "Clear local cache",
+    "clearCacheMessage": "This clears localStorage, sessionStorage, cookies and the React Query cache, and signs you out. Continue?",
+    "clearCacheSuccess": "Local cache cleared."
   }
 }

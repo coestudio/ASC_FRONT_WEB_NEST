@@ -72,6 +72,13 @@ function Field<T extends FieldValues>({
 
   return (
     <InputGroup>
+      {/* Ícone decorativo (cadeado) opcional, à esquerda do campo — SPEC-11
+          item 4. O toggle de mostrar/ocultar senha continua à direita. */}
+      {config.icon ? (
+        <InputGroup.Text>
+          <i className={`bi ${config.icon}`} aria-hidden="true" />
+        </InputGroup.Text>
+      ) : null}
       <Form.Control
         {...field}
         id={field.name}

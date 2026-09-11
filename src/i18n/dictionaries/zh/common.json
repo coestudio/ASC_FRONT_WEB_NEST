@@ -50,5 +50,11 @@
       "saved": "更改已保存。",
       "saveError": "无法保存，请重试。"
     }
+  },
+  "devTools": {
+    "clearCacheButton": "清除本地缓存（开发）",
+    "clearCacheTitle": "清除本地缓存",
+    "clearCacheMessage": "此操作将清除 localStorage、sessionStorage、Cookie 和 React Query 缓存，并退出登录。是否继续？",
+    "clearCacheSuccess": "本地缓存已清除。"
   }
 }

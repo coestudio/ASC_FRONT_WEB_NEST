@@ -70,7 +70,7 @@ function ForgotPasswordPage() {
             fieldName="email"
             label="E-mail"
             placeholder="voce@empresa.com"
-            config={{ containerClass: "mb-4" }}
+            config={{ containerClass: "mb-4", icon: "bi-envelope" }}
           />
           <SubmitButton loading={emailForm.formState.isSubmitting}>Enviar código</SubmitButton>
         </Form>

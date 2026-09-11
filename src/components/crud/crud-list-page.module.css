@@ -1,0 +1,42 @@
+/* Tabela do CrudListPage — cabeçalho em versalete/discreto e linhas com
+   hairline entre elas (sem grade vertical), pra bater com a referência de
+   design (print da tela de Acesso, SPEC-11 escopo expandido). Densidade e
+   nomes de token seguem o padrão real do warren/Portal
+   (Assets/css/base.css, bloco `.table`), adaptado pros tokens do NEST. */
+.crudTable {
+  --bs-table-bg: transparent;
+  font-size: 0.85rem;
+  margin-bottom: 0;
+}
+.crudTable thead th {
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  color: var(--ink-muted);
+  border-bottom: 1px solid var(--bs-border-color);
+  white-space: nowrap;
+  padding-top: 0.85rem;
+  padding-bottom: 0.75rem;
+}
+.crudTable tbody td {
+  vertical-align: middle;
+  border-bottom: 1px solid var(--bs-border-color);
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+.crudTable tbody tr:last-child td {
+  border-bottom: none;
+}
+.crudTable thead th:first-child,
+.crudTable tbody td:first-child {
+  padding-left: 1.25rem;
+}
+.crudTable thead th:last-child,
+.crudTable tbody td:last-child {
+  padding-right: 1.25rem;
+}
+.crudTable tbody tr:hover > * {
+  --bs-table-accent-bg: var(--brand-primary-soft);
+  background-color: var(--brand-primary-soft);
+}
