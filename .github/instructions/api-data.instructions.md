@@ -55,6 +55,27 @@ O Core ainda não define `operationId` — nomes saem de verbo+rota
   PT-BR; `toast.warning` em 4xx, `toast.error` em 5xx/rede. Não duplicar esse
   tratamento nas telas — só tratar o que for específico da tela.
 
+## Formulário — sempre `react-hook-form` + `zodResolver` + `layouts/Form/Fields`
+
+Regra inviolável (dupla): todo formulário usa `useForm` (`react-hook-form`)
+com `zodResolver(schema)` (`@hookform/resolvers/zod`, já é dependência)
+sobre um schema Zod **gerado** (ou remapeado — seção abaixo); e todo campo
+vem de `src/layouts/Form/Fields/**` (`Controller`-based), nunca `<input>`
+cru nem `register(...)` direto num `<Form.Control>`. Ver
+`.github/instructions/components.instructions.md` pra biblioteca de campos.
+
+```tsx
+const methods = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
+
+<InputEmail fieldName="email" methods={methods} label="Email" />
+<InputPassword fieldName="password" methods={methods} label="Senha" />
+```
+
+`src/routes/auth/{login,forgot-password}` ainda usam `register(...)` com
+regras soltas sobre `<Form.Control>`/`components/ui/input` (débito anterior
+a estas regras) — a correção é escopo de
+`specs/02-app-shell-navigation/spec.md`, não copiar esse padrão em tela nova.
+
 ## Validação de formulário — Zod é gerado, nunca escrito
 
 - **Proibido criar ou editar schema Zod.** Os únicos válidos são os de

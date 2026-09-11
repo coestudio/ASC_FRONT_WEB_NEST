@@ -36,6 +36,22 @@ publicado — sem force-push/rebase/amend em branch já sincronizada).
    asset, doc) tem nome em inglês. Nada de `relatorio.ts`, `Cadastro.tsx`.
 7. **Comentário de código sempre em PT-BR.** Todo comentário (`//`, `/* */`,
    JSDoc, `<!-- -->`) é escrito em português do Brasil.
+8. **UI é Bootstrap. Tailwind nunca.** React-Bootstrap + classes utilitárias
+   do Bootstrap 5.3 pra tudo (layout, cor, espaçamento). Nada de instalar
+   `tailwindcss`, `@tailwind` em CSS, nem classe `className="flex ..."` no
+   estilo Tailwind. Ver `.github/instructions/components.instructions.md`.
+9. **Formulário sempre com `react-hook-form` + Zod.** Todo formulário usa
+   `useForm` (`react-hook-form`) com `zodResolver` sobre um schema **gerado**
+   pelo Orval (ou remapeado dele, regra 2) — nunca `useState` por campo,
+   nunca validação manual solta no `onSubmit`. Ver
+   `.github/instructions/api-data.instructions.md`.
+10. **Todo input de formulário vem de `src/layouts/Form/Fields/**`.** Nunca
+    `<input>`, `<Form.Control>` ou um campo customizado criado direto numa
+    tela. Falta um tipo de campo → cria ou edita o Field lá, nunca inline.
+    Isso **resolve** a decisão que ficava em aberto entre `components/ui` e
+    `layouts/Form`: campo de formulário é sempre `layouts/Form/Fields`;
+    `components/ui` continua para blocos que não são input de form (botão,
+    modal, banner). Ver `.github/instructions/components.instructions.md`.
 
 > **Não é Next.js.** O projeto foi migrado. Qualquer resquício de Next
 > (`next/*`, `next-auth`, `NEXT_PUBLIC_*`, `src/app/**`, Server Actions,
@@ -89,12 +105,16 @@ feature de frontend passa por SPEC aprovada antes de implementação.
   (axios server→Core), `permissions.ts` (áreas visíveis na UI — **não** é
   guard de rota), `queries/**` (query options do React Query), `ui-prefs.tsx`
   (provider de tema + i18n, hooks `useT`/`useLocale`/`useThemeMode`).
-- `src/components/**` — componentes de apresentação. `components/ui/**` é o
-  conjunto enxuto atual (usado pelas rotas de auth).
+- `src/components/**` — componentes de apresentação que **não** são input de
+  formulário (`components/ui/**`: botão, modal, banner, toggle).
 - `src/layouts/**` — `AppShell` (sidebar + topbar da área autenticada),
-  `AppBrand`, e `layouts/Form/**` — subsistema grande de campos de formulário
-  portado do `warren/Portal`, **hoje não usado por nenhuma rota**. Ver
-  pendência abaixo.
+  `AppBrand`, e **`layouts/Form/Fields/**`** — a biblioteca canônica de todo
+  input de formulário (regra 10), com wrapper `react-hook-form`
+  (`Controller`) + Bootstrap já embutido (`InputText`, `InputEmail`,
+  `InputCPF`, `InputMoney`, `InputPassword`, `InputDate`, etc. — ver
+  `Fields/Index.ts` pra lista completa e o tipo `LayoutField`). Hoje ainda
+  não é usada por nenhuma rota (portada do `warren/Portal` sem consumidor
+  ainda) — passa a ter consumidor real a partir da SPEC-02.
 - `src/hooks/**` — `useUser`, `useCan` (guard de UI, não de rota).
 - `src/i18n/**` — 3 idiomas (`pt-BR` canônico, `en`, `zh`). Dicts em
   `dictionaries/*.json`.
@@ -217,9 +237,11 @@ por pronta.
 
 ## Pendências conhecidas
 
-- **Dois subsistemas de formulário concorrentes**: `src/components/ui/**`
-  (enxuto, em uso) vs `src/layouts/Form/**` (portado do Portal, sem uso).
-  Consolidação ainda não decidida — o agente trata como `[NEEDS_DECISION]`.
+- **Resolvido** (regra 10): campo de formulário é sempre
+  `layouts/Form/Fields`. `src/components/ui/{input,field,password-field}.tsx`
+  são inputs raw que violam a regra — débito herdado de antes dela existir,
+  migração pra `layouts/Form/Fields` é escopo da `specs/02-app-shell-navigation/spec.md`
+  junto com o resto do formulário de auth (zodResolver).
 - `specs/` está vazio, mas o código referencia specs que não existem
   (`specs/auth-httponly-cookie-bff.md`, `specs/i18n-and-theme.md`). Recriar
   sob demanda no fluxo SDD.
@@ -227,3 +249,9 @@ por pronta.
   páginas "em construção".
 - `.env.exemple` e comentários avulsos citam Next.js / Server Actions — lixo
   de migração.
+- `src/routes/auth/login/index.tsx` e `forgot-password/index.tsx` usam
+  `react-hook-form` **sem** `zodResolver` (validação solta em `register(...)`)
+  — não segue a regra 9 ainda. Correção faz parte do escopo de
+  `specs/02-app-shell-navigation/spec.md` (é onde o padrão de formulário
+  compartilhado já está sendo mexido, antes das SPECs de área copiarem o
+  padrão errado).

@@ -51,8 +51,25 @@ usuário. Quando uma decisão não estiver explícita, você para e pergunta.
 7. **Comentário de código sempre em PT-BR** (`//`, `/* */`, JSDoc, `<!-- -->`).
    Código que você escrever segue isso; código legado com comentário em inglês
    que você tocar, traduza o trecho tocado.
+8. **UI é Bootstrap. Tailwind nunca.** React-Bootstrap + utilitárias do
+   Bootstrap 5.3. Pedido de "usa Tailwind"/`className="flex ..."` estilo
+   Tailwind é `[NEEDS_DECISION]` — resposta padrão: não, o projeto é
+   Bootstrap.
+9. **Formulário sempre `react-hook-form` + `zodResolver` sobre schema
+   gerado.** Nunca `useState` por campo, nunca validação manual solta no
+   `onSubmit`. `src/routes/auth/{login,forgot-password}` ainda não seguem
+   isso — a correção é escopo de `specs/02-app-shell-navigation/spec.md`
+   (§3.6), não código novo solto. Não copiar o padrão antigo em nenhuma
+   SPEC de área.
+10. **Todo input de formulário é `layouts/Form/Fields`.** Nunca `<input>`,
+    `<Form.Control>` ou campo customizado inline. Sem o tipo que precisa lá
+    → cria/edita o Field em `layouts/Form/Fields/`, nunca improvisa na tela.
+    Isso resolve de vez a decisão `components/ui` vs `layouts/Form` — não é
+    mais `[NEEDS_DECISION]`. `components/ui/{input,field,password-field}.tsx`
+    são inputs raw que violam a regra (débito de antes dela existir),
+    migração é escopo da SPEC-02.
 
-Essas cinco também estão em `AGENTS.md` → "Regras invioláveis". Divergência
+Essas regras também estão em `AGENTS.md` → "Regras invioláveis". Divergência
 entre este arquivo e `AGENTS.md` = PARE e pergunte.
 
 ## Território
@@ -155,11 +172,9 @@ Aguardando decisão do usuário.
 ```
 
 Decisões que **sempre** são NEEDS_DECISION neste projeto:
-- Qualquer coisa que toque uma das 5 regras invioláveis (§0).
+- Qualquer coisa que toque uma das regras invioláveis (§0).
 - Criar/editar schema Zod, ou mudar regra de validação → resposta padrão:
   "isso muda no DTO do Core".
-- Subsistema de formulário: `components/ui` vs `layouts/Form` (ver
-  `components.instructions.md`).
 - Endpoint do Core que não existe no client gerado.
 - Nova área de dashboard / novo grupo de rotas / novo prefixo pathless.
 - Mudança no fluxo de auth, na selagem de sessão ou no proxy BFF.
@@ -184,7 +199,9 @@ você não escreve, não edita, não roda `just map`.
    - guard em beforeLoad (context.authed, ou ensureQueryData + getUserAreas)
    - loader semeando o cache quando precisa do dado no primeiro paint
    - validateSearch / head conforme a spec
-4. Componentes: src/components/ui/** (preferir) — React-Bootstrap, CSS Module
+4. Componentes: src/components/ui/** pra não-input (botão, modal, banner) —
+   React-Bootstrap, CSS Module. Todo input de formulário vem de
+   src/layouts/Form/Fields/** (regra 10), nunca criado na tela
 5. i18n: chave no namespace da tela nos 4 locales (pt-BR canônico), useT()
 6. Permissão de UI (src/lib/permissions.ts) se a tela é gated na sidebar
 7. bun run check  +  bun run lint   (fallback: npm run …)
