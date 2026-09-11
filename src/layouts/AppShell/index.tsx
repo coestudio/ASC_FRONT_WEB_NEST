@@ -7,6 +7,8 @@ import { useT } from "@/lib/ui-prefs";
 import type { AreaId } from "@/lib/permissions";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { BrandSwitcher } from "@/components/theme/brand-switcher";
+import { AppBrand } from "@/layouts/AppBrand";
 import { UserMenu } from "./UserMenu";
 import styles from "./index.module.css";
 
@@ -187,9 +189,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div
           className={`${styles.sidebarHeader} d-flex align-items-center justify-content-between`}
         >
-          <a href="/dashboard" className={styles.sidebarBrand}>
-            <span className={styles.sidebarTitle}>Alex Stewart</span>
-          </a>
+          <AppBrand as="link" to="/dashboard" size="sm" className={styles.sidebarBrand} />
         </div>
 
         <Nav className={`${styles.sidebarNav} flex-column`}>
@@ -221,6 +221,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
           <div className={`${styles.topbarTitle} flex-grow-1`}>Portal interno</div>
           <div className="d-flex align-items-center gap-2">
+            <BrandSwitcher />
             <LanguageSwitcher />
             <ThemeToggle labels={themeLabels} />
           </div>

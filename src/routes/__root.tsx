@@ -90,7 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     if (user) context.queryClient.setQueryData(profileMeQueryOptions().queryKey, user);
   },
 
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -118,7 +118,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Manrope:wght@400;500;600;700&display=swap",
       },
-      { id: "favicon", rel: "icon", href: "/favicons/asa.ico", type: "image/x-icon" },
+      {
+        id: "favicon",
+        rel: "icon",
+        // Favicon por brand — asc.ico foi gerado a partir do logo (não havia
+        // .ico dedicado, ver src/assets/ASC e specs/01-brand-theming §D5).
+        href: `/favicons/${match.context.brand}.ico`,
+        type: "image/x-icon",
+      },
     ],
     // Acerta data-bs-theme antes do primeiro paint (cobre o caso `system`).
     scripts: [{ children: THEME_NO_FLASH_SCRIPT }],
@@ -131,9 +138,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
-  const { locale, themeMode } = Route.useRouteContext();
+  const { locale, themeMode, brand } = Route.useRouteContext();
   return (
-    <html lang={locale} data-bs-theme={resolveTheme(themeMode)}>
+    <html lang={locale} data-brand={brand} data-bs-theme={resolveTheme(themeMode)}>
       <head>
         <HeadContent />
       </head>
@@ -148,9 +155,9 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   // O QueryClientProvider é provido por setupRouterSsrQueryIntegration
   // (wrapQueryClient) em src/router.tsx.
-  const { locale, themeMode } = Route.useRouteContext();
+  const { locale, themeMode, brand } = Route.useRouteContext();
   return (
-    <UiPrefsProvider initial={{ locale, themeMode }}>
+    <UiPrefsProvider initial={{ locale, themeMode, brand }}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <ToastContainer position="top-right" autoClose={4000} theme="colored" />
