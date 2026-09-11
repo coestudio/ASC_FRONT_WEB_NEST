@@ -18,50 +18,117 @@
   width: 100%;
   max-width: 420px;
   padding: 2rem;
-  border-radius: 24px;
-  border: 1px solid var(--bs-border-color);
-  background: var(--bs-body-bg);
-  box-shadow: 0 18px 40px -24px rgba(15, 23, 42, 0.35);
+  /* Radius maior, mas ainda via token do Bootstrap (--bs-border-radius-xxl =
+     2rem) em vez de px mágico — SPEC-11 revisão 6. */
+  border-radius: var(--bs-border-radius-xxl, 2rem);
+  border: 1px solid var(--bs-border-color-translucent, var(--bs-border-color));
+  /* Fundo translúcido com blur — deixa o gradiente de .auth-shell aparecer
+     por trás (SPEC-11 revisão 3), mas com opacidade mais alta que o token
+     compartilhado (--surface-translucent, 72%) pra não lavar o contraste do
+     card — mistura sobre o token de superfície em vez de hex fixo. */
+  background: color-mix(in srgb, var(--bs-tertiary-bg) 92%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-elegant, 0 18px 40px -24px rgba(15, 23, 42, 0.35));
 }
 
+/* .auth-brand é aplicado junto de .app-brand (ver src/layouts/AppBrand) —
+   as regras de tamanho/cor de .app-brand__* vêm de styles/globals/base.css;
+   aqui só o que é específico do contexto do card de login. */
 .auth-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
-.auth-brand__logo {
-  width: 44px;
-  height: 44px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-.auth-brand__title {
-  font-weight: 600;
-  line-height: 1.1;
-  color: var(--bs-body-color);
-}
-
-.auth-brand__subtitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bs-secondary-color);
+.auth-brand .app-brand__logo {
+  border-radius: 50%;
 }
 
 .auth-title {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 1.4rem;
+  font-weight: 700;
   color: var(--bs-body-color);
-  margin-bottom: 0.25rem;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 .auth-subtitle {
   font-size: 0.85rem;
   color: var(--bs-secondary-color);
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Labels do formulário de login em caixa alta, pequenas e discretas —
+   SPEC-11 revisão 2, item de labels ("USUÁRIO"/"SENHA"). */
+.auth-card .form-label {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--bs-secondary-color);
+}
+
+/* Inputs com radius de 12px (nenhum token --bs-border-radius-* bate exato
+   com 12px — --bs-border-radius-lg é 8px, --bs-border-radius-xl é 16px —
+   valor direto em rem) — SPEC-11 revisão 8. Fundo levemente mais claro que
+   o card; borda transparente que vira verde (--bs-primary) só no foco
+   (revisão 4). */
+.auth-card .form-control {
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
+  background: var(--bs-secondary-bg);
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+.auth-card .form-control:focus {
+  background: var(--bs-secondary-bg);
+  border-color: var(--bs-primary);
+  box-shadow: none;
+}
+.auth-card .input-group {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--bs-secondary-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease-in-out;
+}
+.auth-card .input-group:focus-within {
+  border-color: var(--bs-primary);
+}
+.auth-card .input-group .form-control {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding-left: 0.25rem;
+  padding-right: 1.25rem;
+}
+/* Ícone decorativo à esquerda do campo, toggle de senha à direita — ambos
+   com área quadrada centralizada dentro do pill — SPEC-11 revisão 5. */
+.auth-card .input-group-text,
+.auth-card .input-group-password {
+  border: none;
+  background: transparent;
+  color: var(--bs-secondary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  padding: 0;
+}
+
+/* Botões com o mesmo radius de 12px dos inputs (revisão 8) — não mais
+   pill. */
+.auth-card .btn {
+  border-radius: 0.75rem;
+}
+
+/* Wrapper do campo senha — permite posicionar "Esqueceu a senha?" na mesma
+   linha da label SENHA (SPEC-11 revisão 2, item 6). */
+.auth-password-wrap .auth-forgot-link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: var(--bs-secondary-color);
+  text-decoration: underline;
 }
 
 @media (max-width: 575.98px) {

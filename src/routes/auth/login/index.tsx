@@ -68,14 +68,21 @@ function LoginPage() {
           fieldName="userName"
           label="Usuário"
           placeholder="Seu usuário"
-          config={{ containerClass: "mb-3" }}
+          config={{ containerClass: "mb-3", icon: "bi-person" }}
         />
 
-        <InputPassword methods={methods} fieldName="password" label="Senha" />
-        <div className="d-flex justify-content-end mb-4">
-          <Link to="/auth/forgot-password" className="small text-body-secondary">
-            Esqueci minha senha
+        {/* Wrapper com posição relativa pra alinhar "Esqueceu a senha?" na
+            mesma linha da label SENHA (SPEC-11 revisão 2, item 6). */}
+        <div className="auth-password-wrap position-relative mb-4">
+          <Link to="/auth/forgot-password" className="auth-forgot-link small">
+            Esqueceu a senha?
           </Link>
+          <InputPassword
+            methods={methods}
+            fieldName="password"
+            label="Senha"
+            config={{ icon: "bi-lock" }}
+          />
         </div>
 
         {hasSuperLogin && (

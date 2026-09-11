@@ -20,6 +20,10 @@ interface InputBaseDTO<T extends FieldValues = FieldValues> {
     rules?: RegisterOptions<T, Path<T>>;
     /** Opções de campo de seleção (ex.: `InputMultiSelect`) — SPEC-03 D3. */
     options?: FieldOption[];
+    /** Classe de ícone `bootstrap-icons` (ex.: "bi-envelope") exibida à
+     * direita do campo — SPEC-11 item 4. Opcional, não afeta consumidores
+     * que não passarem essa config. */
+    icon?: string;
   };
 }
 
