@@ -6,9 +6,10 @@
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/operational/**` (nova — URL
   em inglês, `operacional`→`operational`; rótulo continua "Operacional")
-- **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02, SPEC-07
-  (reusa a lista de Operações em modo
-  read-only)
+- **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02, **SPEC-07-01**
+  (`operations-list`, sub-SPEC de `specs/07-operacoes/spec.md` — reusa
+  `operations-list.tsx` em modo read-only; não depende das demais
+  sub-SPECs de SPEC-07)
 
 ---
 
@@ -94,8 +95,9 @@ src/routes/_dashboard/_internal/operational/
   operations/
     index.tsx                (<OperationsList readOnly /> — de
                               src/components/operations/operations-list.tsx,
-                              criado na SPEC-07, só importado aqui)
-    $id/index.tsx              (detalhe mock próprio, NÃO reusa o da SPEC-07)
+                              criado na SPEC-07-01, só importado aqui)
+    $id/index.tsx              (detalhe mock próprio, NÃO reusa o das
+                              sub-SPECs de detalhe da SPEC-07)
 ```
 
 ## 10. Arquivos esperados
