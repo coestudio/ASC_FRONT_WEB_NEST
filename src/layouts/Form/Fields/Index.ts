@@ -38,11 +38,18 @@ export { default as InputColorPicker } from "./InputColorPicker";
 //export { default as InputKeywords } from './InputKeywords';
 
 //* Seleção
+export { default as InputSelect } from "./InputSelect";
 export { default as InputMultiSelect } from "./InputMultiSelect";
 export { default as InputCheckboxGroup } from "./InputCheckboxGroup";
 
 //* Files
 export { default as InputAvatar } from "./InputAvatar";
+
+//* Grupo (bloco composto, não é um `Input*` flat) — renderiza um objeto
+// aninhado do DTO como um bloco dentro do form (ex.: `HarborCreate.address`,
+// SPEC-04 §9/§10). Fica fora do padrão `Input*` de propósito, pra não entrar
+// no mapeamento de `FieldName` abaixo (que é só pra campo atômico).
+export { default as GroupAddress } from "../Group/Adress";
 
 type FieldExports = typeof import("./Index");
 export type FieldName = {
@@ -53,8 +60,11 @@ export type FieldName = {
     : never;
 }[keyof FieldExports];
 
+/** Tipo de campo "grupo" — bloco composto que renderiza um objeto aninhado do DTO (SPEC-04). */
+export type GroupFieldName = "GroupAddress";
+
 export type LayoutField = {
-  type: FieldName;
+  type: FieldName | GroupFieldName;
   fieldName: string;
   label?: string;
   placeholder?: string;
@@ -62,7 +72,7 @@ export type LayoutField = {
   config?: {
     containerClass?: string;
     className?: string;
-    /** Opções de campo de seleção (ex.: `InputMultiSelect`) — SPEC-03 D3. */
+    /** Opções de campo de seleção (ex.: `InputMultiSelect`/`InputSelect`) — SPEC-03 D3. */
     options?: { value: string | number; label: string }[];
   };
 };

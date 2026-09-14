@@ -36,7 +36,7 @@ function resolveEnumOptionName(name: Record<string, string>, locale: Locale): st
   return name[locale] ?? name["pt-BR"] ?? Object.values(name)[0] ?? "";
 }
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 3;
 
 export const Route = createFileRoute("/_dashboard/admin/access/")({
   head: () => ({ meta: [{ title: "Acesso — ASC" }] }),

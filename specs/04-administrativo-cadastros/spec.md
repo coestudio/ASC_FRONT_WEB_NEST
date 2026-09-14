@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-04
 - **Nome:** administrativo-cadastros
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/registry/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
@@ -176,4 +176,118 @@ SPEC-02.
 
 ---
 
-**Próximo passo:** `APROVAR SPEC-04`.
+## 15. Implementation Notes
+
+**Arquivos criados:**
+- `src/routes/_dashboard/_internal/administrative/registry/{vessel,product,container,terminal,harbor}/index.tsx`
+  — as 5 telas, cada uma só configurando `CrudListPage`/`CrudRecordModal`
+  (colunas, campos, schema gerado), sem lista/form próprio (CA3).
+- `src/lib/queries/{vessel,product,container,terminal,harbor}.ts` —
+  `queryOptions` isoladas, mesma queryKey dos hooks Orval gerados
+  (`getGetApiXxxQueryKey`). Sem loader/server fn de seed: `CrudListPage`
+  (SPEC-02, emendado pela SPEC-10) já garante que o `queryFn` nunca roda no
+  SSR via `useSsrSafeQuery` + gate de montagem — seed via loader ficou
+  documentado como opcional, não obrigatório (`use-ssr-safe-query.ts`).
+- `src/layouts/Form/Fields/InputSelect.tsx` — novo Field de dropdown de
+  seleção única (`Form.Select` simples), companheiro de `InputMultiSelect`.
+  Necessário pra `TerminalCreate.harborId` (FK pro Porto) — não havia Field
+  de seleção única na biblioteca antes desta SPEC; adicionado seguindo a
+  regra 10 do `AGENTS.md` ("falta um tipo → cria o Field, nunca improvisa
+  na tela"), não estava listado no §10 original da spec mas é consequência
+  direta de implementar o campo `harborId` do escopo já aprovado (RF3).
+- `src/layouts/Form/Group/Adress.tsx` — implementado (estava um arquivo
+  vazio/stub no repo). Renderiza os 8 subcampos de `AddressCreate`/`Update`
+  como bloco (`fieldset`), usando `Controller` direto com paths dinâmicos
+  (`${fieldName}.postalCode` etc.) em vez dos `Input*` da biblioteca, já
+  que o path é construído em runtime.
+- `src/components/crud/crud-row-actions.tsx` — botões padrão
+  editar/excluir (e opcionalmente ver), extraído pra evitar repetir o
+  mesmo markup Bootstrap nas 5 telas (espírito da RNF2). Não usado por
+  `admin/access` (SPEC-03), que mantém seu próprio `RowActions` com ações
+  extras (ativar/desativar/redefinir senha) e o design em pílula da
+  SPEC-11 — fora de escopo tocar nele aqui.
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-registry.json` —
+  namespace novo com uma seção por tipo (`vessel`/`product`/`container`/
+  `terminal`/`harbor`), reaproveitando as chaves genéricas de `crud.json`
+  (save/cancel/close/new/searchPlaceholder padrão) sempre que davam conta.
+- `src/layouts/AppShell/nav/administrative-registry.ts` — fragmento novo,
+  área `administrativo`, os 5 itens de cadastro apontando pra
+  `/administrative/registry/*` (D3).
+
+**Arquivos editados:**
+- `src/layouts/AppShell/nav/administrativo.ts` — removidos os 5 itens de
+  cadastro (migraram pro fragmento novo); mantidos Home/Clientes/Operações/
+  Log/Ocorrências como estavam (fora de escopo).
+- `src/layouts/Form/Fields/Index.ts` — exporta `InputSelect` e
+  `GroupAddress`; `LayoutField.type` agora é `FieldName | GroupFieldName`
+  pra aceitar o tipo "grupo" sem misturar com o mapeamento automático de
+  `Input*`.
+- `src/layouts/Form/Fields/InputNumber.tsx` — reescrito: a versão anterior
+  (sem nenhum consumidor real ainda) forçava um piso de 1 e nunca permitia
+  campo vazio, o que é incompatível com `ContainerCreate.tara` (decimal,
+  opcional/nullable). Trocado pra `NumericFormat` sem prefixo/piso,
+  seguindo o mesmo padrão de `InputMoney`/`InputPorcentage`. Decisão
+  tomada durante a implementação (não estava no §10 original), necessária
+  pra CA1 do Container.
+- `src/i18n/dictionaries.ts` — registra o namespace `administrative-registry`
+  no `ptBR` estático (os outros locales já são cobertos pelo glob
+  existente).
+
+**Decisões tomadas durante a implementação (não estavam explícitas no §13):**
+- Sem loader/server fn de seed SSR para as 5 listas — SPEC-10 (`IN_PROGRESS`
+  à época, mas já com a correção de `CrudListPage` aplicada) tornou isso
+  opcional; manter as 5 rotas mais enxutas (sem 5x `*-fns.ts` +
+  `loader`), consistente com o texto de `use-ssr-safe-query.ts` ("o guard
+  só entra em ação quando não há seed... ou uma rota que ainda não tem
+  loader próprio").
+- `InputSelect` e a reescrita de `InputNumber` — ver acima, necessários
+  pra RF3 (harborId/tara), não escopo novo/arquitetural.
+- `HarborTerminalsExtra` (RF4) é montado só quando o modal está em modo
+  `edit`/`view` de um Harbor já existente (nunca em `create`, que não tem
+  `id`) — `extraContent` do `CrudRecordModal` é passado condicionalmente
+  pela rota; como o `modal` da rota começa `null` e só é setado por clique
+  do usuário, o hook de leitura de terminais nunca roda no SSR sem
+  precisar de gate de montagem adicional.
+- `TerminalRegistryPage` usa o mesmo padrão de "gate de montagem"
+  (page/content split) de `admin/access` porque o lookup de portos
+  (`useSsrSafeQuery(harborListQueryOptions())`) roda fora do
+  `CrudListPage`, no corpo do componente — igual ao lookup de roles da
+  SPEC-03.
+- `bun run build:dev` foi rodado uma vez só pra regenerar
+  `src/routeTree.gen.ts` (rotas novas) — `tsc --noEmit` sozinho não
+  aciona o plugin do TanStack Router; artefato de build (`.output/`)
+  removido depois, não commitado.
+
+**Comandos executados:**
+- `bun run build:dev` → **VERIFIED**, build concluído sem erro (usado só
+  pra regenerar `routeTree.gen.ts`; artefato removido depois).
+- `bun run check` → **VERIFIED**, 0 erros.
+- `bun run lint` → **VERIFIED** sem regressão: 64 problems (3 errors, 61
+  warnings) — os 3 erros são os mesmos pré-existentes de
+  `src/lib/session.server.ts` (não tocado nesta SPEC); nenhum arquivo novo/
+  editado desta SPEC aparece na saída do lint. `--fix` рodado uma vez só
+  corrigiu 3 avisos de formatação (`prettier/prettier`) nos meus próprios
+  arquivos novos (`terminal.ts`, `vessel/index.tsx`, `harbor/index.tsx`).
+- `just map` — não rodado (contrato do Core não mudou nesta SPEC; o diff
+  grande em `src/api/generated/**` já estava na árvore de trabalho antes
+  desta sessão, de um `just map` anterior fora do escopo desta SPEC).
+
+**Critérios de aceitação:**
+| # | Critério | Status |
+| --- | --- | --- |
+| CA1 | As 5 telas fazem CRUD real contra o Core (dev) | PASS — hooks Orval reais (`usePostApiXxx`/`usePutApiXxxId`/`useDeleteApiXxxId`); não testado end-to-end contra Core rodando nesta sessão |
+| CA2 | Nenhuma valida com Zod escrito à mão | PASS — `grep` não encontra `z.object`/`.refine`/`.regex` novo nas rotas/queries/Fields desta SPEC; todo schema é `PostApiXxxBody` gerado |
+| CA3 | As 5 telas reusam `crud-list-page`/`crud-record-modal` da SPEC-02 | PASS — nenhuma tela recria lista/modal, só configura colunas/campos |
+| CA4 | `bun run check` + `lint` passam | PASS — `check` limpo; `lint` sem regressão (mesmos 3 erros pré-existentes, 0 novo warning líquido) |
+
+**Limitações conhecidas:**
+- Sem teste end-to-end contra o Core de dev rodando nesta sessão (só
+  `tsc`/`eslint`/build de rotas) — CA1 fica com a mesma ressalva que a
+  SPEC-03 registrou.
+- `InputSelect` não tem busca/filtro (dropdown simples) — aceitável pro
+  volume de Portos esperado (dezenas), documentado como limitação, não
+  bloqueio.
+- Vínculo Harbor↔Terminal continua só leitura (D2, fora de escopo editar
+  aqui).
+
+**Próximo passo:** nenhum — SPEC-04 implementada.

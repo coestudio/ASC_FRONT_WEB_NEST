@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
@@ -99,10 +99,24 @@ export function CrudRecordModal<T extends FieldValues>({
     formState: { isSubmitting },
   } = methods;
 
+  // `defaultValues` normalmente chega como objeto novo a cada render do
+  // chamador (ex.: `defaultValues={toFormValues(modal.user)}` calculado
+  // inline) — se ele entrasse na dependência do efeito, QUALQUER re-render
+  // do pai enquanto o modal já está aberto (refetch em background do React
+  // Query, foco de janela voltando, etc.) recriava o objeto e disparava
+  // `reset()` de novo, apagando em silêncio o que o usuário já tinha
+  // marcado num campo controlado (checkbox de roles, switch de isAdmin —
+  // bug real: usuário selecionava role/admin, um refetch qualquer limpava
+  // antes do submit, Core recebia array vazio e aplicava o default dele).
+  // Um `ref` guarda o valor mais recente sem entrar na dependência — só
+  // reseta na transição de `show` (abrir o modal), não a cada render.
+  const defaultValuesRef = useRef(defaultValues);
+  defaultValuesRef.current = defaultValues;
+
   useEffect(() => {
-    if (show) reset(defaultValues as never);
+    if (show) reset(defaultValuesRef.current as never);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [show, defaultValues]);
+  }, [show]);
 
   const readOnly = mode === "view";
   const title = t(titleKeys[mode]);

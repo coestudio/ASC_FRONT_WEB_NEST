@@ -9,6 +9,7 @@
 // sob `common.*` — isso preserva os caminhos que já existiam antes da
 // migração (ex.: `t("theme.light")`), sem quebrar nenhum call-site (RF1/CA8).
 import ptBRAccess from "./dictionaries/pt-BR/access.json";
+import ptBRAdministrativeRegistry from "./dictionaries/pt-BR/administrative-registry.json";
 import ptBRAuth from "./dictionaries/pt-BR/auth.json";
 import ptBRCommon from "./dictionaries/pt-BR/common.json";
 import ptBRCrud from "./dictionaries/pt-BR/crud.json";
@@ -24,6 +25,7 @@ const ptBR = {
   auth: ptBRAuth,
   access: ptBRAccess,
   crud: ptBRCrud,
+  "administrative-registry": ptBRAdministrativeRegistry,
 };
 
 export type Dictionary = typeof ptBR;

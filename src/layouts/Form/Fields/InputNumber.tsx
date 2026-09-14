@@ -1,12 +1,18 @@
-import React from "react";
 import { FieldValues } from "react-hook-form";
-import { Form } from "react-bootstrap";
-
 import { NumericFormat } from "react-number-format";
 
 import InputDTO from "layouts/Form/types/Input";
 import Input from "layouts/Form/Fields/Input";
 
+/**
+ * Campo numérico decimal genérico, sem prefixo de moeda (ver `InputMoney`
+ * pra valor monetário) e sem piso artificial — aceita vazio (o
+ * `emptyStringsToNull` do `crud-record-modal` converte pra `null` antes da
+ * validação Zod, então serve pra campo opcional como
+ * `ContainerCreate.tara`, SPEC-04). Reescrito porque a versão anterior
+ * forçava um piso de 1 e nunca deixava o campo ficar vazio — inviável pra
+ * qualquer número opcional/decimal.
+ */
 function InputNumber<T extends FieldValues>({
   fieldName,
   methods,
@@ -15,10 +21,6 @@ function InputNumber<T extends FieldValues>({
   config = {},
   ...colProps
 }: InputDTO<T>) {
-  const {
-    formState: { errors },
-  } = methods;
-
   return (
     <Input
       label={label}
@@ -26,20 +28,16 @@ function InputNumber<T extends FieldValues>({
       config={config}
       {...colProps}
       fieldName={fieldName}
-      element={(field) => (
-        <Form.Control
-          type="number"
-          {...field}
-          value={field.value || ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            // Remove zeros à esquerda e converte para número
-            const numericValue = value === "" ? 1 : Math.max(1, parseInt(value, 10) || 1);
-            field.onChange(numericValue);
-          }}
-          isInvalid={!!errors.installmentsNumber}
-          placeholder="Ex: 12"
-          min="1"
+      element={(field, fieldState) => (
+        <NumericFormat
+          name={field.name}
+          getInputRef={field.ref}
+          value={field.value ?? ""}
+          onBlur={field.onBlur}
+          onValueChange={(values) => field.onChange(values.floatValue ?? "")}
+          allowNegative={false}
+          placeholder={placeholder || config.placeholder || "0"}
+          className={`form-control${fieldState.error ? " is-invalid" : ""}`}
         />
       )}
     />
