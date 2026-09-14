@@ -210,5 +210,62 @@
     "description": "History of events recorded for this operation.",
     "byUser": "by {user}",
     "emptyState": "No events recorded."
+  },
+  "containers": {
+    "new": "Link container",
+    "newTitle": "Link container",
+    "loadError": "Could not load the operation's containers.",
+    "empty": "No container linked to this operation.",
+    "colIdentifier": "Container",
+    "colTara": "Tare",
+    "colStatus": "Status",
+    "colPhotos": "Photos",
+    "colActions": "Actions",
+    "form": {
+      "container": "Container",
+      "tara": "Tare",
+      "status": "Link status",
+      "sealDate": "Seal date"
+    },
+    "photosTitle": "Container photos",
+    "photosAdd": "Photos",
+    "photosUpload": "Upload photos",
+    "photosRemove": "Remove photo",
+    "confirm": {
+      "deleteTitle": "Unlink container",
+      "deleteMessage": "Unlink container {identifier} from this operation?"
+    },
+    "toast": {
+      "linked": "Container linked successfully.",
+      "updated": "Link updated successfully.",
+      "unlinked": "Container unlinked successfully.",
+      "photoUploaded": "Photos uploaded successfully.",
+      "photoDeleted": "Photo removed successfully.",
+      "error": "Could not complete the action. Please try again."
+    }
+  },
+  "documents": {
+    "new": "New document",
+    "newTitle": "New document",
+    "editTitle": "Edit document",
+    "loadError": "Could not load the operation's documents.",
+    "empty": "No document registered for this operation.",
+    "colTitle": "Title",
+    "colType": "Type",
+    "colFile": "File",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "fileLink": "Open file",
+    "form": {
+      "title": "Title",
+      "type": "Type",
+      "observation": "Notes",
+      "file": "File"
+    },
+    "toast": {
+      "created": "Document created successfully.",
+      "updated": "Document updated successfully.",
+      "error": "Could not complete the action. Please try again."
+    }
   }
 }

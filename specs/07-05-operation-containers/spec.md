@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-05
 - **Nome:** operation-containers
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/containers/**`
   (nova)
@@ -97,4 +97,54 @@ Nenhuma.
 
 ---
 
-**Próximo passo:** `APROVAR SPEC-07-05`.
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/operations/tabs/Containers.tsx` (criado) — lista
+    paginada dos containers vinculados à operação
+    (`getGetApiOperationOperationIdContainerQueryOptions`), modal de
+    vínculo (`SelectAsync` pra buscar o container existente via
+    `getApiContainer`, `InputText` pra tara), modal de edição (`Select`
+    com `containerOperationStatusOptions` pro status, `InputText`/
+    `InputDate` pra tara/data do lacre) e gerenciamento de fotos
+    (`InputPhotoMulti`, upload individual por foto via
+    `usePostApiOperationOperationIdContainerIdPhoto`, remoção via
+    `useDeleteApiOperationOperationIdContainerIdPhotoPhotoId`).
+  - `src/lib/validation/operation-container.ts` (criado) — schema local
+    do formulário de fotos (`files: File[]`), remapeando
+    `PostApiOperationOperationIdContainerIdPhotoBody.shape.file` (regra 2
+    do AGENTS.md, zero regra de validação nova).
+  - `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+    (editado) — o shell agora monta `<Containers operationId={id} />`
+    quando `tab === "containers"` (antes só mostrava o placeholder
+    genérico pra todas as abas).
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+    (editado) — chaves novas no namespace `containers.*`, sem tocar nas
+    existentes.
+- **Comandos executados:**
+  - `bun run check` — `tsc --noEmit` sem erros (VERIFIED).
+  - `bun run lint` — 66 problems / 3 erros / 63 warnings, idêntico ao
+    baseline pré-existente (VERIFIED, nenhum warning/erro novo).
+- **Critérios de aceitação:**
+  | # | Critério | Status |
+  | --- | --- | --- |
+  | CA1 | Aba funciona ponta a ponta contra o Core (dev), incluindo upload de foto | Implementado; não testado contra o Core rodando nesta sessão (sem ambiente de dev disponível) — fluxo de vínculo/edição/upload/exclusão de foto segue os hooks gerados e o mesmo padrão dos módulos já validados em produção (registry/container). |
+  | CA2 | `bun run check` + `lint` passam | PASS |
+- **Decisões tomadas durante a implementação:**
+  - Não usei `CrudRecordModal`/`RenderFields` declarativo (`layouts/Form/Fields/map.tsx`)
+    porque ele não repassa `config.enumOptions` como a prop `enumOptions`
+    que o `Select` (SPEC-SHARE-01) espera — reproduzir esse padrão faria
+    o `Select` de status renderizar sem opções (mesmo problema latente já
+    presente em `operations-list.tsx`, fora do meu escopo consertar).
+    Montei modais próprios (mesmo padrão do `OperationHeader` do shell,
+    SPEC-07-02) usando os Fields diretamente.
+  - Fotos não têm seleção de `slot` na UI (RF3 da spec só cobre o
+    `Select` de status) — todo upload usa `slot: "None"`.
+  - Lacres (`seals`) não foram implementados: não estão no RF nem nos
+    "Arquivos esperados" da spec (só citados no §1/§2 de contexto),
+    escopo mínimo mantido conforme RF1-RF4.
+- **Limitações conhecidas:**
+  - Sem verificação manual contra o Core rodando (ambiente de dev não
+    disponível nesta sessão).
+
+**Status final:** IMPLEMENTED.

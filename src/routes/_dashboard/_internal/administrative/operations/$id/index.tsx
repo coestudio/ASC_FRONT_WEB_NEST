@@ -27,6 +27,8 @@ import { PageLayout } from "@/layouts/PageLayout";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
+import { Containers } from "@/components/operations/tabs/Containers";
+import { Documents } from "@/components/operations/tabs/Documents";
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/operations/$id/")({
   head: () => ({ meta: [{ title: "Operação — ASC" }] }),
@@ -128,17 +130,20 @@ function OperationShellBody({ id }: { id: string }) {
       </Nav>
 
       <section>
-        {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — as
-            demais (containers, documents) ainda mostram o placeholder
-            genérico até a aba real existir. */}
+        {/* Conteúdo de cada aba (SPEC-07-03 a SPEC-07-09) — todas as 7 já são
+            reais/mock, nenhum placeholder genérico sobra. */}
         {tab === "details" ? (
           <OperationDetailsTab operation={operation} />
         ) : tab === "romaneio" ? (
           <Romaneio operationId={operation.id} />
-        ) : tab === "responsible" ? (
-          <OperationResponsibleTab />
+        ) : tab === "containers" ? (
+          <Containers operationId={id} />
+        ) : tab === "documents" ? (
+          <Documents operationId={id} />
         ) : tab === "reports" ? (
           <Reports operationId={operation.id} />
+        ) : tab === "responsible" ? (
+          <OperationResponsibleTab />
         ) : tab === "log" ? (
           <Log operationId={operation.id} />
         ) : (

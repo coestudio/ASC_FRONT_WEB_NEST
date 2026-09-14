@@ -210,5 +210,62 @@
     "description": "Historial de eventos registrados en esta operación.",
     "byUser": "por {user}",
     "emptyState": "No hay eventos registrados."
+  },
+  "containers": {
+    "new": "Vincular contenedor",
+    "newTitle": "Vincular contenedor",
+    "loadError": "No fue posible cargar los contenedores de la operación.",
+    "empty": "Ningún contenedor vinculado a esta operación.",
+    "colIdentifier": "Contenedor",
+    "colTara": "Tara",
+    "colStatus": "Estado",
+    "colPhotos": "Fotos",
+    "colActions": "Acciones",
+    "form": {
+      "container": "Contenedor",
+      "tara": "Tara",
+      "status": "Estado del vínculo",
+      "sealDate": "Fecha del precinto"
+    },
+    "photosTitle": "Fotos del contenedor",
+    "photosAdd": "Fotos",
+    "photosUpload": "Enviar fotos",
+    "photosRemove": "Quitar foto",
+    "confirm": {
+      "deleteTitle": "Desvincular contenedor",
+      "deleteMessage": "¿Desvincular el contenedor {identifier} de esta operación?"
+    },
+    "toast": {
+      "linked": "Contenedor vinculado con éxito.",
+      "updated": "Vínculo actualizado con éxito.",
+      "unlinked": "Contenedor desvinculado con éxito.",
+      "photoUploaded": "Fotos enviadas con éxito.",
+      "photoDeleted": "Foto eliminada con éxito.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    }
+  },
+  "documents": {
+    "new": "Nuevo documento",
+    "newTitle": "Nuevo documento",
+    "editTitle": "Editar documento",
+    "loadError": "No fue posible cargar los documentos de la operación.",
+    "empty": "Ningún documento registrado para esta operación.",
+    "colTitle": "Título",
+    "colType": "Tipo",
+    "colFile": "Archivo",
+    "colCreatedAt": "Creado el",
+    "colActions": "Acciones",
+    "fileLink": "Abrir archivo",
+    "form": {
+      "title": "Título",
+      "type": "Tipo",
+      "observation": "Observaciones",
+      "file": "Archivo"
+    },
+    "toast": {
+      "created": "Documento creado con éxito.",
+      "updated": "Documento actualizado con éxito.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    }
   }
 }
