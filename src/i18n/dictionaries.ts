@@ -12,6 +12,7 @@ import ptBRAccess from "./dictionaries/pt-BR/access.json";
 import ptBRAdministrativeClients from "./dictionaries/pt-BR/administrative-clients.json";
 import ptBRAdministrativeRegistry from "./dictionaries/pt-BR/administrative-registry.json";
 import ptBRAuth from "./dictionaries/pt-BR/auth.json";
+import ptBRClient from "./dictionaries/pt-BR/client.json";
 import ptBRCommon from "./dictionaries/pt-BR/common.json";
 import ptBRCrud from "./dictionaries/pt-BR/crud.json";
 import ptBRHome from "./dictionaries/pt-BR/home.json";
@@ -33,6 +34,9 @@ const ptBR = {
   "administrative-registry": ptBRAdministrativeRegistry,
   // Namespace da SPEC-05 (Clientes) — mesmo racional da chave acima.
   "administrative-clients": ptBRAdministrativeClients,
+  // Namespace da SPEC-09 (Área do cliente) — conteúdo das telas Home/
+  // Colaboradores/Relatório Final/Acompanhamento; não duplica `navigation.client*`.
+  client: ptBRClient,
 };
 
 export type Dictionary = typeof ptBR;

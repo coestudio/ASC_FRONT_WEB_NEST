@@ -8,19 +8,19 @@ const fragment: NavFragment = {
     { labelKey: "navigation.clientHome", to: "/client", icon: "bi-house", order: 1 },
     {
       labelKey: "navigation.clientFinalReport",
-      to: "/client/relatorio-final",
+      to: "/client/final-report",
       icon: "bi-file-earmark-text",
       order: 2,
     },
     {
       labelKey: "navigation.clientTracking",
-      to: "/client/acompanhamento",
+      to: "/client/tracking",
       icon: "bi-graph-up-arrow",
       order: 3,
     },
     {
       labelKey: "navigation.clientCollaborators",
-      to: "/client/colaboradores",
+      to: "/client/collaborators",
       icon: "bi-people",
       order: 4,
     },

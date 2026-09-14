@@ -48,6 +48,9 @@ export const loginFn = createServerFn({ method: "POST" })
       refreshToken: tokenData.refreshToken ?? null,
       expiresAt: tokenData.expiresAt,
       userId: user.id,
+      // Usuário externo é ele próprio um Collaborator (D1, SPEC-09) — grava
+      // o clientId aqui porque /api/profile/me não devolve esse campo.
+      clientId: user.collaborator?.clientId,
     });
     return { user };
   });
@@ -61,6 +64,19 @@ export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
 export const isAuthedFn = createServerFn({ method: "GET" }).handler(async (): Promise<boolean> => {
   return (await readServerSession()) !== null;
 });
+
+/**
+ * `clientId` persistido na sessão no login (D1, SPEC-09) — usado pelo guard
+ * de `/_dashboard/client` pra alimentar o contexto do router (mesmo padrão
+ * de `context.authed`), sem chamada extra ao Core nas telas de Colaboradores.
+ * `null` se não há sessão ou o usuário é Internal (sem `collaborator`).
+ */
+export const getClientIdFn = createServerFn({ method: "GET" }).handler(
+  async (): Promise<string | null> => {
+    const session = await readServerSession();
+    return session?.clientId ?? null;
+  },
+);
 
 /**
  * Identidade fresca do usuário para o SSR seedar o cache do React Query.

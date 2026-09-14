@@ -15,10 +15,12 @@ import { Route as SystemRouteImport } from './routes/_system'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as DashboardInternalRouteImport } from './routes/_dashboard/_internal'
 import { Route as DashboardAdminRouteRouteImport } from './routes/_dashboard/admin/route'
+import { Route as DashboardClientRouteRouteImport } from './routes/_dashboard/client/route'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SystemNotFoundRouteImport } from './routes/_system/not-found'
 import { Route as ApiCoreRouteImport } from './routes/api/core'
 import { Route as DashboardAdminIndexRouteImport } from './routes/_dashboard/admin/index'
+import { Route as DashboardClientIndexRouteImport } from './routes/_dashboard/client/index'
 import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard/dashboard/index'
 import { Route as AuthForgotPasswordIndexRouteImport } from './routes/auth/forgot-password/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
@@ -26,6 +28,9 @@ import { Route as AuthLogoutIndexRouteImport } from './routes/auth/logout/index'
 import { Route as DashboardInternalLaboratoryIndexRouteImport } from './routes/_dashboard/_internal/laboratory/index'
 import { Route as DashboardAdminAccessIndexRouteImport } from './routes/_dashboard/admin/access/index'
 import { Route as DashboardAdminRolesIndexRouteImport } from './routes/_dashboard/admin/roles/index'
+import { Route as DashboardClientCollaboratorsIndexRouteImport } from './routes/_dashboard/client/collaborators/index'
+import { Route as DashboardClientFinalReportIndexRouteImport } from './routes/_dashboard/client/final-report/index'
+import { Route as DashboardClientTrackingIndexRouteImport } from './routes/_dashboard/client/tracking/index'
 import { Route as DashboardInternalAdministrativeClientsIndexRouteImport } from './routes/_dashboard/_internal/administrative/clients/index'
 import { Route as DashboardInternalAdministrativeRegistryContainerIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/container/index'
 import { Route as DashboardInternalAdministrativeRegistryHarborIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/harbor/index'
@@ -59,6 +64,11 @@ const DashboardAdminRouteRoute = DashboardAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardClientRouteRoute = DashboardClientRouteRouteImport.update({
+  id: '/client',
+  path: '/client',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const SiteIndexRoute = SiteIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -78,6 +88,11 @@ const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashboardAdminRouteRoute,
+} as any)
+const DashboardClientIndexRoute = DashboardClientIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardClientRouteRoute,
 } as any)
 const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
   id: '/dashboard/',
@@ -116,6 +131,24 @@ const DashboardAdminRolesIndexRoute =
     id: '/roles/',
     path: '/roles/',
     getParentRoute: () => DashboardAdminRouteRoute,
+  } as any)
+const DashboardClientCollaboratorsIndexRoute =
+  DashboardClientCollaboratorsIndexRouteImport.update({
+    id: '/collaborators/',
+    path: '/collaborators/',
+    getParentRoute: () => DashboardClientRouteRoute,
+  } as any)
+const DashboardClientFinalReportIndexRoute =
+  DashboardClientFinalReportIndexRouteImport.update({
+    id: '/final-report/',
+    path: '/final-report/',
+    getParentRoute: () => DashboardClientRouteRoute,
+  } as any)
+const DashboardClientTrackingIndexRoute =
+  DashboardClientTrackingIndexRouteImport.update({
+    id: '/tracking/',
+    path: '/tracking/',
+    getParentRoute: () => DashboardClientRouteRoute,
   } as any)
 const DashboardInternalAdministrativeClientsIndexRoute =
   DashboardInternalAdministrativeClientsIndexRouteImport.update({
@@ -158,9 +191,11 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof SiteIndexRoute
   '/admin': typeof DashboardAdminRouteRouteWithChildren
+  '/client': typeof DashboardClientRouteRouteWithChildren
   '/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
   '/admin/': typeof DashboardAdminIndexRoute
+  '/client/': typeof DashboardClientIndexRoute
   '/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
@@ -168,6 +203,9 @@ export interface FileRoutesByFullPath {
   '/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
   '/admin/access/': typeof DashboardAdminAccessIndexRoute
   '/admin/roles/': typeof DashboardAdminRolesIndexRoute
+  '/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
+  '/client/final-report/': typeof DashboardClientFinalReportIndexRoute
+  '/client/tracking/': typeof DashboardClientTrackingIndexRoute
   '/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
   '/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   '/administrative/registry/harbor/': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
@@ -181,6 +219,7 @@ export interface FileRoutesByTo {
   '/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
   '/admin': typeof DashboardAdminIndexRoute
+  '/client': typeof DashboardClientIndexRoute
   '/dashboard': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
@@ -188,6 +227,9 @@ export interface FileRoutesByTo {
   '/laboratory': typeof DashboardInternalLaboratoryIndexRoute
   '/admin/access': typeof DashboardAdminAccessIndexRoute
   '/admin/roles': typeof DashboardAdminRolesIndexRoute
+  '/client/collaborators': typeof DashboardClientCollaboratorsIndexRoute
+  '/client/final-report': typeof DashboardClientFinalReportIndexRoute
+  '/client/tracking': typeof DashboardClientTrackingIndexRoute
   '/administrative/clients': typeof DashboardInternalAdministrativeClientsIndexRoute
   '/administrative/registry/container': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   '/administrative/registry/harbor': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
@@ -202,11 +244,13 @@ export interface FileRoutesById {
   '/_site': typeof SiteRouteWithChildren
   '/_system': typeof SystemRouteWithChildren
   '/_dashboard/admin': typeof DashboardAdminRouteRouteWithChildren
+  '/_dashboard/client': typeof DashboardClientRouteRouteWithChildren
   '/_dashboard/_internal': typeof DashboardInternalRouteWithChildren
   '/_system/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
   '/_site/': typeof SiteIndexRoute
   '/_dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/_dashboard/client/': typeof DashboardClientIndexRoute
   '/_dashboard/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
@@ -214,6 +258,9 @@ export interface FileRoutesById {
   '/_dashboard/_internal/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
   '/_dashboard/admin/access/': typeof DashboardAdminAccessIndexRoute
   '/_dashboard/admin/roles/': typeof DashboardAdminRolesIndexRoute
+  '/_dashboard/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
+  '/_dashboard/client/final-report/': typeof DashboardClientFinalReportIndexRoute
+  '/_dashboard/client/tracking/': typeof DashboardClientTrackingIndexRoute
   '/_dashboard/_internal/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
   '/_dashboard/_internal/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   '/_dashboard/_internal/administrative/registry/harbor/': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
@@ -227,9 +274,11 @@ export interface FileRouteTypes {
     | '/auth'
     | '/'
     | '/admin'
+    | '/client'
     | '/not-found'
     | '/api/core'
     | '/admin/'
+    | '/client/'
     | '/dashboard/'
     | '/auth/forgot-password/'
     | '/auth/login/'
@@ -237,6 +286,9 @@ export interface FileRouteTypes {
     | '/laboratory/'
     | '/admin/access/'
     | '/admin/roles/'
+    | '/client/collaborators/'
+    | '/client/final-report/'
+    | '/client/tracking/'
     | '/administrative/clients/'
     | '/administrative/registry/container/'
     | '/administrative/registry/harbor/'
@@ -250,6 +302,7 @@ export interface FileRouteTypes {
     | '/not-found'
     | '/api/core'
     | '/admin'
+    | '/client'
     | '/dashboard'
     | '/auth/forgot-password'
     | '/auth/login'
@@ -257,6 +310,9 @@ export interface FileRouteTypes {
     | '/laboratory'
     | '/admin/access'
     | '/admin/roles'
+    | '/client/collaborators'
+    | '/client/final-report'
+    | '/client/tracking'
     | '/administrative/clients'
     | '/administrative/registry/container'
     | '/administrative/registry/harbor'
@@ -270,11 +326,13 @@ export interface FileRouteTypes {
     | '/_site'
     | '/_system'
     | '/_dashboard/admin'
+    | '/_dashboard/client'
     | '/_dashboard/_internal'
     | '/_system/not-found'
     | '/api/core'
     | '/_site/'
     | '/_dashboard/admin/'
+    | '/_dashboard/client/'
     | '/_dashboard/dashboard/'
     | '/auth/forgot-password/'
     | '/auth/login/'
@@ -282,6 +340,9 @@ export interface FileRouteTypes {
     | '/_dashboard/_internal/laboratory/'
     | '/_dashboard/admin/access/'
     | '/_dashboard/admin/roles/'
+    | '/_dashboard/client/collaborators/'
+    | '/_dashboard/client/final-report/'
+    | '/_dashboard/client/tracking/'
     | '/_dashboard/_internal/administrative/clients/'
     | '/_dashboard/_internal/administrative/registry/container/'
     | '/_dashboard/_internal/administrative/registry/harbor/'
@@ -342,6 +403,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminRouteRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/client': {
+      id: '/_dashboard/client'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof DashboardClientRouteRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_site/': {
       id: '/_site/'
       path: '/'
@@ -369,6 +437,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof DashboardAdminIndexRouteImport
       parentRoute: typeof DashboardAdminRouteRoute
+    }
+    '/_dashboard/client/': {
+      id: '/_dashboard/client/'
+      path: '/'
+      fullPath: '/client/'
+      preLoaderRoute: typeof DashboardClientIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
     }
     '/_dashboard/dashboard/': {
       id: '/_dashboard/dashboard/'
@@ -418,6 +493,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/roles/'
       preLoaderRoute: typeof DashboardAdminRolesIndexRouteImport
       parentRoute: typeof DashboardAdminRouteRoute
+    }
+    '/_dashboard/client/collaborators/': {
+      id: '/_dashboard/client/collaborators/'
+      path: '/collaborators'
+      fullPath: '/client/collaborators/'
+      preLoaderRoute: typeof DashboardClientCollaboratorsIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
+    }
+    '/_dashboard/client/final-report/': {
+      id: '/_dashboard/client/final-report/'
+      path: '/final-report'
+      fullPath: '/client/final-report/'
+      preLoaderRoute: typeof DashboardClientFinalReportIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
+    }
+    '/_dashboard/client/tracking/': {
+      id: '/_dashboard/client/tracking/'
+      path: '/tracking'
+      fullPath: '/client/tracking/'
+      preLoaderRoute: typeof DashboardClientTrackingIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
     }
     '/_dashboard/_internal/administrative/clients/': {
       id: '/_dashboard/_internal/administrative/clients/'
@@ -495,6 +591,24 @@ const DashboardAdminRouteRouteChildren: DashboardAdminRouteRouteChildren = {
 const DashboardAdminRouteRouteWithChildren =
   DashboardAdminRouteRoute._addFileChildren(DashboardAdminRouteRouteChildren)
 
+interface DashboardClientRouteRouteChildren {
+  DashboardClientIndexRoute: typeof DashboardClientIndexRoute
+  DashboardClientCollaboratorsIndexRoute: typeof DashboardClientCollaboratorsIndexRoute
+  DashboardClientFinalReportIndexRoute: typeof DashboardClientFinalReportIndexRoute
+  DashboardClientTrackingIndexRoute: typeof DashboardClientTrackingIndexRoute
+}
+
+const DashboardClientRouteRouteChildren: DashboardClientRouteRouteChildren = {
+  DashboardClientIndexRoute: DashboardClientIndexRoute,
+  DashboardClientCollaboratorsIndexRoute:
+    DashboardClientCollaboratorsIndexRoute,
+  DashboardClientFinalReportIndexRoute: DashboardClientFinalReportIndexRoute,
+  DashboardClientTrackingIndexRoute: DashboardClientTrackingIndexRoute,
+}
+
+const DashboardClientRouteRouteWithChildren =
+  DashboardClientRouteRoute._addFileChildren(DashboardClientRouteRouteChildren)
+
 interface DashboardInternalRouteChildren {
   DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
   DashboardInternalAdministrativeClientsIndexRoute: typeof DashboardInternalAdministrativeClientsIndexRoute
@@ -526,12 +640,14 @@ const DashboardInternalRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardAdminRouteRoute: typeof DashboardAdminRouteRouteWithChildren
+  DashboardClientRouteRoute: typeof DashboardClientRouteRouteWithChildren
   DashboardInternalRoute: typeof DashboardInternalRouteWithChildren
   DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAdminRouteRoute: DashboardAdminRouteRouteWithChildren,
+  DashboardClientRouteRoute: DashboardClientRouteRouteWithChildren,
   DashboardInternalRoute: DashboardInternalRouteWithChildren,
   DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
 }
