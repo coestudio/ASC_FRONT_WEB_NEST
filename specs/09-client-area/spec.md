@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-09
 - **Nome:** client-area
-- **Status:** APPROVED — D1 e D2 resolvidos. Ver §13.
+- **Status:** IMPLEMENTED. Ver §14.
 - **Autor:** portal-dev-agent (rascunho + revisão)
 - **Área:** `src/routes/_dashboard/client/**` (nova — `client` não é
   `_internal`, é a área de usuário externo)
@@ -226,5 +226,113 @@ src/routes/_dashboard/client/
 
 ---
 
-**Próximo passo:** D1 e D2 resolvidos — spec em `WAITING_APPROVAL`,
-aguardando `APROVAR SPEC-09`.
+## 14. Implementation Notes
+
+**Arquivos criados**
+
+- `src/routes/_dashboard/client/route.tsx` — guard `authed` (herdado do
+  `/_dashboard` pai) + área `client` (`getUserAreas`), mesmo padrão de
+  `src/routes/_dashboard/admin/route.tsx` (busca `profileMeQueryOptions`
+  direto via `fetchMeFn` no `beforeLoad`, cache só se já quente). Também lê
+  `clientId` via `getClientIdFn()` e devolve no contexto do router pras rotas
+  filhas (mesmo padrão de `context.authed`).
+- `src/routes/_dashboard/client/index.tsx` — Home, grid de 3 cards
+  (`/client/collaborators`, `/client/final-report`, `/client/tracking`).
+- `src/routes/_dashboard/client/collaborators/index.tsx` — CRD real
+  (Create/Read/Delete) via `CrudListPage`/`CrudRecordModal`, escopado ao
+  `clientId` do contexto (`getRouteApi("/_dashboard/client").useRouteContext()`).
+  Sem ação de editar (Core não expõe `PUT`/`PATCH` — CA5).
+- `src/routes/_dashboard/client/final-report/index.tsx` — UI-only, array
+  mockado local (`// MOCK` no comentário), `MockDataBanner`.
+- `src/routes/_dashboard/client/tracking/index.tsx` — idem.
+- `src/lib/validation/collaborator.ts` — schema achatado remapeando
+  `PostApiClientClientIdCollaboratorBody.shape.*` (zero Zod novo à mão).
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/client.json` — namespace novo
+  (Home/Colaboradores/Relatório Final/Acompanhamento), sem duplicar
+  `navigation.client*`.
+
+**Arquivos editados**
+
+- `src/lib/session.server.ts` — campo `clientId?: string` no `SessionData`.
+- `src/lib/auth-fns.ts` — `loginFn` grava `user.collaborator?.clientId` na
+  sessão; nova `getClientIdFn` (server fn de leitura, usada pelo guard).
+- `src/layouts/AppShell/nav/client.ts` — 3 `to:` trocados de português para
+  inglês (`final-report`, `tracking`, `collaborators`); `labelKey`s mantidos.
+- `src/i18n/dictionaries.ts` — registra o namespace `client` (import estático
+  pt-BR + entrada no objeto `ptBR`; en/es/zh entram sozinhos pelo
+  `import.meta.glob` já existente).
+- `src/routeTree.gen.ts` — regenerado (`bun run dev`, plugin do TanStack
+  Router) para incluir as 5 rotas novas. Diff só aditivo (116 linhas
+  inseridas, nada removido/reformatado).
+
+**Comandos executados**
+
+- `bun run lint` (baseline, antes de tocar em qualquer arquivo): `66 problems
+  (3 errors, 63 warnings)` — VERIFIED, bate com o baseline informado.
+- `bun run dev` (~15s em background, morto em seguida) — só para o plugin do
+  TanStack Router regenerar `src/routeTree.gen.ts` com as rotas novas.
+  VERIFIED (rotas `/_dashboard/client*` apareceram no arquivo gerado).
+- `bun run check` (`tsc --noEmit`) — VERIFIED, zero erro.
+- `bun run lint` (final) — VERIFIED, `66 problems (3 errors, 63 warnings)` —
+  idêntico ao baseline, zero warning/erro novo.
+- `bun run format` foi rodado uma vez durante a implementação e reformatou
+  (estilo de aspas) uma quantidade grande de `src/api/generated/**` e de
+  `specs/*.md` não relacionados a esta SPEC — **revertido** via
+  `git checkout --` antes do commit (confirmado por `git diff --stat` vazio
+  nesses caminhos). Nenhum arquivo gerado ou spec de outra SPEC ficou
+  modificado no commit final; só os arquivos listados acima.
+- `just map` — não rodado; o contrato do Core não mudou nesta SPEC (endpoints
+  de `Collaborator` já existiam no client gerado).
+
+**Critérios de aceitação**
+
+| #   | Critério                                                                                  | Status                                                                                                                                                                                                                     |
+| --- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CA1 | Colaboradores faz criar/listar/detalhar/excluir real, escopado ao `clientId` da sessão      | PASS (hooks Orval reais — `usePostApiClientClientIdCollaborator`, `useGetApiClientClientIdCollaboratorId`, `useDeleteApiClientClientIdCollaboratorId`; não foi possível rodar E2E contra um Core ao vivo neste ambiente) |
+| CA2 | Usuário `Internal` não acessa `/client/*`                                                  | PASS (guard `getUserAreas(...).includes("client")` no `beforeLoad`, mesmo padrão do `/admin`)                                                                                                                             |
+| CA3 | Relatório Final/Acompanhamento sem write real, mock comentado como tal                     | PASS (`// MOCK` em ambos os arquivos, `MockDataBanner` visível)                                                                                                                                                           |
+| CA4 | `bun run check` + `lint` passam                                                            | PASS (ver comandos acima)                                                                                                                                                                                                 |
+| CA5 | `grep -n "PUT\|PATCH"` em `collaborators/index.tsx` não acha ação de editar                | PASS (única ocorrência é comentário explicando a ausência de editar)                                                                                                                                                      |
+| CA6 | `nav/client.ts` aponta pras 3 rotas em inglês, nenhum `to:` em português sobrevive          | PASS                                                                                                                                                                                                                       |
+
+**Lacuna de contrato encontrada (R1)**
+
+`GET /api/client/{clientId}/collaborator` devolve `CollaboratorDTO[]` puro —
+**sem** `items`/`total` nem parâmetros `Search`/`Offset`/`Limit`, diferente de
+todo outro endpoint de listagem do Core usado até aqui (`PagedDTOOfXxxDTO`).
+Contornado client-side: `collaborators/index.tsx` busca o array inteiro e
+aplica busca/paginação em memória (`toPagedResult`), documentado em
+comentário PT-BR no próprio arquivo — não altera nenhum schema Zod, só a
+forma como a tela consome o array já existente. Fica registrado aqui como
+achado de implementação (não bloqueou nada, mas é uma divergência de
+contrato que outra SPEC/Core pode querer resolver adicionando paginação
+real ao endpoint).
+
+**Decisões tomadas durante a implementação**
+
+- `clientId` exposto ao restante da árvore de rotas via `beforeLoad` de
+  `/_dashboard/client` (retornado no objeto de contexto, não uma nova query
+  Orval) — mesmo padrão de `context.authed` citado no §8 da spec, resolvido
+  com uma nova server fn (`getClientIdFn`) em vez de estender o contexto do
+  `__root` (mantém o escopo restrito à área `client`, sem tocar
+  `__root.tsx`, que não estava na lista de arquivos esperados).
+- Modal de `view` de Colaborador busca o detalhe fresco via
+  `useGetApiClientClientIdCollaboratorId` (em vez de reusar o item já
+  presente na lista) — exercita esse endpoint de ponta a ponta também,
+  coerente com o objetivo do R1/CA1 de validar toda a superfície da API
+  `Collaborator` nunca testada em produção.
+- `titleKeys.edit` do `CrudRecordModal` (prop obrigatória do componente
+  compartilhado) aponta pra mesma chave de `create` (`newTitle`) já que o
+  modo `edit` nunca é acionado nesta tela — não é uma chave nova de i18n.
+
+**Limitações conhecidas**
+
+- Nenhuma verificação E2E contra um Core rodando de verdade nesta sessão —
+  só leitura de contrato/tipos gerados (mesma ressalva já registrada na
+  SPEC-04).
+- Busca/paginação de Colaboradores é 100% client-side (ver R1 acima); numa
+  base de colaboradores muito grande isso buscaria o array inteiro a cada
+  refetch.
+
+**Próximo passo:** nenhum — SPEC-09 implementada, sem `[NEEDS_DECISION]`
+pendente.
