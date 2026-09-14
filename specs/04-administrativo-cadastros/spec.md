@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-04
 - **Nome:** administrativo-cadastros
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/registry/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
