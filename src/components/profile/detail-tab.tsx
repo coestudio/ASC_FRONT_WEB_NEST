@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Form, Spinner } from "react-bootstrap";
+import { Button, Form, Row, Spinner } from "react-bootstrap";
 import { z } from "zod";
 
 import { PostApiProfileMeBody } from "@/api/generated/zod/profile/profile.zod";
@@ -8,7 +8,13 @@ import { usePostApiProfileMe } from "@/api/generated/endpoints/profile/profile";
 import { profileMeQueryOptions } from "@/lib/queries/profile";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { InputText, InputEmail, InputDate } from "@/layouts/Form/Fields/Index";
+import {
+  InputText,
+  InputEmail,
+  InputDate,
+  InputDocument,
+  InputPhone,
+} from "@/layouts/Form/Fields/Index";
 import { useT } from "@/lib/ui-prefs";
 import type { UserDetailDTO } from "@/api/generated/model";
 
@@ -62,37 +68,44 @@ export function DetailTab({ user }: { user: UserDetailDTO }) {
 
   return (
     <Form noValidate onSubmit={onSubmit}>
-      <InputText
-        methods={methods}
-        fieldName="fullName"
-        label={t("shell.profileModal.fullName")}
-        md={12}
-      />
-      <InputText
-        methods={methods}
-        fieldName="userName"
-        label={t("shell.profileModal.userName")}
-        md={6}
-      />
-      <InputEmail
-        methods={methods}
-        fieldName="email"
-        label={t("shell.profileModal.email")}
-        md={6}
-      />
-      <InputText
-        methods={methods}
-        fieldName="document"
-        label={t("shell.profileModal.document")}
-        md={6}
-      />
-      <InputText methods={methods} fieldName="phone" label={t("shell.profileModal.phone")} md={6} />
-      <InputDate
-        methods={methods}
-        fieldName="birthDate"
-        label={t("shell.profileModal.birthDate")}
-        md={6}
-      />
+      <Row className="g-3">
+        <InputText
+          methods={methods}
+          fieldName="fullName"
+          label={t("shell.profileModal.fullName")}
+          md={6}
+        />
+        <InputText
+          methods={methods}
+          fieldName="userName"
+          label={t("shell.profileModal.userName")}
+          md={6}
+        />
+        <InputEmail
+          methods={methods}
+          fieldName="email"
+          label={t("shell.profileModal.email")}
+          md={6}
+        />
+        <InputDocument
+          methods={methods}
+          fieldName="document"
+          label={t("shell.profileModal.document")}
+          md={6}
+        />
+        <InputPhone
+          methods={methods}
+          fieldName="phone"
+          label={t("shell.profileModal.phone")}
+          md={6}
+        />
+        <InputDate
+          methods={methods}
+          fieldName="birthDate"
+          label={t("shell.profileModal.birthDate")}
+          md={6}
+        />
+      </Row>
       <div className="d-flex justify-content-end mt-3">
         <Button type="submit" disabled={methods.formState.isSubmitting}>
           {methods.formState.isSubmitting ? (

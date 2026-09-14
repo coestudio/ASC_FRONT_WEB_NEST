@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Form, Spinner } from "react-bootstrap";
+import { Button, Form, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -45,24 +45,26 @@ export function PasswordTab() {
 
   return (
     <Form noValidate onSubmit={onSubmit}>
-      <InputPassword
-        methods={methods}
-        fieldName="currentPassword"
-        label={t("shell.profileModal.currentPassword")}
-        md={12}
-      />
-      <InputPassword
-        methods={methods}
-        fieldName="newPassword"
-        label={t("shell.profileModal.newPassword")}
-        md={6}
-      />
-      <InputPassword
-        methods={methods}
-        fieldName="newPasswordConfirm"
-        label={t("shell.profileModal.confirmPassword")}
-        md={6}
-      />
+      <Row className="g-3">
+        <InputPassword
+          methods={methods}
+          fieldName="currentPassword"
+          label={t("shell.profileModal.currentPassword")}
+          md={12}
+        />
+        <InputPassword
+          methods={methods}
+          fieldName="newPassword"
+          label={t("shell.profileModal.newPassword")}
+          md={6}
+        />
+        <InputPassword
+          methods={methods}
+          fieldName="newPasswordConfirm"
+          label={t("shell.profileModal.confirmPassword")}
+          md={6}
+        />
+      </Row>
       <div className="d-flex justify-content-end mt-3">
         <Button type="submit" disabled={methods.formState.isSubmitting}>
           {methods.formState.isSubmitting ? (

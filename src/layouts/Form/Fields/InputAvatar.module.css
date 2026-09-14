@@ -1,0 +1,10 @@
+.overlay {
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.wrapper:hover .overlay,
+.wrapper:focus-within .overlay {
+  opacity: 1;
+}

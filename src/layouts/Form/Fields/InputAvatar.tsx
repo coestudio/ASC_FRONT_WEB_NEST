@@ -1,15 +1,29 @@
 import { useRef } from "react";
 import { Controller, FieldValues } from "react-hook-form";
 import { Col } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
 import { useObjectUrl } from "@/hooks";
+import styles from "./InputAvatar.module.css";
 
 interface InputAvatarProps<T extends FieldValues> extends InputDTO<T> {
   /** URL do avatar atual (já salvo no servidor), usada até o usuário trocar o arquivo. */
   previewUrl?: string | null;
   /** Iniciais mostradas quando não há avatar nem arquivo selecionado. */
   initials?: string;
+  /** Rótulo do overlay quando já existe imagem (padrão: "Trocar"). */
+  changeLabel?: string;
+  /** Rótulo do overlay quando ainda não há imagem (padrão: "Selecionar"). */
+  selectLabel?: string;
+  /** Chamado com o arquivo assim que selecionado — antes de ir pro `field.onChange`, útil pra disparar upload automático (ver profile-modal). */
+  onFileSelected?: (file: File) => void;
+  /** Quando definido, mostra o botão de remover (arquivo pendente ou avatar já salvo). */
+  onRemove?: () => void;
+  /** Tamanho máximo em bytes — acima disso o arquivo é rejeitado com toast. */
+  maxSizeBytes?: number;
+  /** Mensagem exibida quando `maxSizeBytes` é excedido. */
+  maxSizeMessage?: string;
 }
 
 /**
@@ -24,6 +38,12 @@ function InputAvatar<T extends FieldValues>({
   config = {},
   previewUrl,
   initials,
+  changeLabel = "Trocar",
+  selectLabel = "Selecionar",
+  onFileSelected,
+  onRemove,
+  maxSizeBytes,
+  maxSizeMessage = "Arquivo muito grande.",
   ...colProps
 }: InputAvatarProps<T>) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,34 +60,58 @@ function InputAvatar<T extends FieldValues>({
       <Controller
         control={methods.control}
         name={fieldName}
-        render={({ field: { onChange, name } }) => {
+        render={({ field: { onChange, value, name } }) => {
           const src = localUrl || previewUrl || null;
+          const hasValue = Boolean(value) || Boolean(previewUrl);
+
+          const handleSelect = (file: File | null) => {
+            if (!file) return;
+            if (maxSizeBytes && file.size > maxSizeBytes) {
+              toast.error(maxSizeMessage);
+              if (inputRef.current) inputRef.current.value = "";
+              return;
+            }
+            onChange(file);
+            onFileSelected?.(file);
+          };
 
           return (
             <div className={config.containerClass || default_containerClass}>
               <div
-                role="button"
-                tabIndex={0}
-                aria-label={config.label || "Trocar avatar"}
-                className="rounded-circle overflow-hidden d-inline-flex align-items-center justify-content-center bg-secondary-subtle text-secondary-emphasis fs-4"
-                style={{ width: 96, height: 96, cursor: "pointer" }}
-                onClick={() => inputRef.current?.click()}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    inputRef.current?.click();
-                  }
-                }}
+                className={`position-relative d-inline-block ${styles.wrapper}`}
+                style={{ width: 96, height: 96 }}
               >
-                {src ? (
-                  <img
-                    src={src}
-                    alt=""
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                ) : (
-                  <span>{initials || "?"}</span>
-                )}
+                <div className="rounded-circle overflow-hidden d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary-emphasis fs-4 w-100 h-100">
+                  {src ? (
+                    <img
+                      src={src}
+                      alt=""
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <span>{initials || "?"}</span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  aria-label={config.label || "Trocar avatar"}
+                  className={`position-absolute top-0 start-0 w-100 h-100 rounded-circle border-0 d-flex flex-column align-items-center justify-content-center text-white p-0 ${styles.overlay}`}
+                  onClick={() => inputRef.current?.click()}
+                >
+                  <i className="bi bi-camera" />
+                  <span className="small">{src ? changeLabel : selectLabel}</span>
+                </button>
+                {hasValue && onRemove ? (
+                  <button
+                    type="button"
+                    aria-label="Remover imagem"
+                    className="position-absolute top-0 start-100 translate-middle rounded-circle btn btn-sm btn-danger p-0 d-flex align-items-center justify-content-center"
+                    style={{ width: 24, height: 24 }}
+                    onClick={onRemove}
+                  >
+                    <i className="bi bi-x-lg" style={{ fontSize: 12 }} />
+                  </button>
+                ) : null}
               </div>
               <input
                 ref={inputRef}
@@ -75,7 +119,7 @@ function InputAvatar<T extends FieldValues>({
                 accept="image/*"
                 className="d-none"
                 name={name}
-                onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+                onChange={(e) => handleSelect(e.target.files?.[0] ?? null)}
               />
             </div>
           );

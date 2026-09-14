@@ -25,7 +25,6 @@
     "profileModal": {
       "title": "Mi perfil",
       "avatar": "Avatar",
-      "uploadAvatar": "Guardar avatar",
       "avatarSaved": "Avatar actualizado.",
       "detailTab": "Detalles",
       "addressTab": "Dirección",
@@ -48,7 +47,14 @@
       "confirmPassword": "Confirmar contraseña",
       "save": "Guardar",
       "saved": "Cambios guardados.",
-      "saveError": "No se pudo guardar. Inténtalo de nuevo."
+      "saveError": "No se pudo guardar. Inténtalo de nuevo.",
+      "cancel": "Cancelar",
+      "changeAvatar": "Cambiar",
+      "selectAvatar": "Seleccionar",
+      "removeAvatar": "Eliminar imagen",
+      "avatarHint": "Pasa el mouse sobre la foto para cambiarla. JPG o PNG hasta 2 MB.",
+      "avatarTooLarge": "Archivo muy grande. Máximo 2 MB.",
+      "uploadingAvatar": "Enviando..."
     }
   },
   "devTools": {

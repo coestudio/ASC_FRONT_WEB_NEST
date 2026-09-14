@@ -25,7 +25,6 @@
     "profileModal": {
       "title": "My profile",
       "avatar": "Avatar",
-      "uploadAvatar": "Save avatar",
       "avatarSaved": "Avatar updated.",
       "detailTab": "Details",
       "addressTab": "Address",
@@ -48,7 +47,14 @@
       "confirmPassword": "Confirm password",
       "save": "Save",
       "saved": "Changes saved.",
-      "saveError": "Could not save. Please try again."
+      "saveError": "Could not save. Please try again.",
+      "cancel": "Cancel",
+      "changeAvatar": "Change",
+      "selectAvatar": "Select",
+      "removeAvatar": "Remove image",
+      "avatarHint": "Hover the photo to change it. JPG or PNG up to 2 MB.",
+      "avatarTooLarge": "File too large. Maximum 2 MB.",
+      "uploadingAvatar": "Uploading..."
     }
   },
   "devTools": {
