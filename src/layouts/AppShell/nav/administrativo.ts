@@ -6,7 +6,9 @@ import type { NavFragment } from "./types";
  * Terminal, Porto, Produto) migraram pra `nav/administrative-registry.ts`
  * (SPEC-04, rotas novas em inglês) — não duplicar aqui. O item "Clientes"
  * migrou pra `nav/administrative-clients.ts` (SPEC-05, rota nova
- * `/administrative/clients`) — também não duplicar aqui.
+ * `/administrative/clients`) — também não duplicar aqui. O item "Operações"
+ * migrou pra `nav/administrative-operations.ts` (SPEC-07-01, rota nova
+ * `/administrative/operations`) — idem, não duplicar.
  * `administrativoLog`/`administrativoOccurrences` continuam órfãos,
  * apontando pra rota antiga: SPEC-06 (que os removeria) foi cancelada, sem
  * spec própria ainda pra essas duas telas.
@@ -20,12 +22,6 @@ const fragment: NavFragment = {
       to: "/administrativo",
       icon: "bi-house",
       order: 1,
-    },
-    {
-      labelKey: "navigation.administrativoOperations",
-      to: "/operacoes",
-      icon: "bi-clipboard-data",
-      order: 3,
     },
     {
       labelKey: "navigation.administrativoLog",

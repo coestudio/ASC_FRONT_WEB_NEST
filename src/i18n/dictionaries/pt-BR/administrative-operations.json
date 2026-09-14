@@ -1,0 +1,54 @@
+{
+  "title": "Operações",
+  "description": "Operações de estufagem e embarque em andamento.",
+  "colNumber": "Número",
+  "colClient": "Cliente",
+  "colProduct": "Produto",
+  "colType": "Tipo",
+  "colService": "Serviço",
+  "colStatus": "Status",
+  "colOpDate": "Data da operação",
+  "colBooking": "Booking",
+  "colActions": "Ações",
+  "emptyState": "Nenhuma operação encontrada.",
+  "newButton": "Nova operação",
+  "newTitle": "Nova operação",
+  "editTitle": "Editar operação",
+  "viewTitle": "Detalhes da operação",
+  "searchPlaceholder": "Buscar por número, booking...",
+  "filters": {
+    "type": "Tipo",
+    "typePlaceholder": "Todos os tipos",
+    "status": "Status",
+    "statusPlaceholder": "Todos os status",
+    "client": "Cliente",
+    "clientPlaceholder": "Buscar cliente..."
+  },
+  "form": {
+    "opType": "Tipo",
+    "opService": "Serviço",
+    "client": "Cliente",
+    "product": "Produto",
+    "vessel": "Navio",
+    "booking": "Booking",
+    "instruction": "Instrução",
+    "nameDate": "Data do nome",
+    "opDate": "Data da operação",
+    "startDate": "Data de início",
+    "observation": "Observação"
+  },
+  "detail": {
+    "number": "Número",
+    "status": "Status",
+    "type": "Tipo",
+    "service": "Serviço",
+    "booking": "Booking",
+    "instruction": "Instrução"
+  },
+  "toast": {
+    "created": "Operação criada com sucesso.",
+    "updated": "Operação atualizada com sucesso.",
+    "error": "Não foi possível concluir a ação. Tente novamente.",
+    "loadError": "Não foi possível carregar os dados da operação."
+  }
+}

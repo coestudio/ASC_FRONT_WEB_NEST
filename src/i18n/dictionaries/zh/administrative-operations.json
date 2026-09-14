@@ -1,0 +1,54 @@
+{
+  "title": "作业",
+  "description": "进行中的装箱和装运作业。",
+  "colNumber": "编号",
+  "colClient": "客户",
+  "colProduct": "产品",
+  "colType": "类型",
+  "colService": "服务",
+  "colStatus": "状态",
+  "colOpDate": "作业日期",
+  "colBooking": "订舱号",
+  "colActions": "操作",
+  "emptyState": "未找到任何作业。",
+  "newButton": "新建作业",
+  "newTitle": "新建作业",
+  "editTitle": "编辑作业",
+  "viewTitle": "作业详情",
+  "searchPlaceholder": "按编号、订舱号搜索...",
+  "filters": {
+    "type": "类型",
+    "typePlaceholder": "所有类型",
+    "status": "状态",
+    "statusPlaceholder": "所有状态",
+    "client": "客户",
+    "clientPlaceholder": "搜索客户..."
+  },
+  "form": {
+    "opType": "类型",
+    "opService": "服务",
+    "client": "客户",
+    "product": "产品",
+    "vessel": "船舶",
+    "booking": "订舱号",
+    "instruction": "说明",
+    "nameDate": "命名日期",
+    "opDate": "作业日期",
+    "startDate": "开始日期",
+    "observation": "备注"
+  },
+  "detail": {
+    "number": "编号",
+    "status": "状态",
+    "type": "类型",
+    "service": "服务",
+    "booking": "订舱号",
+    "instruction": "说明"
+  },
+  "toast": {
+    "created": "作业创建成功。",
+    "updated": "作业更新成功。",
+    "error": "无法完成该操作，请重试。",
+    "loadError": "无法加载作业数据。"
+  }
+}

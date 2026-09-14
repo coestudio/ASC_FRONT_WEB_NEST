@@ -1,0 +1,54 @@
+{
+  "title": "Operations",
+  "description": "Stuffing and boarding operations in progress.",
+  "colNumber": "Number",
+  "colClient": "Client",
+  "colProduct": "Product",
+  "colType": "Type",
+  "colService": "Service",
+  "colStatus": "Status",
+  "colOpDate": "Operation date",
+  "colBooking": "Booking",
+  "colActions": "Actions",
+  "emptyState": "No operation found.",
+  "newButton": "New operation",
+  "newTitle": "New operation",
+  "editTitle": "Edit operation",
+  "viewTitle": "Operation details",
+  "searchPlaceholder": "Search by number, booking...",
+  "filters": {
+    "type": "Type",
+    "typePlaceholder": "All types",
+    "status": "Status",
+    "statusPlaceholder": "All statuses",
+    "client": "Client",
+    "clientPlaceholder": "Search client..."
+  },
+  "form": {
+    "opType": "Type",
+    "opService": "Service",
+    "client": "Client",
+    "product": "Product",
+    "vessel": "Vessel",
+    "booking": "Booking",
+    "instruction": "Instruction",
+    "nameDate": "Name date",
+    "opDate": "Operation date",
+    "startDate": "Start date",
+    "observation": "Notes"
+  },
+  "detail": {
+    "number": "Number",
+    "status": "Status",
+    "type": "Type",
+    "service": "Service",
+    "booking": "Booking",
+    "instruction": "Instruction"
+  },
+  "toast": {
+    "created": "Operation created successfully.",
+    "updated": "Operation updated successfully.",
+    "error": "Could not complete the action. Please try again.",
+    "loadError": "Could not load the operation data."
+  }
+}

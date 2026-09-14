@@ -10,6 +10,7 @@
 // migração (ex.: `t("theme.light")`), sem quebrar nenhum call-site (RF1/CA8).
 import ptBRAccess from "./dictionaries/pt-BR/access.json";
 import ptBRAdministrativeClients from "./dictionaries/pt-BR/administrative-clients.json";
+import ptBRAdministrativeOperations from "./dictionaries/pt-BR/administrative-operations.json";
 import ptBRAdministrativeRegistry from "./dictionaries/pt-BR/administrative-registry.json";
 import ptBRAuth from "./dictionaries/pt-BR/auth.json";
 import ptBRClient from "./dictionaries/pt-BR/client.json";
@@ -34,6 +35,10 @@ const ptBR = {
   "administrative-registry": ptBRAdministrativeRegistry,
   // Namespace da SPEC-05 (Clientes) — mesmo racional da chave acima.
   "administrative-clients": ptBRAdministrativeClients,
+  // Namespace da SPEC-07-01 (Operações — lista + todas as abas do detalhe,
+  // ver §5 da spec): criado aqui, editado (chaves adicionadas) pelas
+  // sub-SPECs seguintes (07-03 em diante), nunca recriado.
+  "administrative-operations": ptBRAdministrativeOperations,
   // Namespace da SPEC-09 (Área do cliente) — conteúdo das telas Home/
   // Colaboradores/Relatório Final/Acompanhamento; não duplica `navigation.client*`.
   client: ptBRClient,
