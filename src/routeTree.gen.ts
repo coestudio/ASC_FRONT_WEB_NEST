@@ -32,6 +32,7 @@ import { Route as DashboardClientCollaboratorsIndexRouteImport } from './routes/
 import { Route as DashboardClientFinalReportIndexRouteImport } from './routes/_dashboard/client/final-report/index'
 import { Route as DashboardClientTrackingIndexRouteImport } from './routes/_dashboard/client/tracking/index'
 import { Route as DashboardInternalAdministrativeClientsIndexRouteImport } from './routes/_dashboard/_internal/administrative/clients/index'
+import { Route as DashboardInternalAdministrativeOperationsIdIndexRouteImport } from './routes/_dashboard/_internal/administrative/operations/$id/index'
 import { Route as DashboardInternalAdministrativeRegistryContainerIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/container/index'
 import { Route as DashboardInternalAdministrativeRegistryHarborIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/harbor/index'
 import { Route as DashboardInternalAdministrativeRegistryProductIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/product/index'
@@ -156,6 +157,12 @@ const DashboardInternalAdministrativeClientsIndexRoute =
     path: '/administrative/clients/',
     getParentRoute: () => DashboardInternalRoute,
   } as any)
+const DashboardInternalAdministrativeOperationsIdIndexRoute =
+  DashboardInternalAdministrativeOperationsIdIndexRouteImport.update({
+    id: '/administrative/operations/$id/',
+    path: '/administrative/operations/$id/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
 const DashboardInternalAdministrativeRegistryContainerIndexRoute =
   DashboardInternalAdministrativeRegistryContainerIndexRouteImport.update({
     id: '/administrative/registry/container/',
@@ -207,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/client/final-report/': typeof DashboardClientFinalReportIndexRoute
   '/client/tracking/': typeof DashboardClientTrackingIndexRoute
   '/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   '/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   '/administrative/registry/harbor/': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
   '/administrative/registry/product/': typeof DashboardInternalAdministrativeRegistryProductIndexRoute
@@ -231,6 +239,7 @@ export interface FileRoutesByTo {
   '/client/final-report': typeof DashboardClientFinalReportIndexRoute
   '/client/tracking': typeof DashboardClientTrackingIndexRoute
   '/administrative/clients': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/administrative/operations/$id': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   '/administrative/registry/container': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   '/administrative/registry/harbor': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
   '/administrative/registry/product': typeof DashboardInternalAdministrativeRegistryProductIndexRoute
@@ -262,6 +271,7 @@ export interface FileRoutesById {
   '/_dashboard/client/final-report/': typeof DashboardClientFinalReportIndexRoute
   '/_dashboard/client/tracking/': typeof DashboardClientTrackingIndexRoute
   '/_dashboard/_internal/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/_dashboard/_internal/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   '/_dashboard/_internal/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   '/_dashboard/_internal/administrative/registry/harbor/': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
   '/_dashboard/_internal/administrative/registry/product/': typeof DashboardInternalAdministrativeRegistryProductIndexRoute
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/client/final-report/'
     | '/client/tracking/'
     | '/administrative/clients/'
+    | '/administrative/operations/$id/'
     | '/administrative/registry/container/'
     | '/administrative/registry/harbor/'
     | '/administrative/registry/product/'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/client/final-report'
     | '/client/tracking'
     | '/administrative/clients'
+    | '/administrative/operations/$id'
     | '/administrative/registry/container'
     | '/administrative/registry/harbor'
     | '/administrative/registry/product'
@@ -344,6 +356,7 @@ export interface FileRouteTypes {
     | '/_dashboard/client/final-report/'
     | '/_dashboard/client/tracking/'
     | '/_dashboard/_internal/administrative/clients/'
+    | '/_dashboard/_internal/administrative/operations/$id/'
     | '/_dashboard/_internal/administrative/registry/container/'
     | '/_dashboard/_internal/administrative/registry/harbor/'
     | '/_dashboard/_internal/administrative/registry/product/'
@@ -522,6 +535,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInternalAdministrativeClientsIndexRouteImport
       parentRoute: typeof DashboardInternalRoute
     }
+    '/_dashboard/_internal/administrative/operations/$id/': {
+      id: '/_dashboard/_internal/administrative/operations/$id/'
+      path: '/administrative/operations/$id'
+      fullPath: '/administrative/operations/$id/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeOperationsIdIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
     '/_dashboard/_internal/administrative/registry/container/': {
       id: '/_dashboard/_internal/administrative/registry/container/'
       path: '/administrative/registry/container'
@@ -612,6 +632,7 @@ const DashboardClientRouteRouteWithChildren =
 interface DashboardInternalRouteChildren {
   DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
   DashboardInternalAdministrativeClientsIndexRoute: typeof DashboardInternalAdministrativeClientsIndexRoute
+  DashboardInternalAdministrativeOperationsIdIndexRoute: typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   DashboardInternalAdministrativeRegistryContainerIndexRoute: typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   DashboardInternalAdministrativeRegistryHarborIndexRoute: typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
   DashboardInternalAdministrativeRegistryProductIndexRoute: typeof DashboardInternalAdministrativeRegistryProductIndexRoute
@@ -623,6 +644,8 @@ const DashboardInternalRouteChildren: DashboardInternalRouteChildren = {
   DashboardInternalLaboratoryIndexRoute: DashboardInternalLaboratoryIndexRoute,
   DashboardInternalAdministrativeClientsIndexRoute:
     DashboardInternalAdministrativeClientsIndexRoute,
+  DashboardInternalAdministrativeOperationsIdIndexRoute:
+    DashboardInternalAdministrativeOperationsIdIndexRoute,
   DashboardInternalAdministrativeRegistryContainerIndexRoute:
     DashboardInternalAdministrativeRegistryContainerIndexRoute,
   DashboardInternalAdministrativeRegistryHarborIndexRoute:

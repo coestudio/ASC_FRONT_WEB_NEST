@@ -1,0 +1,22 @@
+{
+  "shell": {
+    "pageTitle": "Operação {number} — ASC",
+    "eyebrow": "Operação {number}",
+    "tabs": {
+      "details": "Detalhes",
+      "romaneio": "Romaneio",
+      "containers": "Containers",
+      "documents": "Documentos",
+      "reports": "Relatórios",
+      "responsible": "Responsáveis",
+      "log": "Log"
+    },
+    "statusLabel": "Status da operação",
+    "statusUpdated": "Status da operação atualizado com sucesso.",
+    "statusError": "Não foi possível atualizar o status. Tente novamente.",
+    "notFound": "Operação não encontrada.",
+    "loadError": "Não foi possível carregar esta operação.",
+    "retry": "Tentar novamente",
+    "tabPlaceholder": "O conteúdo desta aba ainda não foi implementado nesta etapa."
+  }
+}
