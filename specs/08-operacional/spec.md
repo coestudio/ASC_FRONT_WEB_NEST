@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-08
 - **Nome:** operacional
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/operational/**` (nova — URL
   em inglês, `operacional`→`operational`; rótulo continua "Operacional")
@@ -138,3 +138,98 @@ src/routes/_dashboard/_internal/operational/
 ---
 
 **Próximo passo:** `APROVAR SPEC-08`.
+
+---
+
+## Implementation Notes
+
+**Arquivos criados:**
+
+- `src/routes/_dashboard/_internal/operational/index.tsx` — Home com grid de
+  cards (mesmo desenho de `client/index.tsx`, SPEC-09), único card pra
+  `/operational/operations`.
+- `src/routes/_dashboard/_internal/operational/operations/index.tsx` —
+  `<OperationsList readOnly />` dentro de `PageLayout`, sem editar
+  `operations-list.tsx` (o `readOnly` já existia da SPEC-07-01).
+- `src/routes/_dashboard/_internal/operational/operations/$id/index.tsx` —
+  detalhe mock próprio (`MOCK_OPERATIONS` local, comentário `// MOCK`),
+  `MockDataBanner` no topo, header com badges (status/tipo/modo), abas
+  (Detalhes/Containers/Operacional/Split — as duas últimas placeholder "em
+  construção"), tabela de containers mock com modal somente-leitura de
+  detalhe (sem inserir/lacrar/editar, por escopo — §4). Estado "não
+  encontrado" com link de volta pra lista, mesmo padrão do legado.
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/operational.json` — namespace novo
+  (`home.*`, `detail.*`), mesma árvore nos 4 locales.
+
+**Arquivos editados:**
+
+- `src/layouts/AppShell/nav/operacional.ts` — os 2 `to:` trocados de
+  `/operacional`/`/operacional/operacoes` pra `/operational`/
+  `/operational/operations` (D2). `labelKey`s não mudaram.
+- `src/i18n/dictionaries.ts` — import estático de
+  `pt-BR/operational.json` + entrada `operational: ptBROperational` no
+  objeto `ptBR` (mesmo padrão dos demais namespaces — necessário pro tipo
+  `Dictionary` reconhecer as novas chaves).
+- `src/routeTree.gen.ts` — regenerado (`vite build`) para incluir as 3 rotas
+  novas. Não editado à mão.
+
+**Comandos executados:**
+
+- `bun run lint` (baseline, antes de tocar em qualquer arquivo): `66 problems
+  (3 errors, 63 warnings)` — os 3 erros são pré-existentes em
+  `src/lib/session.server.ts` (`react-hooks/rules-of-hooks`), fora do escopo
+  desta SPEC. **VERIFIED**.
+- `bun run check` (baseline): limpo. **VERIFIED**.
+- `node_modules/.bin/vite build` (pra regenerar `routeTree.gen.ts` via
+  plugin do TanStack Router — `bun run build:azure`/`build` disparam
+  `check:api` via hook `pre*`, que exige o Core rodando; rodei o binário do
+  Vite direto pra evitar essa dependência de rede só para o build de
+  codegen). Build concluído (`✓ built in 457ms`), `.output/` gerado e
+  ignorado pelo `.gitignore` (`/.output`), não versionado. **VERIFIED**.
+- `bun run check` (depois): limpo, `tsc --noEmit` sem erros. **VERIFIED**.
+- `bun run lint` (depois): `66 problems (3 errors, 63 warnings)` — idêntico
+  ao baseline, nenhum warning/erro novo introduzido. **VERIFIED**.
+- `bunx prettier --write` rodado só nos arquivos tocados por esta SPEC (rota
+  `$id/index.tsx` tinha 4 warnings de formatação, corrigidos; os demais
+  arquivos já estavam formatados). Não rodei `bun run format` sem escopo.
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Lista real em modo leitura (sem botão criar/editar/deletar visível) | PASS — `<OperationsList readOnly />`, prop já suportada pelo componente da SPEC-07-01 |
+| CA2 | Detalhe claramente marcado como mock, independente do detalhe real da SPEC-07 | PASS — `MockDataBanner` no topo, comentário `// MOCK`, dado 100% local, nenhum import de `operation-container` gerado |
+| CA3 | `bun run check` + `lint` passam | PASS — check limpo, lint idêntico ao baseline pré-existente |
+
+**Decisões tomadas durante a implementação:**
+
+- Reaproveitei o layout/estilo já estabelecido em `client/index.tsx` (SPEC-09)
+  pra Home (grid de `Card` com `Link`), em vez de portar o CSS Bootstrap
+  cru (`soft-card`, `eyebrow`) do legado `Operacional/Home.tsx` — mantém
+  consistência com o design system atual (Bootstrap + tokens), conforme
+  pedido do usuário de "adaptar ao design system atual".
+- No detalhe mock, não portei as ações de escrita do legado
+  (`ContainerDetail.tsx`: inserir/lacrar/editar via modais com formulário) —
+  fora do escopo por definição explícita da própria SPEC (§4: "qualquer
+  escrita nesta área"). O modal de detalhe do container é só leitura
+  (peso atual/líquido/tara).
+- Status/tipo/modo do mock usam chaves de tradução (`statusKey`/`typeKey`/
+  `modeKey` + `t()`), não string solta, seguindo a regra de i18n mesmo em
+  dado mock (mesmo padrão de `MOCK_STEPS`/`labelKey` em
+  `client/tracking/index.tsx`).
+- `routeTree.gen.ts` foi regenerado via `vite build` direto (não
+  `bun run build`) porque os scripts `npm`/`bun run build*` disparam
+  `predev`/`prebuild` → `check:api`, que exige o Core acessível em rede;
+  chamar o binário do Vite evita essa dependência só para o codegen de
+  rotas.
+
+**Limitações conhecidas:**
+
+- R1 da própria SPEC (duas telas de "detalhe de operação" com comportamento
+  diferente — real em Administrativo, mock em Operacional) é dívida técnica
+  aceita por decisão do usuário, não uma lacuna desta implementação.
+- Não há navegação de linha da lista pro detalhe mock (`operations-list.tsx`
+  abre modal inline de visualização, não navega pra rota `$id`) — a SPEC não
+  pede essa integração (arquivos esperados não incluem editar
+  `operations-list.tsx`), e o `$id` mock é acessível diretamente pela URL,
+  como no legado.

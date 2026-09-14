@@ -1,0 +1,65 @@
+{
+  "home": {
+    "title": "运营",
+    "description": "运营区域业务概览。",
+    "cards": {
+      "operations": {
+        "title": "业务",
+        "description": "业务跟踪（只读）。"
+      }
+    }
+  },
+  "detail": {
+    "eyebrow": "业务 {code}",
+    "notFound": "未找到该业务。",
+    "backToList": "返回业务列表",
+    "backToOperation": "业务",
+    "sections": {
+      "details": { "label": "详情", "description": "业务数据" },
+      "containers": { "label": "集装箱", "description": "关联的集装箱" },
+      "operational": { "label": "运营", "description": "装箱流程" },
+      "split": { "label": "拆分", "description": "业务拆分" }
+    },
+    "operationalPlaceholder": "运营流程建设中。",
+    "splitPlaceholder": "拆分功能建设中。",
+    "fields": {
+      "client": "客户",
+      "type": "类型",
+      "mode": "模式",
+      "status": "状态",
+      "product": "产品"
+    },
+    "status": {
+      "inProgress": "进行中",
+      "finished": "已完成",
+      "pending": "待处理"
+    },
+    "type": {
+      "import": "进口",
+      "export": "出口"
+    },
+    "mode": {
+      "fcl": "整箱",
+      "lcl": "拼箱"
+    },
+    "containers": {
+      "empty": "没有关联的集装箱。",
+      "colIdentifier": "集装箱",
+      "colType": "类型",
+      "colSeal": "封条",
+      "colStatus": "状态",
+      "colVolumes": "已装箱量",
+      "detailTitle": "集装箱详情",
+      "detailWeight": "当前重量",
+      "detailNetWeight": "净重",
+      "detailTare": "皮重",
+      "close": "关闭"
+    },
+    "containerStatus": {
+      "empty": "空箱",
+      "loading": "装箱中",
+      "sealed": "已封条",
+      "shipped": "已装船"
+    }
+  }
+}

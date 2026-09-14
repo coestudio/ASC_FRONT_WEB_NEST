@@ -5,10 +5,10 @@ const fragment: NavFragment = {
   area: "operacional",
   sectionLabelKey: "navigation.operacional",
   items: [
-    { labelKey: "navigation.operacionalHome", to: "/operacional", icon: "bi-house", order: 1 },
+    { labelKey: "navigation.operacionalHome", to: "/operational", icon: "bi-house", order: 1 },
     {
       labelKey: "navigation.operacionalOptions",
-      to: "/operacional/operacoes",
+      to: "/operational/operations",
       icon: "bi-clipboard-data",
       order: 2,
     },

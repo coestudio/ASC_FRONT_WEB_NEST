@@ -1,0 +1,65 @@
+{
+  "home": {
+    "title": "Operational",
+    "description": "Overview of the operational area's operations.",
+    "cards": {
+      "operations": {
+        "title": "Operations",
+        "description": "Operations tracking (read-only)."
+      }
+    }
+  },
+  "detail": {
+    "eyebrow": "Operation {code}",
+    "notFound": "Operation not found.",
+    "backToList": "Back to operations",
+    "backToOperation": "Operation",
+    "sections": {
+      "details": { "label": "Details", "description": "Operation data" },
+      "containers": { "label": "Containers", "description": "Linked containers" },
+      "operational": { "label": "Operational", "description": "Stuffing flow" },
+      "split": { "label": "Split", "description": "Operation split" }
+    },
+    "operationalPlaceholder": "Operational flow under construction.",
+    "splitPlaceholder": "Split under construction.",
+    "fields": {
+      "client": "Client",
+      "type": "Type",
+      "mode": "Mode",
+      "status": "Status",
+      "product": "Product"
+    },
+    "status": {
+      "inProgress": "In progress",
+      "finished": "Finished",
+      "pending": "Pending"
+    },
+    "type": {
+      "import": "Import",
+      "export": "Export"
+    },
+    "mode": {
+      "fcl": "FCL",
+      "lcl": "LCL"
+    },
+    "containers": {
+      "empty": "No container linked.",
+      "colIdentifier": "Container",
+      "colType": "Type",
+      "colSeal": "Seal",
+      "colStatus": "Status",
+      "colVolumes": "Stuffed volumes",
+      "detailTitle": "Container details",
+      "detailWeight": "Current weight",
+      "detailNetWeight": "Net weight",
+      "detailTare": "Tare",
+      "close": "Close"
+    },
+    "containerStatus": {
+      "empty": "Empty",
+      "loading": "Loading",
+      "sealed": "Sealed",
+      "shipped": "Shipped"
+    }
+  }
+}
