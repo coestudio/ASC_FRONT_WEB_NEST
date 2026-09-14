@@ -45,6 +45,17 @@
     "booking": "Booking",
     "instruction": "Instruction"
   },
+  "details": {
+    "clientSection": "Client",
+    "productSection": "Product",
+    "datesSection": "Dates",
+    "document": "Document",
+    "phone": "Phone",
+    "email": "Email",
+    "vesselEmpty": "No vessel linked",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at"
+  },
   "toast": {
     "created": "Operation created successfully.",
     "updated": "Operation updated successfully.",

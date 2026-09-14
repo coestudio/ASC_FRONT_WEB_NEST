@@ -45,6 +45,17 @@
     "booking": "Booking",
     "instruction": "Instrucción"
   },
+  "details": {
+    "clientSection": "Cliente",
+    "productSection": "Producto",
+    "datesSection": "Fechas",
+    "document": "Documento",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "vesselEmpty": "Ningún buque vinculado",
+    "createdAt": "Creado el",
+    "updatedAt": "Actualizado el"
+  },
   "toast": {
     "created": "Operación creada con éxito.",
     "updated": "Operación actualizada con éxito.",

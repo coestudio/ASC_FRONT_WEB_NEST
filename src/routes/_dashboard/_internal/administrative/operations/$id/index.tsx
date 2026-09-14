@@ -17,6 +17,7 @@ import {
 } from "@/api/generated/static/operationStatusOptions";
 import { resolveOperationTypeLabel } from "@/api/generated/static/operationTypeOptions";
 import { resolveOperationServiceLabel } from "@/api/generated/static/operationServiceOptions";
+import { OperationDetailsTab } from "@/components/operations/tabs/Details";
 import { Select } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -123,12 +124,17 @@ function OperationShellBody({ id }: { id: string }) {
       </Nav>
 
       <section>
-        {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — este
-            shell só monta o placeholder até a aba real existir. */}
-        <div className="text-center text-body-secondary py-5">
-          <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />
-          <p className="mb-0">{t("administrative-operations.shell.tabPlaceholder")}</p>
-        </div>
+        {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — as
+            demais ainda mostram o placeholder genérico até a aba real
+            existir. */}
+        {tab === "details" ? (
+          <OperationDetailsTab operation={operation} />
+        ) : (
+          <div className="text-center text-body-secondary py-5">
+            <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />
+            <p className="mb-0">{t("administrative-operations.shell.tabPlaceholder")}</p>
+          </div>
+        )}
       </section>
     </>
   );

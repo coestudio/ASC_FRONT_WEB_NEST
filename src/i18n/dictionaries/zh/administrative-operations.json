@@ -45,6 +45,17 @@
     "booking": "订舱号",
     "instruction": "说明"
   },
+  "details": {
+    "clientSection": "客户",
+    "productSection": "产品",
+    "datesSection": "日期",
+    "document": "证件",
+    "phone": "电话",
+    "email": "邮箱",
+    "vesselEmpty": "未关联船舶",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间"
+  },
   "toast": {
     "created": "作业创建成功。",
     "updated": "作业更新成功。",
