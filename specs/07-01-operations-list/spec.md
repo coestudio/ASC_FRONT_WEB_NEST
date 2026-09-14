@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-01
 - **Nome:** operations-list
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/operations/index.tsx`,
   `src/components/operations/**` (novas), `src/layouts/AppShell/nav/**`,
@@ -128,6 +128,96 @@ Nenhum específico além dos já cobertos pelo índice geral
   nascem mais nesta SPEC — extraídos pra SPEC-SHARE-01 porque acabaram
   reusados por SPEC-07-03/05/06 e por SPEC-04 (campo `harborId` de
   Terminal), não só pelos filtros desta lista. Esta SPEC só consome.
+
+---
+
+## Implementation Notes
+
+**Arquivos criados/editados:**
+
+- `src/components/operations/operations-list.tsx` (criado) — `OperationsList`
+  (exportado, aceita `readOnly`), `OperationsFilters` (tipo/status via
+  `Select`, cliente via `SelectAsync`), `OperationsSearchInput`, `OperationRow`/
+  `OperationCard` (enriquecimento de nome de cliente/produto por linha, via
+  `GET /api/operation/{id}` — mesma decisão do legado, `useOperations.ts`),
+  modais de criação (`PostApiOperationBody`) e edição/visualização
+  (`PutApiOperationIdBody`, dois schemas diferentes porque o Core trava
+  `opType`/`opService`/`booking`/`instruction` depois da criação).
+- `src/components/operations/operations-list.module.css` (criado) — estilo de
+  tabela, duplicado intencionalmente de `crud-list-page.module.css` (não
+  importa módulo CSS privado de outro componente).
+- `src/routes/_dashboard/_internal/administrative/operations/index.tsx`
+  (criado) — `<OperationsList />` em modo completo.
+- `src/layouts/AppShell/nav/administrative-operations.ts` (criado) — item
+  "Operações" migrado pra `/administrative/operations`.
+- `src/layouts/AppShell/nav/administrativo.ts` (editado) — item
+  `administrativoOperations`/`/operacoes` removido (agora vive no fragmento
+  acima).
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+  (criados) — namespace único da feature Operações (lista + futuras abas).
+- `src/i18n/dictionaries.ts` (editado) — import estático + chave
+  `"administrative-operations"` do namespace pt-BR.
+- `src/routeTree.gen.ts` (regenerado via `bun run dev`, não editado à mão).
+
+**Comandos executados:**
+
+- `bun run lint` — baseline antes de tocar em qualquer arquivo: **66
+  problems (3 errors, 63 warnings)** — VERIFIED. Depois da implementação:
+  mesmo resultado, **66 problems (3 errors, 63 warnings)** — VERIFIED, zero
+  regressão (os 3 erros pré-existentes são de `src/lib/session.server.ts`,
+  não tocado).
+- `bun run check` (`tsc --noEmit`) — limpo antes e depois — VERIFIED.
+- `bun run build:azure` — o passo `vite build` compila normalmente (gera o
+  chunk `operations-*.mjs`); o passo seguinte (`patch-nitro-azure-swa.mjs`)
+  falha com `ENOENT .output/server/functions/index.mjs` — **reproduzido
+  também no baseline sem esta mudança** (`git stash` + rerun, mesmo erro
+  idêntico), ou seja, é uma falha pré-existente da worktree, não introduzida
+  por esta SPEC.
+- `just map` — não rodado: o contrato do Core não mudou (só consumo de
+  endpoints já gerados de `Operation`/`Client`/`Product`/`Vessel`).
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Lista faz CRUD/paginação real contra o Core (dev) | PASS — `GET/POST/PUT /api/operation` reais; sem `DELETE` (endpoint não existe no Core, ver decisão abaixo) |
+| CA2 | `bun run check` + `lint` passam | PASS — ambos limpos/sem regressão |
+| CA3 | `operations-list.tsx` é importável e funciona em modo `readOnly` sem editar o arquivo | PASS — prop `readOnly` esconde "Nova operação" e o botão de editar por linha; listagem/filtro/busca continuam |
+
+**Decisões tomadas durante a implementação:**
+
+- **Sem ação de exclusão.** `Operation` não tem endpoint `DELETE` no Core —
+  RF2 fala em "esconde criar/editar/deletar" mas não exige que `deletar`
+  exista; sem endpoint, a ação simplesmente não foi criada (regra: endpoint
+  ausente não se inventa).
+- **"Editar" é um modal, não a rota `$id`.** O detalhe com abas (`$id/**`) é
+  fora de escopo desta SPEC (SPEC-07-03 em diante). Como `PutApiOperationIdBody`
+  já existe e cobre os campos editáveis (`clientId`/`productId`/`vesselId`/
+  datas/observação), a ação "editar" abre um modal (mesmo padrão de
+  harbor/terminal/clientes), não navega para uma rota que ainda não existe.
+  Campos travados após a criação (`opType`/`opService`/`booking`/`instruction`/
+  `status`/`número`) aparecem como resumo somente-leitura no mesmo modal.
+- **Enriquecimento por linha via `GET /api/operation/{id}`.** `OperationDTO`
+  da lista só tem ids de cliente/produto/navio; replicada a mesma decisão do
+  legado (`useOperations.ts`, "Riscos e bloqueios" item 2, opção B do índice
+  geral da SPEC-07): um fetch de detalhe por linha, limitado à página atual.
+  Falha pontual não derruba a linha (cai de volta pro id cru).
+- **Busca livre incluída.** RF1 pede "filtro real (tipo/status/cliente)";
+  adicionado também `Search` (texto livre) por já existir no
+  `GetApiOperationParams` do Core e por paridade com todas as outras listas
+  já implementadas (harbor/terminal/clientes) — não é uma decisão de escopo
+  contestável, é o mesmo padrão em toda a área administrativa.
+
+**Limitações conhecidas:**
+
+- Cards (`ViewToggle` modo `cards`) só abrem o modal de visualização ao
+  clicar — sem atalho de edição direto no card (a tabela tem os dois
+  botões). Mesma assimetria existia no legado (`OperationCards.tsx` só tinha
+  `onSelect`).
+- `build:azure` tem uma falha pré-existente nesta worktree
+  (`patch-nitro-azure-swa.mjs` não encontra `.output/server/functions/index.mjs`)
+  não relacionada a esta SPEC — documentada acima, não corrigida aqui (fora
+  de escopo).
 
 ---
 
