@@ -1,0 +1,45 @@
+{
+  "title": "Clients",
+  "description": "Registered clients and their contact details.",
+  "colFullName": "Name",
+  "colShortName": "Nickname",
+  "colDocument": "Tax ID",
+  "colPhone": "Phone",
+  "colEmail": "Email",
+  "colCreatedAt": "Created at",
+  "colActions": "Actions",
+  "emptyState": "No client found.",
+  "newTitle": "New client",
+  "editTitle": "Edit client",
+  "viewTitle": "Client details",
+  "form": {
+    "fullName": "Name",
+    "shortName": "Nickname",
+    "document": "Tax ID",
+    "razaoSocial": "Legal name",
+    "ie": "State registration",
+    "phone": "Phone",
+    "email": "Email",
+    "observations": "Notes",
+    "address": "Address"
+  },
+  "detail": {
+    "registrationTitle": "Registration data",
+    "reportsTitle": "Reports and history",
+    "reportsColName": "Report",
+    "reportsColType": "Type",
+    "reportsColGeneratedAt": "Generated at",
+    "reportsColStatus": "Status"
+  },
+  "toast": {
+    "created": "Client created successfully.",
+    "updated": "Client updated successfully.",
+    "deleted": "Client deleted.",
+    "error": "Could not complete the action. Please try again.",
+    "loadError": "Could not load the client data."
+  },
+  "confirm": {
+    "deleteTitle": "Delete client",
+    "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+  }
+}

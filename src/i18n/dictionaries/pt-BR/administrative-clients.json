@@ -1,0 +1,45 @@
+{
+  "title": "Clientes",
+  "description": "Clientes cadastrados e seus dados de contato.",
+  "colFullName": "Nome",
+  "colShortName": "Apelido",
+  "colDocument": "CNPJ",
+  "colPhone": "Telefone",
+  "colEmail": "E-mail",
+  "colCreatedAt": "Criado em",
+  "colActions": "Ações",
+  "emptyState": "Nenhum cliente encontrado.",
+  "newTitle": "Novo cliente",
+  "editTitle": "Editar cliente",
+  "viewTitle": "Detalhes do cliente",
+  "form": {
+    "fullName": "Nome",
+    "shortName": "Apelido",
+    "document": "CNPJ",
+    "razaoSocial": "Razão social",
+    "ie": "Inscrição estadual",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "observations": "Observações",
+    "address": "Endereço"
+  },
+  "detail": {
+    "registrationTitle": "Dados cadastrais",
+    "reportsTitle": "Relatórios e histórico",
+    "reportsColName": "Relatório",
+    "reportsColType": "Tipo",
+    "reportsColGeneratedAt": "Gerado em",
+    "reportsColStatus": "Status"
+  },
+  "toast": {
+    "created": "Cliente criado com sucesso.",
+    "updated": "Cliente atualizado com sucesso.",
+    "deleted": "Cliente excluído.",
+    "error": "Não foi possível concluir a ação. Tente novamente.",
+    "loadError": "Não foi possível carregar os dados do cliente."
+  },
+  "confirm": {
+    "deleteTitle": "Excluir cliente",
+    "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+  }
+}
