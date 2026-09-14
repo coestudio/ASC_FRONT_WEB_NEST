@@ -103,5 +103,29 @@
       "photoDeleted": "Foto removida com sucesso.",
       "error": "Não foi possível concluir a ação. Tente novamente."
     }
+  },
+  "documents": {
+    "new": "Novo documento",
+    "newTitle": "Novo documento",
+    "editTitle": "Editar documento",
+    "loadError": "Não foi possível carregar os documentos da operação.",
+    "empty": "Nenhum documento cadastrado para esta operação.",
+    "colTitle": "Título",
+    "colType": "Tipo",
+    "colFile": "Arquivo",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "fileLink": "Abrir arquivo",
+    "form": {
+      "title": "Título",
+      "type": "Tipo",
+      "observation": "Observação",
+      "file": "Arquivo"
+    },
+    "toast": {
+      "created": "Documento criado com sucesso.",
+      "updated": "Documento atualizado com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    }
   }
 }

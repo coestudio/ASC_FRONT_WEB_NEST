@@ -103,5 +103,29 @@
       "photoDeleted": "照片删除成功。",
       "error": "无法完成该操作，请重试。"
     }
+  },
+  "documents": {
+    "new": "新建文件",
+    "newTitle": "新建文件",
+    "editTitle": "编辑文件",
+    "loadError": "无法加载该作业的文件。",
+    "empty": "此作业尚未登记任何文件。",
+    "colTitle": "标题",
+    "colType": "类型",
+    "colFile": "文件",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "fileLink": "打开文件",
+    "form": {
+      "title": "标题",
+      "type": "类型",
+      "observation": "备注",
+      "file": "文件"
+    },
+    "toast": {
+      "created": "文件创建成功。",
+      "updated": "文件更新成功。",
+      "error": "无法完成该操作，请重试。"
+    }
   }
 }

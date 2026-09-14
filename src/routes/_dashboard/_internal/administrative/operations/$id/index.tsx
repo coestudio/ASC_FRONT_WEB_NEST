@@ -23,6 +23,7 @@ import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 import { Containers } from "@/components/operations/tabs/Containers";
+import { Documents } from "@/components/operations/tabs/Documents";
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/operations/$id/")({
   head: () => ({ meta: [{ title: "Operação — ASC" }] }),
@@ -126,9 +127,11 @@ function OperationShellBody({ id }: { id: string }) {
       <section>
         {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — abas
             ainda não implementadas mostram o placeholder genérico. Containers
-            (SPEC-07-05) já é real. */}
+            (SPEC-07-05) e Documentos (SPEC-07-06) já são reais. */}
         {tab === "containers" ? (
           <Containers operationId={id} />
+        ) : tab === "documents" ? (
+          <Documents operationId={id} />
         ) : (
           <div className="text-center text-body-secondary py-5">
             <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />

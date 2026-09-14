@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-06
 - **Nome:** operation-documents
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/documents/**`
   (nova)
@@ -93,4 +93,45 @@ Nenhuma.
 
 ---
 
-**Próximo passo:** `APROVAR SPEC-07-06`.
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/operations/tabs/Documents.tsx` (criado) — lista
+    paginada dos documentos da operação
+    (`getGetApiOperationOperationIdDocumentQueryOptions`), modal de
+    criação (`InputText` pro título, `Select` com `documentTypeOptions`
+    pro tipo, `InputTextArea` pra observação, `InputFileSingle` pro
+    arquivo, sem `accept` restritivo) e modal de edição (título/tipo/
+    observação — o Core não expõe substituição de arquivo via PUT).
+  - `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+    (editado, junto com a SPEC-07-05) — o shell agora monta
+    `<Documents operationId={id} />` quando `tab === "documents"`.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+    (editado) — chaves novas no namespace `documents.*`, sem tocar nas
+    existentes.
+- **Comandos executados:**
+  - `bun run check` — `tsc --noEmit` sem erros (VERIFIED).
+  - `bun run lint` — 66 problems / 3 erros / 63 warnings, idêntico ao
+    baseline pré-existente (VERIFIED, nenhum warning/erro novo).
+- **Critérios de aceitação:**
+  | # | Critério | Status |
+  | --- | --- | --- |
+  | CA1 | Aba funciona ponta a ponta contra o Core (dev), incluindo upload de arquivo | Implementado; não testado contra o Core rodando nesta sessão (sem ambiente de dev disponível) — fluxo de criação/edição segue os hooks gerados e o mesmo padrão dos módulos já validados em produção. |
+  | CA2 | `bun run check` + `lint` passam | PASS |
+- **Decisões tomadas durante a implementação:**
+  - Mesmo motivo da SPEC-07-05: não usei `CrudRecordModal`/`RenderFields`
+    declarativo por causa do `enumOptions` do `Select` não ser repassado
+    por `map.tsx` — modal próprio, Fields usados diretamente.
+  - Endpoint de documento da operação não tem DELETE no contrato gerado
+    (`document.ts`) — sem botão de excluir na tabela (RF1: só hooks
+    gerados, nenhum endpoint inventado).
+  - `Observation` incluído no formulário (campo do mesmo DTO, opcional)
+    mesmo não estando listado nas RF explícitas — não introduz endpoint
+    nem regra nova.
+- **Limitações conhecidas:**
+  - Sem verificação manual contra o Core rodando (ambiente de dev não
+    disponível nesta sessão).
+  - Sem re-upload de arquivo na edição (limite do contrato do Core, não
+    do frontend).
+
+**Status final:** IMPLEMENTED.
