@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge, Button, Card, Col, Pagination, Row, Spinner, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -300,6 +301,7 @@ export type OperationsListProps = {
 export function OperationsList({ readOnly = false }: OperationsListProps) {
   const t = useT();
   const locale = useLocale();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
 
@@ -531,6 +533,21 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     <Badge bg={STATUS_VARIANT[status]}>{resolveOperationStatusLabel(status, locale)}</Badge>
   );
 
+  // Clique em "visualizar" — no modo completo (administrativo) navega pra
+  // página de detalhe com abas (`administrative/operations/$id`, SPEC-07-02
+  // a 07-09, que já existia mas não tinha nenhum link apontando pra ela).
+  // No modo `readOnly` (SPEC-08, área Operacional) mantém o modal antigo:
+  // aquela área tem seu próprio detalhe mock e desacoplado por decisão
+  // explícita do usuário (D1 da SPEC-08) — o id real de `operation.id` não
+  // bate com os ids mock daquela tela, então não dá pra navegar pra lá.
+  const viewOperation = (id: string) => {
+    if (readOnly) {
+      setDetailRequest({ id, mode: "view" });
+      return;
+    }
+    navigate({ to: "/administrative/operations/$id", params: { id } });
+  };
+
   const renderRowActions = (operation: OperationDTO) => {
     const isLoadingDetail = detailRequest?.id === operation.id;
     return (
@@ -539,7 +556,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
           type="button"
           className="btn btn-sm btn-outline-secondary"
           disabled={isLoadingDetail}
-          onClick={() => setDetailRequest({ id: operation.id, mode: "view" })}
+          onClick={() => viewOperation(operation.id)}
         >
           {isLoadingDetail && detailRequest?.mode === "view" ? (
             <Spinner size="sm" animation="border" />
@@ -627,7 +644,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
               key={operation.id}
               operation={operation}
               locale={locale}
-              onView={() => setDetailRequest({ id: operation.id, mode: "view" })}
+              onView={() => viewOperation(operation.id)}
             />
           ))}
         </div>
