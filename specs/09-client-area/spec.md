@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-09
 - **Nome:** client-area
-- **Status:** WAITING_APPROVAL — D1 e D2 resolvidos. Ver §13.
+- **Status:** APPROVED — D1 e D2 resolvidos. Ver §13.
 - **Autor:** portal-dev-agent (rascunho + revisão)
 - **Área:** `src/routes/_dashboard/client/**` (nova — `client` não é
   `_internal`, é a área de usuário externo)
