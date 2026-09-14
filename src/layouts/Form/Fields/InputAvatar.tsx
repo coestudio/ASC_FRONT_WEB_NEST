@@ -3,6 +3,7 @@ import { Controller, FieldValues } from "react-hook-form";
 import { Col } from "react-bootstrap";
 
 import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
+import { useObjectUrl } from "@/hooks";
 
 interface InputAvatarProps<T extends FieldValues> extends InputDTO<T> {
   /** URL do avatar atual (já salvo no servidor), usada até o usuário trocar o arquivo. */
@@ -27,14 +28,19 @@ function InputAvatar<T extends FieldValues>({
 }: InputAvatarProps<T>) {
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Hook precisa ficar no nível do componente (não dentro do `render` do
+  // Controller) pra respeitar as regras de hooks — `watch` acompanha o
+  // valor do campo pra manter a URL sincronizada com o `File` atual.
+  const watchedValue: unknown = methods.watch(fieldName);
+  const watchedFile = watchedValue instanceof File ? watchedValue : null;
+  const localUrl = useObjectUrl(watchedFile);
+
   return (
     <Col {...colProps}>
       <Controller
         control={methods.control}
         name={fieldName}
-        render={({ field: { value, onChange, name } }) => {
-          const file = (value as unknown) instanceof File ? (value as File) : null;
-          const localUrl = file ? URL.createObjectURL(file) : null;
+        render={({ field: { onChange, name } }) => {
           const src = localUrl || previewUrl || null;
 
           return (

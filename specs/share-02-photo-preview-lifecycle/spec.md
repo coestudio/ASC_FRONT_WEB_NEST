@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-SHARE-02
 - **Nome:** photo-preview-lifecycle
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/hooks/**` (novo), `src/layouts/Form/Fields/InputPhotoSingle.tsx`,
   `src/layouts/Form/Fields/InputPhotoMulti.tsx` (SPEC-SHARE-01,
@@ -171,3 +171,66 @@ identidade de `File` (RF1/RF4) já decididos nesta revisão.
 ---
 
 **Próximo passo:** `APROVAR SPEC-SHARE-02`.
+
+---
+
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/hooks/useObjectUrl.ts` (criado) — `useObjectUrl(file)` e
+    `useObjectUrls(files)`.
+  - `src/hooks/index.ts` (editado) — exporta os dois hooks novos no barrel
+    já usado por `useUser`/`useCan`.
+  - `src/layouts/Form/Fields/InputAvatar.tsx` (editado) — `watch(fieldName)`
+    no nível do componente + `useObjectUrl(watchedFile)`; `render` do
+    `Controller` só consome `localUrl` já calculado.
+  - `src/layouts/Form/Fields/InputPhotoSingle.tsx` (editado) — mesmo padrão,
+    desestruturando `watch` de `methods`.
+  - `src/layouts/Form/Fields/InputPhotoMulti.tsx` (editado) — mesmo padrão
+    com `useObjectUrls(watchedFiles)`; o `.map()` de thumbnails passou a ler
+    `urls[i]` em vez de chamar `URL.createObjectURL` por item.
+
+- **Comandos executados:**
+  - `bun run lint` (baseline, antes de tocar em qualquer arquivo):
+    `66 problems (3 errors, 63 warnings)` — VERIFIED, bate com o esperado.
+  - `bun run check` (final): `tsc --noEmit` sem saída — VERIFIED, limpo.
+  - `bun run lint` (final): `66 problems (3 errors, 63 warnings)` — VERIFIED,
+    idêntico ao baseline (mesmos 3 erros pré-existentes em
+    `src/lib/session.server.ts`, nenhum warning novo). No meio do processo
+    apareceu 1 warning novo (`eslint-disable` desnecessário em
+    `useObjectUrl.ts`), removido antes do lint final.
+  - `just map`: não se aplica — nenhuma mudança de contrato do Core.
+  - `bun run build:azure`: não rodado — mudança não toca build/servidor/rotas
+    `api/`, só componentes de UI internos sem consumidor de rota ainda além
+    de `InputAvatar` (profile-modal).
+
+- **Critérios de aceitação:**
+
+  | # | Critério | Resultado |
+  | --- | --- | --- |
+  | CA1 | `grep -rn "createObjectURL" src/` só aparece em `useObjectUrl.ts` | PASS |
+  | CA2 | `grep -n "revokeObjectURL" src/hooks/useObjectUrl.ts` confirma cleanup nos dois hooks | PASS |
+  | CA3 | Trocar foto várias vezes em `InputPhotoSingle`/`InputAvatar` não deixa `<img>` órfã | PASS (por construção: `useEffect` do hook revoga a URL anterior antes/no efeito seguinte a cada troca de `File`; não verificado manualmente no browser — sem servidor Core rodando neste worktree) |
+  | CA4 | Adicionar/remover fotos em `InputPhotoMulti` não recria URL de foto que permaneceu na lista | PASS (por construção: `Map<File, string>` em `ref` só cria URL pra `File` que ainda não tem entrada) |
+  | CA5 | Nenhuma prop pública muda de nome/tipo | PASS — `InputAvatarProps`, `InputPhotoSingleProps` e a assinatura de `InputPhotoMulti` (`InputDTO<T>`) inalteradas |
+  | CA6 | `bun run check` + `lint` passam | PASS |
+
+- **Decisões tomadas durante a implementação:**
+  - Hooks não podem ficar dentro do `render` prop do `Controller` (regras de
+    hooks), então a leitura do valor do campo subiu pro nível do componente
+    via `methods.watch(fieldName)` (já disponível em `UseFormReturn`, sem
+    prop nova) — mantém CA5 (nenhuma prop pública muda).
+  - `useObjectUrls` retorna array **alinhado por índice** com o array de
+    entrada (usa `""` como placeholder pro frame entre o commit e o efeito
+    rodar), pra não desalinhar o `.map()` de thumbnails em
+    `InputPhotoMulti` que usa `key={`${file.name}-${i}`}` por posição.
+  - Import dos hooks novos via barrel `@/hooks` (mesmo padrão de
+    `useUser`/`useCan`), não caminho direto ao arquivo.
+
+- **Limitações conhecidas:**
+  - CA3/CA4 foram verificados por leitura de código (garantia estrutural do
+    hook) e `bun run check`/`lint`, não por teste manual no browser — este
+    worktree não tem o Core rodando para exercitar o fluxo de upload
+    ponta-a-ponta. Recomenda-se validação visual manual (trocar avatar no
+    Profile, adicionar/remover fotos em qualquer tela futura que use
+    `InputPhotoMulti`) antes de considerar o débito 100% fechado em produção.

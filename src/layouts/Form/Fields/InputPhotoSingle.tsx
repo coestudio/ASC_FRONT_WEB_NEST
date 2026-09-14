@@ -3,6 +3,7 @@ import { Controller, FieldValues } from "react-hook-form";
 import { Button, Col, Form } from "react-bootstrap";
 
 import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
+import { useObjectUrl } from "@/hooks";
 
 interface InputPhotoSingleProps<T extends FieldValues> extends InputDTO<T> {
   /** URL da foto já salva no servidor (edição), usada até o usuário trocar o arquivo. */
@@ -18,13 +19,20 @@ interface InputPhotoSingleProps<T extends FieldValues> extends InputDTO<T> {
  */
 function InputPhotoSingle<T extends FieldValues>({
   fieldName,
-  methods: { control },
+  methods: { control, watch },
   label,
   config = {},
   previewUrl,
   ...colProps
 }: InputPhotoSingleProps<T>) {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Hook precisa ficar no nível do componente (não dentro do `render` do
+  // Controller) pra respeitar as regras de hooks — `watch` acompanha o
+  // valor do campo pra manter a URL sincronizada com o `File` atual.
+  const watchedValue: unknown = watch(fieldName);
+  const watchedFile = watchedValue instanceof File ? watchedValue : null;
+  const localUrl = useObjectUrl(watchedFile);
 
   return (
     <Col {...colProps}>
@@ -34,7 +42,6 @@ function InputPhotoSingle<T extends FieldValues>({
         rules={config.rules}
         render={({ field: { value, onChange, name }, fieldState }) => {
           const file = (value as unknown) instanceof File ? (value as File) : null;
-          const localUrl = file ? URL.createObjectURL(file) : null;
           const src = localUrl || previewUrl || null;
 
           return (

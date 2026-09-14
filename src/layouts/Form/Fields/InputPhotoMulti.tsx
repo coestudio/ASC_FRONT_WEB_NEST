@@ -3,6 +3,7 @@ import { Controller, FieldValues } from "react-hook-form";
 import { Button, Col, Form } from "react-bootstrap";
 
 import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
+import { useObjectUrls } from "@/hooks";
 
 /**
  * Upload de múltiplas imagens com grid de preview (thumbnails), cada uma
@@ -14,12 +15,19 @@ import InputDTO, { default_containerClass } from "layouts/Form/types/Input";
  */
 function InputPhotoMulti<T extends FieldValues>({
   fieldName,
-  methods: { control },
+  methods: { control, watch },
   label,
   config = {},
   ...colProps
 }: InputDTO<T>) {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Hook precisa ficar no nível do componente (não dentro do `render` do
+  // Controller) pra respeitar as regras de hooks — `watch` acompanha a
+  // lista atual de arquivos pra manter as URLs sincronizadas.
+  const watchedValue: unknown = watch(fieldName);
+  const watchedFiles = Array.isArray(watchedValue) ? (watchedValue as File[]) : [];
+  const urls = useObjectUrls(watchedFiles);
 
   return (
     <Col {...colProps}>
@@ -61,7 +69,7 @@ function InputPhotoMulti<T extends FieldValues>({
               {files.length > 0 ? (
                 <div className="d-flex flex-wrap gap-2 mt-2">
                   {files.map((file, i) => {
-                    const url = URL.createObjectURL(file);
+                    const url = urls[i];
                     return (
                       <div
                         key={`${file.name}-${i}`}
