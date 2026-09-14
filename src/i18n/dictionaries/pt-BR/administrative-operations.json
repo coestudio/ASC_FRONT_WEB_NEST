@@ -193,5 +193,22 @@
     "loadError": "Não foi possível carregar esta operação.",
     "retry": "Tentar novamente",
     "tabPlaceholder": "O conteúdo desta aba ainda não foi implementado nesta etapa."
+  },
+  "reports": {
+    "description": "Lista de relatórios já emitidos para esta operação.",
+    "colType": "Tipo",
+    "colGeneratedAt": "Gerado em",
+    "colFormat": "Formato",
+    "colStatus": "Status",
+    "colActions": "Ações",
+    "statusReady": "Disponível",
+    "statusPending": "Pendente",
+    "download": "Baixar",
+    "emptyState": "Nenhum relatório disponível."
+  },
+  "log": {
+    "description": "Histórico de eventos registrados nesta operação.",
+    "byUser": "por {user}",
+    "emptyState": "Nenhum evento registrado."
   }
 }

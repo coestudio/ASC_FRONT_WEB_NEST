@@ -193,5 +193,22 @@
     "loadError": "Could not load this operation.",
     "retry": "Try again",
     "tabPlaceholder": "This tab's content has not been implemented yet."
+  },
+  "reports": {
+    "description": "List of reports already issued for this operation.",
+    "colType": "Type",
+    "colGeneratedAt": "Generated at",
+    "colFormat": "Format",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "statusReady": "Available",
+    "statusPending": "Pending",
+    "download": "Download",
+    "emptyState": "No reports available."
+  },
+  "log": {
+    "description": "History of events recorded for this operation.",
+    "byUser": "by {user}",
+    "emptyState": "No events recorded."
   }
 }

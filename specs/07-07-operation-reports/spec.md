@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-07
 - **Nome:** operation-reports
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/reports/**`
   (nova)
@@ -88,3 +88,36 @@ Nenhuma.
 ---
 
 **Próximo passo:** `APROVAR SPEC-07-07`.
+
+## Implementation Notes
+
+- Arquivos alterados:
+  - `src/components/operations/tabs/Reports.tsx` (criado) — tabela mock
+    (tipo, gerado em, formato, status, ação de download desabilitada para
+    itens pendentes), `MockDataBanner` no topo.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+    (editado) — namespace `reports` novo, sem tocar em chaves existentes.
+  - `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+    (editado) — shell agora monta `<Reports operationId={operation.id} />`
+    quando `tab === "reports"`, mesmo padrão usado pra "romaneio" em
+    SPEC-07-04 (branch paralela, não presente nesta worktree).
+- Comandos executados:
+  - `bun run check` — VERIFIED (`tsc --noEmit`, sem erros).
+  - `bun run lint` — VERIFIED, resultado final igual ao baseline pré-mudança
+    (`66 problems (3 errors, 63 warnings)`; os 3 erros e os 63 warnings são
+    pré-existentes, sem relação com esta SPEC).
+- Critérios de aceitação:
+
+  | # | Critério | Resultado |
+  | --- | --- | --- |
+  | CA1 | Aba claramente marcada como mock, sem chamada real | PASS |
+  | CA2 | `bun run check` + `lint` passam | PASS |
+
+- Decisões tomadas durante a implementação:
+  - A SPEC não lista a edição do shell (`$id/index.tsx`) nos "Arquivos
+    esperados", mas o CA1 exige que a aba seja alcançável na UI — segui o
+    precedente já registrado no histórico do projeto (SPEC-07-04, aba
+    Romaneio) de o shell condicionar `tab === "<chave>"` pra montar o
+    componente real no lugar do placeholder genérico.
+- Limitações conhecidas: nenhuma além das já descritas em §4 (emissão real
+  de relatório fora de escopo).

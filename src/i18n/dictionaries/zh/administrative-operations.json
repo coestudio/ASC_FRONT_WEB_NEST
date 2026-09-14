@@ -193,5 +193,22 @@
     "loadError": "无法加载该作业。",
     "retry": "重试",
     "tabPlaceholder": "此标签页的内容尚未实现。"
+  },
+  "reports": {
+    "description": "此作业已生成的报告列表。",
+    "colType": "类型",
+    "colGeneratedAt": "生成时间",
+    "colFormat": "格式",
+    "colStatus": "状态",
+    "colActions": "操作",
+    "statusReady": "可用",
+    "statusPending": "待处理",
+    "download": "下载",
+    "emptyState": "暂无可用报告。"
+  },
+  "log": {
+    "description": "此作业记录的事件历史。",
+    "byUser": "由 {user}",
+    "emptyState": "暂无记录的事件。"
   }
 }

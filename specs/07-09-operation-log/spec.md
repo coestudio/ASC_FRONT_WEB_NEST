@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-09
 - **Nome:** operation-log
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/log/**` (nova)
 - **Depende de:** SPEC-00, SPEC-02 (`mock-data-banner`), SPEC-07-02 (shell
@@ -102,3 +102,35 @@ Nenhuma.
 ---
 
 **Próximo passo:** `APROVAR SPEC-07-09`.
+
+## Implementation Notes
+
+- Arquivos alterados:
+  - `src/components/operations/tabs/Log.tsx` (criado) — lista mock de
+    eventos (data/hora, ação, detalhe, usuário) em cards (`soft-card`),
+    `MockDataBanner` no topo.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+    (editado) — namespace `log` novo, sem tocar em chaves existentes (nem
+    nas do namespace `reports` da SPEC-07-07, já mergeada nesta branch).
+  - `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+    (editado) — shell agora monta `<Log operationId={operation.id} />`
+    quando `tab === "log"`, mesmo padrão da SPEC-07-07/SPEC-07-04.
+- Comandos executados:
+  - `bun run check` — VERIFIED (`tsc --noEmit`, sem erros).
+  - `bun run lint` — VERIFIED, resultado final igual ao baseline
+    (`66 problems (3 errors, 63 warnings)`, todos pré-existentes).
+- Critérios de aceitação:
+
+  | # | Critério | Resultado |
+  | --- | --- | --- |
+  | CA1 | Aba claramente marcada como mock, sem chamada real | PASS |
+  | CA2 | `bun run check` + `lint` passam | PASS |
+
+- Decisões tomadas durante a implementação:
+  - Mesma decisão da SPEC-07-07 quanto a editar o shell (não listado
+    explicitamente em "Arquivos esperados", mas necessário pro CA1).
+  - Rótulo do card usa a ação do evento ("Criação", "Atualização de
+    status" etc.), não o termo genérico "Log de Auditoria" — evita a
+    confusão apontada no §2 com o `/administrative/log`.
+- Limitações conhecidas: `cargoUnitEventDTO` como fonte real (§2) segue
+  fora de escopo — decisão adiada, candidato a SPEC futura.
