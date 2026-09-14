@@ -1,0 +1,55 @@
+/* Card de cliente na view "cards" — referência visual: `ClientCards.tsx` do
+   Portal legado (avatar com iniciais + chip de tipo de documento). Só
+   estilo, a estrutura continua o `CrudListPage` genérico (SPEC-02) — cada
+   tela passa seu próprio `renderCard`, isto aqui é só o CSS do de Clientes. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  box-shadow: var(--shadow-soft);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Avatar circular com iniciais do nome — mesma ideia do legado, cores do
+   token de brand (SPEC-14) em vez de hex fixo. */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--brand-primary-soft);
+  color: var(--brand-primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Chip "CNPJ" — todo cliente é pessoa jurídica (document min/max 14, só
+   CNPJ cabe no shape gerado), então o chip é fixo, não condicional como no
+   legado (que também aceitava CPF). */
+.chip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--bs-border-radius-pill);
+  background-color: var(--bs-tertiary-bg, rgba(127, 127, 127, 0.12));
+  color: var(--ink-muted);
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.doc {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}

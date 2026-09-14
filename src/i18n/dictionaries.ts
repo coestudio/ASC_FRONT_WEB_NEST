@@ -9,6 +9,7 @@
 // sob `common.*` — isso preserva os caminhos que já existiam antes da
 // migração (ex.: `t("theme.light")`), sem quebrar nenhum call-site (RF1/CA8).
 import ptBRAccess from "./dictionaries/pt-BR/access.json";
+import ptBRAdministrativeClients from "./dictionaries/pt-BR/administrative-clients.json";
 import ptBRAdministrativeRegistry from "./dictionaries/pt-BR/administrative-registry.json";
 import ptBRAuth from "./dictionaries/pt-BR/auth.json";
 import ptBRCommon from "./dictionaries/pt-BR/common.json";
@@ -30,6 +31,8 @@ const ptBR = {
   // arquivo verbatim, então o nome da chave aqui precisa bater com o nome
   // do arquivo pros locales en/es/zh (senão o lookup diverge por locale).
   "administrative-registry": ptBRAdministrativeRegistry,
+  // Namespace da SPEC-05 (Clientes) — mesmo racional da chave acima.
+  "administrative-clients": ptBRAdministrativeClients,
 };
 
 export type Dictionary = typeof ptBR;

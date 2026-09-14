@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-05
 - **Nome:** administrativo-clientes
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/clients/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
@@ -151,3 +151,88 @@ AddressDTO` (obrigatório, mesma situação de campo "grupo" do Harbor, ver
 ---
 
 **Próximo passo:** `APROVAR SPEC-05`.
+
+## Implementation Notes
+
+### Arquivos criados
+
+- `src/routes/_dashboard/_internal/administrative/clients/index.tsx` — lista
+  real + modal create/edit/view (`CrudListPage`/`CrudRecordModal`).
+- `src/layouts/AppShell/nav/administrative-clients.ts` — fragmento de nav
+  "Clientes" apontando pra `/administrative/clients` (reusa a chave i18n
+  `navigation.administrativoClients`, já existente).
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-clients.json` —
+  namespace novo (colunas, form, seções de detalhe, toasts, confirmação).
+
+### Arquivos editados
+
+- `src/i18n/dictionaries.ts` — registra o namespace `"administrative-clients"`
+  no objeto `ptBR` (mesmo padrão de `"administrative-registry"`).
+- `src/layouts/AppShell/nav/administrativo.ts` — remove o item
+  `administrativoClients` (rota antiga `/administrativo/clientes`); os demais
+  itens (`administrativoHome`, `administrativoOperations`,
+  `administrativoLog`, `administrativoOccurrences`) não foram tocados.
+- `src/routeTree.gen.ts` — regenerado por `vite build` (arquivo gerado, nunca
+  editado à mão).
+
+### Comandos executados e resultado
+
+- `bun run lint` (baseline, antes de qualquer mudança): `EXIT 1` — 3 erros
+  (`react-hooks/rules-of-hooks` em `src/lib/session.server.ts`, preexistente)
+  + 63 warnings — `VERIFIED` (anotado como baseline).
+- `bun run check` (baseline): `EXIT 0`, limpo — `VERIFIED`.
+- `bun run check` (depois da implementação): `EXIT 0`, limpo — `VERIFIED`.
+- `bun run lint` (depois da implementação): `EXIT 1` — exatamente os mesmos 3
+  erros + 63 warnings do baseline (66 problemas nos dois casos), nenhum
+  arquivo novo apontado — `VERIFIED` (zero regressão).
+- `bun run build:azure`: falha com
+  `ENOENT: .output/server/functions/index.mjs` — reproduzido também em cima
+  do baseline (`git stash` + rebuild, antes de qualquer arquivo desta SPEC)
+  com o **mesmo erro**, ou seja, é falha preexistente do worktree, não
+  causada por esta implementação — `VERIFIED` (regressão descartada,
+  problema não é desta SPEC). `vite build` sozinho (sem o patch do Nitro)
+  passou limpo nas duas rodadas, e foi o que triggou a regeneração do
+  `routeTree.gen.ts`.
+
+### Critérios de aceitação
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Lista faz CRUD real | PASS — `getGetApiClientQueryOptions`/`usePostApiClient`/`usePutApiClientId`/`useDeleteApiClientId`, mesmo padrão de Harbor/Product |
+| CA2 | Detalhe: seção de cadastro real, seção de relatórios visivelmente mock e comentada | PASS — `fields` do modal vêm de `ClientDetailDTO` real; `ClientReportsSection` usa `MockDataBanner` + comentário `// MOCK — ...` |
+| CA3 | `grep -n "MOCK"` aponta só a seção de relatórios | PASS — único hit é o comentário de `buildMockReports` |
+| CA4 | `bun run check` + `lint` passam | PASS (check limpo; lint sem regressão frente ao baseline, mesmos 3 erros preexistentes) |
+| CA5 | Não existe `clients/$id.tsx` | PASS — só `clients/index.tsx` |
+
+### Decisões tomadas durante a implementação
+
+- **`ClientDTO` (item de lista) não tem `address`/`razaoSocial`/`ie`/
+  `observations`** (só `ClientDetailDTO` tem) — decisão técnica (não
+  arquitetural, dentro do que a SPEC já previa em D1): `edit`/`view` nunca
+  abrem direto do item de lista. Um clique em "ver"/"editar" dispara
+  `GET /api/client/{id}` (`getGetApiClientIdQueryOptions`, via
+  `useSsrSafeQuery`) e só monta o `CrudRecordModal` depois que o detalhe
+  completo chega — evita o bug de "editar sobrescreve endereço/razão social
+  com vazio" que aconteceria se o form partisse só do `ClientDTO` da lista.
+  Enquanto a busca do detalhe está em voo, o botão da linha mostra um
+  `Spinner` no lugar do ícone e fica desabilitado; erro de rede mostra toast
+  (`administrative-clients.toast.loadError`) e cancela a abertura.
+- **Campo `document`** — `ClientCreate.document`/`ClientUpdate.document` têm
+  `min(14).max(14)` (exatamente 14 dígitos) — só CNPJ é matematicamente
+  possível (CPF tem 11). Usado `InputCNPJ` (não `InputDocument`, que aceita
+  CPF **ou** CNPJ, usado em `admin/access` pra pessoa física/jurídica).
+- **`collaborations` (`ClientDetailDTO`)** — ignorado deliberadamente
+  (confirma D1 da SPEC: escopo é SPEC-09), não renderizado nem filtrado.
+- **Seção de relatórios mock** — 2 registros fixos (`buildMockReports`),
+  tabela Bootstrap simples (nome/tipo/data/status), sem nenhuma chamada de
+  rede (RF3) — array local no componente, não em `src/lib/queries/`.
+
+### Limitações conhecidas
+
+- `bun run build:azure` está quebrado neste worktree antes e depois desta
+  SPEC (`ENOENT .output/server/functions/index.mjs`) — problema do
+  `scripts/patch-nitro-azure-swa.mjs`/toolchain do worktree, fora do escopo
+  da SPEC-05 (nenhum arquivo tocado por esta implementação afeta a etapa que
+  falha). Recomenda-se abrir isso como item separado se bloquear deploy.
+- Não há suíte de teste automatizado; validação foi por leitura de código +
+  `tsc`/`eslint` (sem servidor dev rodando neste ambiente sandboxed).

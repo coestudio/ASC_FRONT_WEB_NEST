@@ -4,7 +4,9 @@ import type { NavFragment } from "./types";
  * Seção Administrativo — portada do SECTIONS hard-coded de
  * src/layouts/AppShell/index.tsx. Os 5 itens de cadastro (Navio, Container,
  * Terminal, Porto, Produto) migraram pra `nav/administrative-registry.ts`
- * (SPEC-04, rotas novas em inglês) — não duplicar aqui.
+ * (SPEC-04, rotas novas em inglês) — não duplicar aqui. O item "Clientes"
+ * migrou pra `nav/administrative-clients.ts` (SPEC-05, rota nova
+ * `/administrative/clients`) — também não duplicar aqui.
  * `administrativoLog`/`administrativoOccurrences` continuam órfãos,
  * apontando pra rota antiga: SPEC-06 (que os removeria) foi cancelada, sem
  * spec própria ainda pra essas duas telas.
@@ -18,12 +20,6 @@ const fragment: NavFragment = {
       to: "/administrativo",
       icon: "bi-house",
       order: 1,
-    },
-    {
-      labelKey: "navigation.administrativoClients",
-      to: "/administrativo/clientes",
-      icon: "bi-people",
-      order: 2,
     },
     {
       labelKey: "navigation.administrativoOperations",

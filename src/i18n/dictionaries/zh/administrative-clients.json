@@ -1,0 +1,46 @@
+{
+  "title": "客户",
+  "description": "已注册客户及其联系方式。",
+  "colFullName": "名称",
+  "colShortName": "简称",
+  "colDocument": "CNPJ",
+  "colPhone": "电话",
+  "colEmail": "邮箱",
+  "colCreatedAt": "创建时间",
+  "colActions": "操作",
+  "docTypeCnpj": "CNPJ",
+  "emptyState": "未找到任何客户。",
+  "newTitle": "新建客户",
+  "editTitle": "编辑客户",
+  "viewTitle": "客户详情",
+  "form": {
+    "fullName": "名称",
+    "shortName": "简称",
+    "document": "CNPJ",
+    "razaoSocial": "公司名称",
+    "ie": "州注册号",
+    "phone": "电话",
+    "email": "邮箱",
+    "observations": "备注",
+    "address": "地址"
+  },
+  "detail": {
+    "registrationTitle": "注册资料",
+    "reportsTitle": "报告与历史记录",
+    "reportsColName": "报告",
+    "reportsColType": "类型",
+    "reportsColGeneratedAt": "生成时间",
+    "reportsColStatus": "状态"
+  },
+  "toast": {
+    "created": "客户创建成功。",
+    "updated": "客户更新成功。",
+    "deleted": "客户已删除。",
+    "error": "无法完成该操作，请重试。",
+    "loadError": "无法加载客户数据。"
+  },
+  "confirm": {
+    "deleteTitle": "删除客户",
+    "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
+  }
+}
