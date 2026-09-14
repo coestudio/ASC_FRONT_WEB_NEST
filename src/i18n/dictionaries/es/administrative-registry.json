@@ -1,0 +1,130 @@
+{
+  "terminal": {
+    "title": "Terminales",
+    "description": "Terminales asociadas a los puertos.",
+    "colName": "Nombre",
+    "colHarbor": "Puerto",
+    "colCreatedAt": "Creado en",
+    "colActions": "Acciones",
+    "emptyState": "No se encontró ningún terminal.",
+    "newTitle": "Nuevo terminal",
+    "editTitle": "Editar terminal",
+    "viewTitle": "Detalles del terminal",
+    "form": {
+      "name": "Nombre",
+      "harbor": "Puerto"
+    },
+    "toast": {
+      "created": "Terminal creado con éxito.",
+      "updated": "Terminal actualizado con éxito.",
+      "deleted": "Terminal eliminado.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    },
+    "confirm": {
+      "deleteTitle": "Eliminar terminal",
+      "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?"
+    }
+  },
+  "harbor": {
+    "title": "Puertos",
+    "description": "Puertos registrados y sus terminales.",
+    "colName": "Nombre",
+    "colAddress": "Dirección",
+    "colCreatedAt": "Creado en",
+    "colActions": "Acciones",
+    "emptyState": "No se encontró ningún puerto.",
+    "newTitle": "Nuevo puerto",
+    "editTitle": "Editar puerto",
+    "viewTitle": "Detalles del puerto",
+    "form": {
+      "name": "Nombre",
+      "address": "Dirección"
+    },
+    "relatedTerminalsTitle": "Terminales de este puerto",
+    "relatedTerminalsEmpty": "Ningún terminal vinculado a este puerto.",
+    "toast": {
+      "created": "Puerto creado con éxito.",
+      "updated": "Puerto actualizado con éxito.",
+      "deleted": "Puerto eliminado.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    },
+    "confirm": {
+      "deleteTitle": "Eliminar puerto",
+      "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?"
+    }
+  },
+  "container": {
+    "title": "Contenedores",
+    "description": "Contenedores utilizados en las operaciones.",
+    "colIdentifier": "Identificador",
+    "colTara": "Tara",
+    "colCreatedAt": "Creado en",
+    "colActions": "Acciones",
+    "emptyState": "No se encontró ningún contenedor.",
+    "newTitle": "Nuevo contenedor",
+    "editTitle": "Editar contenedor",
+    "viewTitle": "Detalles del contenedor",
+    "form": {
+      "identifier": "Identificador",
+      "tara": "Tara (kg)"
+    },
+    "toast": {
+      "created": "Contenedor creado con éxito.",
+      "updated": "Contenedor actualizado con éxito.",
+      "deleted": "Contenedor eliminado.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    },
+    "confirm": {
+      "deleteTitle": "Eliminar contenedor",
+      "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?"
+    }
+  },
+  "vessel": {
+    "title": "Buques",
+    "description": "Buques utilizados en las operaciones.",
+    "colName": "Nombre",
+    "colCreatedAt": "Creado en",
+    "colActions": "Acciones",
+    "emptyState": "No se encontró ningún buque.",
+    "newTitle": "Nuevo buque",
+    "editTitle": "Editar buque",
+    "viewTitle": "Detalles del buque",
+    "form": {
+      "name": "Nombre"
+    },
+    "toast": {
+      "created": "Buque creado con éxito.",
+      "updated": "Buque actualizado con éxito.",
+      "deleted": "Buque eliminado.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    },
+    "confirm": {
+      "deleteTitle": "Eliminar buque",
+      "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?"
+    }
+  },
+  "product": {
+    "title": "Productos",
+    "description": "Productos utilizados en las operaciones.",
+    "colName": "Nombre",
+    "colCreatedAt": "Creado en",
+    "colActions": "Acciones",
+    "emptyState": "No se encontró ningún producto.",
+    "newTitle": "Nuevo producto",
+    "editTitle": "Editar producto",
+    "viewTitle": "Detalles del producto",
+    "form": {
+      "name": "Nombre"
+    },
+    "toast": {
+      "created": "Producto creado con éxito.",
+      "updated": "Producto actualizado con éxito.",
+      "deleted": "Producto eliminado.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    },
+    "confirm": {
+      "deleteTitle": "Eliminar producto",
+      "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?"
+    }
+  }
+}

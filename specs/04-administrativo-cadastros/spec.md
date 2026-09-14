@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-04
 - **Nome:** administrativo-cadastros
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/registry/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
@@ -188,4 +188,139 @@ SPEC-02.
 
 ---
 
-**Próximo passo:** `APROVAR SPEC-04`.
+**Próximo passo:** nenhum — SPEC concluída.
+
+---
+
+## Implementation Notes
+
+- **Arquivos criados:**
+  - `src/routes/_dashboard/_internal/administrative/registry/{terminal,harbor,container,vessel,product}/index.tsx`
+    — as 5 telas, cada uma configurando `CrudListPage`/`CrudRecordModal`
+    (SPEC-02) com colunas/campos/schema do próprio módulo Orval.
+    - **Terminal**: campo `harborId` via `SelectAsync` (SPEC-SHARE-01)
+      configurado sobre `getApiHarbor({Search})`; coluna "Porto" resolvida
+      por `HarborNameCell` (lookup `useGetApiHarborId` via `useSsrSafeQuery`,
+      já que `TerminalDTO` só tem `harborId`, não o nome).
+    - **Harbor**: campo `address` via `AddressGroup` (SPEC-SHARE-01);
+      `extraContent` do modal em modo `view` mostra terminais relacionados
+      (RF4) via `getGetApiTerminalQueryOptions({HarborId})`, só leitura.
+    - **Container**: campo `tara` (decimal opcional) como `InputText` — não
+      há Field de decimal simples na biblioteca (`InputNumber` força mínimo
+      1 e é inteiro, `InputMoney` é formatado como moeda); o schema já aceita
+      `number | string`, e a normalização de `""` → `null` (ver abaixo) cobre
+      o caso vazio.
+    - **Vessel**/**Product**: só `name`, sem nada especial.
+  - `src/layouts/AppShell/nav/administrative-registry.ts` — fragmento com os
+    5 itens de cadastro, área `administrativo`, apontando pras rotas novas.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-registry.json` —
+    namespace novo (chave `"administrative-registry"`, mesma string do nome
+    do arquivo — ver decisão abaixo) com título/descrição/colunas/form/toast/
+    confirm por módulo.
+- **Arquivos editados:**
+  - `src/layouts/AppShell/nav/administrativo.ts` — removidos os 5 itens de
+    cadastro (migraram pro fragmento novo); mantidos Home/Clientes/Operações
+    (SPEC-05/07) e Log/Ocorrências (órfãos, SPEC-06 cancelada).
+  - `src/i18n/dictionaries.ts` — registra o namespace `"administrative-registry"`
+    no merge estático do `pt-BR` (o `buildLocale` via `import.meta.glob` já
+    cobria os outros 3 locales automaticamente, pelo nome do arquivo).
+  - `src/api/mutator.ts` — **fix A** (bug de sessão anterior, confirmado
+    presente e corrigido): corpo da requisição não é mais serializado duas
+    vezes (`config.data` já vem serializado pelo Axios, `JSON.stringify` de
+    novo dobrava a codificação e quebrava todo POST/PUT/PATCH real contra o
+    Core); o adapter agora roda a mesma lógica de `settle()` do Axios
+    (`validateStatus`) e lança `AxiosError` de verdade pra status fora da
+    faixa aceita — sem isso nenhum interceptor de erro rodava e o app tratava
+    qualquer resposta (400/401/403/409/500...) como sucesso.
+  - `src/components/crud/crud-record-modal.tsx` — **fix B** (confirmado
+    presente): `useEffect` de reset do form agora depende só de `[show]`
+    (valor de `defaultValues` fica num `ref`, atualizado a cada render sem
+    disparar o efeito) — evita apagar seleção em campos controlados quando o
+    componente pai re-renderiza com o modal já aberto. Também portada a
+    normalização `emptyStringsToNull` (achado de sessão anterior, não listado
+    nos 3 fixes originais, mas necessário pros próprios campos desta SPEC:
+    `country`/`postalCode` do `AddressGroup` e `tara` do Container são
+    opcionais com `.nullish()`/`.nullable()` no schema gerado, mas todo Field
+    deixa `""` quando vazio — sem a normalização, deixar esses campos em
+    branco travava o submit) — decisão registrada abaixo.
+  - `src/routes/_dashboard/_internal.tsx` — **fix C** (confirmado presente):
+    `beforeLoad` não usa mais `ensureQueryData` direto (cai no fetch real via
+    `mutator.ts`, que recusa chamada autenticada no SSR, crashando em
+    refresh/link direto pra qualquer rota administrativo/operacional/
+    laboratorio); agora usa `fetchMeFn()` como fallback server-safe, mesmo
+    padrão já usado em `src/routes/_dashboard/admin/route.tsx` (SPEC-03).
+  - `src/routes/_dashboard/admin/access/index.tsx` — ajustes de baixa
+    prioridade pedidos pelo usuário: `PAGE_SIZE` 20 → 3; campos `document`/
+    `phone` trocados de `InputText` genérico pra `InputDocument` (aceita CPF
+    **ou** CNPJ, compatível com o label "Documento (CPF/CNPJ)" e com o
+    `min(11).max(14)` do schema — `InputCPF` validaria só CPF, rejeitando
+    CNPJ) e `InputPhone`; `roles` já usava `opt.key` (não `opt.value`) —
+    confirmado, sem necessidade de correção.
+- **Comandos executados:**
+  - `bun run dev` por ~15s só pra regenerar `src/routeTree.gen.ts` (plugin
+    do TanStack Router roda no dev/build, sem CLI standalone) — processo
+    encerrado depois, nenhum servidor deixado rodando.
+  - `bun run check` (`tsc --noEmit`) — **VERIFIED**, sem erros.
+  - `bun run lint` — **VERIFIED**: baseline antes de qualquer mudança desta
+    sessão = 66 problemas (3 erros, 63 warnings, todos pré-existentes em
+    arquivos não tocados: `src/lib/session.server.ts` e vários `Fields/*`
+    legados). Depois de todas as mudanças desta SPEC (5 rotas novas + fixes
+    A/B/C + ajustes do access): também 66 problemas (3 erros, 63 warnings) —
+    nenhum novo erro/warning introduzido (1 warning de `prettier/prettier`
+    apareceu durante o trabalho por formatação de import, corrigido com
+    `prettier --write` antes do lint final).
+  - `just map` — não executado: o contrato do Core não mudou nesta SPEC
+    (client Orval de terminal/harbor/container/vessel/product já estava
+    gerado).
+- **Critérios de aceitação:**
+
+  | #   | Critério                                                                    | Status |
+  | --- | ---------------------------------------------------------------------------- | ------ |
+  | CA1 | As 5 telas fazem CRUD real contra o Core (dev)                               | PASS (hooks Orval reais, sem mock; não foi possível rodar E2E contra um Core ao vivo neste ambiente — verificado por leitura de contrato/tipos) |
+  | CA2 | Nenhuma valida com Zod escrito à mão                                          | PASS   |
+  | CA3 | As 5 telas reusam `crud-list-page`/`crud-record-modal` da SPEC-02            | PASS   |
+  | CA4 | `bun run check` + `lint` passam                                              | PASS   |
+  | CA5 | Form de Terminal resolve `harborId` via `SelectAsync`                        | PASS   |
+  | CA6 | Form de Harbor resolve `address` via `AddressGroup`                          | PASS   |
+
+- **Decisões tomadas durante a implementação:**
+  - Chave de i18n do namespace novo é `"administrative-registry"` (hífen,
+    igual ao nome do arquivo), não `administrativeRegistry` (camelCase) —
+    `buildLocale()` em `src/i18n/dictionaries.ts` deriva a chave do nome do
+    arquivo verbatim pros locales en/es/zh; usar uma chave diferente no merge
+    do `pt-BR` faria os locales não-pt-BR terem uma chave diferente da usada
+    em pt-BR, quebrando o lookup silenciosamente (fallback pra key crua) em 3
+    dos 4 idiomas. Chamadas ficam como `t("administrative-registry.terminal.title")`
+    — sintaticamente válido (string literal), só não é camelCase.
+  - Nenhum `src/lib/queries/*.ts` novo criado pras 5 telas — os hooks gerados
+    já expõem `getGetApiXxxQueryOptions(params)` prontos (mesmo formato de
+    `queryOptions` que `CrudListPage` espera), sem precisar de wrapper nem de
+    seed via loader/server fn (diferente de `admin/access`, que precisava
+    disso pra outro motivo: popular o multi-select de roles fora do
+    `CrudListPage`). Nenhuma das 5 telas tem esse tipo de dependência extra
+    de primeira renderização.
+  - `HarborNameCell`/o lookup de `selectedLabel` do Terminal e a lista de
+    terminais relacionados do Harbor usam `useSsrSafeQuery` (não o hook
+    `useGetApiXxx` puro) — mesma regra já documentada em
+    `src/lib/queries/use-ssr-safe-query.ts` ("qualquer leitura client-side...
+    deve passar por aqui"), aplicada por consistência mesmo esses três casos
+    só disparando depois de interação do usuário (portanto já garantidamente
+    client-side).
+  - `emptyStringsToNull` portado pro `crud-record-modal.tsx` mesmo não estando
+    na lista original de 3 fixes — é pré-requisito funcional pros próprios
+    campos novos desta SPEC (endereço/tara opcionais); sem ele, CA1
+    (CRUD real funcionando) ficaria quebrado pra esses campos vazios.
+  - Ações de linha (ver/editar/excluir) das 5 telas usam `btn btn-sm
+    btn-outline-*` simples do Bootstrap, sem replicar o CSS Module custom de
+    pílulas coloridas de `admin/access` (que é specífico da SPEC-11/escopo
+    expandido daquela tela, não pedido aqui).
+- **Limitações conhecidas:**
+  - Ambiente sem Core rodando — CRUD real não foi exercitado ponta a ponta
+    (POST/PUT/DELETE reais contra um banco), só verificado por leitura de
+    contrato (tipos gerados, shapes de mutation) e `tsc --noEmit`.
+  - Container não tem um Field de "número decimal" dedicado na biblioteca;
+    usar `InputText` pra `tara` é funcional mas não formata nem valida o
+    número enquanto o usuário digita (só na submissão, via Zod). Criar um
+    `InputDecimal` fica fora do escopo desta SPEC (só consumo de Fields
+    existentes, D4 do §13).
+  - Vínculo Harbor↔Terminal continua só leitura (D2), como já decidido.

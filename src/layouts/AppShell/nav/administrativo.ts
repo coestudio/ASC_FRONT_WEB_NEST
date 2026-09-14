@@ -1,6 +1,14 @@
 import type { NavFragment } from "./types";
 
-/** Seção Administrativo — portada do SECTIONS hard-coded de src/layouts/AppShell/index.tsx. */
+/**
+ * Seção Administrativo — portada do SECTIONS hard-coded de
+ * src/layouts/AppShell/index.tsx. Os 5 itens de cadastro (Navio, Container,
+ * Terminal, Porto, Produto) migraram pra `nav/administrative-registry.ts`
+ * (SPEC-04, rotas novas em inglês) — não duplicar aqui.
+ * `administrativoLog`/`administrativoOccurrences` continuam órfãos,
+ * apontando pra rota antiga: SPEC-06 (que os removeria) foi cancelada, sem
+ * spec própria ainda pra essas duas telas.
+ */
 const fragment: NavFragment = {
   area: "administrativo",
   sectionLabelKey: "navigation.administrativo",
@@ -22,36 +30,6 @@ const fragment: NavFragment = {
       to: "/operacoes",
       icon: "bi-clipboard-data",
       order: 3,
-    },
-    {
-      labelKey: "navigation.administrativoVessel",
-      to: "/administrativo/cadastro/navio",
-      icon: "bi-water",
-      order: 4,
-    },
-    {
-      labelKey: "navigation.administrativoContainer",
-      to: "/administrativo/cadastro/container",
-      icon: "bi-box-seam",
-      order: 5,
-    },
-    {
-      labelKey: "navigation.administrativoTerminal",
-      to: "/administrativo/cadastro/terminal",
-      icon: "bi-building",
-      order: 6,
-    },
-    {
-      labelKey: "navigation.administrativoHarbor",
-      to: "/administrativo/cadastro/porto",
-      icon: "bi-geo-alt",
-      order: 7,
-    },
-    {
-      labelKey: "navigation.administrativoProduct",
-      to: "/administrativo/cadastro/produto",
-      icon: "bi-box2",
-      order: 8,
     },
     {
       labelKey: "navigation.administrativoLog",
