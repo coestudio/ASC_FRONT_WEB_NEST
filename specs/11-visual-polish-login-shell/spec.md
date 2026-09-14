@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-11
 - **Nome:** visual-polish-login-shell
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, a pedido do usuário)
 - **Área:** `src/layouts/AppBrand/**`, `src/layouts/AppShell/**`,
   `src/routes/auth/login/**`, `src/routes/auth/forgot-password/**`,
@@ -138,3 +138,115 @@ pro bundle do browser, só a string da versão.
   `.github/instructions/theming.instructions.md`.
 - Item 7 resolvido (decisão do usuário: só versão do app) — sem mais
   bloqueio, os 7 itens podem ser implementados juntos.
+
+## Implementation Notes
+
+A maior parte dos itens 1–5 e parte do item 6 já tinham sido implementados
+em commits anteriores desta mesma branch/worktree, antes desta sessão
+(`6e2cb6a`, `ea4fbfc`, e ajustes posteriores em `auth.css`/`base.css` — ver
+`git log` desses arquivos). Esta sessão conferiu item a item contra o texto
+atual da spec (revisão 3 é a versão final) e fechou as duas lacunas restantes:
+
+- **Item 4** — o campo `userName` do login usava `icon: "bi-person"`
+  (resquício da revisão 2). Revisão 3 pede ícone de e-mail mesmo nesse campo
+  (`bi-envelope`) — corrigido em `src/routes/auth/login/index.tsx`. O campo
+  senha já usava `bi-lock` + o toggle `bi-eye`/`bi-eye-slash` (nenhuma
+  mudança necessária).
+- **Item 6** — o `ThemeToggle` já estava com o switch customizado
+  (`src/components/theme/theme-toggle.tsx` + `.module.css`), mas o
+  `LanguageSwitcher` ainda usava a aparência default do
+  `Dropdown.Toggle`/`btn-link` do react-bootstrap; existia inclusive uma
+  classe `.languageToggle` já pronta em `src/layouts/AppShell/index.module.css`
+  mas nunca referenciada em nenhum `.tsx`. Movida para
+  `src/components/i18n/language-switcher.module.css` (CSS Module colocado
+  junto do componente, seguindo `components.instructions.md`) e aplicada no
+  `Dropdown.Toggle` — mesmo tratamento pill/hover do resto do topbar. Os
+  itens do menu (`Dropdown.Item`) já ganhavam o hover/active de marca via
+  regra global `.dropdown-item` em `src/styles/globals/base.css` (nenhuma
+  mudança necessária ali).
+
+Itens confirmados como já cobertos, sem alteração nesta sessão:
+
+- **Item 1** (logo no sidebar) — `src/styles/globals/base.css` já define
+  `.app-brand__logo`/`.app-brand__badge` com tamanhos por `size` (`sm|md|lg`)
+  e `src/layouts/AppShell/index.tsx` já passa `size="md"`. Não existe modo
+  "sidebar colapsado" (ícone-only) no `AppShell` atual — só mobile aberto/
+  fechado via `menuOpen` — então não há um segundo breakpoint de tamanho de
+  logo a ajustar; criar esse modo collapse seria escopo novo, não pedido
+  aqui.
+- **Item 2** (logo no login) — `AppBrand` já suporta `variant="badge"`
+  (selo circular com fundo branco + anel `--brand-accent` + sigla),
+  consumido em `src/routes/auth/route.tsx`.
+- **Item 3** (cor do botão) — `.btn-primary`/`.btn-outline-primary` em
+  `src/styles/globals/base.css` já sobrescrevem as variáveis `--bs-btn-*`
+  pré-compiladas do Bootstrap para usar `--bs-primary`/`--brand-primary-hover`
+  em vez de hex fixo.
+- **Item 5** (ícone no forgot-password) — `src/routes/auth/forgot-password/index.tsx`
+  já usa `icon: "bi-envelope"` no campo e-mail.
+- **Item 7** — já implementado e mergeado antes desta spec (commit
+  `ea4fbfc`), confirmado sem duplicar trabalho.
+
+Card translúcido com blur (revisão 3) confirmado em
+`src/styles/globals/auth.css` (`.auth-card`, `color-mix(...) ` +
+`backdrop-filter: blur(10px)`), usando token `--bs-tertiary-bg`, não hex
+fixo.
+
+### Comandos executados
+
+- `bun run lint` — baseline antes de tocar em qualquer arquivo:
+  `66 problems (3 errors, 63 warnings)` — **VERIFIED**, igual ao esperado.
+- `bun run check` (tsc --noEmit) — **VERIFIED**, sem saída/erros.
+- `bun run lint` (depois das mudanças) — **VERIFIED**,
+  `66 problems (3 errors, 63 warnings)` — mesmo baseline, nenhuma regressão
+  (os 3 erros pré-existentes são em `src/lib/session.server.ts`, não tocado).
+- `just map` — não executado: nenhuma mudança de contrato de API/DTO.
+- `bun run build:azure` — não executado: mudança não toca build/servidor/
+  rotas de `api/`.
+
+### Verificação visual (tokens por brand × modo)
+
+Não há suíte de testes automatizados nem servidor de dev rodado nesta
+sessão para captura de tela. Verificação feita por leitura de
+`src/styles/globals/tokens.css`: os 6 blocos
+`[data-brand="X"][data-bs-theme="Y"]` (asa/asi/asc × light/dark) definem
+`--brand-primary`, `--brand-primary-hover`, `--brand-primary-soft`,
+`--brand-primary-muted`, `--brand-accent`, `--on-brand` — todos os tokens
+usados nos arquivos tocados (`.btn-primary`, `.app-brand__badge`,
+`language-switcher.module.css`, `theme-toggle.module.css`, `auth.css`) têm
+definição nas 6 combinações. Nenhum hex fixo introduzido.
+
+### Critérios de aceitação
+
+| Critério | Status |
+| --- | --- |
+| `bun run check` limpo | PASS |
+| `bun run lint` limpo (baseline mantido) | PASS |
+| Item 1 — logo sidebar | PASS (já implementado antes desta sessão) |
+| Item 2 — logo login | PASS (já implementado antes desta sessão) |
+| Item 3 — botão cor via token | PASS (já implementado antes desta sessão) |
+| Item 4 — ícones login (envelope + cadeado/olho) | PASS (corrigido nesta sessão) |
+| Item 5 — ícone forgot-password | PASS (já implementado antes desta sessão) |
+| Item 6 — polish dropdown idioma + theme switch | PASS (theme switch já pronto; dropdown de idioma corrigido nesta sessão) |
+| Tokens definidos nas 6 combinações brand×modo | PASS |
+
+### Decisões tomadas durante a implementação
+
+- Preservada a decisão de radius não-pill (12px/`0.75rem`) em inputs/botões
+  do card de login, documentada em `src/styles/globals/auth.css` como
+  "revisão 8" — não existe registro dessa revisão no corpo desta spec, mas é
+  código já mergeado em `SPECS-LEGADO` (decisão já tomada); não revertida
+  sem confirmação do usuário, conforme regra de não sobrescrever decisão já
+  tomada.
+- CSS do botão de idioma movido para um `.module.css` dedicado
+  (`language-switcher.module.css`) em vez de reaproveitar a classe morta que
+  já existia em `AppShell/index.module.css`, para respeitar a convenção de
+  CSS Module colocado junto do componente (`components.instructions.md`).
+
+### Limitações conhecidas
+
+- Nenhuma captura de tela/verificação visual em navegador real foi feita
+  (sem dev server rodado nesta sessão) — a confirmação foi por leitura de
+  CSS/tokens, conforme permitido quando não há suíte automatizada.
+- `AppShell` não tem modo de sidebar colapsado (ícone-only); item 1 foi
+  considerado coberto pelo que existe hoje (tamanhos por `size` prop),
+  já que criar esse modo é escopo novo não pedido nesta spec.

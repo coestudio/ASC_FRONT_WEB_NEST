@@ -63,12 +63,15 @@ function LoginPage() {
       <p className="auth-subtitle">Acesse o portal interno.</p>
 
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
+        {/* Ícone de envelope (não de pessoa) — decisão final da revisão 3 da
+            SPEC-11: usuário pediu "ícone de email" mesmo o campo sendo
+            userName. */}
         <InputText
           methods={methods}
           fieldName="userName"
           label="Usuário"
           placeholder="Seu usuário"
-          config={{ containerClass: "mb-3", icon: "bi-person" }}
+          config={{ containerClass: "mb-3", icon: "bi-envelope" }}
         />
 
         {/* Wrapper com posição relativa pra alinhar "Esqueceu a senha?" na

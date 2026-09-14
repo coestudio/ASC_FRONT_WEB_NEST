@@ -187,32 +187,9 @@
   height: 0.85rem;
 }
 
-/* Botão de idioma no topbar */
-.languageToggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
-  flex-shrink: 0;
-  background: none;
-  border: 1px solid var(--bs-border-color);
-  border-radius: 999px;
-  font-size: 0.82rem;
-  color: var(--bs-body-color);
-  cursor: pointer;
-  transition:
-    background-color 0.12s ease,
-    border-color 0.12s ease,
-    color 0.12s ease;
-}
-.languageToggle:hover {
-  background-color: var(--brand-primary-soft);
-  border-color: var(--brand-primary-muted);
-  color: var(--brand-primary);
-}
-.languageToggle::after {
-  display: none;
-}
+/* Botão de idioma no topbar — CSS movido para
+   src/components/i18n/language-switcher.module.css (SPEC-11 item 6): fica
+   colocado junto do componente que consome, em vez de morar aqui sem uso. */
 
 .submenu {
   position: relative;
