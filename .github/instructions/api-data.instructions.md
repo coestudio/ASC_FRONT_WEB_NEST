@@ -1,6 +1,6 @@
 ---
-applyTo: 'src/api/**,src/lib/queries/**'
-description: 'Use ao mexer no client de API gerado, no transporte, no proxy BFF ou nas query options. Fixa o que é gerado (read-only), os três caminhos de chamada ao Core e o padrão de queryKey.'
+applyTo: "src/api/**,src/lib/queries/**"
+description: "Use ao mexer no client de API gerado, no transporte, no proxy BFF ou nas query options. Fixa o que é gerado (read-only), os três caminhos de chamada ao Core e o padrão de queryKey."
 ---
 
 # API / Data Instructions

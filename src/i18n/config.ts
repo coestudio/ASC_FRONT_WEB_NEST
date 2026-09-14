@@ -1,4 +1,4 @@
-export const locales = ["pt-BR", "en", "zh"] as const;
+export const locales = ["pt-BR", "en", "zh", "es"] as const;
 
 export type Locale = (typeof locales)[number];
 
@@ -14,6 +14,7 @@ export const LOCALE_LABELS: Record<Locale, { label: string; flag: string }> = {
   "pt-BR": { label: "Português", flag: "🇧🇷" },
   en: { label: "English", flag: "🇺🇸" },
   zh: { label: "中文", flag: "🇨🇳" },
+  es: { label: "Español", flag: "🇪🇸" },
 };
 
 /**

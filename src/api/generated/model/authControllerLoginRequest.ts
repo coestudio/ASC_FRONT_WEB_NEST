@@ -7,13 +7,13 @@
 
 export interface AuthControllerLoginRequest {
   /**
-   * @minLength 3
-   * @maxLength 150
-   */
+     * @minLength 3
+     * @maxLength 150
+     */
   userName: string;
   /**
-   * @minLength 6
-   * @maxLength 100
-   */
+     * @minLength 6
+     * @maxLength 100
+     */
   password: string;
 }

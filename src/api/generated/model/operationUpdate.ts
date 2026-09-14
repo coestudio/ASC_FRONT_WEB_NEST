@@ -17,8 +17,8 @@ export interface OperationUpdate {
   /** @nullable */
   startDate?: string | null;
   /**
-   * @maxLength 500
-   * @nullable
-   */
+     * @maxLength 500
+     * @nullable
+     */
   observation?: string | null;
 }

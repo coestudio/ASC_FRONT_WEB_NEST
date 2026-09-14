@@ -5,4 +5,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CargoPhotoSlot = number;
+export type CargoPhotoSlot = typeof CargoPhotoSlot[keyof typeof CargoPhotoSlot];
+
+
+export const CargoPhotoSlot = {
+  Label: 'Label',
+  Weight: 'Weight',
+  Divergence: 'Divergence',
+  General: 'General',
+} as const;

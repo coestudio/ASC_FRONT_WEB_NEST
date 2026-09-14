@@ -17,10 +17,14 @@ import {
   type ResolvedTheme,
   type ThemeMode,
 } from "@/styles/globals/color-modes";
+import { DEFAULT_BRAND, isBrand, type Brand } from "@/styles/globals/brand";
 import {
   readThemeCookie,
   writeThemeCookie,
   applyThemeToDocument,
+  readBrandCookie,
+  writeBrandCookie,
+  applyBrandToDocument,
 } from "@/styles/globals/theme-store";
 import {
   LOCALE_COOKIE_NAME,
@@ -33,14 +37,16 @@ import { dictionaries, type Dictionary } from "@/i18n/dictionaries";
 import { translate, type TranslateParams, type TranslationKey } from "@/i18n/translate";
 
 /**
- * Preferências de UI (tema + idioma). Resolvidas no servidor a partir de
- * cookie / Accept-Language, semeadas via `__root` no contexto do router,
- * e mantidas no client por este provider. Ver specs/i18n-and-theme.md.
+ * Preferências de UI (tema + idioma + brand). Resolvidas no servidor a
+ * partir de cookie / Accept-Language, semeadas via `__root` no contexto do
+ * router, e mantidas no client por este provider. Brand e modo são
+ * dimensões ortogonais — ver specs/01-brand-theming/spec.md.
  */
 
 export interface UiPrefs {
   themeMode: ThemeMode;
   locale: Locale;
+  brand: Brand;
 }
 
 /** Lê as preferências no ambiente atual (server: request; client: cookie). */
@@ -48,11 +54,13 @@ export const readUiPrefs = createIsomorphicFn()
   .server((): UiPrefs => {
     const cookieTheme = getCookie("asc_theme");
     const cookieLocale = getCookie(LOCALE_COOKIE_NAME);
+    const cookieBrand = getCookie("asc_brand");
     return {
       themeMode: isThemeMode(cookieTheme) ? cookieTheme : "system",
       locale: isLocale(cookieLocale)
         ? cookieLocale
         : negotiateLocale(getRequestHeader("accept-language")),
+      brand: isBrand(cookieBrand) ? cookieBrand : DEFAULT_BRAND,
     };
   })
   .client((): UiPrefs => {
@@ -62,6 +70,7 @@ export const readUiPrefs = createIsomorphicFn()
       locale: isLocale(cookieLocale && decodeURIComponent(cookieLocale))
         ? (decodeURIComponent(cookieLocale!) as Locale)
         : defaultLocale,
+      brand: readBrandCookie() ?? DEFAULT_BRAND,
     };
   });
 
@@ -72,6 +81,8 @@ interface UiPrefsContextValue {
   themeMode: ThemeMode;
   resolvedTheme: ResolvedTheme;
   setThemeMode: (mode: ThemeMode) => void;
+  brand: Brand;
+  setBrand: (brand: Brand) => void;
 }
 
 const UiPrefsContext = createContext<UiPrefsContextValue | null>(null);
@@ -81,6 +92,7 @@ const ONE_YEAR = 60 * 60 * 24 * 365;
 export function UiPrefsProvider({ initial, children }: { initial: UiPrefs; children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(initial.locale);
   const [themeMode, setThemeModeState] = useState<ThemeMode>(initial.themeMode);
+  const [brand, setBrandState] = useState<Brand>(initial.brand);
   const [systemDark, setSystemDark] = useState(false);
 
   // Reatividade a `prefers-color-scheme` quando mode === "system".
@@ -95,10 +107,13 @@ export function UiPrefsProvider({ initial, children }: { initial: UiPrefs; child
   const resolvedTheme: ResolvedTheme =
     themeMode === "system" ? (systemDark ? "dark" : "light") : themeMode;
 
-  // Mantém <html data-bs-theme> e <html lang> em sincronia.
+  // Mantém <html data-bs-theme>, <html data-brand> e <html lang> em sincronia.
   useEffect(() => {
     applyThemeToDocument(resolvedTheme);
   }, [resolvedTheme]);
+  useEffect(() => {
+    applyBrandToDocument(brand);
+  }, [brand]);
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
@@ -117,6 +132,11 @@ export function UiPrefsProvider({ initial, children }: { initial: UiPrefs; child
     setThemeModeState(mode);
   }, []);
 
+  const setBrand = useCallback((next: Brand) => {
+    writeBrandCookie(next);
+    setBrandState(next);
+  }, []);
+
   const setLocale = useCallback((next: Locale) => {
     document.cookie = `${LOCALE_COOKIE_NAME}=${next}; path=/; max-age=${ONE_YEAR}; SameSite=Lax`;
     setLocaleState(next);
@@ -130,8 +150,10 @@ export function UiPrefsProvider({ initial, children }: { initial: UiPrefs; child
       themeMode,
       resolvedTheme,
       setThemeMode,
+      brand,
+      setBrand,
     }),
-    [locale, setLocale, themeMode, resolvedTheme, setThemeMode],
+    [locale, setLocale, themeMode, resolvedTheme, setThemeMode, brand, setBrand],
   );
 
   return <UiPrefsContext.Provider value={value}>{children}</UiPrefsContext.Provider>;
@@ -169,6 +191,15 @@ export function useResolvedTheme(): ResolvedTheme {
 
 export function useSetThemeMode(): (mode: ThemeMode) => void {
   return useUiPrefs().setThemeMode;
+}
+
+// ── brand ─────────────────────────────────────────────────────────────
+export function useBrand(): Brand {
+  return useUiPrefs().brand;
+}
+
+export function useSetBrand(): (brand: Brand) => void {
+  return useUiPrefs().setBrand;
 }
 
 export { resolveTheme };

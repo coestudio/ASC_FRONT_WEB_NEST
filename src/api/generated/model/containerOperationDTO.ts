@@ -4,18 +4,18 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ContainerDTO } from "./containerDTO";
-import type { ContainerOperationStatus } from "./containerOperationStatus";
-import type { ContainerPhotoDTO } from "./containerPhotoDTO";
-import type { SealDTO } from "./sealDTO";
+import type { ContainerDTO } from './containerDTO.ts';
+import type { ContainerOperationStatus } from './containerOperationStatus.ts';
+import type { ContainerPhotoDTO } from './containerPhotoDTO.ts';
+import type { SealDTO } from './sealDTO.ts';
 
 export interface ContainerOperationDTO {
   operationId: string;
   containerId: string;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
   tara?: number | string | null;
   /** @nullable */
   sealDate?: string | null;

@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { DocumentType } from "./documentType";
-import type { FileDTO } from "./fileDTO";
+import type { DocumentType } from './documentType.ts';
+import type { FileDTO } from './fileDTO.ts';
 
 export interface DocumentDTO {
   operationId: string;

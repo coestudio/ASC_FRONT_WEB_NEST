@@ -4,25 +4,24 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from "zod";
+import * as zod from 'zod';
 
-export const getApiHarborQueryOffsetRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
-export const getApiHarborQueryLimitRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
+
+export const getApiHarborQueryOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiHarborQueryLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const GetApiHarborQueryParams = zod.object({
-  Search: zod.string().optional(),
-  Offset: zod
-    .union([zod.int(), zod.stringFormat("int32", getApiHarborQueryOffsetRegExpTwo)])
-    .optional(),
-  Limit: zod
-    .union([zod.int(), zod.stringFormat("int32", getApiHarborQueryLimitRegExpTwo)])
-    .optional(),
-  Sort: zod.string().optional(),
-});
+  "Search": zod.string().optional(),
+  "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiHarborQueryOffsetRegExpTwo)]).optional(),
+  "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiHarborQueryLimitRegExpTwo)]).optional(),
+  "Sort": zod.string().optional()
+})
 
 export const getApiHarborResponseItemsItemAddressCountryMax = 2;
 
-export const getApiHarborResponseItemsItemAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
+
+export const getApiHarborResponseItemsItemAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiHarborResponseItemsItemAddressPostalCodeMax = 20;
 
 export const getApiHarborResponseItemsItemAddressStateMax = 2;
@@ -37,47 +36,40 @@ export const getApiHarborResponseItemsItemAddressComplementMax = 100;
 
 export const getApiHarborResponseItemsItemAddressCityMax = 100;
 
-export const getApiHarborResponseTotalRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
-export const getApiHarborResponseOffsetRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
-export const getApiHarborResponseLimitRegExpTwo = new RegExp("^-?(?:0|[1-9]\\d*)$");
+export const getApiHarborResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiHarborResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiHarborResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
 
 export const GetApiHarborResponse = zod.object({
-  items: zod.array(
-    zod.object({
-      name: zod.string(),
-      address: zod.object({
-        country: zod
-          .string()
-          .max(getApiHarborResponseItemsItemAddressCountryMax)
-          .regex(getApiHarborResponseItemsItemAddressCountryRegExp)
-          .nullish(),
-        postalCode: zod.string().max(getApiHarborResponseItemsItemAddressPostalCodeMax).nullish(),
-        state: zod.string().max(getApiHarborResponseItemsItemAddressStateMax).nullish(),
-        neighborhood: zod
-          .string()
-          .max(getApiHarborResponseItemsItemAddressNeighborhoodMax)
-          .nullish(),
-        street: zod.string().max(getApiHarborResponseItemsItemAddressStreetMax).nullish(),
-        number: zod.string().max(getApiHarborResponseItemsItemAddressNumberMax).nullish(),
-        complement: zod.string().max(getApiHarborResponseItemsItemAddressComplementMax).nullish(),
-        city: zod.string().max(getApiHarborResponseItemsItemAddressCityMax).nullish(),
-        fullAddress: zod.string().optional(),
-      }),
-      id: zod.uuid(),
-      createdAt: zod.iso.datetime({ offset: true }),
-      updatedAt: zod.iso.datetime({ offset: true }),
-    }),
-  ),
-  total: zod.union([zod.int(), zod.stringFormat("int32", getApiHarborResponseTotalRegExpTwo)]),
-  offset: zod.union([zod.int(), zod.stringFormat("int32", getApiHarborResponseOffsetRegExpTwo)]),
-  limit: zod.union([zod.int(), zod.stringFormat("int32", getApiHarborResponseLimitRegExpTwo)]),
-  hasNext: zod.boolean().optional(),
-  hasPrevious: zod.boolean().optional(),
-});
+  "items": zod.array(zod.object({
+  "name": zod.string(),
+  "address": zod.object({
+  "country": zod.string().max(getApiHarborResponseItemsItemAddressCountryMax).regex(getApiHarborResponseItemsItemAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(getApiHarborResponseItemsItemAddressPostalCodeMax).nullish(),
+  "state": zod.string().max(getApiHarborResponseItemsItemAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(getApiHarborResponseItemsItemAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(getApiHarborResponseItemsItemAddressStreetMax).nullish(),
+  "number": zod.string().max(getApiHarborResponseItemsItemAddressNumberMax).nullish(),
+  "complement": zod.string().max(getApiHarborResponseItemsItemAddressComplementMax).nullish(),
+  "city": zod.string().max(getApiHarborResponseItemsItemAddressCityMax).nullish(),
+  "fullAddress": zod.string().optional()
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', getApiHarborResponseTotalRegExpTwo)]),
+  "offset": zod.union([zod.int(),zod.stringFormat('int32', getApiHarborResponseOffsetRegExpTwo)]),
+  "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiHarborResponseLimitRegExpTwo)]),
+  "hasNext": zod.boolean().optional(),
+  "hasPrevious": zod.boolean().optional()
+})
 
 export const postApiHarborBodyAddressCountryMax = 2;
 
-export const postApiHarborBodyAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
+
+export const postApiHarborBodyAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiHarborBodyAddressPostalCodeMax = 10;
 
 export const postApiHarborBodyAddressStateMax = -1;
@@ -95,29 +87,26 @@ export const postApiHarborBodyAddressCityMax = 100;
 export const postApiHarborBodyNameMin = 3;
 export const postApiHarborBodyNameMax = 50;
 
+
+
 export const PostApiHarborBody = zod.object({
-  address: zod
-    .object({
-      country: zod
-        .string()
-        .max(postApiHarborBodyAddressCountryMax)
-        .regex(postApiHarborBodyAddressCountryRegExp)
-        .nullish(),
-      postalCode: zod.string().max(postApiHarborBodyAddressPostalCodeMax).nullable(),
-      state: zod.string().max(postApiHarborBodyAddressStateMax).nullish(),
-      neighborhood: zod.string().max(postApiHarborBodyAddressNeighborhoodMax).nullish(),
-      street: zod.string().max(postApiHarborBodyAddressStreetMax).nullish(),
-      number: zod.string().max(postApiHarborBodyAddressNumberMax).nullish(),
-      complement: zod.string().max(postApiHarborBodyAddressComplementMax).nullish(),
-      city: zod.string().max(postApiHarborBodyAddressCityMax).nullish(),
-    })
-    .optional(),
-  name: zod.string().min(postApiHarborBodyNameMin).max(postApiHarborBodyNameMax),
-});
+  "address": zod.object({
+  "country": zod.string().max(postApiHarborBodyAddressCountryMax).regex(postApiHarborBodyAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(postApiHarborBodyAddressPostalCodeMax).nullable(),
+  "state": zod.string().max(postApiHarborBodyAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(postApiHarborBodyAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(postApiHarborBodyAddressStreetMax).nullish(),
+  "number": zod.string().max(postApiHarborBodyAddressNumberMax).nullish(),
+  "complement": zod.string().max(postApiHarborBodyAddressComplementMax).nullish(),
+  "city": zod.string().max(postApiHarborBodyAddressCityMax).nullish()
+}).optional(),
+  "name": zod.string().min(postApiHarborBodyNameMin).max(postApiHarborBodyNameMax)
+})
 
 export const postApiHarborResponseAddressCountryMax = 2;
 
-export const postApiHarborResponseAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
+
+export const postApiHarborResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiHarborResponseAddressPostalCodeMax = 20;
 
 export const postApiHarborResponseAddressStateMax = 2;
@@ -132,35 +121,34 @@ export const postApiHarborResponseAddressComplementMax = 100;
 
 export const postApiHarborResponseAddressCityMax = 100;
 
+
+
 export const PostApiHarborResponse = zod.object({
-  name: zod.string(),
-  address: zod.object({
-    country: zod
-      .string()
-      .max(postApiHarborResponseAddressCountryMax)
-      .regex(postApiHarborResponseAddressCountryRegExp)
-      .nullish(),
-    postalCode: zod.string().max(postApiHarborResponseAddressPostalCodeMax).nullish(),
-    state: zod.string().max(postApiHarborResponseAddressStateMax).nullish(),
-    neighborhood: zod.string().max(postApiHarborResponseAddressNeighborhoodMax).nullish(),
-    street: zod.string().max(postApiHarborResponseAddressStreetMax).nullish(),
-    number: zod.string().max(postApiHarborResponseAddressNumberMax).nullish(),
-    complement: zod.string().max(postApiHarborResponseAddressComplementMax).nullish(),
-    city: zod.string().max(postApiHarborResponseAddressCityMax).nullish(),
-    fullAddress: zod.string().optional(),
-  }),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "name": zod.string(),
+  "address": zod.object({
+  "country": zod.string().max(postApiHarborResponseAddressCountryMax).regex(postApiHarborResponseAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(postApiHarborResponseAddressPostalCodeMax).nullish(),
+  "state": zod.string().max(postApiHarborResponseAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(postApiHarborResponseAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(postApiHarborResponseAddressStreetMax).nullish(),
+  "number": zod.string().max(postApiHarborResponseAddressNumberMax).nullish(),
+  "complement": zod.string().max(postApiHarborResponseAddressComplementMax).nullish(),
+  "city": zod.string().max(postApiHarborResponseAddressCityMax).nullish(),
+  "fullAddress": zod.string().optional()
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const GetApiHarborIdParams = zod.object({
-  id: zod.uuid(),
-});
+  "id": zod.uuid()
+})
 
 export const getApiHarborIdResponseAddressCountryMax = 2;
 
-export const getApiHarborIdResponseAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
+
+export const getApiHarborIdResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiHarborIdResponseAddressPostalCodeMax = 20;
 
 export const getApiHarborIdResponseAddressStateMax = 2;
@@ -175,35 +163,34 @@ export const getApiHarborIdResponseAddressComplementMax = 100;
 
 export const getApiHarborIdResponseAddressCityMax = 100;
 
+
+
 export const GetApiHarborIdResponse = zod.object({
-  name: zod.string(),
-  address: zod.object({
-    country: zod
-      .string()
-      .max(getApiHarborIdResponseAddressCountryMax)
-      .regex(getApiHarborIdResponseAddressCountryRegExp)
-      .nullish(),
-    postalCode: zod.string().max(getApiHarborIdResponseAddressPostalCodeMax).nullish(),
-    state: zod.string().max(getApiHarborIdResponseAddressStateMax).nullish(),
-    neighborhood: zod.string().max(getApiHarborIdResponseAddressNeighborhoodMax).nullish(),
-    street: zod.string().max(getApiHarborIdResponseAddressStreetMax).nullish(),
-    number: zod.string().max(getApiHarborIdResponseAddressNumberMax).nullish(),
-    complement: zod.string().max(getApiHarborIdResponseAddressComplementMax).nullish(),
-    city: zod.string().max(getApiHarborIdResponseAddressCityMax).nullish(),
-    fullAddress: zod.string().optional(),
-  }),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "name": zod.string(),
+  "address": zod.object({
+  "country": zod.string().max(getApiHarborIdResponseAddressCountryMax).regex(getApiHarborIdResponseAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(getApiHarborIdResponseAddressPostalCodeMax).nullish(),
+  "state": zod.string().max(getApiHarborIdResponseAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(getApiHarborIdResponseAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(getApiHarborIdResponseAddressStreetMax).nullish(),
+  "number": zod.string().max(getApiHarborIdResponseAddressNumberMax).nullish(),
+  "complement": zod.string().max(getApiHarborIdResponseAddressComplementMax).nullish(),
+  "city": zod.string().max(getApiHarborIdResponseAddressCityMax).nullish(),
+  "fullAddress": zod.string().optional()
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const PutApiHarborIdParams = zod.object({
-  id: zod.uuid(),
-});
+  "id": zod.uuid()
+})
 
 export const putApiHarborIdBodyAddressCountryMax = 2;
 
-export const putApiHarborIdBodyAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
+
+export const putApiHarborIdBodyAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiHarborIdBodyAddressPostalCodeMax = 10;
 
 export const putApiHarborIdBodyAddressStateMax = -1;
@@ -221,29 +208,26 @@ export const putApiHarborIdBodyAddressCityMax = 100;
 export const putApiHarborIdBodyNameMin = 3;
 export const putApiHarborIdBodyNameMax = 50;
 
+
+
 export const PutApiHarborIdBody = zod.object({
-  address: zod
-    .object({
-      country: zod
-        .string()
-        .max(putApiHarborIdBodyAddressCountryMax)
-        .regex(putApiHarborIdBodyAddressCountryRegExp)
-        .nullish(),
-      postalCode: zod.string().max(putApiHarborIdBodyAddressPostalCodeMax).nullable(),
-      state: zod.string().max(putApiHarborIdBodyAddressStateMax).nullish(),
-      neighborhood: zod.string().max(putApiHarborIdBodyAddressNeighborhoodMax).nullish(),
-      street: zod.string().max(putApiHarborIdBodyAddressStreetMax).nullish(),
-      number: zod.string().max(putApiHarborIdBodyAddressNumberMax).nullish(),
-      complement: zod.string().max(putApiHarborIdBodyAddressComplementMax).nullish(),
-      city: zod.string().max(putApiHarborIdBodyAddressCityMax).nullish(),
-    })
-    .optional(),
-  name: zod.string().min(putApiHarborIdBodyNameMin).max(putApiHarborIdBodyNameMax),
-});
+  "address": zod.object({
+  "country": zod.string().max(putApiHarborIdBodyAddressCountryMax).regex(putApiHarborIdBodyAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(putApiHarborIdBodyAddressPostalCodeMax).nullable(),
+  "state": zod.string().max(putApiHarborIdBodyAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(putApiHarborIdBodyAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(putApiHarborIdBodyAddressStreetMax).nullish(),
+  "number": zod.string().max(putApiHarborIdBodyAddressNumberMax).nullish(),
+  "complement": zod.string().max(putApiHarborIdBodyAddressComplementMax).nullish(),
+  "city": zod.string().max(putApiHarborIdBodyAddressCityMax).nullish()
+}).optional(),
+  "name": zod.string().min(putApiHarborIdBodyNameMin).max(putApiHarborIdBodyNameMax)
+})
 
 export const putApiHarborIdResponseAddressCountryMax = 2;
 
-export const putApiHarborIdResponseAddressCountryRegExp = new RegExp("^[A-Z]{2}$");
+
+export const putApiHarborIdResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiHarborIdResponseAddressPostalCodeMax = 20;
 
 export const putApiHarborIdResponseAddressStateMax = 2;
@@ -258,30 +242,29 @@ export const putApiHarborIdResponseAddressComplementMax = 100;
 
 export const putApiHarborIdResponseAddressCityMax = 100;
 
+
+
 export const PutApiHarborIdResponse = zod.object({
-  name: zod.string(),
-  address: zod.object({
-    country: zod
-      .string()
-      .max(putApiHarborIdResponseAddressCountryMax)
-      .regex(putApiHarborIdResponseAddressCountryRegExp)
-      .nullish(),
-    postalCode: zod.string().max(putApiHarborIdResponseAddressPostalCodeMax).nullish(),
-    state: zod.string().max(putApiHarborIdResponseAddressStateMax).nullish(),
-    neighborhood: zod.string().max(putApiHarborIdResponseAddressNeighborhoodMax).nullish(),
-    street: zod.string().max(putApiHarborIdResponseAddressStreetMax).nullish(),
-    number: zod.string().max(putApiHarborIdResponseAddressNumberMax).nullish(),
-    complement: zod.string().max(putApiHarborIdResponseAddressComplementMax).nullish(),
-    city: zod.string().max(putApiHarborIdResponseAddressCityMax).nullish(),
-    fullAddress: zod.string().optional(),
-  }),
-  id: zod.uuid(),
-  createdAt: zod.iso.datetime({ offset: true }),
-  updatedAt: zod.iso.datetime({ offset: true }),
-});
+  "name": zod.string(),
+  "address": zod.object({
+  "country": zod.string().max(putApiHarborIdResponseAddressCountryMax).regex(putApiHarborIdResponseAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(putApiHarborIdResponseAddressPostalCodeMax).nullish(),
+  "state": zod.string().max(putApiHarborIdResponseAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(putApiHarborIdResponseAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(putApiHarborIdResponseAddressStreetMax).nullish(),
+  "number": zod.string().max(putApiHarborIdResponseAddressNumberMax).nullish(),
+  "complement": zod.string().max(putApiHarborIdResponseAddressComplementMax).nullish(),
+  "city": zod.string().max(putApiHarborIdResponseAddressCityMax).nullish(),
+  "fullAddress": zod.string().optional()
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
 
 export const DeleteApiHarborIdParams = zod.object({
-  id: zod.uuid(),
-});
+  "id": zod.uuid()
+})
 
-export const DeleteApiHarborIdResponse = zod.unknown();
+export const DeleteApiHarborIdResponse = zod.unknown()
+

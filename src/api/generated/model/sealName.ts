@@ -5,4 +5,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type SealName = number;
+export type SealName = typeof SealName[keyof typeof SealName];
+
+
+export const SealName = {
+  NONE: 'NONE',
+  ASA: 'ASA',
+  ASI: 'ASI',
+  AMATEUR: 'AMATEUR',
+  EXTRA: 'EXTRA',
+} as const;

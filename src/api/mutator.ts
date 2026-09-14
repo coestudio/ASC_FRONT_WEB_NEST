@@ -1,4 +1,4 @@
-import axios, { type AxiosAdapter, type AxiosRequestConfig } from "axios";
+import axios, { AxiosError, type AxiosAdapter, type AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 
 /**
@@ -53,12 +53,16 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
   }
 
   const hasBody = method !== "GET" && method !== "HEAD" && config.data != null;
+  // O Axios já serializa `config.data` (via transformRequest padrão) antes de
+  // chamar este adapter customizado — usar o valor direto como body, sem
+  // `JSON.stringify` de novo (senão dobra a codificação e quebra a
+  // desserialização no Core). FormData é a única exceção, já vem correto.
   const res = await fetch("/api/core", {
     method,
     headers,
     credentials: "same-origin",
     signal: config.signal as AbortSignal | undefined,
-    body: hasBody ? (isForm ? (config.data as FormData) : JSON.stringify(config.data)) : undefined,
+    body: hasBody ? (isForm ? (config.data as FormData) : (config.data as BodyInit)) : undefined,
   });
 
   const contentType = res.headers.get("content-type") ?? "";
@@ -68,7 +72,7 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
   else if (contentType.includes("application/json")) data = await res.json().catch(() => null);
   else data = await res.text();
 
-  return {
+  const response = {
     data,
     status: res.status,
     statusText: res.statusText,
@@ -76,6 +80,24 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
     config,
     request: null,
   };
+
+  // Adapters custom do Axios não passam pelo `settle()` interno (só os
+  // built-in xhr/http/fetch chamam isso sozinhos) — sem isso, qualquer status
+  // HTTP vira promise resolvida pro Axios inteiro e nenhum interceptor de
+  // erro roda. Replica a mesma lógica de `axios/lib/core/settle.js`.
+  const validateStatus = config.validateStatus;
+  if (!validateStatus || validateStatus(response.status)) {
+    return response;
+  }
+  throw new AxiosError(
+    `Request failed with status code ${response.status}`,
+    [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][
+      Math.floor(response.status / 100) - 4
+    ],
+    config,
+    null,
+    response,
+  );
 };
 
 export const axiosInstance = axios.create({ adapter: coreProxyAdapter });
@@ -106,6 +128,14 @@ function extractBackendMessage(err: unknown): string | undefined {
   if (!err || typeof err !== "object") return undefined;
   const data = (err as { response?: { data?: Record<string, unknown> } }).response?.data;
   if (!data || typeof data !== "object") return undefined;
+
+  // `ProblemDetails.Detail` — campo real que o GlobalExceptionHandler do
+  // Core preenche via MessageCatalog.Resolve(code, locale, args) (SPEC-15).
+  // Checado antes dos fallbacks abaixo, que continuam cobrindo mensagens
+  // fora do catálogo (construtor legado DomainException(string), sempre
+  // pt-BR) e respostas de erro que não são ProblemDetails (ex. o proxy BFF
+  // src/routes/api/core.ts, que devolve { message: "..." }).
+  if (typeof data.detail === "string") return data.detail;
 
   if (data.errors && typeof data.errors === "object") {
     const messages = Object.values(data.errors).flat().filter(Boolean);

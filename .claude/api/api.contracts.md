@@ -18,13 +18,13 @@ fronteira; a fonte de verdade dos tipos é o client gerado em
 `npx orval` + `npx tsx scripts/staticSnapshots.ts` + `npx tsc --noEmit`.
 Saídas (todas 100% geradas, nunca editar):
 
-| Pasta | Conteúdo |
-| --- | --- |
+| Pasta                            | Conteúdo                                                                                 |
+| -------------------------------- | ---------------------------------------------------------------------------------------- |
 | `src/api/generated/endpoints/**` | hooks TanStack Query (client `react-query`, transporte `axios` via `src/api/mutator.ts`) |
-| `src/api/generated/model/**` | tipos TS de DTO / ViewModel |
-| `src/api/generated/zod/**` | schemas `zod` (regras min/max dos DTOs) |
-| `src/api/generated/static/**` | snapshots `x-snapshot` de rotas de enum estáticas do Core (`[StaticEndpoint]`) |
-| `src/api/snapshot.json` | marcador de hash do contrato (checado por `check:api` nos hooks `pre*`) |
+| `src/api/generated/model/**`     | tipos TS de DTO / ViewModel                                                              |
+| `src/api/generated/zod/**`       | schemas `zod` (regras min/max dos DTOs)                                                  |
+| `src/api/generated/static/**`    | snapshots `x-snapshot` de rotas de enum estáticas do Core (`[StaticEndpoint]`)           |
+| `src/api/snapshot.json`          | marcador de hash do contrato (checado por `check:api` nos hooks `pre*`)                  |
 
 `npm run check:api` (roda em `predev`/`prebuild`/`prestart`) só **avisa** se o
 hash do contrato no ar divergiu do último `just map` — nunca trava.
@@ -53,11 +53,11 @@ hook Orval (browser)
 Via `src/lib/core-client.ts` (axios com `API_URL`, server-only), dentro de
 server functions (`createServerFn`):
 
-| Server fn | Endpoint Core | Uso |
-| --- | --- | --- |
-| `loginFn` | `POST /api/auth/login` | login; sela o cookie, devolve só `{ user }` |
-| `fetchMeFn` | `GET /api/profile/me` | seed de identidade no SSR |
-| `logoutFn` | — | só limpa o cookie (Core não tem logout) |
+| Server fn   | Endpoint Core          | Uso                                         |
+| ----------- | ---------------------- | ------------------------------------------- |
+| `loginFn`   | `POST /api/auth/login` | login; sela o cookie, devolve só `{ user }` |
+| `fetchMeFn` | `GET /api/profile/me`  | seed de identidade no SSR                   |
+| `logoutFn`  | —                      | só limpa o cookie (Core não tem logout)     |
 
 O `mutator` faz `throw` no SSR de propósito: chamada autenticada ao Core no
 servidor **tem** que passar por server fn.
