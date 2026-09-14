@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ProfileCreate } from "./profileCreate";
+import type { ProfileCreate } from './profileCreate.ts';
 
 export interface CollaboratorCreate {
   profile: ProfileCreate;

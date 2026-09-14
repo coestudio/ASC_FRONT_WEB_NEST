@@ -1,0 +1,60 @@
+{
+  "metadata": {
+    "title": "ASC",
+    "description": "Aplicação ASC"
+  },
+  "theme": {
+    "light": "Tema claro",
+    "dark": "Tema escuro",
+    "system": "Tema do sistema"
+  },
+  "shell": {
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "profile": "Perfil",
+    "preferences": "Preferências",
+    "theme": "Tema",
+    "language": "Idioma",
+    "viewMode": "Visualização",
+    "viewModeCards": "Cards",
+    "viewModeList": "Lista",
+    "underConstruction": "Em construção",
+    "underConstructionDescription": "Esta tela ainda está em desenvolvimento.",
+    "areaWelcome": "Bem-vindo(a) à área {area}.",
+    "brand": "Marca",
+    "profileModal": {
+      "title": "Meu perfil",
+      "avatar": "Avatar",
+      "uploadAvatar": "Salvar avatar",
+      "avatarSaved": "Avatar atualizado.",
+      "detailTab": "Detalhes",
+      "addressTab": "Endereço",
+      "passwordTab": "Senha",
+      "fullName": "Nome completo",
+      "userName": "Usuário",
+      "email": "E-mail",
+      "document": "Documento",
+      "phone": "Telefone",
+      "birthDate": "Data de nascimento",
+      "postalCode": "CEP",
+      "state": "Estado",
+      "city": "Cidade",
+      "neighborhood": "Bairro",
+      "street": "Rua",
+      "number": "Número",
+      "complement": "Complemento",
+      "currentPassword": "Senha atual",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar senha",
+      "save": "Salvar",
+      "saved": "Alterações salvas.",
+      "saveError": "Não foi possível salvar. Tente novamente."
+    }
+  },
+  "devTools": {
+    "clearCacheButton": "Limpar cache local (dev)",
+    "clearCacheTitle": "Limpar cache local",
+    "clearCacheMessage": "Isso apaga localStorage, sessionStorage, cookies e o cache do React Query, e encerra sua sessão. Continuar?",
+    "clearCacheSuccess": "Cache local limpo."
+  }
+}

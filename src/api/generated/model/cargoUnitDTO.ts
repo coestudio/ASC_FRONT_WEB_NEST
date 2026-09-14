@@ -4,8 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoIdentificationStatus } from "./cargoIdentificationStatus";
-import type { CargoUnitStatus } from "./cargoUnitStatus";
+import type { CargoIdentificationStatus } from './cargoIdentificationStatus.ts';
+import type { CargoUnitStatus } from './cargoUnitStatus.ts';
 
 export interface CargoUnitDTO {
   operationId?: string;
@@ -19,19 +19,19 @@ export interface CargoUnitDTO {
   itemCode?: string;
   observation?: string;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
   netWeight?: number | string | null;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
   tare?: number | string | null;
   /**
-   * @nullable
-   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-   */
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
   grossWeight?: number | string | null;
   status?: CargoUnitStatus;
   identificationStatus?: CargoIdentificationStatus;

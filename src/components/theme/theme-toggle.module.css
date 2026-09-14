@@ -1,0 +1,82 @@
+/* Switch de tema — SPEC-11 item 6. Switch custom (trilho + thumb com o
+   ícone do modo atual bem visível dentro dele), construído sobre um
+   <input type="checkbox" role="switch"> acessível e escondido visualmente.
+   Sem lógica nova: continua ciclando light → dark → system a cada clique. */
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 3rem;
+  height: 1.6rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Input real — acessível (foco/teclado/leitor de tela), mas invisível;
+   o trilho e o thumb abaixo é que ficam visíveis. */
+.input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--bs-border-radius-pill, 50rem);
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  transition:
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out;
+}
+
+.input:checked ~ .track {
+  background: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.input:focus-visible ~ .track {
+  box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Thumb branco, bem contrastado com o trilho — o ícone do modo atual vive
+   dentro dele, sempre visível. */
+.thumb {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: var(--bs-white);
+  box-shadow: 0 1px 3px rgba(var(--bs-emphasis-color-rgb, 0, 0, 0), 0.3);
+  transition: transform 0.18s ease-in-out;
+  pointer-events: none;
+}
+
+.input:checked ~ .thumb {
+  transform: translateX(1.4rem);
+}
+
+.icon {
+  font-size: 0.8rem;
+}
+
+/* Cor do ícone por modo — sol em amarelo (aviso), lua na cor da marca,
+   "sistema" em cinza neutro. */
+.iconLight {
+  color: var(--bs-warning);
+}
+.iconDark {
+  color: var(--bs-primary);
+}
+.iconSystem {
+  color: var(--bs-secondary-color);
+}

@@ -1,6 +1,6 @@
 ---
-applyTo: 'src/lib/**'
-description: 'Use ao mexer em utilidades compartilhadas: sessão, server functions de auth, permissões e preferências de UI. Fixa a fronteira server/client e o papel de cada peça.'
+applyTo: "src/lib/**"
+description: "Use ao mexer em utilidades compartilhadas: sessão, server functions de auth, permissões e preferências de UI. Fixa a fronteira server/client e o papel de cada peça."
 ---
 
 # lib Instructions

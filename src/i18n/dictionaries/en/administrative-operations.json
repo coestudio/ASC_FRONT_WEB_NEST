@@ -1,0 +1,271 @@
+{
+  "title": "Operations",
+  "description": "Stuffing and boarding operations in progress.",
+  "colNumber": "Number",
+  "colClient": "Client",
+  "colProduct": "Product",
+  "colType": "Type",
+  "colService": "Service",
+  "colStatus": "Status",
+  "colOpDate": "Operation date",
+  "colBooking": "Booking",
+  "colActions": "Actions",
+  "emptyState": "No operation found.",
+  "newButton": "New operation",
+  "newTitle": "New operation",
+  "editTitle": "Edit operation",
+  "viewTitle": "Operation details",
+  "searchPlaceholder": "Search by number, booking...",
+  "filters": {
+    "type": "Type",
+    "typePlaceholder": "All types",
+    "status": "Status",
+    "statusPlaceholder": "All statuses",
+    "client": "Client",
+    "clientPlaceholder": "Search client..."
+  },
+  "form": {
+    "opType": "Type",
+    "opService": "Service",
+    "client": "Client",
+    "product": "Product",
+    "vessel": "Vessel",
+    "booking": "Booking",
+    "instruction": "Instruction",
+    "nameDate": "Name date",
+    "opDate": "Operation date",
+    "startDate": "Start date",
+    "observation": "Notes"
+  },
+  "detail": {
+    "number": "Number",
+    "status": "Status",
+    "type": "Type",
+    "service": "Service",
+    "booking": "Booking",
+    "instruction": "Instruction"
+  },
+  "details": {
+    "clientSection": "Client",
+    "productSection": "Product",
+    "datesSection": "Dates",
+    "document": "Document",
+    "phone": "Phone",
+    "email": "Email",
+    "vesselEmpty": "No vessel linked",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at"
+  },
+  "responsible": {
+    "searchPlaceholder": "Search by name, role or email...",
+    "link": "Link",
+    "unlink": "Unlink",
+    "emptyState": "No responsible party found.",
+    "filter": {
+      "all": "All links",
+      "linked": "Linked",
+      "unlinked": "Not linked",
+      "allRoles": "All roles"
+    },
+    "roles": {
+      "coordinator": "Coordinator",
+      "analyst": "Analyst",
+      "assistant": "Assistant",
+      "supervisor": "Supervisor"
+    }
+  },
+  "toast": {
+    "created": "Operation created successfully.",
+    "updated": "Operation updated successfully.",
+    "error": "Could not complete the action. Please try again.",
+    "loadError": "Could not load the operation data."
+  },
+  "romaneio": {
+    "title": "Packing list",
+    "description": "Bales registered for this operation.",
+    "newButton": "New bale",
+    "newTitle": "New bale",
+    "editTitle": "Edit bale",
+    "viewTitle": "Bale details",
+    "searchPlaceholder": "Search by identifier, code...",
+    "emptyState": "No bale registered.",
+    "colItemIdentifier": "Bale",
+    "colItemCode": "Code",
+    "colLote": "Batch",
+    "colPeso": "Weight (kg)",
+    "colSource": "Source",
+    "colActions": "Actions",
+    "form": {
+      "itemIdentifier": "Bale identifier",
+      "itemCode": "Item code",
+      "tipo": "Type",
+      "contrato": "Contract",
+      "peso": "Net weight (kg)",
+      "pesoTara": "Tare (kg)",
+      "pesoBruto": "Gross weight (kg)",
+      "instruction": "Instruction",
+      "notaFiscal": "Invoice",
+      "lote": "Batch",
+      "pilha": "Stack"
+    },
+    "confirm": {
+      "deleteTitle": "Delete bale",
+      "deleteMessage": "Delete bale {name}? This action cannot be undone."
+    },
+    "toast": {
+      "created": "Bale created successfully.",
+      "updated": "Bale updated successfully.",
+      "deleted": "Bale deleted successfully.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "import": {
+      "button": "Import spreadsheet",
+      "title": "Import packing list",
+      "stepUpload": "Upload spreadsheet",
+      "stepReview": "Review",
+      "fileLabel": "Spreadsheet (.xlsx or .csv)",
+      "analyze": "Analyze",
+      "analyzing": "Analyzing...",
+      "back": "Back",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "applying": "Applying...",
+      "sheetRowLabel": "Row {row}",
+      "summary": {
+        "totalDataRows": "Spreadsheet rows",
+        "new": "New",
+        "missing": "Missing",
+        "conflicts": "Conflicts",
+        "foreign": "From another operation",
+        "invalid": "Invalid",
+        "duplicated": "Duplicated",
+        "unchanged": "Unchanged"
+      },
+      "sections": {
+        "new": "New bales",
+        "newHint": "The bales checked below will be created.",
+        "missing": "Bales missing from the spreadsheet",
+        "missingHint": "Check to delete a bale that no longer appears in the spreadsheet.",
+        "conflicts": "Bales with divergence",
+        "conflictsHint": "Check the fields that should be updated with the spreadsheet value.",
+        "foreign": "Belong to another operation",
+        "foreignHint": "These bales already exist in another operation and will not be changed.",
+        "invalid": "Invalid rows",
+        "invalidHint": "These rows have errors and will not be imported.",
+        "duplicated": "Duplicated rows in the spreadsheet",
+        "duplicatedHint": "This bale appears more than once in the spreadsheet and will not be imported."
+      },
+      "toast": {
+        "analyzeError": "Could not analyze the spreadsheet. Please try again.",
+        "applyError": "Could not apply the import. Please try again.",
+        "applySuccess": "Import applied: {created} created, {updated} updated, {deleted} deleted."
+      },
+      "fields": {
+        "itemCode": "Item code",
+        "tipo": "Type",
+        "contrato": "Contract",
+        "peso": "Net weight",
+        "pesoTara": "Tare",
+        "pesoBruto": "Gross weight",
+        "instruction": "Instruction",
+        "notaFiscal": "Invoice",
+        "lote": "Batch",
+        "pilha": "Stack"
+      }
+    }
+  },
+  "shell": {
+    "pageTitle": "Operation {number} — ASC",
+    "eyebrow": "Operation {number}",
+    "tabs": {
+      "details": "Details",
+      "romaneio": "Packing list",
+      "containers": "Containers",
+      "documents": "Documents",
+      "reports": "Reports",
+      "responsible": "Responsible parties",
+      "log": "Log"
+    },
+    "statusLabel": "Operation status",
+    "statusUpdated": "Operation status updated successfully.",
+    "statusError": "Could not update the status. Please try again.",
+    "notFound": "Operation not found.",
+    "loadError": "Could not load this operation.",
+    "retry": "Try again",
+    "tabPlaceholder": "This tab's content has not been implemented yet."
+  },
+  "reports": {
+    "description": "List of reports already issued for this operation.",
+    "colType": "Type",
+    "colGeneratedAt": "Generated at",
+    "colFormat": "Format",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "statusReady": "Available",
+    "statusPending": "Pending",
+    "download": "Download",
+    "emptyState": "No reports available."
+  },
+  "log": {
+    "description": "History of events recorded for this operation.",
+    "byUser": "by {user}",
+    "emptyState": "No events recorded."
+  },
+  "containers": {
+    "new": "Link container",
+    "newTitle": "Link container",
+    "loadError": "Could not load the operation's containers.",
+    "empty": "No container linked to this operation.",
+    "colIdentifier": "Container",
+    "colTara": "Tare",
+    "colStatus": "Status",
+    "colPhotos": "Photos",
+    "colActions": "Actions",
+    "form": {
+      "container": "Container",
+      "tara": "Tare",
+      "status": "Link status",
+      "sealDate": "Seal date"
+    },
+    "photosTitle": "Container photos",
+    "photosAdd": "Photos",
+    "photosUpload": "Upload photos",
+    "photosRemove": "Remove photo",
+    "confirm": {
+      "deleteTitle": "Unlink container",
+      "deleteMessage": "Unlink container {identifier} from this operation?"
+    },
+    "toast": {
+      "linked": "Container linked successfully.",
+      "updated": "Link updated successfully.",
+      "unlinked": "Container unlinked successfully.",
+      "photoUploaded": "Photos uploaded successfully.",
+      "photoDeleted": "Photo removed successfully.",
+      "error": "Could not complete the action. Please try again."
+    }
+  },
+  "documents": {
+    "new": "New document",
+    "newTitle": "New document",
+    "editTitle": "Edit document",
+    "loadError": "Could not load the operation's documents.",
+    "empty": "No document registered for this operation.",
+    "colTitle": "Title",
+    "colType": "Type",
+    "colFile": "File",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "fileLink": "Open file",
+    "form": {
+      "title": "Title",
+      "type": "Type",
+      "observation": "Notes",
+      "file": "File"
+    },
+    "toast": {
+      "created": "Document created successfully.",
+      "updated": "Document updated successfully.",
+      "error": "Could not complete the action. Please try again."
+    }
+  }
+}

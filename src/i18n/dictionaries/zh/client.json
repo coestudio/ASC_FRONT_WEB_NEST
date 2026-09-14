@@ -1,0 +1,69 @@
+{
+  "home": {
+    "title": "客户区域",
+    "description": "跟踪您的报告、业务和协作者。",
+    "cards": {
+      "collaborators": {
+        "title": "协作者",
+        "description": "管理您公司拥有门户访问权限的协作者。"
+      },
+      "finalReport": {
+        "title": "最终报告",
+        "description": "查看您业务的最终报告。"
+      },
+      "tracking": {
+        "title": "跟踪",
+        "description": "跟踪您业务的进展。"
+      }
+    }
+  },
+  "collaborators": {
+    "title": "协作者",
+    "description": "您公司拥有门户访问权限的协作者。",
+    "colFullName": "姓名",
+    "colUserName": "用户名",
+    "colEmail": "电子邮件",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "emptyState": "未找到协作者。",
+    "newTitle": "新建协作者",
+    "viewTitle": "协作者详情",
+    "form": {
+      "fullName": "姓名",
+      "userName": "用户名",
+      "email": "电子邮件",
+      "document": "证件号（CPF/CNPJ）",
+      "phone": "电话",
+      "birthDate": "出生日期"
+    },
+    "toast": {
+      "created": "协作者创建成功。",
+      "deleted": "协作者已删除。",
+      "error": "无法完成操作，请重试。"
+    },
+    "confirm": {
+      "deleteTitle": "删除协作者",
+      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
+    }
+  },
+  "finalReport": {
+    "title": "最终报告",
+    "description": "您业务的最终报告。",
+    "colOperation": "业务",
+    "colProduct": "产品",
+    "colIssuedAt": "签发时间",
+    "colStatus": "状态",
+    "statusIssued": "已签发",
+    "statusPending": "待处理"
+  },
+  "tracking": {
+    "title": "跟踪",
+    "description": "您业务的进展。",
+    "steps": {
+      "received": "已接收",
+      "inspection": "检验",
+      "processing": "处理中",
+      "shipped": "已发货"
+    }
+  }
+}

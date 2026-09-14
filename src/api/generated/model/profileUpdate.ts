@@ -7,26 +7,25 @@
 
 export interface ProfileUpdate {
   /**
-   * @minLength 3
-   * @maxLength 150
-   */
+     * @minLength 3
+     * @maxLength 150
+     */
   fullName: string;
   /**
-   * @minLength 11
-   * @maxLength 14
-   * @nullable
-   */
-  document?: string | null;
+     * @minLength 11
+     * @maxLength 14
+     */
+  document: string;
   /**
-   * @minLength 3
-   * @maxLength 320
-   */
+     * @minLength 3
+     * @maxLength 320
+     */
   email: string;
   /**
-   * @minLength 3
-   * @maxLength 20
-   * @nullable
-   */
+     * @minLength 3
+     * @maxLength 20
+     * @nullable
+     */
   phone?: string | null;
   /** @nullable */
   birthDate?: string | null;

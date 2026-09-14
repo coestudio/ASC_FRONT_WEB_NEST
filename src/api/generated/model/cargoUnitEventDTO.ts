@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoUnitEventAction } from "./cargoUnitEventAction";
+import type { CargoUnitEventAction } from './cargoUnitEventAction.ts';
 
 export interface CargoUnitEventDTO {
   cargoUnitId?: string;

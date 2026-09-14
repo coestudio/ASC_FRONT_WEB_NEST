@@ -1,0 +1,130 @@
+{
+  "terminal": {
+    "title": "码头",
+    "description": "与港口关联的码头。",
+    "colName": "名称",
+    "colHarbor": "港口",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "emptyState": "未找到任何码头。",
+    "newTitle": "新建码头",
+    "editTitle": "编辑码头",
+    "viewTitle": "码头详情",
+    "form": {
+      "name": "名称",
+      "harbor": "港口"
+    },
+    "toast": {
+      "created": "码头创建成功。",
+      "updated": "码头更新成功。",
+      "deleted": "码头已删除。",
+      "error": "无法完成该操作，请重试。"
+    },
+    "confirm": {
+      "deleteTitle": "删除码头",
+      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
+    }
+  },
+  "harbor": {
+    "title": "港口",
+    "description": "已注册的港口及其码头。",
+    "colName": "名称",
+    "colAddress": "地址",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "emptyState": "未找到任何港口。",
+    "newTitle": "新建港口",
+    "editTitle": "编辑港口",
+    "viewTitle": "港口详情",
+    "form": {
+      "name": "名称",
+      "address": "地址"
+    },
+    "relatedTerminalsTitle": "该港口的码头",
+    "relatedTerminalsEmpty": "没有关联到该港口的码头。",
+    "toast": {
+      "created": "港口创建成功。",
+      "updated": "港口更新成功。",
+      "deleted": "港口已删除。",
+      "error": "无法完成该操作，请重试。"
+    },
+    "confirm": {
+      "deleteTitle": "删除港口",
+      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
+    }
+  },
+  "container": {
+    "title": "集装箱",
+    "description": "作业中使用的集装箱。",
+    "colIdentifier": "编号",
+    "colTara": "皮重",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "emptyState": "未找到任何集装箱。",
+    "newTitle": "新建集装箱",
+    "editTitle": "编辑集装箱",
+    "viewTitle": "集装箱详情",
+    "form": {
+      "identifier": "编号",
+      "tara": "皮重（千克）"
+    },
+    "toast": {
+      "created": "集装箱创建成功。",
+      "updated": "集装箱更新成功。",
+      "deleted": "集装箱已删除。",
+      "error": "无法完成该操作，请重试。"
+    },
+    "confirm": {
+      "deleteTitle": "删除集装箱",
+      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
+    }
+  },
+  "vessel": {
+    "title": "船舶",
+    "description": "作业中使用的船舶。",
+    "colName": "名称",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "emptyState": "未找到任何船舶。",
+    "newTitle": "新建船舶",
+    "editTitle": "编辑船舶",
+    "viewTitle": "船舶详情",
+    "form": {
+      "name": "名称"
+    },
+    "toast": {
+      "created": "船舶创建成功。",
+      "updated": "船舶更新成功。",
+      "deleted": "船舶已删除。",
+      "error": "无法完成该操作，请重试。"
+    },
+    "confirm": {
+      "deleteTitle": "删除船舶",
+      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
+    }
+  },
+  "product": {
+    "title": "产品",
+    "description": "作业中使用的产品。",
+    "colName": "名称",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "emptyState": "未找到任何产品。",
+    "newTitle": "新建产品",
+    "editTitle": "编辑产品",
+    "viewTitle": "产品详情",
+    "form": {
+      "name": "名称"
+    },
+    "toast": {
+      "created": "产品创建成功。",
+      "updated": "产品更新成功。",
+      "deleted": "产品已删除。",
+      "error": "无法完成该操作，请重试。"
+    },
+    "confirm": {
+      "deleteTitle": "删除产品",
+      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
+    }
+  }
+}

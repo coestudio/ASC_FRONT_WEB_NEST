@@ -135,6 +135,15 @@ Specs citadas no código que não existem mais (`auth-httponly-cookie-bff.md`,
 `i18n-and-theme.md`) podem ser recriadas como spec de documentação quando a
 área for tocada — mas só com aprovação, como qualquer spec.
 
+### Branch
+
+`specs/BRANCHING.md` é a fonte de verdade de **qual branch criar e a partir
+de qual outra** pra cada SPEC (plano de ondas até `SPECS-LEGADO`). Ao receber
+`APROVAR SPEC-NN`, antes de codar: confira lá a base correta da branch —
+nunca puxar de `main` direto pra uma SPEC de área (02–09), e nunca criar
+`spec-08-operacional` antes de `spec-07-operacoes` estar mergeada na branch
+de onda.
+
 ## 4. STATUS
 
 ```
@@ -142,6 +151,7 @@ DRAFT → WAITING_APPROVAL → APPROVED → IN_PROGRESS → IMPLEMENTED
                                   ↓
                                BLOCKED
 ```
+
 (ou `CANCELLED`, com aprovação explícita a qualquer momento).
 
 Implementável: `APPROVED`, `IN_PROGRESS`. Todo o resto: **PARE**.
@@ -172,6 +182,7 @@ Aguardando decisão do usuário.
 ```
 
 Decisões que **sempre** são NEEDS_DECISION neste projeto:
+
 - Qualquer coisa que toque uma das regras invioláveis (§0).
 - Criar/editar schema Zod, ou mudar regra de validação → resposta padrão:
   "isso muda no DTO do Core".
@@ -209,6 +220,7 @@ você não escreve, não edita, não roda `just map`.
 ```
 
 Regras que não se negociam:
+
 - As 5 regras invioláveis do §0 (TanStack+Azure SWA, zero Zod à mão, bun
   padrão, npm compatível, `.env` versionado).
 - `src/api/generated/**` e `src/routeTree.gen.ts` **nunca** são editados à mão.
@@ -248,6 +260,7 @@ Nunca declare uma verificação como passada sem rodar.
 - `FAILED` — rodou e falhou.
 
 Antes de marcar `IMPLEMENTED`, rode e cole o resultado de:
+
 - `bun run check` (tsc) — e, se plausível regressão de runtime, `npm run check`
 - `bun run lint`
 - `just map` **se** a feature dependia de mudança no contrato do Core
