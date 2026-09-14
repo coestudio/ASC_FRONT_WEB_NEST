@@ -18,6 +18,25 @@ dictionaries`, `spec-01-brand-theming` (essa mergeada via branch
 `worktree-spec-01-brand-theming` — o prefixo `worktree-` foi acidental, da
 ferramenta de isolamento; branches novas não repetem esse prefixo).
 
+> **Desvio do plano — SPEC-04 e SPEC-05 foram direto pra `SPECS-LEGADO`,
+> não passaram por `wave-2-parallel-areas`.** Decisão do usuário: uma
+> implementação anterior da SPEC-04 (`spec-04-administrativo-cadastros`,
+> nascida antes da SPEC-SHARE-01 existir) duplicava componentes que a
+> SPEC-SHARE-01 (`Select`/`SelectAsync`/`AddressGroup`) já tinha resolvido
+> de forma compartilhada — em vez de rebasear aquela branch em cima de
+> `wave-2-parallel-areas` (que estava desatualizada em relação a
+> `SPECS-LEGADO`, sem SPEC-10/11/12/13/14/15/SPEC-SHARE-01), a
+> implementação foi refeita do zero direto em cima de `SPECS-LEGADO`, numa
+> branch nova (`spec-04-administrativo-cadastros-v2`), e mergeada de volta
+> pra lá assim que pronta — mesmo caminho seguido pela SPEC-05 logo em
+> seguida (implementada na mesma branch v2, reusando `AddressGroup`).
+> `wave-2-parallel-areas` continua existindo mas **não recebeu** SPEC-04
+> nem SPEC-05 — quem for implementar SPEC-06/07/08/09 (as que ainda faltam
+> da Onda 2) deve decidir, caso a caso, se nasce de `wave-2-parallel-areas`
+> (seguindo o plano original abaixo) ou direto de `SPECS-LEGADO` (seguindo
+> o precedente da v2, provavelmente mais seguro dado o quanto
+> `wave-2-parallel-areas` já ficou pra trás).
+
 ## Estrutura
 
 ```
