@@ -50,5 +50,25 @@
     "updated": "Operation updated successfully.",
     "error": "Could not complete the action. Please try again.",
     "loadError": "Could not load the operation data."
+  },
+  "shell": {
+    "pageTitle": "Operation {number} — ASC",
+    "eyebrow": "Operation {number}",
+    "tabs": {
+      "details": "Details",
+      "romaneio": "Packing list",
+      "containers": "Containers",
+      "documents": "Documents",
+      "reports": "Reports",
+      "responsible": "Responsible parties",
+      "log": "Log"
+    },
+    "statusLabel": "Operation status",
+    "statusUpdated": "Operation status updated successfully.",
+    "statusError": "Could not update the status. Please try again.",
+    "notFound": "Operation not found.",
+    "loadError": "Could not load this operation.",
+    "retry": "Try again",
+    "tabPlaceholder": "This tab's content has not been implemented yet."
   }
 }

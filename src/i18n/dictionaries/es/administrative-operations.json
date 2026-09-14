@@ -50,5 +50,25 @@
     "updated": "Operación actualizada con éxito.",
     "error": "No fue posible completar la acción. Inténtelo de nuevo.",
     "loadError": "No fue posible cargar los datos de la operación."
+  },
+  "shell": {
+    "pageTitle": "Operación {number} — ASC",
+    "eyebrow": "Operación {number}",
+    "tabs": {
+      "details": "Detalles",
+      "romaneio": "Romaneo",
+      "containers": "Contenedores",
+      "documents": "Documentos",
+      "reports": "Informes",
+      "responsible": "Responsables",
+      "log": "Registro"
+    },
+    "statusLabel": "Estado de la operación",
+    "statusUpdated": "Estado de la operación actualizado con éxito.",
+    "statusError": "No fue posible actualizar el estado. Inténtalo de nuevo.",
+    "notFound": "Operación no encontrada.",
+    "loadError": "No fue posible cargar esta operación.",
+    "retry": "Intentar de nuevo",
+    "tabPlaceholder": "El contenido de esta pestaña aún no fue implementado."
   }
 }

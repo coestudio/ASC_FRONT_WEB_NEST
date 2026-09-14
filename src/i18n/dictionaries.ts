@@ -35,9 +35,11 @@ const ptBR = {
   "administrative-registry": ptBRAdministrativeRegistry,
   // Namespace da SPEC-05 (Clientes) — mesmo racional da chave acima.
   "administrative-clients": ptBRAdministrativeClients,
-  // Namespace da SPEC-07-01 (Operações — lista + todas as abas do detalhe,
-  // ver §5 da spec): criado aqui, editado (chaves adicionadas) pelas
-  // sub-SPECs seguintes (07-03 em diante), nunca recriado.
+  // Namespace da árvore SPEC-07 (Operações) — único, compartilhado entre a
+  // lista (SPEC-07-01) e todas as abas do shell de detalhe (SPEC-07-02 a
+  // 07-09, ver `specs/07-operacoes/spec.md` §5). Criado pela SPEC-07-01,
+  // editado (chaves adicionadas, ex. `shell.*`) pelas sub-SPECs seguintes,
+  // nunca recriado.
   "administrative-operations": ptBRAdministrativeOperations,
   // Namespace da SPEC-09 (Área do cliente) — conteúdo das telas Home/
   // Colaboradores/Relatório Final/Acompanhamento; não duplica `navigation.client*`.

@@ -50,5 +50,25 @@
     "updated": "作业更新成功。",
     "error": "无法完成该操作，请重试。",
     "loadError": "无法加载作业数据。"
+  },
+  "shell": {
+    "pageTitle": "作业 {number} — ASC",
+    "eyebrow": "作业 {number}",
+    "tabs": {
+      "details": "详情",
+      "romaneio": "装箱单",
+      "containers": "集装箱",
+      "documents": "文件",
+      "reports": "报告",
+      "responsible": "负责人",
+      "log": "日志"
+    },
+    "statusLabel": "作业状态",
+    "statusUpdated": "作业状态更新成功。",
+    "statusError": "无法更新状态，请重试。",
+    "notFound": "未找到该作业。",
+    "loadError": "无法加载该作业。",
+    "retry": "重试",
+    "tabPlaceholder": "此标签页的内容尚未实现。"
   }
 }
