@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-05
 - **Nome:** administrativo-clientes
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/clients/**` (nova)
 - **Depende de:** SPEC-00 (namespaces do dicionário), SPEC-02
