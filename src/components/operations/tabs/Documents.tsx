@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Modal, Pagination, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Form, Modal, Spinner, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import type { ZodType } from "zod";
 import { z } from "zod";
@@ -23,6 +23,7 @@ import {
   resolveDocumentTypeLabel,
 } from "@/api/generated/static/documentTypeOptions";
 import { InputFileSingle, InputText, InputTextArea, Select } from "@/layouts/Form/Fields/Index";
+import { ListPagination } from "@/components/ui/list-pagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 
@@ -218,17 +219,7 @@ export function Documents({ operationId }: { operationId: string }) {
         </div>
       )}
 
-      {totalPages > 1 ? (
-        <Pagination className="justify-content-center mt-3">
-          <Pagination.Prev disabled={page <= 1} onClick={() => setPage(page - 1)} />
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <Pagination.Item key={p} active={p === page} onClick={() => setPage(p)}>
-              {p}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next disabled={page >= totalPages} onClick={() => setPage(page + 1)} />
-        </Pagination>
-      ) : null}
+      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       <Modal show={createModalOpen} onHide={() => setCreateModalOpen(false)} centered>
         <Modal.Header closeButton>

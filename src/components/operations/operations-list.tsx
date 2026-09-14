@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Col, Pagination, Row, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Card, Col, Row, Spinner, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -35,6 +35,7 @@ import {
 } from "@/api/generated/static/operationServiceOptions";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ViewToggle } from "@/components/ui/view-toggle";
+import { ListPagination } from "@/components/ui/list-pagination";
 import { InputText, Select, SelectAsync } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import type { Locale } from "@/i18n/config";
@@ -679,17 +680,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
         </div>
       )}
 
-      {totalPages > 1 ? (
-        <Pagination className="justify-content-center mt-3">
-          <Pagination.Prev disabled={page <= 1} onClick={() => setPage((p) => p - 1)} />
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <Pagination.Item key={p} active={p === page} onClick={() => setPage(p)}>
-              {p}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)} />
-        </Pagination>
-      ) : null}
+      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       {modal?.mode === "create" ? (
         <CrudRecordModal<OperationCreateValues>

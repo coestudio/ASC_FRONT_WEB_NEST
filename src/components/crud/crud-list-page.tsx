@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Pagination, Spinner, Table } from "react-bootstrap";
+import { Button, Spinner, Table } from "react-bootstrap";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
 import { useT } from "@/lib/ui-prefs";
@@ -8,6 +8,7 @@ import type { TranslationKey } from "@/i18n/translate";
 import { useResponsiveViewMode, type ViewMode } from "@/lib/view-mode";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
+import { ListPagination } from "@/components/ui/list-pagination";
 import { InputText } from "@/layouts/Form/Fields/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./crud-list-page.module.css";
@@ -176,17 +177,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
         </div>
       )}
 
-      {totalPages > 1 ? (
-        <Pagination className="justify-content-center mt-3">
-          <Pagination.Prev disabled={page <= 1} onClick={() => onPageChange(page - 1)} />
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <Pagination.Item key={p} active={p === page} onClick={() => onPageChange(p)}>
-              {p}
-            </Pagination.Item>
-          ))}
-          <Pagination.Next disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} />
-        </Pagination>
-      ) : null}
+      <ListPagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
     </>
   );
 }
