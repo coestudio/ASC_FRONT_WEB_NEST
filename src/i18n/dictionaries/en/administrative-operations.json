@@ -51,6 +51,100 @@
     "error": "Could not complete the action. Please try again.",
     "loadError": "Could not load the operation data."
   },
+  "romaneio": {
+    "title": "Packing list",
+    "description": "Bales registered for this operation.",
+    "newButton": "New bale",
+    "newTitle": "New bale",
+    "editTitle": "Edit bale",
+    "viewTitle": "Bale details",
+    "searchPlaceholder": "Search by identifier, code...",
+    "emptyState": "No bale registered.",
+    "colItemIdentifier": "Bale",
+    "colItemCode": "Code",
+    "colLote": "Batch",
+    "colPeso": "Weight (kg)",
+    "colSource": "Source",
+    "colActions": "Actions",
+    "form": {
+      "itemIdentifier": "Bale identifier",
+      "itemCode": "Item code",
+      "tipo": "Type",
+      "contrato": "Contract",
+      "peso": "Net weight (kg)",
+      "pesoTara": "Tare (kg)",
+      "pesoBruto": "Gross weight (kg)",
+      "instruction": "Instruction",
+      "notaFiscal": "Invoice",
+      "lote": "Batch",
+      "pilha": "Stack"
+    },
+    "confirm": {
+      "deleteTitle": "Delete bale",
+      "deleteMessage": "Delete bale {name}? This action cannot be undone."
+    },
+    "toast": {
+      "created": "Bale created successfully.",
+      "updated": "Bale updated successfully.",
+      "deleted": "Bale deleted successfully.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "import": {
+      "button": "Import spreadsheet",
+      "title": "Import packing list",
+      "stepUpload": "Upload spreadsheet",
+      "stepReview": "Review",
+      "fileLabel": "Spreadsheet (.xlsx or .csv)",
+      "analyze": "Analyze",
+      "analyzing": "Analyzing...",
+      "back": "Back",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "applying": "Applying...",
+      "sheetRowLabel": "Row {row}",
+      "summary": {
+        "totalDataRows": "Spreadsheet rows",
+        "new": "New",
+        "missing": "Missing",
+        "conflicts": "Conflicts",
+        "foreign": "From another operation",
+        "invalid": "Invalid",
+        "duplicated": "Duplicated",
+        "unchanged": "Unchanged"
+      },
+      "sections": {
+        "new": "New bales",
+        "newHint": "The bales checked below will be created.",
+        "missing": "Bales missing from the spreadsheet",
+        "missingHint": "Check to delete a bale that no longer appears in the spreadsheet.",
+        "conflicts": "Bales with divergence",
+        "conflictsHint": "Check the fields that should be updated with the spreadsheet value.",
+        "foreign": "Belong to another operation",
+        "foreignHint": "These bales already exist in another operation and will not be changed.",
+        "invalid": "Invalid rows",
+        "invalidHint": "These rows have errors and will not be imported.",
+        "duplicated": "Duplicated rows in the spreadsheet",
+        "duplicatedHint": "This bale appears more than once in the spreadsheet and will not be imported."
+      },
+      "toast": {
+        "analyzeError": "Could not analyze the spreadsheet. Please try again.",
+        "applyError": "Could not apply the import. Please try again.",
+        "applySuccess": "Import applied: {created} created, {updated} updated, {deleted} deleted."
+      },
+      "fields": {
+        "itemCode": "Item code",
+        "tipo": "Type",
+        "contrato": "Contract",
+        "peso": "Net weight",
+        "pesoTara": "Tare",
+        "pesoBruto": "Gross weight",
+        "instruction": "Instruction",
+        "notaFiscal": "Invoice",
+        "lote": "Batch",
+        "pilha": "Stack"
+      }
+    }
+  },
   "shell": {
     "pageTitle": "Operation {number} — ASC",
     "eyebrow": "Operation {number}",

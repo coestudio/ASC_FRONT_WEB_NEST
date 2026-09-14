@@ -51,6 +51,100 @@
     "error": "无法完成该操作，请重试。",
     "loadError": "无法加载作业数据。"
   },
+  "romaneio": {
+    "title": "装箱单",
+    "description": "此作业已登记的包裹。",
+    "newButton": "新建包裹",
+    "newTitle": "新建包裹",
+    "editTitle": "编辑包裹",
+    "viewTitle": "包裹详情",
+    "searchPlaceholder": "按标识、代码搜索...",
+    "emptyState": "未登记任何包裹。",
+    "colItemIdentifier": "包裹",
+    "colItemCode": "代码",
+    "colLote": "批次",
+    "colPeso": "重量（千克）",
+    "colSource": "来源",
+    "colActions": "操作",
+    "form": {
+      "itemIdentifier": "包裹标识",
+      "itemCode": "项目代码",
+      "tipo": "类型",
+      "contrato": "合同",
+      "peso": "净重（千克）",
+      "pesoTara": "皮重（千克）",
+      "pesoBruto": "毛重（千克）",
+      "instruction": "说明",
+      "notaFiscal": "发票",
+      "lote": "批次",
+      "pilha": "堆垛"
+    },
+    "confirm": {
+      "deleteTitle": "删除包裹",
+      "deleteMessage": "删除包裹 {name}？此操作无法撤销。"
+    },
+    "toast": {
+      "created": "包裹登记成功。",
+      "updated": "包裹更新成功。",
+      "deleted": "包裹删除成功。",
+      "error": "无法完成该操作，请重试。"
+    },
+    "import": {
+      "button": "导入表格",
+      "title": "导入装箱单",
+      "stepUpload": "上传表格",
+      "stepReview": "审核",
+      "fileLabel": "表格（.xlsx 或 .csv）",
+      "analyze": "分析",
+      "analyzing": "正在分析...",
+      "back": "返回",
+      "cancel": "取消",
+      "apply": "应用",
+      "applying": "正在应用...",
+      "sheetRowLabel": "第 {row} 行",
+      "summary": {
+        "totalDataRows": "表格行数",
+        "new": "新增",
+        "missing": "缺失",
+        "conflicts": "冲突",
+        "foreign": "属于其他作业",
+        "invalid": "无效",
+        "duplicated": "重复",
+        "unchanged": "未变更"
+      },
+      "sections": {
+        "new": "新包裹",
+        "newHint": "下方勾选的包裹将被创建。",
+        "missing": "表格中缺失的包裹",
+        "missingHint": "勾选以删除表格中不再出现的包裹。",
+        "conflicts": "有差异的包裹",
+        "conflictsHint": "勾选应使用表格值更新的字段。",
+        "foreign": "属于其他作业",
+        "foreignHint": "这些包裹已存在于其他作业中，不会被更改。",
+        "invalid": "无效行",
+        "invalidHint": "这些行存在错误，不会被导入。",
+        "duplicated": "表格中重复的行",
+        "duplicatedHint": "此包裹在表格中出现多次，不会被导入。"
+      },
+      "toast": {
+        "analyzeError": "无法分析表格，请重试。",
+        "applyError": "无法应用导入，请重试。",
+        "applySuccess": "导入已应用：新建 {created} 个，更新 {updated} 个，删除 {deleted} 个。"
+      },
+      "fields": {
+        "itemCode": "项目代码",
+        "tipo": "类型",
+        "contrato": "合同",
+        "peso": "净重",
+        "pesoTara": "皮重",
+        "pesoBruto": "毛重",
+        "instruction": "说明",
+        "notaFiscal": "发票",
+        "lote": "批次",
+        "pilha": "堆垛"
+      }
+    }
+  },
   "shell": {
     "pageTitle": "作业 {number} — ASC",
     "eyebrow": "作业 {number}",
