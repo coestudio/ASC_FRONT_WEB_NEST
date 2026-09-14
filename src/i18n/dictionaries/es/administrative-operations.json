@@ -70,5 +70,38 @@
     "loadError": "No fue posible cargar esta operación.",
     "retry": "Intentar de nuevo",
     "tabPlaceholder": "El contenido de esta pestaña aún no fue implementado."
+  },
+  "containers": {
+    "new": "Vincular contenedor",
+    "newTitle": "Vincular contenedor",
+    "loadError": "No fue posible cargar los contenedores de la operación.",
+    "empty": "Ningún contenedor vinculado a esta operación.",
+    "colIdentifier": "Contenedor",
+    "colTara": "Tara",
+    "colStatus": "Estado",
+    "colPhotos": "Fotos",
+    "colActions": "Acciones",
+    "form": {
+      "container": "Contenedor",
+      "tara": "Tara",
+      "status": "Estado del vínculo",
+      "sealDate": "Fecha del precinto"
+    },
+    "photosTitle": "Fotos del contenedor",
+    "photosAdd": "Fotos",
+    "photosUpload": "Enviar fotos",
+    "photosRemove": "Quitar foto",
+    "confirm": {
+      "deleteTitle": "Desvincular contenedor",
+      "deleteMessage": "¿Desvincular el contenedor {identifier} de esta operación?"
+    },
+    "toast": {
+      "linked": "Contenedor vinculado con éxito.",
+      "updated": "Vínculo actualizado con éxito.",
+      "unlinked": "Contenedor desvinculado con éxito.",
+      "photoUploaded": "Fotos enviadas con éxito.",
+      "photoDeleted": "Foto eliminada con éxito.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    }
   }
 }

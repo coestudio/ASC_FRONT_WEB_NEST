@@ -70,5 +70,38 @@
     "loadError": "无法加载该作业。",
     "retry": "重试",
     "tabPlaceholder": "此标签页的内容尚未实现。"
+  },
+  "containers": {
+    "new": "关联集装箱",
+    "newTitle": "关联集装箱",
+    "loadError": "无法加载该作业的集装箱。",
+    "empty": "此作业尚未关联任何集装箱。",
+    "colIdentifier": "集装箱",
+    "colTara": "皮重",
+    "colStatus": "状态",
+    "colPhotos": "照片",
+    "colActions": "操作",
+    "form": {
+      "container": "集装箱",
+      "tara": "皮重",
+      "status": "关联状态",
+      "sealDate": "封条日期"
+    },
+    "photosTitle": "集装箱照片",
+    "photosAdd": "照片",
+    "photosUpload": "上传照片",
+    "photosRemove": "移除照片",
+    "confirm": {
+      "deleteTitle": "取消关联集装箱",
+      "deleteMessage": "确定要将集装箱 {identifier} 从此作业中取消关联吗？"
+    },
+    "toast": {
+      "linked": "集装箱关联成功。",
+      "updated": "关联更新成功。",
+      "unlinked": "集装箱取消关联成功。",
+      "photoUploaded": "照片上传成功。",
+      "photoDeleted": "照片删除成功。",
+      "error": "无法完成该操作，请重试。"
+    }
   }
 }

@@ -22,6 +22,7 @@ import { PageLayout } from "@/layouts/PageLayout";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
+import { Containers } from "@/components/operations/tabs/Containers";
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/operations/$id/")({
   head: () => ({ meta: [{ title: "Operação — ASC" }] }),
@@ -123,12 +124,17 @@ function OperationShellBody({ id }: { id: string }) {
       </Nav>
 
       <section>
-        {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — este
-            shell só monta o placeholder até a aba real existir. */}
-        <div className="text-center text-body-secondary py-5">
-          <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />
-          <p className="mb-0">{t("administrative-operations.shell.tabPlaceholder")}</p>
-        </div>
+        {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — abas
+            ainda não implementadas mostram o placeholder genérico. Containers
+            (SPEC-07-05) já é real. */}
+        {tab === "containers" ? (
+          <Containers operationId={id} />
+        ) : (
+          <div className="text-center text-body-secondary py-5">
+            <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />
+            <p className="mb-0">{t("administrative-operations.shell.tabPlaceholder")}</p>
+          </div>
+        )}
       </section>
     </>
   );
