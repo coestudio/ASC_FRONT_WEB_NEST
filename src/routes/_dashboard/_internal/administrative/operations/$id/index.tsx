@@ -18,6 +18,7 @@ import {
 import { resolveOperationTypeLabel } from "@/api/generated/static/operationTypeOptions";
 import { resolveOperationServiceLabel } from "@/api/generated/static/operationServiceOptions";
 import { OperationDetailsTab } from "@/components/operations/tabs/Details";
+import { OperationResponsibleTab } from "@/components/operations/tabs/Responsible";
 import { Select } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -129,6 +130,8 @@ function OperationShellBody({ id }: { id: string }) {
             existir. */}
         {tab === "details" ? (
           <OperationDetailsTab operation={operation} />
+        ) : tab === "responsible" ? (
+          <OperationResponsibleTab />
         ) : (
           <div className="text-center text-body-secondary py-5">
             <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />

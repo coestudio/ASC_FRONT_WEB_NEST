@@ -56,6 +56,24 @@
     "createdAt": "Creado el",
     "updatedAt": "Actualizado el"
   },
+  "responsible": {
+    "searchPlaceholder": "Buscar por nombre, función o correo...",
+    "link": "Vincular",
+    "unlink": "Desvincular",
+    "emptyState": "No se encontró ningún responsable.",
+    "filter": {
+      "all": "Todos los vínculos",
+      "linked": "Vinculados",
+      "unlinked": "No vinculados",
+      "allRoles": "Todas las funciones"
+    },
+    "roles": {
+      "coordinator": "Coordinador(a)",
+      "analyst": "Analista",
+      "assistant": "Asistente",
+      "supervisor": "Supervisor(a)"
+    }
+  },
   "toast": {
     "created": "Operación creada con éxito.",
     "updated": "Operación actualizada con éxito.",

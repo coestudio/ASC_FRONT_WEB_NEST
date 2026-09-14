@@ -56,6 +56,24 @@
     "createdAt": "Created at",
     "updatedAt": "Updated at"
   },
+  "responsible": {
+    "searchPlaceholder": "Search by name, role or email...",
+    "link": "Link",
+    "unlink": "Unlink",
+    "emptyState": "No responsible party found.",
+    "filter": {
+      "all": "All links",
+      "linked": "Linked",
+      "unlinked": "Not linked",
+      "allRoles": "All roles"
+    },
+    "roles": {
+      "coordinator": "Coordinator",
+      "analyst": "Analyst",
+      "assistant": "Assistant",
+      "supervisor": "Supervisor"
+    }
+  },
   "toast": {
     "created": "Operation created successfully.",
     "updated": "Operation updated successfully.",

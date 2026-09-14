@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-08
 - **Nome:** operation-responsible
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/responsible/**`
   (nova)
@@ -97,6 +97,54 @@ src/components/operations/tabs/
   decisão "espelhar Operações"? Mantida UI-only nesta leva — registrado
   como candidata a virar real numa SPEC futura dedicada, não decidida
   aqui.
+
+---
+
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/operations/tabs/Responsible.tsx` — criado. UI-only
+    (D1): dado local (`MOCK_RESPONSIBLES`), comentado como mock, nunca
+    projetado de `ResponsibleDTO` real (que existe embutido em
+    `OperationDetailDTO.responsibles`, mas não é consumido aqui). Banner
+    `MockDataBanner` visível no topo (RF1). Busca por nome/função/e-mail e
+    filtro de função via `layouts/Form/Fields` (`InputText`/`Select`, regra
+    10 do AGENTS.md), filtro de vínculo (todos/vinculados/não vinculados)
+    via botões simples (mesmo padrão não-form de `ViewToggle`,
+    `src/components/ui/view-toggle.tsx`). Vincular/desvincular só atualiza
+    estado local (`useState`), sem qualquer chamada de rede (RF2).
+  - `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+    — import + wiring da aba `responsible` (`tab === "responsible"`) no
+    shell de abas (SPEC-07-02), substituindo o placeholder genérico só para
+    essa aba.
+  - `src/i18n/dictionaries/*/administrative-operations.json` — bloco
+    `responsible.*` novo (busca, rótulos de filtro, papéis mock,
+    vincular/desvincular, estado vazio) nos 4 locales, mesmo número de
+    chaves em todos.
+- **Comandos executados:**
+  - `bun run check` → **VERIFIED**, `tsc --noEmit` limpo.
+  - `bun run lint` → **VERIFIED**, 66 problems / 3 erros / 63 warnings —
+    igual ao baseline (após `prettier --write` escopado aos dois arquivos
+    de componente tocados/criados nesta rodada, sem `bun run format`
+    solto).
+- **Critérios de aceitação:**
+
+  | # | Critério | Resultado |
+  | --- | --- | --- |
+  | CA1 | Aba claramente marcada como mock, sem chamada real | **PASS** — `MockDataBanner` visível, dado 100% local, comentário `// MOCK` no array, nenhum hook Orval importado no componente. |
+  | CA2 | `bun run check` + `lint` passam | **PASS** |
+
+- **Decisões tomadas durante a implementação:**
+  - Papéis mock (`coordinator`/`analyst`/`assistant`/`supervisor`) são só
+    rótulo de exibição, sem relação com `InternalRole` (enum real do
+    Core) — evita qualquer confusão de que o filtro reflita permissão
+    real.
+  - Filtro de vínculo (todos/vinculados/não vinculados) implementado como
+    grupo de botões simples (não é `layouts/Form/Fields`, mesmo racional
+    de `ViewToggle`: não é um valor de formulário submetido, é um toggle de
+    exibição local).
+- **Limitações conhecidas:** nenhuma além do que a própria SPEC já registra
+  em D1/R1 (candidatura a virar real fica para SPEC futura dedicada).
 
 ---
 

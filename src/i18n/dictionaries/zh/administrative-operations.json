@@ -56,6 +56,24 @@
     "createdAt": "创建时间",
     "updatedAt": "更新时间"
   },
+  "responsible": {
+    "searchPlaceholder": "按姓名、职能或邮箱搜索...",
+    "link": "关联",
+    "unlink": "取消关联",
+    "emptyState": "未找到负责人。",
+    "filter": {
+      "all": "全部关联状态",
+      "linked": "已关联",
+      "unlinked": "未关联",
+      "allRoles": "全部职能"
+    },
+    "roles": {
+      "coordinator": "协调员",
+      "analyst": "分析员",
+      "assistant": "助理",
+      "supervisor": "主管"
+    }
+  },
   "toast": {
     "created": "作业创建成功。",
     "updated": "作业更新成功。",
