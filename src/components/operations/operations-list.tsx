@@ -28,7 +28,10 @@ import {
   operationTypeOptions,
   resolveOperationTypeLabel,
 } from "@/api/generated/static/operationTypeOptions";
-import { resolveOperationServiceLabel } from "@/api/generated/static/operationServiceOptions";
+import {
+  operationServiceOptions,
+  resolveOperationServiceLabel,
+} from "@/api/generated/static/operationServiceOptions";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { InputText, Select, SelectAsync } from "@/layouts/Form/Fields/Index";
@@ -380,6 +383,16 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       label: t("administrative-operations.form.opType"),
       col: { md: 4 },
       config: { enumOptions: operationTypeOptions },
+    },
+    {
+      // Campo obrigatório no `PostApiOperationBody` (zod.enum(['Bale','Bag']))
+      // que faltava aqui — sem ele o submit sempre falhava a validação
+      // silenciosamente (opType parecia ser o único enum "quebrado").
+      type: "Select",
+      fieldName: "opService",
+      label: t("administrative-operations.form.opService"),
+      col: { md: 4 },
+      config: { enumOptions: operationServiceOptions },
     },
     {
       type: "SelectAsync",
