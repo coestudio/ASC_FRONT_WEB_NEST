@@ -17,6 +17,7 @@ import {
 } from "@/api/generated/static/operationStatusOptions";
 import { resolveOperationTypeLabel } from "@/api/generated/static/operationTypeOptions";
 import { resolveOperationServiceLabel } from "@/api/generated/static/operationServiceOptions";
+import { Reports } from "@/components/operations/tabs/Reports";
 import { Select } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -124,11 +125,16 @@ function OperationShellBody({ id }: { id: string }) {
 
       <section>
         {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — este
-            shell só monta o placeholder até a aba real existir. */}
-        <div className="text-center text-body-secondary py-5">
-          <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />
-          <p className="mb-0">{t("administrative-operations.shell.tabPlaceholder")}</p>
-        </div>
+            shell só monta o placeholder até a aba real existir. Relatórios
+            (SPEC-07-07) já é real (mock, UI-only). */}
+        {tab === "reports" ? (
+          <Reports operationId={operation.id} />
+        ) : (
+          <div className="text-center text-body-secondary py-5">
+            <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />
+            <p className="mb-0">{t("administrative-operations.shell.tabPlaceholder")}</p>
+          </div>
+        )}
       </section>
     </>
   );

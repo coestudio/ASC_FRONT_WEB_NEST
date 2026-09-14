@@ -70,5 +70,17 @@
     "loadError": "No fue posible cargar esta operación.",
     "retry": "Intentar de nuevo",
     "tabPlaceholder": "El contenido de esta pestaña aún no fue implementado."
+  },
+  "reports": {
+    "description": "Lista de informes ya emitidos para esta operación.",
+    "colType": "Tipo",
+    "colGeneratedAt": "Generado el",
+    "colFormat": "Formato",
+    "colStatus": "Estado",
+    "colActions": "Acciones",
+    "statusReady": "Disponible",
+    "statusPending": "Pendiente",
+    "download": "Descargar",
+    "emptyState": "No hay informes disponibles."
   }
 }
