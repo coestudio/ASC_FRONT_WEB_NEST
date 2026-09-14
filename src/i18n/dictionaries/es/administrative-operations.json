@@ -51,6 +51,100 @@
     "error": "No fue posible completar la acción. Inténtelo de nuevo.",
     "loadError": "No fue posible cargar los datos de la operación."
   },
+  "romaneio": {
+    "title": "Romaneo",
+    "description": "Fardos registrados para esta operación.",
+    "newButton": "Nuevo fardo",
+    "newTitle": "Nuevo fardo",
+    "editTitle": "Editar fardo",
+    "viewTitle": "Detalles del fardo",
+    "searchPlaceholder": "Buscar por identificador, código...",
+    "emptyState": "Ningún fardo registrado.",
+    "colItemIdentifier": "Fardo",
+    "colItemCode": "Código",
+    "colLote": "Lote",
+    "colPeso": "Peso (kg)",
+    "colSource": "Origen",
+    "colActions": "Acciones",
+    "form": {
+      "itemIdentifier": "Identificador del fardo",
+      "itemCode": "Código del artículo",
+      "tipo": "Tipo",
+      "contrato": "Contrato",
+      "peso": "Peso neto (kg)",
+      "pesoTara": "Tara (kg)",
+      "pesoBruto": "Peso bruto (kg)",
+      "instruction": "Instrucción",
+      "notaFiscal": "Factura",
+      "lote": "Lote",
+      "pilha": "Pila"
+    },
+    "confirm": {
+      "deleteTitle": "Eliminar fardo",
+      "deleteMessage": "¿Eliminar el fardo {name}? Esta acción no se puede deshacer."
+    },
+    "toast": {
+      "created": "Fardo registrado con éxito.",
+      "updated": "Fardo actualizado con éxito.",
+      "deleted": "Fardo eliminado con éxito.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    },
+    "import": {
+      "button": "Importar planilla",
+      "title": "Importar romaneo",
+      "stepUpload": "Enviar planilla",
+      "stepReview": "Revisar",
+      "fileLabel": "Planilla (.xlsx o .csv)",
+      "analyze": "Analizar",
+      "analyzing": "Analizando...",
+      "back": "Volver",
+      "cancel": "Cancelar",
+      "apply": "Aplicar",
+      "applying": "Aplicando...",
+      "sheetRowLabel": "Línea {row}",
+      "summary": {
+        "totalDataRows": "Líneas en la planilla",
+        "new": "Nuevos",
+        "missing": "Ausentes",
+        "conflicts": "Conflictos",
+        "foreign": "De otra operación",
+        "invalid": "Inválidos",
+        "duplicated": "Duplicados",
+        "unchanged": "Sin cambios"
+      },
+      "sections": {
+        "new": "Fardos nuevos",
+        "newHint": "Se crearán los fardos marcados abajo.",
+        "missing": "Fardos ausentes en la planilla",
+        "missingHint": "Marque para eliminar el fardo que ya no aparece en la planilla.",
+        "conflicts": "Fardos con divergencia",
+        "conflictsHint": "Marque los campos que deben actualizarse con el valor de la planilla.",
+        "foreign": "Pertenecen a otra operación",
+        "foreignHint": "Estos fardos ya existen en otra operación y no serán alterados.",
+        "invalid": "Líneas inválidas",
+        "invalidHint": "Estas líneas tienen error y no serán importadas.",
+        "duplicated": "Líneas duplicadas en la planilla",
+        "duplicatedHint": "Este fardo aparece más de una vez en la planilla y no será importado."
+      },
+      "toast": {
+        "analyzeError": "No fue posible analizar la planilla. Inténtelo de nuevo.",
+        "applyError": "No fue posible aplicar la importación. Inténtelo de nuevo.",
+        "applySuccess": "Importación aplicada: {created} creados, {updated} actualizados, {deleted} eliminados."
+      },
+      "fields": {
+        "itemCode": "Código del artículo",
+        "tipo": "Tipo",
+        "contrato": "Contrato",
+        "peso": "Peso neto",
+        "pesoTara": "Tara",
+        "pesoBruto": "Peso bruto",
+        "instruction": "Instrucción",
+        "notaFiscal": "Factura",
+        "lote": "Lote",
+        "pilha": "Pila"
+      }
+    }
+  },
   "shell": {
     "pageTitle": "Operación {number} — ASC",
     "eyebrow": "Operación {number}",
