@@ -73,7 +73,11 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
           {t("administrative-operations.details.productSection")}
         </h2>
         <Row className="g-3">
-          <DetailField label={t("administrative-operations.form.product")} value={operation.product.name} md={6} />
+          <DetailField
+            label={t("administrative-operations.form.product")}
+            value={operation.product.name}
+            md={6}
+          />
           <DetailField
             label={t("administrative-operations.form.vessel")}
             value={operation.vessel?.name ?? t("administrative-operations.details.vesselEmpty")}
