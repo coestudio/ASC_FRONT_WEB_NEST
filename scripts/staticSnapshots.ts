@@ -31,7 +31,10 @@ function operationName(method: string, path: string): string {
     .split("/")
     .map((seg) => seg.replace(/[{}]/g, ""))
     .filter(Boolean);
-  const pascal = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join("");
+  const pascal = parts
+    .flatMap((p) => p.split("-"))
+    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+    .join("");
   return method.toLowerCase() + pascal;
 }
 
