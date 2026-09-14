@@ -28,13 +28,12 @@ import type { Locale } from "@/i18n/config";
 import type { TranslationKey } from "@/i18n/translate";
 import styles from "./index.module.css";
 
-// `EnumOptionDTO.name` usa chave de 2 letras (pt/en/es/zh, ver
-// src/api/generated/static/getApiUserRoles.ts) — não bate 1:1 com `Locale`
-// ("pt-BR"). Resolve pro texto certo, com fallback honesto (nunca inventa
-// tradução: cai pro primeiro valor disponível ou pro próprio value).
+// `EnumOptionDTO.name` já usa as mesmas chaves de `Locale` ("pt-BR"/"en"/
+// "es"/"zh", ver src/api/generated/static/getApiUserRoles.ts após a
+// atualização do contrato da API) — resolve direto por locale, com fallback
+// honesto (nunca inventa tradução: cai pro primeiro valor disponível).
 function resolveEnumOptionName(name: Record<string, string>, locale: Locale): string {
-  const key = locale === "pt-BR" ? "pt" : locale;
-  return name[key] ?? name.pt ?? Object.values(name)[0] ?? "";
+  return name[locale] ?? name["pt-BR"] ?? Object.values(name)[0] ?? "";
 }
 
 const PAGE_SIZE = 20;
@@ -202,16 +201,22 @@ function AdminAccessPageContent() {
   // loader acima na primeira renderização.
   const { data: roleOptions } = useSsrSafeQuery(userRolesQueryOptions());
 
+  // `opt.key` é o valor de enum que o Core espera em `roles`
+  // ('Agent'/'Supervisor'/'Laboratory', ver PostApiUserBody.roles) — `opt.value`
+  // é só o código numérico interno (100/200/300), não bate com o schema Zod
+  // gerado nem com o que vem de volta em `UserDTO.roles`. Bug anterior mandava
+  // `opt.value` (causava 400 no Core ao selecionar role e "Agent" cru na
+  // coluna "Perfil").
   const roleFieldOptions = useMemo(
     () =>
       (roleOptions ?? []).map((opt) => ({
-        value: opt.value,
+        value: opt.key,
         label: resolveEnumOptionName(opt.name, locale),
       })),
     [roleOptions, locale],
   );
 
-  // Mapa valor→label pra exibir a coluna "perfil" na lista (contrato de
+  // Mapa key→label pra exibir a coluna "perfil" na lista (contrato de
   // colunas da SPEC-03 §3.2) sem repetir a resolução de EnumOptionDTO por
   // linha.
   const roleLabelByValue = useMemo(() => {
@@ -233,8 +238,8 @@ function AdminAccessPageContent() {
     { type: "InputText", fieldName: "fullName", label: t("access.form.fullName"), col: { md: 6 } },
     { type: "InputText", fieldName: "userName", label: t("access.form.username"), col: { md: 6 } },
     { type: "InputEmail", fieldName: "email", label: t("access.form.email"), col: { md: 6 } },
-    { type: "InputText", fieldName: "document", label: t("access.form.document"), col: { md: 6 } },
-    { type: "InputText", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
+    { type: "InputCPF", fieldName: "document", label: t("access.form.document"), col: { md: 6 } },
+    { type: "InputPhone", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
     {
       type: "InputDate",
       fieldName: "birthDate",
@@ -242,7 +247,7 @@ function AdminAccessPageContent() {
       col: { md: 6 },
     },
     {
-      type: "InputMultiSelect",
+      type: "InputCheckboxGroup",
       fieldName: "roles",
       label: t("access.form.roles"),
       col: { md: 8 },
@@ -255,8 +260,8 @@ function AdminAccessPageContent() {
     { type: "InputText", fieldName: "fullName", label: t("access.form.fullName"), col: { md: 6 } },
     { type: "InputText", fieldName: "userName", label: t("access.form.username"), col: { md: 6 } },
     { type: "InputEmail", fieldName: "email", label: t("access.form.email"), col: { md: 6 } },
-    { type: "InputText", fieldName: "document", label: t("access.form.document"), col: { md: 6 } },
-    { type: "InputText", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
+    { type: "InputCPF", fieldName: "document", label: t("access.form.document"), col: { md: 6 } },
+    { type: "InputPhone", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
     {
       type: "InputDate",
       fieldName: "birthDate",
@@ -288,7 +293,7 @@ function AdminAccessPageContent() {
     {
       key: "type",
       headerKey: "access.colType",
-      render: (u) => t(u.type === 0 ? "access.internal" : "access.external"),
+      render: (u) => t(u.type === "Internal" ? "access.internal" : "access.external"),
     },
     {
       key: "createdAt",
@@ -310,7 +315,7 @@ function AdminAccessPageContent() {
             userName: values.userName,
             profile: {
               fullName: values.fullName,
-              document: values.document || null,
+              document: values.document,
               email: values.email,
               phone: values.phone || null,
               birthDate: values.birthDate || null,
@@ -327,7 +332,7 @@ function AdminAccessPageContent() {
             userName: values.userName,
             profile: {
               fullName: values.fullName,
-              document: values.document || null,
+              document: values.document,
               email: values.email,
               phone: values.phone || null,
               birthDate: values.birthDate || null,
@@ -418,7 +423,7 @@ function AdminAccessPageContent() {
                 {t(u.isActive ? "access.active" : "access.inactive")}
               </Badge>
               <Badge pill bg="info">
-                {t(u.type === 0 ? "access.internal" : "access.external")}
+                {t(u.type === "Internal" ? "access.internal" : "access.external")}
               </Badge>
               <div className="mt-2">
                 <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />

@@ -39,6 +39,7 @@ export { default as InputColorPicker } from "./InputColorPicker";
 
 //* Seleção
 export { default as InputMultiSelect } from "./InputMultiSelect";
+export { default as InputCheckboxGroup } from "./InputCheckboxGroup";
 
 //* Files
 export { default as InputAvatar } from "./InputAvatar";

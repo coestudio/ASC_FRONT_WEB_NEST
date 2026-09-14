@@ -1,4 +1,4 @@
-import axios, { type AxiosAdapter, type AxiosRequestConfig } from "axios";
+import axios, { AxiosError, type AxiosAdapter, type AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 
 /**
@@ -52,13 +52,20 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
     headers.set("content-type", "application/json");
   }
 
+  // `config.data` já chega serializado pelo `transformRequest` padrão do
+  // Axios (roda sempre no `dispatchRequest`, antes deste adapter customizado
+  // ser chamado) — pra payload de objeto JSON, `config.data` já é a *string*
+  // JSON pronta, não o objeto. Re-serializar aqui com `JSON.stringify`
+  // dobrava a codificação (mandava uma string JSON escapada dentro de outra
+  // string pro Core, que falhava a desserializar a raiz — bug que causava
+  // 400 "The <param> field is required." em todo POST/PUT/PATCH com corpo).
   const hasBody = method !== "GET" && method !== "HEAD" && config.data != null;
   const res = await fetch("/api/core", {
     method,
     headers,
     credentials: "same-origin",
     signal: config.signal as AbortSignal | undefined,
-    body: hasBody ? (isForm ? (config.data as FormData) : JSON.stringify(config.data)) : undefined,
+    body: hasBody ? (config.data as BodyInit) : undefined,
   });
 
   const contentType = res.headers.get("content-type") ?? "";
@@ -68,7 +75,7 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
   else if (contentType.includes("application/json")) data = await res.json().catch(() => null);
   else data = await res.text();
 
-  return {
+  const response = {
     data,
     status: res.status,
     statusText: res.statusText,
@@ -76,6 +83,32 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
     config,
     request: null,
   };
+
+  // Adapter customizado do Axios NÃO passa pelo `settle()` interno (isso é
+  // responsabilidade de cada adapter — xhr/http/fetch built-in chamam
+  // `settle()` sozinhos, ver node_modules/axios/lib/core/settle.js). Sem
+  // isto, QUALQUER status HTTP (400/401/403/409/500...) virava uma promise
+  // *resolvida* pro Axios — nenhum `.catch`/interceptor de erro do app
+  // jamais rodava, e código de sucesso (toast verde, fechar modal, invalidar
+  // lista) disparava mesmo com o Core rejeitando a requisição. Replica a
+  // mesma checagem do `settle()` oficial: valida status (default do Axios,
+  // 200–299, ou `config.validateStatus` se customizado) e rejeita com um
+  // `AxiosError` de verdade quando fora da faixa.
+  const validateStatus = config.validateStatus;
+  const isValid = !res.status || !validateStatus || validateStatus(res.status);
+  if (!isValid) {
+    throw new AxiosError(
+      `Request failed with status code ${res.status}`,
+      res.status >= 400 && res.status < 500
+        ? AxiosError.ERR_BAD_REQUEST
+        : AxiosError.ERR_BAD_RESPONSE,
+      config,
+      null,
+      response,
+    );
+  }
+
+  return response;
 };
 
 export const axiosInstance = axios.create({ adapter: coreProxyAdapter });
