@@ -4,6 +4,7 @@ import type { NavFragment } from "./types";
 const fragment: NavFragment = {
   area: "admin",
   sectionLabelKey: "navigation.admin",
+  icon: "bi-shield",
   items: [
     { labelKey: "navigation.adminAccess", to: "/admin/access", icon: "bi-shield-lock", order: 1 },
     {

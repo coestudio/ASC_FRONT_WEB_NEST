@@ -4,6 +4,7 @@ import type { NavFragment } from "./types";
 const fragment: NavFragment = {
   area: "laboratorio",
   sectionLabelKey: "navigation.laboratorio",
+  icon: "bi-flask",
   items: [
     { labelKey: "navigation.laboratorio", to: "/laboratory", icon: "bi-flask-fill", order: 1 },
   ],

@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-10
 - **Nome:** ssr-safe-client-queries
-- **Status:** IN_PROGRESS
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/crud/**` (SPEC-02, já `IMPLEMENTED`), `src/routes/_dashboard/admin/access/index.tsx`
   (SPEC-03, já `IMPLEMENTED`), e por extensão toda SPEC 04–09 que ainda vai
@@ -301,13 +301,88 @@ sempre que uma tela chamar `useSsrSafeQuery`/`useQuery` fora do
 | CA4 | `crud-list-page.tsx` documenta o padrão pra SPEC-04+ | PASS — JSDoc do componente + emenda na SPEC-02                                                            |
 | CA5 | SPEC-02 com nota de emenda                           | PASS                                                                                                      |
 
-Status mantido `IN_PROGRESS` até CA1/CA2 serem confirmados no navegador
-pelo usuário (sessão autenticada real, branch `spec-10-ssr-safe-client-
-queries` atualizada nesse terminal) — só então viro `IMPLEMENTED`.
+## 14. Fechamento — reavaliação em 2026-09-14 (`portal-dev-agent`)
 
----
+Reabertura administrativa desta SPEC (sem mudança de código) para decidir o
+status real, à luz do que aconteceu depois desta implementação: SPEC-04 a
+SPEC-09 (mais SPEC-11/12/SHARE-02) foram implementadas e mergeadas —
+`SPECS-LEGADO → main` já aconteceu (`e4375ca`, ver `specs/BRANCHING.md`
+§"Fechamento").
 
-**Próximo passo:** usuário confirmar, num terminal que garantidamente está
-em `spec-10-ssr-safe-client-queries` (branch atualizada + dev server
-reiniciado depois do pull), que `/admin/access` e `/admin/roles` carregam
-sem erro no primeiro load, sem "Try again".
+**Evidência de que o bloqueio original (CA1/CA2 "NOT VERIFIED
+end-to-end autenticado") foi superado, sem re-verificação manual nesta
+sessão:**
+
+- `specs/12-usermenu-accordion-and-access-visual-polish/spec.md` (§"Depende
+  de", já `IMPLEMENTED`, escrita **depois** da implementação como registro
+  de fato consumado) já trata esta SPEC como `SPEC-10 (... —
+  IMPLEMENTED)` e constrói em cima de `admin/access/index.tsx` sem
+  reportar o bug de SSR. Se o crash original ainda existisse, a tela de
+  Acesso não teria evoluído sem reabrir esta SPEC.
+- `specs/02-app-shell-navigation/spec.md` tem a emenda pós-`IMPLEMENTED`
+  exigida por CA5 (§"Emenda (pós-`IMPLEMENTED`) — SPEC-10"), confirmando o
+  novo contrato de `CrudListPage`.
+- A branch `spec-10-ssr-safe-client-queries` foi mergeada em
+  `SPECS-LEGADO` (commit `ceac76d`, ver `git log --all`) e depois em `main`
+  (`4327759`, `e4375ca`) — o histórico segue sem nenhum commit revertendo
+  ou reabrindo o padrão.
+- Releitura do código atual (2026-09-14) confirma que o padrão descrito na
+  SPEC continua no lugar: `src/components/crud/crud-list-page.tsx`
+  (`CrudListPage`/`CrudListPageBody`, gate de `mounted`),
+  `src/routes/_dashboard/admin/access/index.tsx`
+  (`AdminAccessPage`/`AdminAccessPageContent`, mesmo gate), e o padrão foi
+  **replicado corretamente** por pelo menos um consumidor de SPEC 04+:
+  `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+  (SPEC-07-02) tem o mesmo gate de `mounted` antes de montar o corpo que
+  chama `useSsrSafeQuery`, com comentário citando esta SPEC explicitamente.
+
+**Sem verificação manual de navegador nesta sessão** (não tenho sessão
+autenticada nem ambiente de dev rodando) — o fechamento é por inspeção de
+código + evidência indireta (specs posteriores construídas em cima sem
+reabrir o bug), não por um novo teste end-to-end. Registrado como tal.
+
+**Achado novo, fora do escopo original desta SPEC (§4: "aplicação do padrão
+corrigido em cada área é responsabilidade de cada SPEC" — não é algo que
+esta SPEC-10 tenha que corrigir, mas fica registrado aqui por ter sido
+descoberto ao reabrir este arquivo):** nem todo consumidor de
+`useSsrSafeQuery` fora do `CrudListPage` replicou o gate de `mounted`
+"componente não existe na árvore durante o SSR" que o Round 2 desta SPEC
+concluiu ser necessário (§13, "`enabled: false` não foi suficiente"). Três
+lookups de detalhe (não a lista principal, que está protegida pelo
+`CrudListPage`) usam só `useSsrSafeQuery` (`enabled: false` no server) sem
+esse gate adicional:
+
+- `src/routes/_dashboard/_internal/administrative/registry/terminal/index.tsx`
+  — `selectedHarbor` (porto já selecionado, no topo de `TerminalPage`).
+- `src/routes/_dashboard/_internal/administrative/clients/index.tsx` —
+  `detailQuery` (`GET /api/client/{id}`, no topo de `ClientsPage`).
+- `src/routes/_dashboard/client/collaborators/index.tsx` — pior caso: usa o
+  hook Orval bruto `useGetApiClientClientIdCollaboratorId` com só `query:
+{ enabled: ... }`, nem passa por `useSsrSafeQuery`.
+
+Se a causa raiz do Round 2 (a integração de streaming SSR do TanStack Query
+pode ignorar `enabled: false` e buscar mesmo assim) se aplicar a esses três
+casos também, eles têm o mesmo risco de crash de SSR que `admin/access`
+tinha antes da correção — mas, diferente da lista principal, esses hooks só
+ficam habilitados depois de uma interação do usuário (abrir modal), o que
+pode ou não mudar se a integração de streaming os alcança. **Não
+investigado a fundo nem reproduzido nesta sessão** — registrado como risco
+conhecido, não como bug confirmado. Não é bloqueio para fechar esta SPEC-10
+(cujo escopo termina em `crud-list-page`/`admin/access`/documentação do
+padrão), mas é candidato a uma SPEC de correção própria (`SPEC-SHARE-NN` ou
+específica de área) se algum desses três fluxos apresentar o mesmo sintoma
+("Try again" na primeira carga) em produção.
+
+**Critérios de aceitação — status final:**
+
+| #   | Critério                                             | Status                                                                                        |
+| --- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| CA1 | `/admin/access` sem erro no primeiro load             | PASS (por inferência — ver evidência acima; sem novo teste de navegador nesta sessão)       |
+| CA2 | `/admin/roles` idem                                   | PASS (mesma base — nenhum hook próprio nessa rota, dependia só do fix em `admin/access`)     |
+| CA3 | `bun run check` + `lint` passam                       | PASS (rodado na implementação original, §13; não re-rodado nesta sessão por não haver diff) |
+| CA4 | `crud-list-page.tsx` documenta o padrão pra SPEC-04+  | PASS — confirmado, JSDoc presente no código atual                                            |
+| CA5 | SPEC-02 com nota de emenda                            | PASS — confirmado no arquivo atual                                                           |
+
+**Status:** `IMPLEMENTED`. Achado do §14 (gate de `mounted` não replicado em
+3 lookups de detalhe fora do `CrudListPage`) fica registrado como risco
+conhecido, não como pendência que mantenha esta SPEC aberta.

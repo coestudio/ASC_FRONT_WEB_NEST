@@ -23,6 +23,9 @@ export type NavItem = {
 export type NavFragment = {
   area: AreaId;
   sectionLabelKey: TranslationKey;
+  /** Ícone do cabeçalho da seção — só precisa ser setado em um fragmento por
+   * `area` (o merge em `nav/index.ts` usa o primeiro não vazio que encontrar). */
+  icon?: string;
   items: NavItem[];
 };
 

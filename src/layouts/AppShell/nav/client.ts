@@ -4,6 +4,7 @@ import type { NavFragment } from "./types";
 const fragment: NavFragment = {
   area: "client",
   sectionLabelKey: "navigation.client",
+  icon: "bi-person-workspace",
   items: [
     { labelKey: "navigation.clientHome", to: "/client", icon: "bi-house", order: 1 },
     {
@@ -21,7 +22,7 @@ const fragment: NavFragment = {
     {
       labelKey: "navigation.clientCollaborators",
       to: "/client/collaborators",
-      icon: "bi-people",
+      icon: "bi-person-lines-fill",
       order: 4,
     },
   ],

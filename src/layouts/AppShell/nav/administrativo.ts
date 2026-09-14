@@ -16,11 +16,12 @@ import type { NavFragment } from "./types";
 const fragment: NavFragment = {
   area: "administrativo",
   sectionLabelKey: "navigation.administrativo",
+  icon: "bi-briefcase",
   items: [
     {
       labelKey: "navigation.administrativoHome",
       to: "/administrativo",
-      icon: "bi-house",
+      icon: "bi-house-door",
       order: 1,
     },
     {

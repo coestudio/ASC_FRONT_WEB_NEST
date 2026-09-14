@@ -4,12 +4,18 @@ import type { NavFragment } from "./types";
 const fragment: NavFragment = {
   area: "operacional",
   sectionLabelKey: "navigation.operacional",
+  icon: "bi-gear",
   items: [
-    { labelKey: "navigation.operacionalHome", to: "/operational", icon: "bi-house", order: 1 },
+    {
+      labelKey: "navigation.operacionalHome",
+      to: "/operational",
+      icon: "bi-house-gear",
+      order: 1,
+    },
     {
       labelKey: "navigation.operacionalOptions",
       to: "/operational/operations",
-      icon: "bi-clipboard-data",
+      icon: "bi-list-check",
       order: 2,
     },
   ],

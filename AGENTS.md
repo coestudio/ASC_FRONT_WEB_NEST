@@ -247,23 +247,33 @@ por pronta.
   (SPEC-14, código morto, zero consumidor) — `input.tsx`/`field.tsx`/
   `password-field.tsx` citados numa versão antiga desta nota nunca
   existiram nesse caminho (nota desatualizada, corrigida na SPEC-14).
-  O débito real que continua de pé é `src/routes/auth/{login,forgot-password}`
-  usando `<Form.Control>` cru inline (não um wrapper de `components/ui`) —
-  migração pra `layouts/Form/Fields` continua escopo de
-  `specs/02-app-shell-navigation/spec.md`, junto com o resto do formulário
-  de auth (zodResolver).
-- `specs/00` e `specs/01` estão `IMPLEMENTED`; `specs/02` a `09` estão
-  `DRAFT`, aguardando aprovação (ver `specs/BRANCHING.md` pro plano de
-  branch/onda). Código antigo ainda cita specs apagadas de antes desse fluxo
-  existir (`specs/auth-httponly-cookie-bff.md`, `specs/i18n-and-theme.md`) —
+- **Resolvido** (regra 9): `src/routes/auth/login/index.tsx` e
+  `forgot-password/index.tsx` (checado em código em 2026-09-14) já usam
+  `useForm` + `zodResolver` (`loginSchema`/`forgotPasswordEmailSchema`/
+  `verificationCodeSchema`/`newPasswordSchema`) e os campos já vêm de
+  `layouts/Form/Fields` (`InputText`, `InputPassword`) — nada de
+  `<Form.Control>` cru nem `register(...)` solto. Migração feita como parte
+  de `specs/02-app-shell-navigation/spec.md` (`IMPLEMENTED`), como a nota
+  anterior previa.
+- `specs/00` a `specs/09` (mais `specs/share-01-shared-form-fields` e
+  `specs/share-02-photo-preview-lifecycle`) estão `IMPLEMENTED` e mergeadas
+  em `main` — `SPECS-LEGADO → main` aconteceu (commit `e4375ca`, ver
+  `specs/BRANCHING.md` §"Fechamento"); `main` tem paridade funcional com
+  `warren/Portal` (com a ressalva deliberada de SPEC-06, cancelada, fora do
+  escopo). `specs/10-ssr-safe-client-queries` também está `IMPLEMENTED`
+  (fechada por reavaliação em 2026-09-14 — ver seu §14 pro achado residual:
+  alguns consumidores de `useSsrSafeQuery` fora do `CrudListPage`
+  — `administrative/registry/terminal`, `administrative/clients`,
+  `client/collaborators` — não replicam o gate de `mounted` que o Round 2
+  daquela SPEC concluiu ser necessário; risco conhecido, não confirmado
+  como bug reproduzido, não bloqueia o fechamento). Código antigo ainda cita
+  specs apagadas de antes desse fluxo existir
+  (`specs/auth-httponly-cookie-bff.md`, `specs/i18n-and-theme.md`) —
   recriar sob demanda no fluxo SDD, se necessário.
-- Áreas de dashboard (administrativo/operacional/laboratório) ainda são
-  páginas "em construção".
+- Áreas de dashboard: administrativo e operacional já saíram de "em
+  construção" (SPEC-04/05/07/08 `IMPLEMENTED`); só Laboratório continua
+  placeholder (`src/routes/_dashboard/_internal/laboratory/index.tsx`,
+  "Página em construção") — sem SPEC nesta leva, ver `specs/BRANCHING.md`
+  §"Fora deste plano".
 - `.env.exemple` e comentários avulsos citam Next.js / Server Actions — lixo
   de migração.
-- `src/routes/auth/login/index.tsx` e `forgot-password/index.tsx` usam
-  `react-hook-form` **sem** `zodResolver` (validação solta em `register(...)`)
-  — não segue a regra 9 ainda. Correção faz parte do escopo de
-  `specs/02-app-shell-navigation/spec.md` (é onde o padrão de formulário
-  compartilhado já está sendo mexido, antes das SPECs de área copiarem o
-  padrão errado).

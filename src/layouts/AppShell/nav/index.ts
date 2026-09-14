@@ -26,10 +26,12 @@ function buildSections(): NavSection[] {
     const existing = byArea.get(fragment.area);
     if (existing) {
       existing.items.push(...fragment.items);
+      if (!existing.icon && fragment.icon) existing.icon = fragment.icon;
     } else {
       byArea.set(fragment.area, {
         area: fragment.area,
         sectionLabelKey: fragment.sectionLabelKey,
+        icon: fragment.icon,
         items: [...fragment.items],
       });
     }

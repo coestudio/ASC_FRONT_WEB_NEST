@@ -288,3 +288,24 @@ SPEC-SHARE-01 e as SPEC-02–09 (e as sub-SPECs 07-01 a 07-09) recebem
   `occurrence`) deixou de fazer sentido pro escopo desta leva. Fica fora de
   `SPECS-LEGADO`; os itens de nav legado correspondentes ficam órfãos (ver
   nota em "Estrutura" e em SPEC-04 §10).
+
+## Fechamento — `SPECS-LEGADO → main` aconteceu
+
+Confirmado por `git log` (checado em 2026-09-14): o PR final descrito na
+seção acima **já aconteceu**. `SPECS-LEGADO` recebeu a última peça
+pendente (`spec-08-operacional`, commit `758c46f`, "merge: traz
+spec-08-operacional pra SPECS-LEGADO") e, em seguida, `SPECS-LEGADO` foi
+mergeada em `main` em dois passos: `4327759` ("merge: traz SPECS-LEGADO
+pra main — paridade funcional com warren/Portal (parcial)") e `e4375ca`
+("merge: traz spec-08-operacional (última pendência) pra main").
+
+`main` hoje contém todas as SPECs de 02 a 09 (com as 9 sub-branches de
+SPEC-07), SPEC-SHARE-01, SPEC-SHARE-02, SPEC-10 a SPEC-15, e SPEC-00/01
+(que antes só existiam em `SPECS-LEGADO`) — status `IMPLEMENTED` em cada
+`spec.md` correspondente. A ressalva de SPEC-06 (cancelada, Log/Ocorrências
+fora do escopo) se mantém: `main` não tem paridade nesse ponto específico,
+por decisão deliberada, não por atraso.
+
+Commits em `main` depois de `e4375ca` (`45f253c` "Profile-Modal", `3628485`
+"refinamento") são trabalho posterior a este plano de ondas — fora do
+escopo deste documento.
