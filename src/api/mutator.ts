@@ -150,10 +150,17 @@ function extractBackendMessage(err: unknown): string | undefined {
 
 let isRedirectingToLogin = false;
 
-function redirectToLogin() {
+/**
+ * Joga o usuário pro login — usado tanto pra sessão expirada (401 do Core)
+ * quanto, a pedido explícito, pra falha de servidor (erro de rede sem
+ * resposta — servidor fora do ar — ou 5xx): nesses casos não dá pra saber se
+ * é a sessão que caiu ou o Core que caiu, mas a decisão tomada foi tratar os
+ * dois como "não dá pra continuar autenticado agora, volta pro login".
+ */
+function redirectToLogin(message = "Sessão expirada. Faça login novamente.") {
   if (isRedirectingToLogin) return;
   isRedirectingToLogin = true;
-  toast.error("Sessão expirada. Faça login novamente.");
+  toast.error(message);
   if (typeof window !== "undefined") {
     window.location.href = "/auth/login";
   }
@@ -184,6 +191,14 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      // Erro 5xx (Core fora do ar/instável) — decisão explícita do usuário:
+      // trata como "não dá pra continuar", volta pro login (não só mostra
+      // toast). Difere de 4xx, que é erro de requisição/negócio normal.
+      if (status && status >= 500) {
+        redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
+        return Promise.reject(error);
+      }
+
       const backendMessage = extractBackendMessage(error);
 
       let message: string;
@@ -199,19 +214,19 @@ axiosInstance.interceptors.response.use(
         message = backendMessage ?? "Conflito de dados.";
       } else if (status === 422) {
         message = backendMessage ?? "Dados inválidos.";
-      } else if (status && status >= 500) {
-        message = "Erro ao se comunicar com o servidor. Tente novamente.";
       } else {
+        // Nunca é >= 500 aqui (tratado acima, com redirect) — sobra 4xx sem
+        // handler específico e o caso sem `status` (erro sem resposta que
+        // ainda assim é um AxiosError, ex. timeout de config do axios).
         message = error.message ?? "Erro desconhecido.";
       }
 
-      if (status && status >= 400 && status < 500) {
-        toast.warning(message);
-      } else {
-        toast.error(message);
-      }
+      toast.warning(message);
     } else {
-      toast.error("Erro de conexão. Verifique sua rede.");
+      // Erro sem `response` e que nem é um `AxiosError` — falha de rede pura
+      // do `fetch` dentro do adapter (`coreProxyAdapter`), ex. servidor fora
+      // do ar. Mesma decisão do 5xx acima: volta pro login.
+      redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
     }
 
     return Promise.reject(error);
