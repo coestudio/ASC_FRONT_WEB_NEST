@@ -8,6 +8,7 @@
   "colEmail": "Email",
   "colCreatedAt": "Created at",
   "colActions": "Actions",
+  "docTypeCnpj": "Tax ID",
   "emptyState": "No client found.",
   "newTitle": "New client",
   "editTitle": "Edit client",

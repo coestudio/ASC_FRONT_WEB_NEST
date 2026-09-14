@@ -8,6 +8,7 @@
   "colEmail": "E-mail",
   "colCreatedAt": "Criado em",
   "colActions": "Ações",
+  "docTypeCnpj": "CNPJ",
   "emptyState": "Nenhum cliente encontrado.",
   "newTitle": "Novo cliente",
   "editTitle": "Editar cliente",

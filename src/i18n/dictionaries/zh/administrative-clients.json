@@ -8,6 +8,7 @@
   "colEmail": "邮箱",
   "colCreatedAt": "创建时间",
   "colActions": "操作",
+  "docTypeCnpj": "CNPJ",
   "emptyState": "未找到任何客户。",
   "newTitle": "新建客户",
   "editTitle": "编辑客户",

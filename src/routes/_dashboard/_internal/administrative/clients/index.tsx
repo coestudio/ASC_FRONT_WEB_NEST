@@ -23,8 +23,29 @@ import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import styles from "./index.module.css";
 
 const PAGE_SIZE = 20;
+
+// Formata `document` (só CNPJ cabe no shape gerado, `ClientCreate.document`
+// tem min/max 14) pro padrão `00.000.000/0000-00" — mesmo helper do
+// `ClientCards.tsx` do Portal legado, adaptado (lá também tratava CPF, aqui
+// não precisa).
+function formatDocument(doc: string): string {
+  const d = doc.replace(/\D/g, "");
+  if (d.length === 14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+  return doc;
+}
+
+// Iniciais do nome pro avatar do card — mesma ideia do `ClientCards.tsx`
+// legado (primeira letra do primeiro + último nome).
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
+  return (first + last).toUpperCase();
+}
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/clients/")({
   head: () => ({ meta: [{ title: "Clientes — ASC" }] }),
@@ -357,12 +378,17 @@ function ClientsPage() {
           queryOptions={listQueryOptions}
           columns={columns}
           renderCard={(c) => (
-            <Card>
+            <Card className={styles.card}>
               <Card.Body>
-                <Card.Title className="h6 mb-0">{c.fullName}</Card.Title>
-                <Card.Subtitle className="text-body-secondary small mt-1">
-                  {c.document}
-                </Card.Subtitle>
+                <div className={styles.top}>
+                  <div className={styles.avatar}>{initials(c.fullName)}</div>
+                  <span className={styles.chip}>{t("administrative-clients.docTypeCnpj")}</span>
+                </div>
+                <div className={styles.name}>{c.fullName}</div>
+                <div className={styles.doc}>
+                  <i className="bi bi-card-text me-1" aria-hidden />
+                  {formatDocument(c.document)}
+                </div>
               </Card.Body>
             </Card>
           )}
