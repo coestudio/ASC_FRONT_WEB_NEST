@@ -18,6 +18,7 @@ import ptBRCommon from "./dictionaries/pt-BR/common.json";
 import ptBRCrud from "./dictionaries/pt-BR/crud.json";
 import ptBRHome from "./dictionaries/pt-BR/home.json";
 import ptBRNavigation from "./dictionaries/pt-BR/navigation.json";
+import ptBROperational from "./dictionaries/pt-BR/operational.json";
 
 import type { Locale } from "./config";
 
@@ -44,6 +45,9 @@ const ptBR = {
   // Namespace da SPEC-09 (Área do cliente) — conteúdo das telas Home/
   // Colaboradores/Relatório Final/Acompanhamento; não duplica `navigation.client*`.
   client: ptBRClient,
+  // Namespace da SPEC-08 (Operacional) — Home + detalhe mock; não duplica
+  // `navigation.operacional*`.
+  operational: ptBROperational,
 };
 
 export type Dictionary = typeof ptBR;
