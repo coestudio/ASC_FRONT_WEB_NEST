@@ -57,21 +57,28 @@
     "updatedAt": "Updated at"
   },
   "responsible": {
-    "searchPlaceholder": "Search by name, role or email...",
+    "searchPlaceholder": "Search by name or email...",
+    "linkPlaceholder": "Type to search a user...",
     "link": "Link",
     "unlink": "Unlink",
     "emptyState": "No responsible party found.",
     "filter": {
       "all": "All links",
       "linked": "Linked",
-      "unlinked": "Not linked",
-      "allRoles": "All roles"
+      "unlinked": "Not linked"
     },
     "roles": {
-      "coordinator": "Coordinator",
-      "analyst": "Analyst",
-      "assistant": "Assistant",
-      "supervisor": "Supervisor"
+      "Internal": "Internal",
+      "External": "External",
+      "Agent": "Agent",
+      "Supervisor": "Supervisor",
+      "Laboratory": "Laboratory"
+    },
+    "toast": {
+      "linked": "Responsible linked successfully.",
+      "unlinked": "Responsible unlinked successfully.",
+      "error": "Could not complete the action. Please try again.",
+      "loadError": "Could not load the operation's responsible parties."
     }
   },
   "toast": {

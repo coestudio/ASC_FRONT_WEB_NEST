@@ -57,21 +57,28 @@
     "updatedAt": "Actualizado el"
   },
   "responsible": {
-    "searchPlaceholder": "Buscar por nombre, función o correo...",
+    "searchPlaceholder": "Buscar por nombre o correo...",
+    "linkPlaceholder": "Escriba para buscar un usuario...",
     "link": "Vincular",
     "unlink": "Desvincular",
     "emptyState": "No se encontró ningún responsable.",
     "filter": {
       "all": "Todos los vínculos",
       "linked": "Vinculados",
-      "unlinked": "No vinculados",
-      "allRoles": "Todas las funciones"
+      "unlinked": "No vinculados"
     },
     "roles": {
-      "coordinator": "Coordinador(a)",
-      "analyst": "Analista",
-      "assistant": "Asistente",
-      "supervisor": "Supervisor(a)"
+      "Internal": "Interno",
+      "External": "Externo",
+      "Agent": "Agente",
+      "Supervisor": "Supervisor(a)",
+      "Laboratory": "Laboratorio"
+    },
+    "toast": {
+      "linked": "Responsable vinculado con éxito.",
+      "unlinked": "Responsable desvinculado con éxito.",
+      "error": "No se pudo completar la acción. Inténtelo de nuevo.",
+      "loadError": "No se pudieron cargar los responsables de la operación."
     }
   },
   "toast": {

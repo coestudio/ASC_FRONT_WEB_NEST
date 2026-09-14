@@ -143,7 +143,7 @@ function OperationShellBody({ id }: { id: string }) {
         ) : tab === "reports" ? (
           <Reports operationId={operation.id} />
         ) : tab === "responsible" ? (
-          <OperationResponsibleTab />
+          <OperationResponsibleTab operationId={id} />
         ) : tab === "log" ? (
           <Log operationId={operation.id} />
         ) : (

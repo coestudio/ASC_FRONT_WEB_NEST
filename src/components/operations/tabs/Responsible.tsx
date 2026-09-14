@@ -1,64 +1,28 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import { Badge, Button, Card, Col, Form, Modal, Row, Spinner } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { z } from "zod";
 
-import { MockDataBanner } from "@/components/ui/mock-data-banner";
-import { InputText, Select } from "@/layouts/Form/Fields/Index";
+import { getApiUser } from "@/api/generated/endpoints/user/user";
+import {
+  getGetApiOperationOperationIdResponsibleQueryKey,
+  getGetApiOperationOperationIdResponsibleQueryOptions,
+  useDeleteApiOperationOperationIdResponsibleId,
+  usePostApiOperationOperationIdResponsible,
+} from "@/api/generated/endpoints/responsible/responsible";
+import { PostApiOperationOperationIdResponsibleBody } from "@/api/generated/zod/responsible/responsible.zod";
+import type { ResponsibleDTO } from "@/api/generated/model";
+import { InputText, SelectAsync } from "@/layouts/Form/Fields/Index";
+import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 
-/**
- * Papéis mock — só rótulo pra exibição do card, sem relação com
- * `InternalRole` (enum real do Core). UI-only (D1 da SPEC-07-08): a API
- * real (`ResponsibleApi`) já existe e está gerada, mas não é consumida
- * aqui nesta leva.
- */
-type MockRole = "coordinator" | "analyst" | "assistant" | "supervisor";
-
-type MockResponsible = {
-  id: string;
-  name: string;
-  role: MockRole;
-  email: string;
-  phone: string;
-};
-
-// MOCK — sem chamada real (D1, specs/07-08-operation-responsible/spec.md).
-// Dado sintetizado localmente, nunca projetado de `ResponsibleDTO` real.
-const MOCK_RESPONSIBLES: MockResponsible[] = [
-  {
-    id: "1",
-    name: "Ana Souza",
-    role: "coordinator",
-    email: "ana.souza@asc.com",
-    phone: "(11) 90000-0001",
-  },
-  {
-    id: "2",
-    name: "Bruno Lima",
-    role: "analyst",
-    email: "bruno.lima@asc.com",
-    phone: "(11) 90000-0002",
-  },
-  {
-    id: "3",
-    name: "Carla Nunes",
-    role: "assistant",
-    email: "carla.nunes@asc.com",
-    phone: "(11) 90000-0003",
-  },
-  {
-    id: "4",
-    name: "Diego Alves",
-    role: "supervisor",
-    email: "diego.alves@asc.com",
-    phone: "(11) 90000-0004",
-  },
-];
-
-const MOCK_ROLES: MockRole[] = ["coordinator", "analyst", "assistant", "supervisor"];
-
 type LinkedFilter = "all" | "linked" | "unlinked";
+
+type LinkFormValues = z.infer<typeof PostApiOperationOperationIdResponsibleBody>;
 
 function initials(name: string): string {
   return name
@@ -70,46 +34,98 @@ function initials(name: string): string {
 }
 
 /**
- * Aba **Responsáveis** (SPEC-07-08) — UI-only (D1): vínculo funcionário ×
- * operação só em estado local, nunca persistido. Espelha o comportamento do
- * legado (`OperationResponsaveis.tsx`), com dado mock nomeado e comentado
- * como tal.
+ * Aba **Responsáveis** (SPEC-16) — troca o mock da SPEC-07-08 (D1) pelo
+ * módulo `Responsible` real do Core: lista quem já está vinculado
+ * (`useGetApiOperationOperationIdResponsible`), vincula um novo usuário via
+ * busca (`SelectAsync` + `getApiUser`, mesmo padrão de
+ * `fetchContainerOptions`) e desvincula pelo `id` do vínculo (não o
+ * `userId`). Papel exibido é o real do Core (`user.type`/`user.roles`), sem
+ * inventar rótulo.
  */
-export function OperationResponsibleTab() {
+export function OperationResponsibleTab({ operationId }: { operationId: string }) {
   const t = useT();
-  // Vínculo inicial mock: os dois primeiros já "vinculados" — só pra ter
-  // estado inicial variado na demonstração, sem qualquer origem real.
-  const [linkedIds, setLinkedIds] = useState<string[]>(["1", "2"]);
+  const queryClient = useQueryClient();
+
   const [linkedFilter, setLinkedFilter] = useState<LinkedFilter>("all");
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
 
   const searchMethods = useForm<{ search: string }>({ defaultValues: { search: "" } });
   const search = searchMethods.watch("search");
 
-  const roleMethods = useForm<{ role: string }>({ defaultValues: { role: "all" } });
-  const role = roleMethods.watch("role");
+  const query = useSsrSafeQuery(getGetApiOperationOperationIdResponsibleQueryOptions(operationId));
 
-  const toggleLinked = (id: string) =>
-    setLinkedIds((prev) =>
-      prev.includes(id) ? prev.filter((linkedId) => linkedId !== id) : [...prev, id],
+  const invalidateList = () =>
+    queryClient.invalidateQueries({
+      queryKey: getGetApiOperationOperationIdResponsibleQueryKey(operationId),
+    });
+
+  const linkMutation = usePostApiOperationOperationIdResponsible();
+  const unlinkMutation = useDeleteApiOperationOperationIdResponsibleId();
+
+  const fetchUserOptions = (userSearch: string) =>
+    getApiUser({ Search: userSearch, Limit: 20 }).then((res) =>
+      res.items.map((user) => ({
+        value: user.id,
+        label: user.profile.fullName || user.profile.email,
+      })),
     );
 
+  const linkForm = useForm<LinkFormValues>({
+    resolver: zodResolver(PostApiOperationOperationIdResponsibleBody),
+    defaultValues: { userId: "" },
+  });
+  const selectedUserId = linkForm.watch("userId");
+
+  // Sem botão de salvar extra (mesmo padrão do `Select` de status em
+  // `OperationHeader`): assim que o usuário escolhe uma opção no
+  // `SelectAsync`, o vínculo já é criado.
+  useEffect(() => {
+    if (!selectedUserId) return;
+    linkMutation.mutate(
+      { operationId, data: { userId: selectedUserId } },
+      {
+        onSuccess: () => {
+          toast.success(t("administrative-operations.responsible.toast.linked"));
+          invalidateList();
+          setLinkModalOpen(false);
+          linkForm.reset({ userId: "" });
+        },
+        onError: () => {
+          toast.error(t("administrative-operations.responsible.toast.error"));
+          linkForm.reset({ userId: "" });
+        },
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUserId]);
+
+  const handleUnlink = async (item: ResponsibleDTO) => {
+    try {
+      await unlinkMutation.mutateAsync({ operationId, id: item.id });
+      toast.success(t("administrative-operations.responsible.toast.unlinked"));
+      invalidateList();
+    } catch {
+      toast.error(t("administrative-operations.responsible.toast.error"));
+    }
+  };
+
   const list = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return MOCK_RESPONSIBLES.filter((item) => {
-      const isLinked = linkedIds.includes(item.id);
-      if (linkedFilter === "linked" && !isLinked) return false;
-      if (linkedFilter === "unlinked" && isLinked) return false;
-      if (role !== "all" && item.role !== role) return false;
-      if (!query) return true;
+    const items = query.data ?? [];
+    const queryText = search.trim().toLowerCase();
+    return items.filter((item) => {
+      // RF do CA2: o endpoint só devolve vínculos já criados, então todo item
+      // desta lista está sempre "linked" — o filtro "não vinculados" continua
+      // existindo na UI (RF da SPEC-16), mas nunca tem resultado com o dado
+      // real (não há mais candidato solto pra exibir aqui).
+      if (linkedFilter === "unlinked") return false;
+      if (!queryText) return true;
+      const name = item.user.profile.fullName ?? item.user.userName;
       return (
-        item.name.toLowerCase().includes(query) ||
-        item.email.toLowerCase().includes(query) ||
-        t(`administrative-operations.responsible.roles.${item.role}` as TranslationKey)
-          .toLowerCase()
-          .includes(query)
+        name.toLowerCase().includes(queryText) ||
+        item.user.profile.email.toLowerCase().includes(queryText)
       );
     });
-  }, [search, linkedFilter, role, linkedIds, t]);
+  }, [search, linkedFilter, query.data]);
 
   const linkedFilterOptions: { key: LinkedFilter; labelKey: TranslationKey }[] = [
     { key: "all", labelKey: "administrative-operations.responsible.filter.all" },
@@ -119,8 +135,6 @@ export function OperationResponsibleTab() {
 
   return (
     <div>
-      <MockDataBanner className="mb-3" />
-
       <Row className="g-2 mb-3">
         <Col md={5}>
           <InputText
@@ -128,24 +142,6 @@ export function OperationResponsibleTab() {
             fieldName="search"
             placeholder={t("administrative-operations.responsible.searchPlaceholder")}
             config={{ containerClass: "mb-0" }}
-          />
-        </Col>
-        <Col md={3}>
-          <Select
-            methods={roleMethods}
-            fieldName="role"
-            config={{
-              containerClass: "mb-0",
-              options: [
-                { value: "all", label: t("administrative-operations.responsible.filter.allRoles") },
-                ...MOCK_ROLES.map((mockRole) => ({
-                  value: mockRole,
-                  label: t(
-                    `administrative-operations.responsible.roles.${mockRole}` as TranslationKey,
-                  ),
-                })),
-              ],
-            }}
           />
         </Col>
         <Col md={4} className="d-flex align-items-start gap-2">
@@ -168,47 +164,116 @@ export function OperationResponsibleTab() {
             ))}
           </div>
         </Col>
+        <Col md={3} className="d-flex justify-content-end align-items-start">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              linkForm.reset({ userId: "" });
+              setLinkModalOpen(true);
+            }}
+          >
+            <i className="bi bi-link-45deg me-1" aria-hidden />
+            {t("administrative-operations.responsible.link")}
+          </Button>
+        </Col>
       </Row>
 
-      <div className="d-flex flex-column gap-2">
-        {list.map((item) => {
-          const isLinked = linkedIds.includes(item.id);
-          return (
-            <Card key={item.id} body className="d-flex flex-row flex-wrap align-items-center gap-3">
-              <div
-                className="rounded-circle bg-primary-subtle text-primary-emphasis d-flex align-items-center justify-content-center fw-semibold flex-shrink-0"
-                style={{ width: 44, height: 44 }}
+      {query.isLoading ? (
+        <div className="d-flex justify-content-center py-5">
+          <Spinner animation="border" />
+        </div>
+      ) : query.isError ? (
+        <div className="alert alert-danger d-flex align-items-center justify-content-between gap-3">
+          <span>{t("administrative-operations.responsible.toast.loadError")}</span>
+          <button
+            type="button"
+            className="btn btn-outline-danger btn-sm"
+            onClick={() => query.refetch()}
+          >
+            {t("administrative-operations.shell.retry")}
+          </button>
+        </div>
+      ) : (
+        <div className="d-flex flex-column gap-2">
+          {list.map((item) => {
+            const name = item.user.profile.fullName || item.user.userName;
+            return (
+              <Card
+                key={item.id}
+                body
+                className="d-flex flex-row flex-wrap align-items-center gap-3"
               >
-                {initials(item.name)}
-              </div>
-              <div className="flex-grow-1 min-w-0">
-                <div className="fw-semibold text-truncate">{item.name}</div>
-                <div className="small text-body-secondary text-truncate">
-                  {t(`administrative-operations.responsible.roles.${item.role}` as TranslationKey)}{" "}
-                  · {item.email} · {item.phone}
+                <div
+                  className="rounded-circle bg-primary-subtle text-primary-emphasis d-flex align-items-center justify-content-center fw-semibold flex-shrink-0"
+                  style={{ width: 44, height: 44 }}
+                >
+                  {initials(name)}
                 </div>
-              </div>
-              <Button
-                size="sm"
-                variant={isLinked ? "outline-danger" : "success"}
-                onClick={() => toggleLinked(item.id)}
-              >
-                <i className={`bi ${isLinked ? "bi-x-lg" : "bi-link-45deg"} me-1`} aria-hidden />
-                {isLinked
-                  ? t("administrative-operations.responsible.unlink")
-                  : t("administrative-operations.responsible.link")}
-              </Button>
-            </Card>
-          );
-        })}
+                <div className="flex-grow-1 min-w-0">
+                  <div className="fw-semibold text-truncate">{name}</div>
+                  <div className="d-flex flex-wrap gap-1 my-1">
+                    <Badge bg="secondary">
+                      {t(
+                        `administrative-operations.responsible.roles.${item.user.type}` as TranslationKey,
+                      )}
+                    </Badge>
+                    {item.user.roles.map((role) => (
+                      <Badge key={role} bg="info" text="dark">
+                        {t(`administrative-operations.responsible.roles.${role}` as TranslationKey)}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div className="small text-body-secondary text-truncate">
+                    {item.user.profile.email}
+                    {item.user.profile.phone ? ` · ${item.user.profile.phone}` : ""}
+                  </div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline-danger"
+                  disabled={unlinkMutation.isPending}
+                  onClick={() => handleUnlink(item)}
+                >
+                  <i className="bi bi-x-lg me-1" aria-hidden />
+                  {t("administrative-operations.responsible.unlink")}
+                </Button>
+              </Card>
+            );
+          })}
 
-        {list.length === 0 ? (
-          <div className="text-center text-body-secondary py-4">
-            <i className="bi bi-people display-6 d-block mb-2" aria-hidden />
-            {t("administrative-operations.responsible.emptyState")}
-          </div>
-        ) : null}
-      </div>
+          {list.length === 0 ? (
+            <div className="text-center text-body-secondary py-4">
+              <i className="bi bi-people display-6 d-block mb-2" aria-hidden />
+              {t("administrative-operations.responsible.emptyState")}
+            </div>
+          ) : null}
+        </div>
+      )}
+
+      <Modal show={linkModalOpen} onHide={() => setLinkModalOpen(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="h5 mb-0">
+            {t("administrative-operations.responsible.link")}
+          </Modal.Title>
+        </Modal.Header>
+        <Form noValidate>
+          <Modal.Body>
+            <SelectAsync<LinkFormValues>
+              methods={linkForm}
+              fieldName="userId"
+              label={t("administrative-operations.responsible.link")}
+              config={{ placeholder: t("administrative-operations.responsible.linkPlaceholder") }}
+              fetchOptions={fetchUserOptions}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="outline-secondary" onClick={() => setLinkModalOpen(false)}>
+              {t("crud.recordModal.cancel")}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
     </div>
   );
 }
