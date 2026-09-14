@@ -12,6 +12,8 @@ interface InputBaseDTO<T extends FieldValues = FieldValues> {
   label?: string;
   placeholder?: string;
   rules?: RegisterOptions<T, Path<T>>;
+  /** Desabilita a edição do campo (permanece visível e é enviado no submit — só a interação do usuário é bloqueada). */
+  disabled?: boolean;
   config?: {
     containerClass?: string;
     className?: string;

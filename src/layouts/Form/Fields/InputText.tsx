@@ -13,6 +13,7 @@ function InputText<T extends FieldValues>({
   config = {},
   minLength,
   maxLength,
+  disabled,
   ...colProps
 }: InputDTO<T>) {
   return (
@@ -27,6 +28,7 @@ function InputText<T extends FieldValues>({
           <Form.Control
             {...field}
             type="text"
+            disabled={disabled}
             minLength={minLength}
             maxLength={maxLength}
             placeholder={placeholder || "Digite seu texto"}

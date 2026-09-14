@@ -79,6 +79,7 @@ export function DetailTab({ user }: { user: UserDetailDTO }) {
           methods={methods}
           fieldName="userName"
           label={t("shell.profileModal.userName")}
+          disabled
           md={6}
         />
         <InputEmail

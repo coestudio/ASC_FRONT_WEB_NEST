@@ -18,6 +18,7 @@
  *   --bs-primary(-rgb)          [alias de --brand-primary]
  *   --bs-success(-rgb)          [alias de --brand-primary]
  *   --bs-link-color(-rgb)       [alias de --brand-primary]
+ *   --bs-link-hover-color       [alias de --brand-primary-hover]
  *   --bs-secondary(-rgb)        [cinza neutro de UI — NÃO é cor de marca]
  *   --bs-danger(-rgb), --bs-warning, --bs-info, --bs-danger-soft
  *   --sidebar-active-fg, --sidebar-bg, --sidebar-fg, --sidebar-fg-muted,
@@ -75,6 +76,7 @@
   --surface: #ffffff;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-hover);
   --bs-border-radius: 0.85rem;
   --bs-border-radius-sm: 0.6rem;
   --bs-border-radius-lg: 1.15rem;
@@ -134,6 +136,7 @@
   --surface: #1a2029;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-hover);
 
   /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
   --sidebar-active-fg: #ffffff;
@@ -181,6 +184,7 @@
   --bs-info-rgb: 8, 145, 178;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-hover);
   --surface: #ffffff;
 
   /* Tokens do AppShell (sidebar do menu logado) — tema claro */
@@ -234,6 +238,7 @@
   --surface: #1a2029;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-hover);
 
   /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
   --sidebar-active-fg: #ffffff;
@@ -280,6 +285,7 @@
   --bs-info-rgb: 8, 145, 178;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-hover);
   --surface: #ffffff;
 
   /* Tokens do AppShell (sidebar do menu logado) — tema claro */
@@ -333,6 +339,7 @@
   --surface: #1a2029;
   --bs-link-color: var(--brand-primary);
   --bs-link-color-rgb: var(--brand-primary-rgb);
+  --bs-link-hover-color: var(--brand-primary-hover);
 
   /* Tokens do AppShell (sidebar do menu logado) — tema escuro */
   --sidebar-active-fg: #ffffff;
