@@ -29,7 +29,7 @@ import type { TranslationKey } from "@/i18n/translate";
 import { resolveInternalRoleLabel } from "@/api/generated/static/internalRoleOptions";
 import styles from "./index.module.css";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 3;
 
 export const Route = createFileRoute("/_dashboard/admin/access/")({
   head: () => ({ meta: [{ title: "Acesso — ASC" }] }),
@@ -229,8 +229,15 @@ function AdminAccessPageContent() {
     { type: "InputText", fieldName: "fullName", label: t("access.form.fullName"), col: { md: 6 } },
     { type: "InputText", fieldName: "userName", label: t("access.form.username"), col: { md: 6 } },
     { type: "InputEmail", fieldName: "email", label: t("access.form.email"), col: { md: 6 } },
-    { type: "InputText", fieldName: "document", label: t("access.form.document"), col: { md: 6 } },
-    { type: "InputText", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
+    // `document` aceita CPF ou CNPJ (label "Documento (CPF/CNPJ)") — `InputDocument`
+    // detecta o tipo pela quantidade de dígitos, diferente de `InputCPF` (só CPF).
+    {
+      type: "InputDocument",
+      fieldName: "document",
+      label: t("access.form.document"),
+      col: { md: 6 },
+    },
+    { type: "InputPhone", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
     {
       type: "InputDate",
       fieldName: "birthDate",
@@ -251,8 +258,13 @@ function AdminAccessPageContent() {
     { type: "InputText", fieldName: "fullName", label: t("access.form.fullName"), col: { md: 6 } },
     { type: "InputText", fieldName: "userName", label: t("access.form.username"), col: { md: 6 } },
     { type: "InputEmail", fieldName: "email", label: t("access.form.email"), col: { md: 6 } },
-    { type: "InputText", fieldName: "document", label: t("access.form.document"), col: { md: 6 } },
-    { type: "InputText", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
+    {
+      type: "InputDocument",
+      fieldName: "document",
+      label: t("access.form.document"),
+      col: { md: 6 },
+    },
+    { type: "InputPhone", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
     {
       type: "InputDate",
       fieldName: "birthDate",

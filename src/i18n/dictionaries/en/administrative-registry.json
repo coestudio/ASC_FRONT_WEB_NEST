@@ -1,0 +1,130 @@
+{
+  "terminal": {
+    "title": "Terminals",
+    "description": "Terminals associated with harbors.",
+    "colName": "Name",
+    "colHarbor": "Harbor",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "emptyState": "No terminal found.",
+    "newTitle": "New terminal",
+    "editTitle": "Edit terminal",
+    "viewTitle": "Terminal details",
+    "form": {
+      "name": "Name",
+      "harbor": "Harbor"
+    },
+    "toast": {
+      "created": "Terminal created successfully.",
+      "updated": "Terminal updated successfully.",
+      "deleted": "Terminal deleted.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "confirm": {
+      "deleteTitle": "Delete terminal",
+      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+    }
+  },
+  "harbor": {
+    "title": "Harbors",
+    "description": "Registered harbors and their terminals.",
+    "colName": "Name",
+    "colAddress": "Address",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "emptyState": "No harbor found.",
+    "newTitle": "New harbor",
+    "editTitle": "Edit harbor",
+    "viewTitle": "Harbor details",
+    "form": {
+      "name": "Name",
+      "address": "Address"
+    },
+    "relatedTerminalsTitle": "Terminals at this harbor",
+    "relatedTerminalsEmpty": "No terminal linked to this harbor.",
+    "toast": {
+      "created": "Harbor created successfully.",
+      "updated": "Harbor updated successfully.",
+      "deleted": "Harbor deleted.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "confirm": {
+      "deleteTitle": "Delete harbor",
+      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+    }
+  },
+  "container": {
+    "title": "Containers",
+    "description": "Containers used in operations.",
+    "colIdentifier": "Identifier",
+    "colTara": "Tare",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "emptyState": "No container found.",
+    "newTitle": "New container",
+    "editTitle": "Edit container",
+    "viewTitle": "Container details",
+    "form": {
+      "identifier": "Identifier",
+      "tara": "Tare (kg)"
+    },
+    "toast": {
+      "created": "Container created successfully.",
+      "updated": "Container updated successfully.",
+      "deleted": "Container deleted.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "confirm": {
+      "deleteTitle": "Delete container",
+      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+    }
+  },
+  "vessel": {
+    "title": "Vessels",
+    "description": "Vessels used in operations.",
+    "colName": "Name",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "emptyState": "No vessel found.",
+    "newTitle": "New vessel",
+    "editTitle": "Edit vessel",
+    "viewTitle": "Vessel details",
+    "form": {
+      "name": "Name"
+    },
+    "toast": {
+      "created": "Vessel created successfully.",
+      "updated": "Vessel updated successfully.",
+      "deleted": "Vessel deleted.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "confirm": {
+      "deleteTitle": "Delete vessel",
+      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+    }
+  },
+  "product": {
+    "title": "Products",
+    "description": "Products used in operations.",
+    "colName": "Name",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "emptyState": "No product found.",
+    "newTitle": "New product",
+    "editTitle": "Edit product",
+    "viewTitle": "Product details",
+    "form": {
+      "name": "Name"
+    },
+    "toast": {
+      "created": "Product created successfully.",
+      "updated": "Product updated successfully.",
+      "deleted": "Product deleted.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "confirm": {
+      "deleteTitle": "Delete product",
+      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+    }
+  }
+}
