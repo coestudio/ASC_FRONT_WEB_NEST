@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-04
 - **Nome:** operation-romaneio
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/romaneio/**`
   (nova)

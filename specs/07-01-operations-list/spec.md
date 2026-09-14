@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-01
 - **Nome:** operations-list
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/operations/index.tsx`,
   `src/components/operations/**` (novas), `src/layouts/AppShell/nav/**`,

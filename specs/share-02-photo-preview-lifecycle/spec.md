@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-SHARE-02
 - **Nome:** photo-preview-lifecycle
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/hooks/**` (novo), `src/layouts/Form/Fields/InputPhotoSingle.tsx`,
   `src/layouts/Form/Fields/InputPhotoMulti.tsx` (SPEC-SHARE-01,

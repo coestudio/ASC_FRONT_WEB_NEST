@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-07
 - **Nome:** operation-reports
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/reports/**`
   (nova)

@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-09
 - **Nome:** operation-log
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/log/**` (nova)
 - **Depende de:** SPEC-00, SPEC-02 (`mock-data-banner`), SPEC-07-02 (shell

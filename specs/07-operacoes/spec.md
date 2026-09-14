@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07
 - **Nome:** operacoes
-- **Status:** DRAFT (índice — cada sub-SPEC tem status próprio)
+- **Status:** APPROVED (índice — cada sub-SPEC tem status próprio, ver 07-01 a 07-09)
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/operations/**`
   (nova)

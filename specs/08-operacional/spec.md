@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-08
 - **Nome:** operacional
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/operational/**` (nova — URL
   em inglês, `operacional`→`operational`; rótulo continua "Operacional")

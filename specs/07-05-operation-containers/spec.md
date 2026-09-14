@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-05
 - **Nome:** operation-containers
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/containers/**`
   (nova)

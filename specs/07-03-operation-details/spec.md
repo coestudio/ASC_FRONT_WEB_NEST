@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-03
 - **Nome:** operation-details
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/details/**` (nova)
 - **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`, para o campo

@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-08
 - **Nome:** operation-responsible
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/responsible/**`
   (nova)

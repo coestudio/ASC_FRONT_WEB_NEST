@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-02
 - **Nome:** operation-shell
-- **Status:** DRAFT
+- **Status:** APPROVED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/_internal/administrative/operations/$id/**`
   (rota única, nova), `src/components/operations/tabs/**` (componentes de
