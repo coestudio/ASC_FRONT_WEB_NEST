@@ -82,5 +82,10 @@
     "statusPending": "待处理",
     "download": "下载",
     "emptyState": "暂无可用报告。"
+  },
+  "log": {
+    "description": "此作业记录的事件历史。",
+    "byUser": "由 {user}",
+    "emptyState": "暂无记录的事件。"
   }
 }

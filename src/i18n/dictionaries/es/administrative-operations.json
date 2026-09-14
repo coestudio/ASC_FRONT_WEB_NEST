@@ -82,5 +82,10 @@
     "statusPending": "Pendiente",
     "download": "Descargar",
     "emptyState": "No hay informes disponibles."
+  },
+  "log": {
+    "description": "Historial de eventos registrados en esta operación.",
+    "byUser": "por {user}",
+    "emptyState": "No hay eventos registrados."
   }
 }

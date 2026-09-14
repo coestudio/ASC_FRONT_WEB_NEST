@@ -82,5 +82,10 @@
     "statusPending": "Pending",
     "download": "Download",
     "emptyState": "No reports available."
+  },
+  "log": {
+    "description": "History of events recorded for this operation.",
+    "byUser": "by {user}",
+    "emptyState": "No events recorded."
   }
 }
