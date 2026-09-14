@@ -4,10 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,28 +17,25 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   GetApiHarborParams,
   HarborCreate,
   HarborDTO,
   HarborUpdate,
-  PagedDTOOfHarborDTO
-} from '../../model';
+  PagedDTOOfHarborDTO,
+} from "../../model";
 
-import { apiRequest } from '../../../mutator.ts';
-
-
-
+import { apiRequest } from "../../../mutator.ts";
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -51,358 +45,391 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const getApiHarbor = (
-    params?: GetApiHarborParams,
- signal?: AbortSignal
+export const getApiHarbor = (params?: GetApiHarborParams, signal?: AbortSignal) => {
+  return apiRequest<PagedDTOOfHarborDTO>({ url: `/api/harbor`, method: "GET", params, signal });
+};
+
+export const getGetApiHarborQueryKey = (params?: GetApiHarborParams) => {
+  return [`/api/harbor`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetApiHarborQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiHarbor>>,
+  TError = void,
+>(
+  params?: GetApiHarborParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>>;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetApiHarborQueryKey(params);
 
-      return apiRequest<PagedDTOOfHarborDTO>(
-      {url: `/api/harbor`, method: 'GET',
-        params, signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiHarbor>>> = ({ signal }) =>
+    getApiHarbor(params, signal);
 
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiHarbor>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
-
-
-export const getGetApiHarborQueryKey = (params?: GetApiHarborParams,) => {
-    return [
-    `/api/harbor`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetApiHarborQueryOptions = <TData = Awaited<ReturnType<typeof getApiHarbor>>, TError = void>(params?: GetApiHarborParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiHarborQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiHarbor>>> = ({ signal }) => getApiHarbor(params, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiHarborQueryResult = NonNullable<Awaited<ReturnType<typeof getApiHarbor>>>
-export type GetApiHarborQueryError = void
-
+export type GetApiHarborQueryResult = NonNullable<Awaited<ReturnType<typeof getApiHarbor>>>;
+export type GetApiHarborQueryError = void;
 
 export function useGetApiHarbor<TData = Awaited<ReturnType<typeof getApiHarbor>>, TError = void>(
- params: undefined |  GetApiHarborParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>> & Pick<
+  params: undefined | GetApiHarborParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>> &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiHarbor>>,
           TError,
           Awaited<ReturnType<typeof getApiHarbor>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGetApiHarbor<TData = Awaited<ReturnType<typeof getApiHarbor>>, TError = void>(
- params?: GetApiHarborParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>> & Pick<
+  params?: GetApiHarborParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>> &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiHarbor>>,
           TError,
           Awaited<ReturnType<typeof getApiHarbor>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useGetApiHarbor<TData = Awaited<ReturnType<typeof getApiHarbor>>, TError = void>(
- params?: GetApiHarborParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+  params?: GetApiHarborParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
 export function useGetApiHarbor<TData = Awaited<ReturnType<typeof getApiHarbor>>, TError = void>(
- params?: GetApiHarborParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  params?: GetApiHarborParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarbor>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiHarborQueryOptions(params, options);
 
-  const queryOptions = getGetApiHarborQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const postApiHarbor = (harborCreate: HarborCreate, signal?: AbortSignal) => {
+  return apiRequest<HarborDTO>({
+    url: `/api/harbor`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: harborCreate,
+    signal,
+  });
+};
 
+export const getPostApiHarborMutationKey = () => ["postApiHarbor"] as const;
 
+export const getPostApiHarborMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiHarbor>>,
+    TError,
+    PostApiHarborMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiHarbor>>,
+  TError,
+  PostApiHarborMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiHarborMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiHarbor>>,
+    PostApiHarborMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return postApiHarbor(data);
+  };
 
-export const postApiHarbor = (
-    harborCreate: HarborCreate,
- signal?: AbortSignal
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiHarborMutationResult = NonNullable<Awaited<ReturnType<typeof postApiHarbor>>>;
+export type PostApiHarborMutationBody = HarborCreate;
+export type PostApiHarborMutationError = void;
+export type PostApiHarborMutationVariables = { data: HarborCreate };
+
+export const usePostApiHarbor = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiHarbor>>,
+      TError,
+      PostApiHarborMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiHarbor>>,
+  TError,
+  PostApiHarborMutationVariables,
+  TContext
+> => {
+  return useMutation(getPostApiHarborMutationOptions(options), queryClient);
+};
+export const getApiHarborId = (id: string, signal?: AbortSignal) => {
+  return apiRequest<HarborDTO>({ url: `/api/harbor/${id}`, method: "GET", signal });
+};
+
+export const getGetApiHarborIdQueryKey = (id: string) => {
+  return [`/api/harbor/${id}`] as const;
+};
+
+export const getGetApiHarborIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiHarborId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>>;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetApiHarborIdQueryKey(id);
 
-      return apiRequest<HarborDTO>(
-      {url: `/api/harbor`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: harborCreate, signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiHarborId>>> = ({ signal }) =>
+    getApiHarborId(id, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
 
+export type GetApiHarborIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiHarborId>>>;
+export type GetApiHarborIdQueryError = void;
 
-
-export const getPostApiHarborMutationKey = () => ['postApiHarbor'] as const;
-
-export const getPostApiHarborMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiHarbor>>, TError,PostApiHarborMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiHarbor>>, TError,PostApiHarborMutationVariables, TContext> => {
-
-const mutationKey = getPostApiHarborMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiHarbor>>, PostApiHarborMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiHarbor(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiHarborMutationResult = NonNullable<Awaited<ReturnType<typeof postApiHarbor>>>
-    export type PostApiHarborMutationBody = HarborCreate
-    export type PostApiHarborMutationError = void
-    export type PostApiHarborMutationVariables = {data: HarborCreate}
-
-    export const usePostApiHarbor = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiHarbor>>, TError,PostApiHarborMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiHarbor>>,
-        TError,
-        PostApiHarborMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiHarborMutationOptions(options), queryClient);
-    }
-    export const getApiHarborId = (
-    id: string,
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<HarborDTO>(
-      {url: `/api/harbor/${id}`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiHarborIdQueryKey = (id: string,) => {
-    return [
-    `/api/harbor/${id}`
-    ] as const;
-    }
-
-
-export const getGetApiHarborIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiHarborId>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiHarborIdQueryKey(id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiHarborId>>> = ({ signal }) => getApiHarborId(id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiHarborIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiHarborId>>>
-export type GetApiHarborIdQueryError = void
-
-
-export function useGetApiHarborId<TData = Awaited<ReturnType<typeof getApiHarborId>>, TError = void>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>> & Pick<
+export function useGetApiHarborId<
+  TData = Awaited<ReturnType<typeof getApiHarborId>>,
+  TError = void,
+>(
+  id: string,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>> &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiHarborId>>,
           TError,
           Awaited<ReturnType<typeof getApiHarborId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiHarborId<TData = Awaited<ReturnType<typeof getApiHarborId>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiHarborId<
+  TData = Awaited<ReturnType<typeof getApiHarborId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>> &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiHarborId>>,
           TError,
           Awaited<ReturnType<typeof getApiHarborId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiHarborId<TData = Awaited<ReturnType<typeof getApiHarborId>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiHarborId<
+  TData = Awaited<ReturnType<typeof getApiHarborId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiHarborId<TData = Awaited<ReturnType<typeof getApiHarborId>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiHarborId<
+  TData = Awaited<ReturnType<typeof getApiHarborId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiHarborId>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiHarborIdQueryOptions(id, options);
 
-  const queryOptions = getGetApiHarborIdQueryOptions(id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const putApiHarborId = (id: string, harborUpdate: HarborUpdate, signal?: AbortSignal) => {
+  return apiRequest<HarborDTO>({
+    url: `/api/harbor/${id}`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: harborUpdate,
+    signal,
+  });
+};
 
+export const getPutApiHarborIdMutationKey = () => ["putApiHarborId"] as const;
 
+export const getPutApiHarborIdMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiHarborId>>,
+    TError,
+    PutApiHarborIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiHarborId>>,
+  TError,
+  PutApiHarborIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPutApiHarborIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiHarborId>>,
+    PutApiHarborIdMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
 
+    return putApiHarborId(id, data);
+  };
 
-export const putApiHarborId = (
-    id: string,
-    harborUpdate: HarborUpdate,
- signal?: AbortSignal
-) => {
+  return { mutationFn, ...mutationOptions };
+};
 
+export type PutApiHarborIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiHarborId>>>;
+export type PutApiHarborIdMutationBody = HarborUpdate;
+export type PutApiHarborIdMutationError = void;
+export type PutApiHarborIdMutationVariables = { id: string; data: HarborUpdate };
 
-      return apiRequest<HarborDTO>(
-      {url: `/api/harbor/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: harborUpdate, signal
-    },
-      );
-    }
+export const usePutApiHarborId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putApiHarborId>>,
+      TError,
+      PutApiHarborIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putApiHarborId>>,
+  TError,
+  PutApiHarborIdMutationVariables,
+  TContext
+> => {
+  return useMutation(getPutApiHarborIdMutationOptions(options), queryClient);
+};
+export const deleteApiHarborId = (id: string, signal?: AbortSignal) => {
+  return apiRequest<void>({ url: `/api/harbor/${id}`, method: "DELETE", signal });
+};
 
+export const getDeleteApiHarborIdMutationKey = () => ["deleteApiHarborId"] as const;
 
+export const getDeleteApiHarborIdMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiHarborId>>,
+    TError,
+    DeleteApiHarborIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiHarborId>>,
+  TError,
+  DeleteApiHarborIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getDeleteApiHarborIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiHarborId>>,
+    DeleteApiHarborIdMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
 
-export const getPutApiHarborIdMutationKey = () => ['putApiHarborId'] as const;
+    return deleteApiHarborId(id);
+  };
 
-export const getPutApiHarborIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiHarborId>>, TError,PutApiHarborIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiHarborId>>, TError,PutApiHarborIdMutationVariables, TContext> => {
+  return { mutationFn, ...mutationOptions };
+};
 
-const mutationKey = getPutApiHarborIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export type DeleteApiHarborIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiHarborId>>
+>;
 
+export type DeleteApiHarborIdMutationError = void;
+export type DeleteApiHarborIdMutationVariables = { id: string };
 
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiHarborId>>, PutApiHarborIdMutationVariables> = (props) => {
-          const {id,data} = props ?? {};
-
-          return  putApiHarborId(id,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutApiHarborIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiHarborId>>>
-    export type PutApiHarborIdMutationBody = HarborUpdate
-    export type PutApiHarborIdMutationError = void
-    export type PutApiHarborIdMutationVariables = {id: string;data: HarborUpdate}
-
-    export const usePutApiHarborId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiHarborId>>, TError,PutApiHarborIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiHarborId>>,
-        TError,
-        PutApiHarborIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPutApiHarborIdMutationOptions(options), queryClient);
-    }
-    export const deleteApiHarborId = (
-    id: string,
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<void>(
-      {url: `/api/harbor/${id}`, method: 'DELETE', signal
-    },
-      );
-    }
-
-
-
-
-export const getDeleteApiHarborIdMutationKey = () => ['deleteApiHarborId'] as const;
-
-export const getDeleteApiHarborIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiHarborId>>, TError,DeleteApiHarborIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiHarborId>>, TError,DeleteApiHarborIdMutationVariables, TContext> => {
-
-const mutationKey = getDeleteApiHarborIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiHarborId>>, DeleteApiHarborIdMutationVariables> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteApiHarborId(id,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteApiHarborIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiHarborId>>>
-
-    export type DeleteApiHarborIdMutationError = void
-    export type DeleteApiHarborIdMutationVariables = {id: string}
-
-    export const useDeleteApiHarborId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiHarborId>>, TError,DeleteApiHarborIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiHarborId>>,
-        TError,
-        DeleteApiHarborIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getDeleteApiHarborIdMutationOptions(options), queryClient);
-    }
+export const useDeleteApiHarborId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteApiHarborId>>,
+      TError,
+      DeleteApiHarborIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteApiHarborId>>,
+  TError,
+  DeleteApiHarborIdMutationVariables,
+  TContext
+> => {
+  return useMutation(getDeleteApiHarborIdMutationOptions(options), queryClient);
+};

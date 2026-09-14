@@ -4,10 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,25 +17,19 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
-import type {
-  CollaboratorCreate,
-  CollaboratorDTO
-} from '../../model';
+import type { CollaboratorCreate, CollaboratorDTO } from "../../model";
 
-import { apiRequest } from '../../../mutator.ts';
-
-
-
+import { apiRequest } from "../../../mutator.ts";
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -48,304 +39,415 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const getApiClientClientIdCollaborator = (
-    clientId: string,
- signal?: AbortSignal
+export const getApiClientClientIdCollaborator = (clientId: string, signal?: AbortSignal) => {
+  return apiRequest<CollaboratorDTO[]>({
+    url: `/api/client/${clientId}/collaborator`,
+    method: "GET",
+    signal,
+  });
+};
+
+export const getGetApiClientClientIdCollaboratorQueryKey = (clientId: string) => {
+  return [`/api/client/${clientId}/collaborator`] as const;
+};
+
+export const getGetApiClientClientIdCollaboratorQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
+  TError = void,
+>(
+  clientId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetApiClientClientIdCollaboratorQueryKey(clientId);
 
-      return apiRequest<CollaboratorDTO[]>(
-      {url: `/api/client/${clientId}/collaborator`, method: 'GET', signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>> = ({
+    signal,
+  }) => getApiClientClientIdCollaborator(clientId, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: clientId !== null && clientId !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiClientClientIdCollaboratorQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>
+>;
+export type GetApiClientClientIdCollaboratorQueryError = void;
 
-
-export const getGetApiClientClientIdCollaboratorQueryKey = (clientId: string,) => {
-    return [
-    `/api/client/${clientId}/collaborator`
-    ] as const;
-    }
-
-
-export const getGetApiClientClientIdCollaboratorQueryOptions = <TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError = void>(clientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiClientClientIdCollaboratorQueryKey(clientId);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>> = ({ signal }) => getApiClientClientIdCollaborator(clientId, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: clientId !== null && clientId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiClientClientIdCollaboratorQueryResult = NonNullable<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>>
-export type GetApiClientClientIdCollaboratorQueryError = void
-
-
-export function useGetApiClientClientIdCollaborator<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError = void>(
- clientId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>> & Pick<
+export function useGetApiClientClientIdCollaborator<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
+  TError = void,
+>(
+  clientId: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
           TError,
           Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiClientClientIdCollaborator<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError = void>(
- clientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiClientClientIdCollaborator<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
+  TError = void,
+>(
+  clientId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
           TError,
           Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiClientClientIdCollaborator<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError = void>(
- clientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiClientClientIdCollaborator<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
+  TError = void,
+>(
+  clientId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiClientClientIdCollaborator<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError = void>(
- clientId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiClientClientIdCollaborator<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>,
+  TError = void,
+>(
+  clientId: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaborator>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiClientClientIdCollaboratorQueryOptions(clientId, options);
 
-  const queryOptions = getGetApiClientClientIdCollaboratorQueryOptions(clientId,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const postApiClientClientIdCollaborator = (
-    clientId: string,
-    collaboratorCreate: CollaboratorCreate,
- signal?: AbortSignal
+  clientId: string,
+  collaboratorCreate: CollaboratorCreate,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<CollaboratorDTO>({
+    url: `/api/client/${clientId}/collaborator`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: collaboratorCreate,
+    signal,
+  });
+};
 
+export const getPostApiClientClientIdCollaboratorMutationKey = () =>
+  ["postApiClientClientIdCollaborator"] as const;
 
-      return apiRequest<CollaboratorDTO>(
-      {url: `/api/client/${clientId}/collaborator`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: collaboratorCreate, signal
-    },
-      );
-    }
+export const getPostApiClientClientIdCollaboratorMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>,
+    TError,
+    PostApiClientClientIdCollaboratorMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>,
+  TError,
+  PostApiClientClientIdCollaboratorMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiClientClientIdCollaboratorMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>,
+    PostApiClientClientIdCollaboratorMutationVariables
+  > = (props) => {
+    const { clientId, data } = props ?? {};
 
+    return postApiClientClientIdCollaborator(clientId, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPostApiClientClientIdCollaboratorMutationKey = () => ['postApiClientClientIdCollaborator'] as const;
+export type PostApiClientClientIdCollaboratorMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>
+>;
+export type PostApiClientClientIdCollaboratorMutationBody = CollaboratorCreate;
+export type PostApiClientClientIdCollaboratorMutationError = void;
+export type PostApiClientClientIdCollaboratorMutationVariables = {
+  clientId: string;
+  data: CollaboratorCreate;
+};
 
-export const getPostApiClientClientIdCollaboratorMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>, TError,PostApiClientClientIdCollaboratorMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>, TError,PostApiClientClientIdCollaboratorMutationVariables, TContext> => {
-
-const mutationKey = getPostApiClientClientIdCollaboratorMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>, PostApiClientClientIdCollaboratorMutationVariables> = (props) => {
-          const {clientId,data} = props ?? {};
-
-          return  postApiClientClientIdCollaborator(clientId,data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiClientClientIdCollaboratorMutationResult = NonNullable<Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>>
-    export type PostApiClientClientIdCollaboratorMutationBody = CollaboratorCreate
-    export type PostApiClientClientIdCollaboratorMutationError = void
-    export type PostApiClientClientIdCollaboratorMutationVariables = {clientId: string;data: CollaboratorCreate}
-
-    export const usePostApiClientClientIdCollaborator = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>, TError,PostApiClientClientIdCollaboratorMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>,
-        TError,
-        PostApiClientClientIdCollaboratorMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiClientClientIdCollaboratorMutationOptions(options), queryClient);
-    }
-    export const getApiClientClientIdCollaboratorId = (
-    clientId: string,
-    id: string,
- signal?: AbortSignal
+export const usePostApiClientClientIdCollaborator = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>,
+      TError,
+      PostApiClientClientIdCollaboratorMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiClientClientIdCollaborator>>,
+  TError,
+  PostApiClientClientIdCollaboratorMutationVariables,
+  TContext
+> => {
+  return useMutation(getPostApiClientClientIdCollaboratorMutationOptions(options), queryClient);
+};
+export const getApiClientClientIdCollaboratorId = (
+  clientId: string,
+  id: string,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<CollaboratorDTO>({
+    url: `/api/client/${clientId}/collaborator/${id}`,
+    method: "GET",
+    signal,
+  });
+};
 
+export const getGetApiClientClientIdCollaboratorIdQueryKey = (clientId: string, id: string) => {
+  return [`/api/client/${clientId}/collaborator/${id}`] as const;
+};
 
-      return apiRequest<CollaboratorDTO>(
-      {url: `/api/client/${clientId}/collaborator/${id}`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiClientClientIdCollaboratorIdQueryKey = (clientId: string,
-    id: string,) => {
-    return [
-    `/api/client/${clientId}/collaborator/${id}`
-    ] as const;
-    }
-
-
-export const getGetApiClientClientIdCollaboratorIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError = void>(clientId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>>, }
+export const getGetApiClientClientIdCollaboratorIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
+  TError = void,
+>(
+  clientId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>
+    >;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
-const {query: queryOptions} = options ?? {};
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiClientClientIdCollaboratorIdQueryKey(clientId, id);
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiClientClientIdCollaboratorIdQueryKey(clientId,id);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>> = ({
+    signal,
+  }) => getApiClientClientIdCollaboratorId(clientId, id, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: clientId !== null && clientId !== undefined && id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiClientClientIdCollaboratorIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>
+>;
+export type GetApiClientClientIdCollaboratorIdQueryError = void;
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>> = ({ signal }) => getApiClientClientIdCollaboratorId(clientId,id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: clientId !== null && clientId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiClientClientIdCollaboratorIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>>
-export type GetApiClientClientIdCollaboratorIdQueryError = void
-
-
-export function useGetApiClientClientIdCollaboratorId<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError = void>(
- clientId: string,
-    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>> & Pick<
+export function useGetApiClientClientIdCollaboratorId<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
+  TError = void,
+>(
+  clientId: string,
+  id: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
           TError,
           Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiClientClientIdCollaboratorId<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError = void>(
- clientId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiClientClientIdCollaboratorId<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
+  TError = void,
+>(
+  clientId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
           TError,
           Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiClientClientIdCollaboratorId<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError = void>(
- clientId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiClientClientIdCollaboratorId<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
+  TError = void,
+>(
+  clientId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiClientClientIdCollaboratorId<TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError = void>(
- clientId: string,
-    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiClientClientIdCollaboratorId<
+  TData = Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>,
+  TError = void,
+>(
+  clientId: string,
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof getApiClientClientIdCollaboratorId>>, TError, TData>
+    >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiClientClientIdCollaboratorIdQueryOptions(clientId, id, options);
 
-  const queryOptions = getGetApiClientClientIdCollaboratorIdQueryOptions(clientId,id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-
-
-
-
-
 export const deleteApiClientClientIdCollaboratorId = (
-    clientId: string,
-    id: string,
- signal?: AbortSignal
+  clientId: string,
+  id: string,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<void>({
+    url: `/api/client/${clientId}/collaborator/${id}`,
+    method: "DELETE",
+    signal,
+  });
+};
 
+export const getDeleteApiClientClientIdCollaboratorIdMutationKey = () =>
+  ["deleteApiClientClientIdCollaboratorId"] as const;
 
-      return apiRequest<void>(
-      {url: `/api/client/${clientId}/collaborator/${id}`, method: 'DELETE', signal
-    },
-      );
-    }
+export const getDeleteApiClientClientIdCollaboratorIdMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>,
+    TError,
+    DeleteApiClientClientIdCollaboratorIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>,
+  TError,
+  DeleteApiClientClientIdCollaboratorIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getDeleteApiClientClientIdCollaboratorIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>,
+    DeleteApiClientClientIdCollaboratorIdMutationVariables
+  > = (props) => {
+    const { clientId, id } = props ?? {};
 
+    return deleteApiClientClientIdCollaboratorId(clientId, id);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getDeleteApiClientClientIdCollaboratorIdMutationKey = () => ['deleteApiClientClientIdCollaboratorId'] as const;
+export type DeleteApiClientClientIdCollaboratorIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>
+>;
 
-export const getDeleteApiClientClientIdCollaboratorIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>, TError,DeleteApiClientClientIdCollaboratorIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>, TError,DeleteApiClientClientIdCollaboratorIdMutationVariables, TContext> => {
+export type DeleteApiClientClientIdCollaboratorIdMutationError = void;
+export type DeleteApiClientClientIdCollaboratorIdMutationVariables = {
+  clientId: string;
+  id: string;
+};
 
-const mutationKey = getDeleteApiClientClientIdCollaboratorIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>, DeleteApiClientClientIdCollaboratorIdMutationVariables> = (props) => {
-          const {clientId,id} = props ?? {};
-
-          return  deleteApiClientClientIdCollaboratorId(clientId,id,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteApiClientClientIdCollaboratorIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>>
-
-    export type DeleteApiClientClientIdCollaboratorIdMutationError = void
-    export type DeleteApiClientClientIdCollaboratorIdMutationVariables = {clientId: string;id: string}
-
-    export const useDeleteApiClientClientIdCollaboratorId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>, TError,DeleteApiClientClientIdCollaboratorIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>,
-        TError,
-        DeleteApiClientClientIdCollaboratorIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getDeleteApiClientClientIdCollaboratorIdMutationOptions(options), queryClient);
-    }
+export const useDeleteApiClientClientIdCollaboratorId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>,
+      TError,
+      DeleteApiClientClientIdCollaboratorIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteApiClientClientIdCollaboratorId>>,
+  TError,
+  DeleteApiClientClientIdCollaboratorIdMutationVariables,
+  TContext
+> => {
+  return useMutation(getDeleteApiClientClientIdCollaboratorIdMutationOptions(options), queryClient);
+};

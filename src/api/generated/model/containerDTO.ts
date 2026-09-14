@@ -8,9 +8,9 @@
 export interface ContainerDTO {
   identifier: string;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   tara?: number | string | null;
   id: string;
   createdAt: string;

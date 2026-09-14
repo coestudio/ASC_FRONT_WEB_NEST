@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { TerminalDTO } from './terminalDTO.ts';
+import type { TerminalDTO } from "./terminalDTO.ts";
 
 export interface PagedDTOOfTerminalDTO {
   items: TerminalDTO[];

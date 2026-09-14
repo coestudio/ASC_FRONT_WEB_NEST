@@ -8,8 +8,8 @@
 export interface ContainerOperationLink {
   containerId: string;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   tara?: number | string | null;
 }

@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InvoiceItemStatus } from './invoiceItemStatus.ts';
+import type { InvoiceItemStatus } from "./invoiceItemStatus.ts";
 
 export interface InvoiceItemDTO {
   invoiceId?: string;
@@ -13,19 +13,19 @@ export interface InvoiceItemDTO {
   lot?: string;
   stack?: string;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   netWeight?: number | string | null;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   tare?: number | string | null;
   /**
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   grossWeight?: number | string | null;
   observation?: string;
   status?: InvoiceItemStatus;

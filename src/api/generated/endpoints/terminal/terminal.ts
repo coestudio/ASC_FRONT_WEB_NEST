@@ -4,10 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,28 +17,25 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
 
 import type {
   GetApiTerminalParams,
   PagedDTOOfTerminalDTO,
   TerminalCreate,
   TerminalDTO,
-  TerminalUpdate
-} from '../../model';
+  TerminalUpdate,
+} from "../../model";
 
-import { apiRequest } from '../../../mutator.ts';
-
-
-
+import { apiRequest } from "../../../mutator.ts";
 
 const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKey: K } => {
   const result = { queryKey } as T & { queryKey: K };
   for (const key of Object.keys(query)) {
     // The explicit queryKey always wins, matching the previous
     // `{ ...query, queryKey }` spread where it was set last.
-    if (key === 'queryKey') continue;
+    if (key === "queryKey") continue;
     Object.defineProperty(result, key, {
       enumerable: true,
       configurable: true,
@@ -51,358 +45,411 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const getApiTerminal = (
-    params?: GetApiTerminalParams,
- signal?: AbortSignal
+export const getApiTerminal = (params?: GetApiTerminalParams, signal?: AbortSignal) => {
+  return apiRequest<PagedDTOOfTerminalDTO>({ url: `/api/terminal`, method: "GET", params, signal });
+};
+
+export const getGetApiTerminalQueryKey = (params?: GetApiTerminalParams) => {
+  return [`/api/terminal`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetApiTerminalQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiTerminal>>,
+  TError = void,
+>(
+  params?: GetApiTerminalParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>>;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetApiTerminalQueryKey(params);
 
-      return apiRequest<PagedDTOOfTerminalDTO>(
-      {url: `/api/terminal`, method: 'GET',
-        params, signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiTerminal>>> = ({ signal }) =>
+    getApiTerminal(params, signal);
 
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiTerminal>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiTerminalQueryResult = NonNullable<Awaited<ReturnType<typeof getApiTerminal>>>;
+export type GetApiTerminalQueryError = void;
 
-
-export const getGetApiTerminalQueryKey = (params?: GetApiTerminalParams,) => {
-    return [
-    `/api/terminal`, ...(params ? [params] : [])
-    ] as const;
-    }
-
-
-export const getGetApiTerminalQueryOptions = <TData = Awaited<ReturnType<typeof getApiTerminal>>, TError = void>(params?: GetApiTerminalParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiTerminalQueryKey(params);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiTerminal>>> = ({ signal }) => getApiTerminal(params, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiTerminalQueryResult = NonNullable<Awaited<ReturnType<typeof getApiTerminal>>>
-export type GetApiTerminalQueryError = void
-
-
-export function useGetApiTerminal<TData = Awaited<ReturnType<typeof getApiTerminal>>, TError = void>(
- params: undefined |  GetApiTerminalParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>> & Pick<
+export function useGetApiTerminal<
+  TData = Awaited<ReturnType<typeof getApiTerminal>>,
+  TError = void,
+>(
+  params: undefined | GetApiTerminalParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>> &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiTerminal>>,
           TError,
           Awaited<ReturnType<typeof getApiTerminal>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiTerminal<TData = Awaited<ReturnType<typeof getApiTerminal>>, TError = void>(
- params?: GetApiTerminalParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiTerminal<
+  TData = Awaited<ReturnType<typeof getApiTerminal>>,
+  TError = void,
+>(
+  params?: GetApiTerminalParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>> &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiTerminal>>,
           TError,
           Awaited<ReturnType<typeof getApiTerminal>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiTerminal<TData = Awaited<ReturnType<typeof getApiTerminal>>, TError = void>(
- params?: GetApiTerminalParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiTerminal<
+  TData = Awaited<ReturnType<typeof getApiTerminal>>,
+  TError = void,
+>(
+  params?: GetApiTerminalParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiTerminal<TData = Awaited<ReturnType<typeof getApiTerminal>>, TError = void>(
- params?: GetApiTerminalParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiTerminal<
+  TData = Awaited<ReturnType<typeof getApiTerminal>>,
+  TError = void,
+>(
+  params?: GetApiTerminalParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminal>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiTerminalQueryOptions(params, options);
 
-  const queryOptions = getGetApiTerminalQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const postApiTerminal = (terminalCreate: TerminalCreate, signal?: AbortSignal) => {
+  return apiRequest<TerminalDTO>({
+    url: `/api/terminal`,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: terminalCreate,
+    signal,
+  });
+};
 
+export const getPostApiTerminalMutationKey = () => ["postApiTerminal"] as const;
 
+export const getPostApiTerminalMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiTerminal>>,
+    TError,
+    PostApiTerminalMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiTerminal>>,
+  TError,
+  PostApiTerminalMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPostApiTerminalMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiTerminal>>,
+    PostApiTerminalMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return postApiTerminal(data);
+  };
 
-export const postApiTerminal = (
-    terminalCreate: TerminalCreate,
- signal?: AbortSignal
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiTerminalMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiTerminal>>
+>;
+export type PostApiTerminalMutationBody = TerminalCreate;
+export type PostApiTerminalMutationError = void;
+export type PostApiTerminalMutationVariables = { data: TerminalCreate };
+
+export const usePostApiTerminal = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiTerminal>>,
+      TError,
+      PostApiTerminalMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiTerminal>>,
+  TError,
+  PostApiTerminalMutationVariables,
+  TContext
+> => {
+  return useMutation(getPostApiTerminalMutationOptions(options), queryClient);
+};
+export const getApiTerminalId = (id: string, signal?: AbortSignal) => {
+  return apiRequest<TerminalDTO>({ url: `/api/terminal/${id}`, method: "GET", signal });
+};
+
+export const getGetApiTerminalIdQueryKey = (id: string) => {
+  return [`/api/terminal/${id}`] as const;
+};
+
+export const getGetApiTerminalIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiTerminalId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>>;
+  },
 ) => {
+  const { query: queryOptions } = options ?? {};
 
+  const queryKey = queryOptions?.queryKey ?? getGetApiTerminalIdQueryKey(id);
 
-      return apiRequest<TerminalDTO>(
-      {url: `/api/terminal`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: terminalCreate, signal
-    },
-      );
-    }
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiTerminalId>>> = ({ signal }) =>
+    getApiTerminalId(id, signal);
 
+  return {
+    queryKey,
+    queryFn,
+    enabled: id !== null && id !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+};
 
+export type GetApiTerminalIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiTerminalId>>>;
+export type GetApiTerminalIdQueryError = void;
 
-
-export const getPostApiTerminalMutationKey = () => ['postApiTerminal'] as const;
-
-export const getPostApiTerminalMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiTerminal>>, TError,PostApiTerminalMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postApiTerminal>>, TError,PostApiTerminalMutationVariables, TContext> => {
-
-const mutationKey = getPostApiTerminalMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiTerminal>>, PostApiTerminalMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiTerminal(data,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiTerminalMutationResult = NonNullable<Awaited<ReturnType<typeof postApiTerminal>>>
-    export type PostApiTerminalMutationBody = TerminalCreate
-    export type PostApiTerminalMutationError = void
-    export type PostApiTerminalMutationVariables = {data: TerminalCreate}
-
-    export const usePostApiTerminal = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiTerminal>>, TError,PostApiTerminalMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiTerminal>>,
-        TError,
-        PostApiTerminalMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPostApiTerminalMutationOptions(options), queryClient);
-    }
-    export const getApiTerminalId = (
-    id: string,
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<TerminalDTO>(
-      {url: `/api/terminal/${id}`, method: 'GET', signal
-    },
-      );
-    }
-
-
-
-
-export const getGetApiTerminalIdQueryKey = (id: string,) => {
-    return [
-    `/api/terminal/${id}`
-    ] as const;
-    }
-
-
-export const getGetApiTerminalIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiTerminalId>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetApiTerminalIdQueryKey(id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiTerminalId>>> = ({ signal }) => getApiTerminalId(id, signal);
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiTerminalIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiTerminalId>>>
-export type GetApiTerminalIdQueryError = void
-
-
-export function useGetApiTerminalId<TData = Awaited<ReturnType<typeof getApiTerminalId>>, TError = void>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>> & Pick<
+export function useGetApiTerminalId<
+  TData = Awaited<ReturnType<typeof getApiTerminalId>>,
+  TError = void,
+>(
+  id: string,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>> &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiTerminalId>>,
           TError,
           Awaited<ReturnType<typeof getApiTerminalId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiTerminalId<TData = Awaited<ReturnType<typeof getApiTerminalId>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiTerminalId<
+  TData = Awaited<ReturnType<typeof getApiTerminalId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>> &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiTerminalId>>,
           TError,
           Awaited<ReturnType<typeof getApiTerminalId>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiTerminalId<TData = Awaited<ReturnType<typeof getApiTerminalId>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useGetApiTerminalId<
+  TData = Awaited<ReturnType<typeof getApiTerminalId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
-export function useGetApiTerminalId<TData = Awaited<ReturnType<typeof getApiTerminalId>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>>, }
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiTerminalId<
+  TData = Awaited<ReturnType<typeof getApiTerminalId>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiTerminalId>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getGetApiTerminalIdQueryOptions(id, options);
 
-  const queryOptions = getGetApiTerminalIdQueryOptions(id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
 
   return withQueryKey(query, queryOptions.queryKey);
 }
-
-
-
-
-
 
 export const putApiTerminalId = (
-    id: string,
-    terminalUpdate: TerminalUpdate,
- signal?: AbortSignal
+  id: string,
+  terminalUpdate: TerminalUpdate,
+  signal?: AbortSignal,
 ) => {
+  return apiRequest<TerminalDTO>({
+    url: `/api/terminal/${id}`,
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    data: terminalUpdate,
+    signal,
+  });
+};
 
+export const getPutApiTerminalIdMutationKey = () => ["putApiTerminalId"] as const;
 
-      return apiRequest<TerminalDTO>(
-      {url: `/api/terminal/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: terminalUpdate, signal
-    },
-      );
-    }
+export const getPutApiTerminalIdMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiTerminalId>>,
+    TError,
+    PutApiTerminalIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiTerminalId>>,
+  TError,
+  PutApiTerminalIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPutApiTerminalIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiTerminalId>>,
+    PutApiTerminalIdMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
 
+    return putApiTerminalId(id, data);
+  };
 
+  return { mutationFn, ...mutationOptions };
+};
 
-export const getPutApiTerminalIdMutationKey = () => ['putApiTerminalId'] as const;
+export type PutApiTerminalIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiTerminalId>>
+>;
+export type PutApiTerminalIdMutationBody = TerminalUpdate;
+export type PutApiTerminalIdMutationError = void;
+export type PutApiTerminalIdMutationVariables = { id: string; data: TerminalUpdate };
 
-export const getPutApiTerminalIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiTerminalId>>, TError,PutApiTerminalIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof putApiTerminalId>>, TError,PutApiTerminalIdMutationVariables, TContext> => {
+export const usePutApiTerminalId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof putApiTerminalId>>,
+      TError,
+      PutApiTerminalIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof putApiTerminalId>>,
+  TError,
+  PutApiTerminalIdMutationVariables,
+  TContext
+> => {
+  return useMutation(getPutApiTerminalIdMutationOptions(options), queryClient);
+};
+export const deleteApiTerminalId = (id: string, signal?: AbortSignal) => {
+  return apiRequest<void>({ url: `/api/terminal/${id}`, method: "DELETE", signal });
+};
 
-const mutationKey = getPutApiTerminalIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
+export const getDeleteApiTerminalIdMutationKey = () => ["deleteApiTerminalId"] as const;
 
+export const getDeleteApiTerminalIdMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiTerminalId>>,
+    TError,
+    DeleteApiTerminalIdMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiTerminalId>>,
+  TError,
+  DeleteApiTerminalIdMutationVariables,
+  TContext
+> => {
+  const mutationKey = getDeleteApiTerminalIdMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && "mutationKey" in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiTerminalId>>,
+    DeleteApiTerminalIdMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
 
+    return deleteApiTerminalId(id);
+  };
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiTerminalId>>, PutApiTerminalIdMutationVariables> = (props) => {
-          const {id,data} = props ?? {};
+  return { mutationFn, ...mutationOptions };
+};
 
-          return  putApiTerminalId(id,data,)
-        }
+export type DeleteApiTerminalIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiTerminalId>>
+>;
 
+export type DeleteApiTerminalIdMutationError = void;
+export type DeleteApiTerminalIdMutationVariables = { id: string };
 
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PutApiTerminalIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiTerminalId>>>
-    export type PutApiTerminalIdMutationBody = TerminalUpdate
-    export type PutApiTerminalIdMutationError = void
-    export type PutApiTerminalIdMutationVariables = {id: string;data: TerminalUpdate}
-
-    export const usePutApiTerminalId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiTerminalId>>, TError,PutApiTerminalIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof putApiTerminalId>>,
-        TError,
-        PutApiTerminalIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getPutApiTerminalIdMutationOptions(options), queryClient);
-    }
-    export const deleteApiTerminalId = (
-    id: string,
- signal?: AbortSignal
-) => {
-
-
-      return apiRequest<void>(
-      {url: `/api/terminal/${id}`, method: 'DELETE', signal
-    },
-      );
-    }
-
-
-
-
-export const getDeleteApiTerminalIdMutationKey = () => ['deleteApiTerminalId'] as const;
-
-export const getDeleteApiTerminalIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiTerminalId>>, TError,DeleteApiTerminalIdMutationVariables, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiTerminalId>>, TError,DeleteApiTerminalIdMutationVariables, TContext> => {
-
-const mutationKey = getDeleteApiTerminalIdMutationKey();
-const {mutation: mutationOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiTerminalId>>, DeleteApiTerminalIdMutationVariables> = (props) => {
-          const {id} = props ?? {};
-
-          return  deleteApiTerminalId(id,)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteApiTerminalIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiTerminalId>>>
-
-    export type DeleteApiTerminalIdMutationError = void
-    export type DeleteApiTerminalIdMutationVariables = {id: string}
-
-    export const useDeleteApiTerminalId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiTerminalId>>, TError,DeleteApiTerminalIdMutationVariables, TContext>, }
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiTerminalId>>,
-        TError,
-        DeleteApiTerminalIdMutationVariables,
-        TContext
-      > => {
-      return useMutation(getDeleteApiTerminalIdMutationOptions(options), queryClient);
-    }
+export const useDeleteApiTerminalId = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteApiTerminalId>>,
+      TError,
+      DeleteApiTerminalIdMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteApiTerminalId>>,
+  TError,
+  DeleteApiTerminalIdMutationVariables,
+  TContext
+> => {
+  return useMutation(getDeleteApiTerminalIdMutationOptions(options), queryClient);
+};

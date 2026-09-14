@@ -7,21 +7,21 @@
 
 export interface CargoUnitRecordWeight {
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   netWeight?: number | string | null;
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   tare?: number | string | null;
   /**
-     * @minimum 0
-     * @nullable
-     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
-     */
+   * @minimum 0
+   * @nullable
+   * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+   */
   grossWeight?: number | string | null;
 }

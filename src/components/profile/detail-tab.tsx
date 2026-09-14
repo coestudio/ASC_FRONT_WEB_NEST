@@ -46,7 +46,7 @@ export function DetailTab({ user }: { user: UserDetailDTO }) {
           userName: data.userName,
           profile: {
             fullName: data.fullName,
-            document: data.document || null,
+            document: data.document,
             email: data.email,
             phone: data.phone || null,
             birthDate: data.birthDate || null,

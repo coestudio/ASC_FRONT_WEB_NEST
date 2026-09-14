@@ -6,14 +6,14 @@
  */
 
 export type GetApiVesselParams = {
-Search?: string;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Offset?: number | string;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Limit?: number | string;
-Sort?: string;
+  Search?: string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Offset?: number | string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Limit?: number | string;
+  Sort?: string;
 };

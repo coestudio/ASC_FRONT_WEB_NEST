@@ -4,7 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoUnitEventDTO } from './cargoUnitEventDTO.ts';
+import type { CargoUnitEventDTO } from "./cargoUnitEventDTO.ts";
 
 export interface PagedDTOOfCargoUnitEventDTO {
   items: CargoUnitEventDTO[];

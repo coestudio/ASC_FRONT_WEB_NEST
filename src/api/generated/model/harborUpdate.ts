@@ -4,13 +4,13 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { AddressUpdate } from './addressUpdate.ts';
+import type { AddressUpdate } from "./addressUpdate.ts";
 
 export interface HarborUpdate {
   address?: AddressUpdate;
   /**
-     * @minLength 3
-     * @maxLength 50
-     */
+   * @minLength 3
+   * @maxLength 50
+   */
   name: string;
 }

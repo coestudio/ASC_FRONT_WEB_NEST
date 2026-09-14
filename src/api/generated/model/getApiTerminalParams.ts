@@ -6,15 +6,15 @@
  */
 
 export type GetApiTerminalParams = {
-Search?: string;
-HarborId?: string;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Offset?: number | string;
-/**
- * @pattern ^-?(?:0|[1-9]\d*)$
- */
-Limit?: number | string;
-Sort?: string;
+  Search?: string;
+  HarborId?: string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Offset?: number | string;
+  /**
+   * @pattern ^-?(?:0|[1-9]\d*)$
+   */
+  Limit?: number | string;
+  Sort?: string;
 };
