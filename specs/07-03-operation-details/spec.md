@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-03
 - **Nome:** operation-details
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/.../administrative/operations/$id/details/**` (nova)
 - **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`, para o campo
@@ -92,6 +92,41 @@ Nenhum específico além dos já cobertos pelo índice geral.
 ## 13. Decisões pendentes
 
 Nenhuma.
+
+---
+
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/operations/tabs/Details.tsx` — já criado num commit WIP
+    anterior desta mesma branch (`e2e3176`); nesta rodada só levou um ajuste
+    de formatação (`prettier --write`, sem mudança de comportamento).
+  - `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+    — já tinha a aba "Detalhes" (`OperationDetailsTab`) e a troca de status
+    (`OperationHeader`, RF2) wireados desde o commit WIP/SPEC-07-02; não
+    tocado nesta rodada além do necessário pra SPEC-07-08 (import da aba
+    Responsáveis).
+  - `src/i18n/dictionaries/*/administrative-operations.json` — chaves do
+    namespace `details.*` já adicionadas no commit WIP anterior; nenhuma
+    chave nova nesta rodada.
+- **Comandos executados:**
+  - `bun run check` → **VERIFIED**, `tsc --noEmit` limpo.
+  - `bun run lint` → **VERIFIED**, 66 problems / 3 erros / 63 warnings —
+    igual ao baseline registrado antes de tocar em qualquer arquivo.
+- **Critérios de aceitação:**
+
+  | # | Critério | Resultado |
+  | --- | --- | --- |
+  | CA1 | Aba funciona ponta a ponta contra o Core (dev), incluindo troca de status | **NOT VERIFIED** — sem instância do Core rodando neste ambiente/worktree pra exercitar manualmente; revisão de código confirma que a aba consome só `OperationDetailDTO` (dado real, resolvido pelo shell via `getGetApiOperationIdQueryOptions`) e que a troca de status usa `usePatchApiOperationIdStatus` com `zodResolver(PatchApiOperationIdStatusBody)` (schema gerado), sem mock. |
+  | CA2 | `bun run check` + `lint` passam | **PASS** |
+
+- **Decisões tomadas durante a implementação:** nenhuma nova — a troca de
+  status (RF2) já vive no cabeçalho comum do shell (`OperationHeader`,
+  herdado da SPEC-07-02), visível em todas as abas, conforme o próprio
+  texto da SPEC-07-03 (§1) previa.
+- **Limitações conhecidas:** CA1 não foi validado ponta a ponta contra uma
+  instância real do Core nesta rodada (ambiente sem backend disponível) —
+  só revisão estática/tipagem.
 
 ---
 

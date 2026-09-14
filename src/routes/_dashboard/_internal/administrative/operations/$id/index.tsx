@@ -18,6 +18,8 @@ import {
 import { resolveOperationTypeLabel } from "@/api/generated/static/operationTypeOptions";
 import { resolveOperationServiceLabel } from "@/api/generated/static/operationServiceOptions";
 import { Romaneio } from "@/components/operations/tabs/Romaneio";
+import { OperationDetailsTab } from "@/components/operations/tabs/Details";
+import { OperationResponsibleTab } from "@/components/operations/tabs/Responsible";
 import { Select } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -124,11 +126,15 @@ function OperationShellBody({ id }: { id: string }) {
       </Nav>
 
       <section>
-        {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — este
-            shell só monta o placeholder até a aba real existir. Romaneio
-            (SPEC-07-04) já é real. */}
-        {tab === "romaneio" ? (
+        {/* Conteúdo de cada aba é escopo de SPEC-07-03 a SPEC-07-09 — as
+            demais ainda mostram o placeholder genérico até a aba real
+            existir. */}
+        {tab === "details" ? (
+          <OperationDetailsTab operation={operation} />
+        ) : tab === "romaneio" ? (
           <Romaneio operationId={operation.id} />
+        ) : tab === "responsible" ? (
+          <OperationResponsibleTab />
         ) : (
           <div className="text-center text-body-secondary py-5">
             <i className="bi bi-hourglass-split fs-3 d-block mb-2" aria-hidden />
