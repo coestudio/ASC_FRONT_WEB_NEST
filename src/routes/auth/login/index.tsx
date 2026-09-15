@@ -11,22 +11,21 @@ import { profileMeQueryOptions } from "@/lib/queries/profile";
 import { loginSchema, type LoginInput } from "@/lib/validation/login";
 import { InputText, InputPassword } from "@/layouts/Form/Fields/Index";
 
-type LogoutReason = "session_expired" | "server_error";
+// Único motivo de redirect automático pro login hoje: 401 (sessão de fato
+// inválida). 5xx/erro de rede não desloga mais — mostra toast na hora,
+// sem sair da tela (decisão revista 2026-09-15, ver mutator.ts).
+type LogoutReason = "session_expired";
 
 type LoginSearch = { redirect?: string; reason?: LogoutReason };
 
 const LOGOUT_REASON_MESSAGES: Record<LogoutReason, string> = {
   session_expired: "Sua sessão expirou. Faça login novamente.",
-  server_error: "Não foi possível conectar ao servidor. Faça login novamente.",
 };
 
 export const Route = createFileRoute("/auth/login/")({
   validateSearch: (search: Record<string, unknown>): LoginSearch => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
-    reason:
-      search.reason === "session_expired" || search.reason === "server_error"
-        ? search.reason
-        : undefined,
+    reason: search.reason === "session_expired" ? search.reason : undefined,
   }),
   head: () => ({ meta: [{ title: "Entrar — ASC" }] }),
   component: LoginPage,
