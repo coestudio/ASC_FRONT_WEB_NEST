@@ -128,7 +128,6 @@ export * from './romaneioImportApply.ts';
 export * from './romaneioImportApplyResultDTO.ts';
 export * from './romaneioImportConflictDTO.ts';
 export * from './romaneioImportConflictResolution.ts';
-export * from './romaneioImportDTO.ts';
 export * from './romaneioImportForeignDTO.ts';
 export * from './romaneioImportInvalidDTO.ts';
 export * from './romaneioImportRomaneioFormat.ts';

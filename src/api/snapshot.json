@@ -2,6 +2,6 @@
   "source": "https://dev-asc-api.alexstewart.com.br/api/openapi/v1.json",
   "openapi": "3.1.1",
   "version": "1.0.0",
-  "hash": "sha256:594947b048635cacd5e1a236b1f0fefe7c2ad070dc7ca681babdf50ef6036983",
-  "pulledAt": "2026-09-15T07:37:52.118Z"
+  "hash": "sha256:248858d64f4a040f137b3328bd33ccd979f7b3e056784f8d4f28475a0536eb30",
+  "pulledAt": "2026-09-15T11:28:18.427Z"
 }
