@@ -12,9 +12,11 @@ import { InputText, InputCEP, Select } from "@/layouts/Form/Fields/Index";
 import { useT } from "@/lib/ui-prefs";
 import type { AddressDTO } from "@/api/generated/model";
 import { brStateOptions } from "@/data/br-states";
+import { countryOptions } from "@/data/countries";
 
 const addressSchema = z.object({
   postalCode: PutApiProfileAddressBody.shape.postalCode,
+  country: PutApiProfileAddressBody.shape.country,
   state: PutApiProfileAddressBody.shape.state,
   neighborhood: PutApiProfileAddressBody.shape.neighborhood,
   street: PutApiProfileAddressBody.shape.street,
@@ -32,6 +34,9 @@ export function AddressTab({ address }: { address: AddressDTO }) {
     resolver: zodResolver(addressSchema),
     defaultValues: {
       postalCode: address.postalCode ?? "",
+      // Default "BR" (não string vazia — o Zod gerado exige exatamente 2
+      // letras quando o campo é preenchido, `""` quebraria a validação).
+      country: address.country ?? "BR",
       state: address.state ?? "",
       neighborhood: address.neighborhood ?? "",
       street: address.street ?? "",
@@ -41,6 +46,9 @@ export function AddressTab({ address }: { address: AddressDTO }) {
     },
   });
   const mutation = usePutApiProfileAddress();
+  // País ativo do formulário (SPEC-24) — decide se "Estado" continua um
+  // dropdown de UF (só faz sentido para o Brasil) ou vira texto livre.
+  const isBrazil = (methods.watch("country") || "BR") === "BR";
 
   const onSubmit = methods.handleSubmit(async (data) => {
     try {
@@ -70,11 +78,31 @@ export function AddressTab({ address }: { address: AddressDTO }) {
         />
         <Select
           methods={methods}
-          fieldName="state"
-          label={t("shell.profileModal.state")}
-          config={{ options: brStateOptions, placeholder: t("shell.profileModal.selectState") }}
+          fieldName="country"
+          label={t("shell.profileModal.country")}
+          config={{ options: countryOptions, placeholder: t("shell.profileModal.selectCountry") }}
           md={4}
         />
+        {isBrazil ? (
+          <Select
+            methods={methods}
+            fieldName="state"
+            label={t("shell.profileModal.state")}
+            config={{ options: brStateOptions, placeholder: t("shell.profileModal.selectState") }}
+            md={4}
+          />
+        ) : (
+          <InputText
+            methods={methods}
+            fieldName="state"
+            label={t("shell.profileModal.state")}
+            // Core aumentou o limite de `state` pra 100 chars (pedido da
+            // SPEC-24 §18, já implementado) — cabe nome de província/
+            // distrito por extenso pra endereço fora do Brasil.
+            maxLength={100}
+            md={4}
+          />
+        )}
         <InputText methods={methods} fieldName="city" label={t("shell.profileModal.city")} md={4} />
         <InputText
           methods={methods}

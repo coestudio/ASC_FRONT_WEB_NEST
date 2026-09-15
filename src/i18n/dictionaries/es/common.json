@@ -36,6 +36,7 @@
       "phone": "Teléfono",
       "birthDate": "Fecha de nacimiento",
       "postalCode": "Código postal",
+      "country": "País",
       "state": "Estado",
       "city": "Ciudad",
       "neighborhood": "Barrio",
@@ -55,7 +56,8 @@
       "avatarHint": "Pasa el mouse sobre la foto para cambiarla. JPG o PNG hasta 2 MB.",
       "avatarTooLarge": "Archivo muy grande. Máximo 2 MB.",
       "uploadingAvatar": "Enviando...",
-      "selectState": "Seleccione el estado"
+      "selectState": "Seleccione el estado",
+      "selectCountry": "Seleccione el país"
     }
   },
   "devTools": {

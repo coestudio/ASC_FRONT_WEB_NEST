@@ -36,6 +36,7 @@
       "phone": "电话",
       "birthDate": "出生日期",
       "postalCode": "邮政编码",
+      "country": "国家",
       "state": "省/州",
       "city": "城市",
       "neighborhood": "街区",
@@ -55,7 +56,8 @@
       "avatarHint": "将鼠标悬停在照片上即可更换。JPG 或 PNG，最大 2 MB。",
       "avatarTooLarge": "文件过大，最大 2 MB。",
       "uploadingAvatar": "正在上传...",
-      "selectState": "选择州/省"
+      "selectState": "选择州/省",
+      "selectCountry": "选择国家"
     }
   },
   "devTools": {

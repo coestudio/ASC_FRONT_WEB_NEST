@@ -9,7 +9,6 @@ import { getUserAreas, type AreaId, type PermissionUser } from "@/lib/permission
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { BrandSwitcher } from "@/components/theme/brand-switcher";
-import { AppBrand } from "@/layouts/AppBrand";
 import { getNavSections, type NavItem, type NavSection } from "./nav";
 import { UserMenu } from "./UserMenu";
 import styles from "./index.module.css";
@@ -129,7 +128,11 @@ export function AppShell({ children }: { children: ReactNode }) {
     system: t("theme.system"),
   };
   const [menuOpen, setMenuOpen] = useState(false);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  // Accordion de exclusão mútua (SPEC-25): só uma seção aberta por vez —
+  // antes era um mapa independente por seção (`Record<string, boolean>`),
+  // o que deixava múltiplas seções abertas ao mesmo tempo e estourava a
+  // altura de `.sidebarNav` (`overflow-y: auto`), forçando barra de rolagem.
+  const [expandedArea, setExpandedArea] = useState<string | null>(null);
 
   const sections = getNavSections(getUserAreas(user as PermissionUser | null));
 
@@ -138,15 +141,11 @@ export function AppShell({ children }: { children: ReactNode }) {
     setMenuOpen(false);
   }, [pathname]);
 
-  // auto-expande a seção da rota atual
+  // auto-expande só a seção da rota atual, fechando qualquer outra que
+  // estivesse aberta (mesma regra de exclusividade do clique manual).
   useEffect(() => {
-    setExpanded((prev) => {
-      const next = { ...prev };
-      for (const s of sections) {
-        if (isChildActive(s.items, pathname)) next[s.area] = true;
-      }
-      return next;
-    });
+    const activeSection = sections.find((s) => isChildActive(s.items, pathname));
+    setExpandedArea(activeSection?.area ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -157,11 +156,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}
 
       <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`}>
-        <div
-          className={`${styles.sidebarHeader} d-flex align-items-center justify-content-between`}
-        >
-          <AppBrand as="link" to="/dashboard" size="md" className={styles.sidebarBrand} />
-        </div>
+        {/* Brand escondido da sidebar (SPEC-26) — a faixa continua existindo,
+            vazia, só pra manter o alinhamento de altura com o `.topbar`
+            (ver comentário de `.sidebarHeader` no CSS). */}
+        <div className={styles.sidebarHeader} aria-hidden="true" />
 
         <Nav className={`${styles.sidebarNav} flex-column`}>
           {sections.map((section) => (
@@ -169,9 +167,9 @@ export function AppShell({ children }: { children: ReactNode }) {
               key={section.area}
               section={section}
               pathname={pathname}
-              expanded={!!expanded[section.area]}
+              expanded={expandedArea === section.area}
               onToggle={() =>
-                setExpanded((prev) => ({ ...prev, [section.area]: !prev[section.area] }))
+                setExpandedArea((prev) => (prev === section.area ? null : section.area))
               }
               t={t}
             />

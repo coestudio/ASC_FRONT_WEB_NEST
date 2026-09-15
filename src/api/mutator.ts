@@ -195,6 +195,15 @@ axiosInstance.interceptors.response.use(
       const status = error.response?.status;
 
       if (status === 401) {
+        // Diagnóstico (SPEC-27, Fase 1) — qualquer 401 aqui já dispara logout
+        // global (redirectToLogin abaixo); este log só ajuda a confirmar, na
+        // próxima reprodução, qual chamada/endpoint disparou o 401 e o que o
+        // Core respondeu (status + corpo), sem mudar o comportamento em si.
+        console.error("[mutator] 401 recebido — deslogando sessão.", {
+          method: error.config?.method,
+          corePath: error.config?.headers?.["x-core-path"],
+          responseBody: error.response?.data,
+        });
         redirectToLogin();
         return Promise.reject(error);
       }
