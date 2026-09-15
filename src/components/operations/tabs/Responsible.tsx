@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import { Badge, Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -260,7 +261,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
       <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       <Modal show={linkModalOpen} onHide={() => setLinkModalOpen(false)} centered>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title className="h5 mb-0">
             {t("administrative-operations.responsible.link")}
           </Modal.Title>

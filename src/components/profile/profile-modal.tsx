@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Modal, Nav, Spinner } from "react-bootstrap";
+import { Button, Nav, Spinner } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -58,7 +59,7 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
 
   return (
     <Modal show={show} onHide={onClose} centered size="lg" scrollable>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h6 fw-semibold d-flex align-items-center gap-2">
           <i className="bi bi-person" />
           {t("shell.profileModal.title")}

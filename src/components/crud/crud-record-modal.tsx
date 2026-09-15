@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Form, Modal, Spinner } from "react-bootstrap";
+import { Button, Form, Spinner } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import type { ZodType } from "zod";
 
 import { useT } from "@/lib/ui-prefs";
@@ -113,7 +114,7 @@ export function CrudRecordModal<T extends FieldValues>({
 
   return (
     <Modal show={show} onHide={onClose} centered size="lg">
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h5 mb-0">{title}</Modal.Title>
       </Modal.Header>
       <Form noValidate onSubmit={readOnly ? undefined : handleSubmit(onSubmit as SubmitHandler<T>)}>

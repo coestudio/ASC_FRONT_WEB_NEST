@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Modal, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -326,7 +327,7 @@ export function Invoice({ operationId }: { operationId: string }) {
       <FilePreviewModal show={!!previewing} onHide={() => setPreviewing(null)} file={previewing} />
 
       <Modal show={createModalOpen} onHide={() => setCreateModalOpen(false)} centered size="lg">
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title className="h5 mb-0">
             {t("administrative-operations.invoice.newTitle")}
           </Modal.Title>
@@ -492,7 +493,7 @@ function StatusChangeModal({
 
   return (
     <Modal show onHide={onClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h5 mb-0">{title}</Modal.Title>
       </Modal.Header>
       <Form noValidate onSubmit={methods.handleSubmit(handle)}>

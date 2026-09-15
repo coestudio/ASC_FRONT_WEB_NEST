@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Modal, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { FilePreviewModal } from "@/components/ui/file-preview-modal";
 import { toast } from "react-toastify";
@@ -257,7 +258,7 @@ export function Documents({ operationId }: { operationId: string }) {
       />
 
       <Modal show={createModalOpen} onHide={() => setCreateModalOpen(false)} centered>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title className="h5 mb-0">
             {t("administrative-operations.documents.newTitle")}
           </Modal.Title>
@@ -302,7 +303,7 @@ export function Documents({ operationId }: { operationId: string }) {
 
       {editing ? (
         <Modal show onHide={() => setEditing(null)} centered>
-          <Modal.Header closeButton>
+          <Modal.Header>
             <Modal.Title className="h5 mb-0">
               {t("administrative-operations.documents.editTitle")}
             </Modal.Title>

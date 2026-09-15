@@ -10,6 +10,14 @@ description: "Use ao criar ou editar componentes de apresentação e layouts. Fi
 - **React-Bootstrap + Bootstrap 5.3. Regra inviolável — nunca Tailwind.**
   `<Form.*>`, `<Button>`, `<Card>`, `<Modal>`, `<Spinner>`, ícones
   `bootstrap-icons` (`<i className="bi bi-x">`) ou `react-bootstrap-icons`.
+- **Modal só fecha por ação explícita — regra inviolável.** Nunca importe
+  `Modal` direto de `react-bootstrap`; use `@/components/ui/modal`
+  (`import { Modal } from "@/components/ui/modal"`), que já vem com
+  `backdrop="static"`/`keyboard={false}` por padrão — clicar fora ou
+  apertar ESC nunca fecham nenhum modal do projeto. `Modal.Header` nunca
+  leva `closeButton` (sem "X" no canto) — a única saída é o botão de
+  ação no rodapé (`Cancelar`/`Fechar`/etc.), que chama a função de
+  fechar direto no `onClick`, nunca via `onHide` do backdrop/ESC.
 - Layout com classes utilitárias Bootstrap (`d-flex`, `gap-2`, `bg-body`,
   `text-body-secondary`, `min-vh-100`). Nada de `tailwindcss` instalado, nada
   de classe utilitária no estilo Tailwind (`flex`, `p-4`, `text-gray-500`) —

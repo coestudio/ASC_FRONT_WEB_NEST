@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Modal, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import type { ZodType } from "zod";
@@ -331,7 +332,7 @@ export function Containers({ operationId }: { operationId: string }) {
       <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       <Modal show={linkModalOpen} onHide={() => setLinkModalOpen(false)} centered>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title className="h5 mb-0">
             {t("administrative-operations.containers.newTitle")}
           </Modal.Title>
@@ -366,7 +367,7 @@ export function Containers({ operationId }: { operationId: string }) {
 
       {editing ? (
         <Modal show onHide={() => setEditing(null)} centered size="lg">
-          <Modal.Header closeButton>
+          <Modal.Header>
             <Modal.Title className="h5 mb-0">{editing.container.identifier}</Modal.Title>
           </Modal.Header>
           <Form noValidate onSubmit={updateForm.handleSubmit(handleUpdateSubmit)}>
@@ -642,7 +643,7 @@ function StuffIdentifiedModal({
 
   return (
     <Modal show onHide={onClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h5 mb-0">
           {t("administrative-operations.containers.stuffing.identifiedTitle", {
             identifier: containerLink.container.identifier,
@@ -748,7 +749,7 @@ function StuffQuantityModal({
 
   return (
     <Modal show onHide={handleClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h5 mb-0">
           {t("administrative-operations.containers.stuffing.quantityTitle", {
             identifier: containerLink.container.identifier,
@@ -855,7 +856,7 @@ function CargoUnitsModal({
   return (
     <>
       <Modal show onHide={onClose} centered size="lg">
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title className="h5 mb-0">
             {t("administrative-operations.containers.stuffing.cargoUnitsTitle", {
               identifier: containerLink.container.identifier,
@@ -969,7 +970,7 @@ function CancelCargoUnitModal({
 
   return (
     <Modal show onHide={onClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h5 mb-0">
           {t("administrative-operations.containers.stuffing.cancelTitle")}
         </Modal.Title>
