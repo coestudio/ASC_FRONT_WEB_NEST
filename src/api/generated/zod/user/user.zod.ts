@@ -290,7 +290,7 @@ export const getApiUserIdResponseAddressCountryMax = 2;
 export const getApiUserIdResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiUserIdResponseAddressPostalCodeMax = 20;
 
-export const getApiUserIdResponseAddressStateMax = 2;
+export const getApiUserIdResponseAddressStateMax = 100;
 
 export const getApiUserIdResponseAddressNeighborhoodMax = 100;
 
@@ -401,6 +401,8 @@ export const putApiUserIdBodyUserNameMax = 150;
 
 
 export const PutApiUserIdBody = zod.object({
+  "roles": zod.array(zod.enum(['Agent', 'Supervisor', 'Laboratory'])).nullish(),
+  "isAdmin": zod.boolean().nullish(),
   "profile": zod.object({
   "fullName": zod.string().min(putApiUserIdBodyProfileFullNameMin).max(putApiUserIdBodyProfileFullNameMax),
   "document": zod.string().min(putApiUserIdBodyProfileDocumentMin).max(putApiUserIdBodyProfileDocumentMax),

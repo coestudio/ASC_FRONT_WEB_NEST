@@ -4,9 +4,14 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { InternalRole } from './internalRole.ts';
 import type { ProfileUpdate } from './profileUpdate.ts';
 
 export interface UserUpdate {
+  /** @nullable */
+  roles?: InternalRole[] | null;
+  /** @nullable */
+  isAdmin?: boolean | null;
   profile: ProfileUpdate;
   /**
      * @minLength 3

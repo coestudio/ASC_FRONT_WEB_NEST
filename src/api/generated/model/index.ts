@@ -11,6 +11,8 @@ export * from './addressUpdate.ts';
 export * from './authControllerForgotPasswordRequest.ts';
 export * from './authControllerLoginRequest.ts';
 export * from './authControllerLoginResponse.ts';
+export * from './authControllerLogoutRequest.ts';
+export * from './authControllerRefreshRequest.ts';
 export * from './authControllerResetPasswordRequest.ts';
 export * from './authControllerValidateResetCodeRequest.ts';
 export * from './cargoPhotoDTO.ts';

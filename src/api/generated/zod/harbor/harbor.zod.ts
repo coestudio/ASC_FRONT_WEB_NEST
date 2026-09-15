@@ -24,7 +24,7 @@ export const getApiHarborResponseItemsItemAddressCountryMax = 2;
 export const getApiHarborResponseItemsItemAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiHarborResponseItemsItemAddressPostalCodeMax = 20;
 
-export const getApiHarborResponseItemsItemAddressStateMax = 2;
+export const getApiHarborResponseItemsItemAddressStateMax = 100;
 
 export const getApiHarborResponseItemsItemAddressNeighborhoodMax = 100;
 
@@ -72,7 +72,7 @@ export const postApiHarborBodyAddressCountryMax = 2;
 export const postApiHarborBodyAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiHarborBodyAddressPostalCodeMax = 10;
 
-export const postApiHarborBodyAddressStateMax = 2;
+export const postApiHarborBodyAddressStateMax = 100;
 
 export const postApiHarborBodyAddressNeighborhoodMax = 100;
 
@@ -109,7 +109,7 @@ export const postApiHarborResponseAddressCountryMax = 2;
 export const postApiHarborResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiHarborResponseAddressPostalCodeMax = 20;
 
-export const postApiHarborResponseAddressStateMax = 2;
+export const postApiHarborResponseAddressStateMax = 100;
 
 export const postApiHarborResponseAddressNeighborhoodMax = 100;
 
@@ -151,7 +151,7 @@ export const getApiHarborIdResponseAddressCountryMax = 2;
 export const getApiHarborIdResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiHarborIdResponseAddressPostalCodeMax = 20;
 
-export const getApiHarborIdResponseAddressStateMax = 2;
+export const getApiHarborIdResponseAddressStateMax = 100;
 
 export const getApiHarborIdResponseAddressNeighborhoodMax = 100;
 
@@ -193,7 +193,7 @@ export const putApiHarborIdBodyAddressCountryMax = 2;
 export const putApiHarborIdBodyAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiHarborIdBodyAddressPostalCodeMax = 10;
 
-export const putApiHarborIdBodyAddressStateMax = 2;
+export const putApiHarborIdBodyAddressStateMax = 100;
 
 export const putApiHarborIdBodyAddressNeighborhoodMax = 100;
 
@@ -230,7 +230,7 @@ export const putApiHarborIdResponseAddressCountryMax = 2;
 export const putApiHarborIdResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiHarborIdResponseAddressPostalCodeMax = 20;
 
-export const putApiHarborIdResponseAddressStateMax = 2;
+export const putApiHarborIdResponseAddressStateMax = 100;
 
 export const putApiHarborIdResponseAddressNeighborhoodMax = 100;
 
