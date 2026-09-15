@@ -54,7 +54,8 @@
       "removeAvatar": "Remove image",
       "avatarHint": "Hover the photo to change it. JPG or PNG up to 2 MB.",
       "avatarTooLarge": "File too large. Maximum 2 MB.",
-      "uploadingAvatar": "Uploading..."
+      "uploadingAvatar": "Uploading...",
+      "selectState": "Select the state"
     }
   },
   "devTools": {

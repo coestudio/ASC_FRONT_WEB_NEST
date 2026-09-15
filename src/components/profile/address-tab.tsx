@@ -8,9 +8,10 @@ import { z } from "zod";
 import { PutApiProfileAddressBody } from "@/api/generated/zod/profile/profile.zod";
 import { usePutApiProfileAddress } from "@/api/generated/endpoints/profile/profile";
 import { profileMeQueryOptions } from "@/lib/queries/profile";
-import { InputText, InputCEP } from "@/layouts/Form/Fields/Index";
+import { InputText, InputCEP, Select } from "@/layouts/Form/Fields/Index";
 import { useT } from "@/lib/ui-prefs";
 import type { AddressDTO } from "@/api/generated/model";
+import { brStateOptions } from "@/data/br-states";
 
 const addressSchema = z.object({
   postalCode: PutApiProfileAddressBody.shape.postalCode,
@@ -61,16 +62,17 @@ export function AddressTab({ address }: { address: AddressDTO }) {
           config={{ rules: { required: false } }}
           updateFields={{
             city: "city",
-            state: "state",
+            uf: "state",
             neighborhood: "neighborhood",
             street: "street",
           }}
           md={4}
         />
-        <InputText
+        <Select
           methods={methods}
           fieldName="state"
           label={t("shell.profileModal.state")}
+          config={{ options: brStateOptions, placeholder: t("shell.profileModal.selectState") }}
           md={4}
         />
         <InputText methods={methods} fieldName="city" label={t("shell.profileModal.city")} md={4} />

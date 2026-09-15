@@ -54,7 +54,8 @@
       "removeAvatar": "移除图片",
       "avatarHint": "将鼠标悬停在照片上即可更换。JPG 或 PNG，最大 2 MB。",
       "avatarTooLarge": "文件过大，最大 2 MB。",
-      "uploadingAvatar": "正在上传..."
+      "uploadingAvatar": "正在上传...",
+      "selectState": "选择州/省"
     }
   },
   "devTools": {
