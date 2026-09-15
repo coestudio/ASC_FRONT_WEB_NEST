@@ -309,3 +309,26 @@ por decisão deliberada, não por atraso.
 Commits em `main` depois de `e4375ca` (`45f253c` "Profile-Modal", `3628485`
 "refinamento") são trabalho posterior a este plano de ondas — fora do
 escopo deste documento.
+
+## SPECs pós-fechamento
+
+SPECs criadas depois do fechamento acima (SPEC-19 em diante) não fazem
+parte deste plano de ondas — cada uma é pequena e isolada, sem branch de
+onda própria; nasce e mergeia direto na branch corrente do workspace (ou
+numa branch própria nomeada `spec-NN-<slug>`), salvo instrução em
+contrário do usuário. Numeração continua **linear e sequencial**
+(`specs/NN-slug/`), mesmo quando a SPEC é parte de uma lista temática maior
+— não se cria um prefixo próprio tipo `operations-NN` pra agrupar SPECs de
+uma mesma feature/área, a menos que o volume justifique isolar (mesmo
+critério que levou `07-NN` a existir, por causa do tamanho da SPEC-07
+original).
+
+- **SPEC-19** (`19-dashboard-home-redirect`, `IMPLEMENTED`) — primeira
+  dessa leva, primeiro precedente.
+- **SPEC-20** (`20-operations-document-preview-modal`, `APPROVED`) —
+  primeiro item de uma lista de pequenas SPECs dedicadas à feature de
+  Operações (`src/routes/_dashboard/_internal/administrative/
+operations/**`, `src/components/operations/tabs/**`), pedidas uma a uma
+  pelo usuário. Não é sub-SPEC de SPEC-07 (aquela árvore, `07-01` a
+  `07-09`, já fechou). Próximos itens da mesma lista continuam a sequência
+  numérica normal (`21`, `22`, ...), não um prefixo `operations-NN`.

@@ -4,7 +4,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "Scripts/**/*.ts",
-    "vite.config.ts",
+    "vite.config.mts",
     "eslint.config.js"
   ]
 }
