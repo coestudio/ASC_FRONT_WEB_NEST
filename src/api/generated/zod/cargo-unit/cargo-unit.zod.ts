@@ -30,29 +30,6 @@ export const GetApiCargoStatusesValueResponse = zod.object({
   "name": zod.record(zod.string(), zod.string())
 })
 
-export const getApiCargoIdentificationStatusesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
-
-export const GetApiCargoIdentificationStatusesResponseItem = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiCargoIdentificationStatusesResponseValueRegExpTwo)]),
-  "key": zod.string(),
-  "name": zod.record(zod.string(), zod.string())
-})
-export const GetApiCargoIdentificationStatusesResponse = zod.array(GetApiCargoIdentificationStatusesResponseItem)
-
-export const GetApiCargoIdentificationStatusesValueParams = zod.object({
-  "value": zod.int()
-})
-
-export const getApiCargoIdentificationStatusesValueResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-
-
-export const GetApiCargoIdentificationStatusesValueResponse = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiCargoIdentificationStatusesValueResponseValueRegExpTwo)]),
-  "key": zod.string(),
-  "name": zod.record(zod.string(), zod.string())
-})
-
 export const GetApiOperationOperationIdCargoParams = zod.object({
   "operationId": zod.uuid()
 })
@@ -63,12 +40,9 @@ export const getApiOperationOperationIdCargoQueryLimitRegExpTwo = new RegExp('^-
 
 export const GetApiOperationOperationIdCargoQueryParams = zod.object({
   "ContainerOperationId": zod.uuid().optional(),
+  "InvoiceId": zod.uuid().optional(),
   "WithoutRomaneio": zod.boolean().optional(),
-  "WithoutInvoiceItem": zod.boolean().optional(),
-  "Divergent": zod.boolean().optional(),
-  "StuffedWithoutDocuments": zod.boolean().optional(),
-  "Status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "IdentificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
+  "Status": zod.enum(['Stuffed', 'Canceled']).optional(),
   "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdCargoQueryOffsetRegExpTwo)]).optional(),
   "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdCargoQueryLimitRegExpTwo)]).optional(),
   "Sort": zod.string().optional()
@@ -85,17 +59,15 @@ export const getApiOperationOperationIdCargoResponseLimitRegExpTwo = new RegExp(
 export const GetApiOperationOperationIdCargoResponse = zod.object({
   "items": zod.array(zod.object({
   "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
+  "containerOperationId": zod.uuid().optional(),
   "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
+  "invoiceId": zod.uuid().optional(),
   "observation": zod.string().optional(),
+  "status": zod.enum(['Stuffed', 'Canceled']).optional(),
+  "identified": zod.boolean().optional(),
   "netWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdCargoResponseItemsItemNetWeightRegExpTwo)]).nullish(),
   "tare": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdCargoResponseItemsItemTareRegExpTwo)]).nullish(),
   "grossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdCargoResponseItemsItemGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -105,69 +77,6 @@ export const GetApiOperationOperationIdCargoResponse = zod.object({
   "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdCargoResponseLimitRegExpTwo)]),
   "hasNext": zod.boolean().optional(),
   "hasPrevious": zod.boolean().optional()
-})
-
-export const PostApiOperationOperationIdCargoParams = zod.object({
-  "operationId": zod.uuid()
-})
-
-export const postApiOperationOperationIdCargoBodyItemIdentifierMax = 100;
-
-export const postApiOperationOperationIdCargoBodyItemCodeMax = 100;
-
-export const postApiOperationOperationIdCargoBodyNetWeightMinOne = 0;
-
-export const postApiOperationOperationIdCargoBodyNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const postApiOperationOperationIdCargoBodyNetWeightMinTwo = 0;
-
-export const postApiOperationOperationIdCargoBodyTareMinOne = 0;
-
-export const postApiOperationOperationIdCargoBodyTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const postApiOperationOperationIdCargoBodyTareMinTwo = 0;
-
-export const postApiOperationOperationIdCargoBodyGrossWeightMinOne = 0;
-
-export const postApiOperationOperationIdCargoBodyGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const postApiOperationOperationIdCargoBodyGrossWeightMinTwo = 0;
-
-export const postApiOperationOperationIdCargoBodyObservationMax = 500;
-
-
-
-export const PostApiOperationOperationIdCargoBody = zod.object({
-  "itemIdentifier": zod.string().max(postApiOperationOperationIdCargoBodyItemIdentifierMax).nullish(),
-  "itemCode": zod.string().max(postApiOperationOperationIdCargoBodyItemCodeMax).nullish(),
-  "netWeight": zod.union([zod.number().min(postApiOperationOperationIdCargoBodyNetWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdCargoBodyNetWeightRegExpTwo).min(postApiOperationOperationIdCargoBodyNetWeightMinTwo)]).nullish(),
-  "tare": zod.union([zod.number().min(postApiOperationOperationIdCargoBodyTareMinOne),zod.stringFormat('double', postApiOperationOperationIdCargoBodyTareRegExpTwo).min(postApiOperationOperationIdCargoBodyTareMinTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number().min(postApiOperationOperationIdCargoBodyGrossWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdCargoBodyGrossWeightRegExpTwo).min(postApiOperationOperationIdCargoBodyGrossWeightMinTwo)]).nullish(),
-  "observation": zod.string().max(postApiOperationOperationIdCargoBodyObservationMax).nullish(),
-  "containerOperationId": zod.uuid().nullish()
-})
-
-export const postApiOperationOperationIdCargoResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PostApiOperationOperationIdCargoResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
 })
 
 export const GetApiOperationOperationIdCargoIdEventsParams = zod.object({
@@ -193,7 +102,7 @@ export const getApiOperationOperationIdCargoIdEventsResponseLimitRegExpTwo = new
 export const GetApiOperationOperationIdCargoIdEventsResponse = zod.object({
   "items": zod.array(zod.object({
   "cargoUnitId": zod.uuid().optional(),
-  "action": zod.enum(['Created', 'Stuffed', 'Updated', 'Identified', 'LinkedToInvoice', 'Canceled', 'WeightRecorded', 'LinkedToRomaneio', 'LinkedToInvoiceItem', 'MarkedDivergent', 'Reconciled']).optional(),
+  "action": zod.enum(['Created', 'Canceled']).optional(),
   "note": zod.string().optional(),
   "beforeState": zod.string().optional(),
   "afterState": zod.string().optional(),
@@ -206,288 +115,6 @@ export const GetApiOperationOperationIdCargoIdEventsResponse = zod.object({
   "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdCargoIdEventsResponseLimitRegExpTwo)]),
   "hasNext": zod.boolean().optional(),
   "hasPrevious": zod.boolean().optional()
-})
-
-export const PutApiOperationOperationIdCargoIdParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
-
-export const putApiOperationOperationIdCargoIdBodyItemIdentifierMax = 100;
-
-export const putApiOperationOperationIdCargoIdBodyItemCodeMax = 100;
-
-export const putApiOperationOperationIdCargoIdBodyNetWeightMinOne = 0;
-
-export const putApiOperationOperationIdCargoIdBodyNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const putApiOperationOperationIdCargoIdBodyNetWeightMinTwo = 0;
-
-export const putApiOperationOperationIdCargoIdBodyTareMinOne = 0;
-
-export const putApiOperationOperationIdCargoIdBodyTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const putApiOperationOperationIdCargoIdBodyTareMinTwo = 0;
-
-export const putApiOperationOperationIdCargoIdBodyGrossWeightMinOne = 0;
-
-export const putApiOperationOperationIdCargoIdBodyGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const putApiOperationOperationIdCargoIdBodyGrossWeightMinTwo = 0;
-
-export const putApiOperationOperationIdCargoIdBodyObservationMax = 500;
-
-
-
-export const PutApiOperationOperationIdCargoIdBody = zod.object({
-  "itemIdentifier": zod.string().max(putApiOperationOperationIdCargoIdBodyItemIdentifierMax).nullish(),
-  "itemCode": zod.string().max(putApiOperationOperationIdCargoIdBodyItemCodeMax).nullish(),
-  "netWeight": zod.union([zod.number().min(putApiOperationOperationIdCargoIdBodyNetWeightMinOne),zod.stringFormat('double', putApiOperationOperationIdCargoIdBodyNetWeightRegExpTwo).min(putApiOperationOperationIdCargoIdBodyNetWeightMinTwo)]).nullish(),
-  "tare": zod.union([zod.number().min(putApiOperationOperationIdCargoIdBodyTareMinOne),zod.stringFormat('double', putApiOperationOperationIdCargoIdBodyTareRegExpTwo).min(putApiOperationOperationIdCargoIdBodyTareMinTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number().min(putApiOperationOperationIdCargoIdBodyGrossWeightMinOne),zod.stringFormat('double', putApiOperationOperationIdCargoIdBodyGrossWeightRegExpTwo).min(putApiOperationOperationIdCargoIdBodyGrossWeightMinTwo)]).nullish(),
-  "observation": zod.string().max(putApiOperationOperationIdCargoIdBodyObservationMax).nullish()
-})
-
-export const putApiOperationOperationIdCargoIdResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const putApiOperationOperationIdCargoIdResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const putApiOperationOperationIdCargoIdResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PutApiOperationOperationIdCargoIdResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdCargoIdResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdCargoIdResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdCargoIdResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
-export const PostApiOperationOperationIdCargoIdStuffContainerOperationIdParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid(),
-  "containerOperationId": zod.uuid()
-})
-
-export const postApiOperationOperationIdCargoIdStuffContainerOperationIdResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdStuffContainerOperationIdResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdStuffContainerOperationIdResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PostApiOperationOperationIdCargoIdStuffContainerOperationIdResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdStuffContainerOperationIdResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdStuffContainerOperationIdResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdStuffContainerOperationIdResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
-export const PostApiOperationOperationIdCargoIdIdentifyParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
-
-export const PostApiOperationOperationIdCargoIdIdentifyBody = zod.object({
-  "romaneioId": zod.uuid()
-})
-
-export const postApiOperationOperationIdCargoIdIdentifyResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdIdentifyResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdIdentifyResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PostApiOperationOperationIdCargoIdIdentifyResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdIdentifyResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdIdentifyResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdIdentifyResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
-export const PostApiOperationOperationIdCargoIdWeightParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
-
-export const postApiOperationOperationIdCargoIdWeightBodyNetWeightMinOne = 0;
-
-export const postApiOperationOperationIdCargoIdWeightBodyNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const postApiOperationOperationIdCargoIdWeightBodyNetWeightMinTwo = 0;
-
-export const postApiOperationOperationIdCargoIdWeightBodyTareMinOne = 0;
-
-export const postApiOperationOperationIdCargoIdWeightBodyTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const postApiOperationOperationIdCargoIdWeightBodyTareMinTwo = 0;
-
-export const postApiOperationOperationIdCargoIdWeightBodyGrossWeightMinOne = 0;
-
-export const postApiOperationOperationIdCargoIdWeightBodyGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-export const postApiOperationOperationIdCargoIdWeightBodyGrossWeightMinTwo = 0;
-
-
-
-export const PostApiOperationOperationIdCargoIdWeightBody = zod.object({
-  "netWeight": zod.union([zod.number().min(postApiOperationOperationIdCargoIdWeightBodyNetWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdCargoIdWeightBodyNetWeightRegExpTwo).min(postApiOperationOperationIdCargoIdWeightBodyNetWeightMinTwo)]).nullish(),
-  "tare": zod.union([zod.number().min(postApiOperationOperationIdCargoIdWeightBodyTareMinOne),zod.stringFormat('double', postApiOperationOperationIdCargoIdWeightBodyTareRegExpTwo).min(postApiOperationOperationIdCargoIdWeightBodyTareMinTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number().min(postApiOperationOperationIdCargoIdWeightBodyGrossWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdCargoIdWeightBodyGrossWeightRegExpTwo).min(postApiOperationOperationIdCargoIdWeightBodyGrossWeightMinTwo)]).nullish()
-})
-
-export const postApiOperationOperationIdCargoIdWeightResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdWeightResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdWeightResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PostApiOperationOperationIdCargoIdWeightResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdWeightResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdWeightResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdWeightResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
-export const PostApiOperationOperationIdCargoIdDivergenceParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
-
-export const postApiOperationOperationIdCargoIdDivergenceBodyNoteMax = 500;
-
-
-
-export const PostApiOperationOperationIdCargoIdDivergenceBody = zod.object({
-  "note": zod.string().max(postApiOperationOperationIdCargoIdDivergenceBodyNoteMax)
-})
-
-export const postApiOperationOperationIdCargoIdDivergenceResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdDivergenceResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdDivergenceResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PostApiOperationOperationIdCargoIdDivergenceResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdDivergenceResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdDivergenceResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdDivergenceResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
-export const PostApiOperationOperationIdCargoIdReconcileParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
-
-export const postApiOperationOperationIdCargoIdReconcileBodyNoteMax = 500;
-
-
-
-export const PostApiOperationOperationIdCargoIdReconcileBody = zod.object({
-  "note": zod.string().max(postApiOperationOperationIdCargoIdReconcileBodyNoteMax)
-})
-
-export const postApiOperationOperationIdCargoIdReconcileResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdReconcileResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdReconcileResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PostApiOperationOperationIdCargoIdReconcileResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdReconcileResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdReconcileResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdReconcileResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
-})
-
-export const PostApiOperationOperationIdCargoIdInvoiceParams = zod.object({
-  "operationId": zod.uuid(),
-  "id": zod.uuid()
-})
-
-export const PostApiOperationOperationIdCargoIdInvoiceBody = zod.object({
-  "invoiceItemId": zod.uuid()
-})
-
-export const postApiOperationOperationIdCargoIdInvoiceResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdInvoiceResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdCargoIdInvoiceResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-
-
-export const PostApiOperationOperationIdCargoIdInvoiceResponse = zod.object({
-  "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
-  "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
-  "observation": zod.string().optional(),
-  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdInvoiceResponseNetWeightRegExpTwo)]).nullish(),
-  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdInvoiceResponseTareRegExpTwo)]).nullish(),
-  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdInvoiceResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
-  "id": zod.uuid(),
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "updatedAt": zod.iso.datetime({"offset":true})
 })
 
 export const PostApiOperationOperationIdCargoIdCancelParams = zod.object({
@@ -510,17 +137,15 @@ export const postApiOperationOperationIdCargoIdCancelResponseGrossWeightRegExpTw
 
 export const PostApiOperationOperationIdCargoIdCancelResponse = zod.object({
   "operationId": zod.uuid().optional(),
-  "containerOperationId": zod.uuid().nullish(),
+  "containerOperationId": zod.uuid().optional(),
   "romaneioId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
-  "itemIdentifier": zod.string().optional(),
-  "itemCode": zod.string().optional(),
+  "invoiceId": zod.uuid().optional(),
   "observation": zod.string().optional(),
+  "status": zod.enum(['Stuffed', 'Canceled']).optional(),
+  "identified": zod.boolean().optional(),
   "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdCancelResponseNetWeightRegExpTwo)]).nullish(),
   "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdCancelResponseTareRegExpTwo)]).nullish(),
   "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoIdCancelResponseGrossWeightRegExpTwo)]).nullish(),
-  "status": zod.enum(['Open', 'Stuffed', 'Canceled']).optional(),
-  "identificationStatus": zod.enum(['Unidentified', 'Partial', 'Identified', 'Divergent', 'Reconciled']).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -607,4 +232,80 @@ export const DeleteApiOperationOperationIdCargoIdPhotosPhotoIdParams = zod.objec
 })
 
 export const DeleteApiOperationOperationIdCargoIdPhotosPhotoIdResponse = zod.unknown()
+
+export const PostApiOperationOperationIdCargoStuffIdentifiedParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+export const PostApiOperationOperationIdCargoStuffIdentifiedBody = zod.object({
+  "containerOperationId": zod.uuid(),
+  "romaneioId": zod.uuid(),
+  "invoiceId": zod.uuid()
+})
+
+export const postApiOperationOperationIdCargoStuffIdentifiedResponseCargoUnitsItemNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdCargoStuffIdentifiedResponseCargoUnitsItemTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdCargoStuffIdentifiedResponseCargoUnitsItemGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const PostApiOperationOperationIdCargoStuffIdentifiedResponse = zod.object({
+  "cargoUnits": zod.array(zod.object({
+  "operationId": zod.uuid().optional(),
+  "containerOperationId": zod.uuid().optional(),
+  "romaneioId": zod.uuid().nullish(),
+  "invoiceId": zod.uuid().optional(),
+  "observation": zod.string().optional(),
+  "status": zod.enum(['Stuffed', 'Canceled']).optional(),
+  "identified": zod.boolean().optional(),
+  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoStuffIdentifiedResponseCargoUnitsItemNetWeightRegExpTwo)]).nullish(),
+  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoStuffIdentifiedResponseCargoUnitsItemTareRegExpTwo)]).nullish(),
+  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoStuffIdentifiedResponseCargoUnitsItemGrossWeightRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "warnings": zod.array(zod.string()).optional()
+})
+
+export const PostApiOperationOperationIdCargoStuffQuantityParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+export const postApiOperationOperationIdCargoStuffQuantityBodyQuantityMaxOne = 2147483647;
+
+export const postApiOperationOperationIdCargoStuffQuantityBodyQuantityRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+export const postApiOperationOperationIdCargoStuffQuantityBodyQuantityMaxTwo = 2147483647;
+
+
+
+export const PostApiOperationOperationIdCargoStuffQuantityBody = zod.object({
+  "containerOperationId": zod.uuid(),
+  "invoiceId": zod.uuid(),
+  "quantity": zod.union([zod.int().min(1).max(postApiOperationOperationIdCargoStuffQuantityBodyQuantityMaxOne),zod.stringFormat('int32', postApiOperationOperationIdCargoStuffQuantityBodyQuantityRegExpTwo).min(1).max(postApiOperationOperationIdCargoStuffQuantityBodyQuantityMaxTwo)]).optional()
+})
+
+export const postApiOperationOperationIdCargoStuffQuantityResponseCargoUnitsItemNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdCargoStuffQuantityResponseCargoUnitsItemTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdCargoStuffQuantityResponseCargoUnitsItemGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const PostApiOperationOperationIdCargoStuffQuantityResponse = zod.object({
+  "cargoUnits": zod.array(zod.object({
+  "operationId": zod.uuid().optional(),
+  "containerOperationId": zod.uuid().optional(),
+  "romaneioId": zod.uuid().nullish(),
+  "invoiceId": zod.uuid().optional(),
+  "observation": zod.string().optional(),
+  "status": zod.enum(['Stuffed', 'Canceled']).optional(),
+  "identified": zod.boolean().optional(),
+  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoStuffQuantityResponseCargoUnitsItemNetWeightRegExpTwo)]).nullish(),
+  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoStuffQuantityResponseCargoUnitsItemTareRegExpTwo)]).nullish(),
+  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoStuffQuantityResponseCargoUnitsItemGrossWeightRegExpTwo)]).nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "warnings": zod.array(zod.string()).optional()
+})
 

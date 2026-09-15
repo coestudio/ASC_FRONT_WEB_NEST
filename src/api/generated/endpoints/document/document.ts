@@ -340,9 +340,6 @@ if(postApiOperationOperationIdDocumentBody.Observation !== undefined) {
 if(postApiOperationOperationIdDocumentBody.InvoiceId !== undefined) {
  formData.append(`InvoiceId`, postApiOperationOperationIdDocumentBody.InvoiceId);
  }
-if(postApiOperationOperationIdDocumentBody.InvoiceItemId !== undefined) {
- formData.append(`InvoiceItemId`, postApiOperationOperationIdDocumentBody.InvoiceItemId);
- }
 if(postApiOperationOperationIdDocumentBody.CargoUnitId !== undefined) {
  formData.append(`CargoUnitId`, postApiOperationOperationIdDocumentBody.CargoUnitId);
  }

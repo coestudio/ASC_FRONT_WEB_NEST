@@ -16,4 +16,9 @@ export interface ContainerCreate {
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
      */
   tara?: number | string | null;
+  /**
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
+  maxWeight?: number | string | null;
 }

@@ -12,8 +12,6 @@ export interface DocumentDTO {
   /** @nullable */
   invoiceId?: string | null;
   /** @nullable */
-  invoiceItemId?: string | null;
-  /** @nullable */
   cargoUnitId?: string | null;
   /** @nullable */
   romaneioId?: string | null;

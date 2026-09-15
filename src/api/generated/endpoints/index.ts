@@ -7,7 +7,6 @@ export * from './core/core.ts';
 export * from './document/document.ts';
 export * from './harbor/harbor.ts';
 export * from './invoice/invoice.ts';
-export * from './invoice-item/invoice-item.ts';
 export * from './operation/operation.ts';
 export * from './operation-container/operation-container.ts';
 export * from './product/product.ts';

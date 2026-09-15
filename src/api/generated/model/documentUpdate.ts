@@ -17,8 +17,6 @@ export interface DocumentUpdate {
   /** @nullable */
   invoiceId?: string | null;
   /** @nullable */
-  invoiceItemId?: string | null;
-  /** @nullable */
   cargoUnitId?: string | null;
   /** @nullable */
   romaneioId?: string | null;

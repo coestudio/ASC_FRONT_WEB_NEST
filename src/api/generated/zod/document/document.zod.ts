@@ -54,7 +54,6 @@ export const GetApiOperationOperationIdDocumentResponse = zod.object({
   "items": zod.array(zod.object({
   "operationId": zod.uuid(),
   "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
   "cargoUnitId": zod.uuid().nullish(),
   "romaneioId": zod.uuid().nullish(),
   "type": zod.enum(['Other', 'Booking', 'Instruction', 'PackingList', 'Invoice', 'Certificate', 'Report']),
@@ -95,7 +94,6 @@ export const PostApiOperationOperationIdDocumentBody = zod.object({
   "Type": zod.enum(['Other', 'Booking', 'Instruction', 'PackingList', 'Invoice', 'Certificate', 'Report']).optional(),
   "Observation": zod.string().optional(),
   "InvoiceId": zod.uuid().optional(),
-  "InvoiceItemId": zod.uuid().optional(),
   "CargoUnitId": zod.uuid().optional(),
   "RomaneioId": zod.uuid().optional()
 })
@@ -103,7 +101,6 @@ export const PostApiOperationOperationIdDocumentBody = zod.object({
 export const PostApiOperationOperationIdDocumentResponse = zod.object({
   "operationId": zod.uuid(),
   "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
   "cargoUnitId": zod.uuid().nullish(),
   "romaneioId": zod.uuid().nullish(),
   "type": zod.enum(['Other', 'Booking', 'Instruction', 'PackingList', 'Invoice', 'Certificate', 'Report']),
@@ -131,7 +128,6 @@ export const GetApiOperationOperationIdDocumentIdParams = zod.object({
 export const GetApiOperationOperationIdDocumentIdResponse = zod.object({
   "operationId": zod.uuid(),
   "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
   "cargoUnitId": zod.uuid().nullish(),
   "romaneioId": zod.uuid().nullish(),
   "type": zod.enum(['Other', 'Booking', 'Instruction', 'PackingList', 'Invoice', 'Certificate', 'Report']),
@@ -166,7 +162,6 @@ export const PutApiOperationOperationIdDocumentIdBody = zod.object({
   "type": zod.enum(['Other', 'Booking', 'Instruction', 'PackingList', 'Invoice', 'Certificate', 'Report']),
   "observation": zod.string().optional(),
   "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
   "cargoUnitId": zod.uuid().nullish(),
   "romaneioId": zod.uuid().nullish()
 })
@@ -174,7 +169,6 @@ export const PutApiOperationOperationIdDocumentIdBody = zod.object({
 export const PutApiOperationOperationIdDocumentIdResponse = zod.object({
   "operationId": zod.uuid(),
   "invoiceId": zod.uuid().nullish(),
-  "invoiceItemId": zod.uuid().nullish(),
   "cargoUnitId": zod.uuid().nullish(),
   "romaneioId": zod.uuid().nullish(),
   "type": zod.enum(['Other', 'Booking', 'Instruction', 'PackingList', 'Invoice', 'Certificate', 'Report']),
