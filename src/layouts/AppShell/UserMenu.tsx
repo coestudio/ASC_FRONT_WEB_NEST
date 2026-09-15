@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 
 import { useUser } from "@/hooks";
@@ -45,11 +45,18 @@ export function UserMenu() {
   const [showProfile, setShowProfile] = useState(false);
   const [prefOpen, setPrefOpen] = useState(false);
   const [openSection, setOpenSection] = useState<SectionKey | null>(null);
+  // Se a URL do avatar falhar ao carregar (SAS expirada, rede), cai pras
+  // iniciais em vez de ícone de imagem quebrada — achado da revisão manual
+  // 3 brands × tema (SPEC-14).
+  const [avatarError, setAvatarError] = useState(false);
 
   const fullName = user?.profile?.fullName ?? user?.userName ?? "";
   const email = user?.profile?.email ?? user?.userName ?? "";
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
   const avatarUrl = user?.profile?.avatarFile?.url ?? null;
+  // Reseta o erro se a URL mudar (troca de foto) — sem isso, um avatar novo
+  // depois de um que falhou ficaria preso nas iniciais.
+  useEffect(() => setAvatarError(false), [avatarUrl]);
 
   const themeMode = useThemeMode();
   const setThemeMode = useSetThemeMode();
@@ -82,10 +89,11 @@ export function UserMenu() {
           id="user-menu-toggle"
         >
           <div className="app-topbar__avatar flex-shrink-0">
-            {avatarUrl ? (
+            {avatarUrl && !avatarError ? (
               <img
                 src={avatarUrl}
                 alt={fullName}
+                onError={() => setAvatarError(true)}
                 style={{
                   width: "100%",
                   height: "100%",

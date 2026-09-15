@@ -58,15 +58,24 @@ export function useViewMode(): [ViewMode, (mode: ViewMode) => void] {
   return [mode, setViewModeValue];
 }
 
-/** Detecta tela pequena (<1024px, inclui tablet) onde cards são ideais e a tabela não cabe. */
+/**
+ * Detecta tela pequena (<1024px, inclui tablet) onde cards são ideais e a
+ * tabela não cabe.
+ *
+ * Estado inicial sempre `false` (nunca lê `window.matchMedia` no `useState`
+ * inicializador) — o SSR não sabe o viewport real e sempre renderiza `false`;
+ * se o inicializador rodasse `matchMedia` de cara no client, a *primeira*
+ * renderização do client (antes da hidratação reconciliar) já pegaria o
+ * valor real do viewport, divergindo da árvore do servidor sempre que a tela
+ * for de fato <1024px — hydration mismatch (`ViewToggle` sumindo/aparecendo
+ * na árvore). O valor real só é aplicado depois, no `useEffect` (roda só no
+ * client, depois do mount) — 1 render extra, sem mismatch.
+ */
 export function useIsMobile(breakpointPx: number = MOBILE_BREAKPOINT_PX): boolean {
   const query = `(max-width: ${breakpointPx}px)`;
-  const [isMobile, setIsMobile] = useState<boolean>(() =>
-    typeof window !== "undefined" ? window.matchMedia(query).matches : false,
-  );
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
     const mql = window.matchMedia(query);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     setIsMobile(mql.matches);
