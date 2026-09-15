@@ -331,11 +331,15 @@
       "entryDate": "入库日期",
       "exitDate": "出库日期",
       "exitTime": "出库时间",
+      "declaredItemsCount": "数量",
+      "declaredGrossWeight": "总毛重（kg）",
+      "declaredNetWeight": "总净重（kg）",
       "totalInvoiceValue": "发票总金额",
       "totalProductsValue": "货物总金额",
       "observation": "备注",
       "files": "文件",
-      "filesRequiredHint": "请至少选择1个文件以创建发票。"
+      "filesRequiredHint": "请至少选择1个文件以创建发票。",
+      "declaredFieldsRequiredHint": "请填写数量、毛重和净重以创建发票。"
     },
     "confirm": {
       "action": "确认",

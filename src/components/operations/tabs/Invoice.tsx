@@ -94,6 +94,9 @@ export function Invoice({ operationId }: { operationId: string }) {
       EntryDate: "",
       ExitDate: "",
       ExitTime: "",
+      DeclaredItemsCount: "",
+      DeclaredGrossWeight: "",
+      DeclaredNetWeight: "",
       TotalInvoiceValue: "",
       TotalProductsValue: "",
       Observation: "",
@@ -105,6 +108,21 @@ export function Invoice({ operationId }: { operationId: string }) {
   // expressa a obrigatoriedade (D2 §14 da SPEC): desabilita o submit até ter
   // pelo menos 1 arquivo selecionado, sem inventar `.min()` no schema.
   const hasFile = Array.isArray(files) && files.length > 0;
+  // Mesmo gate pros três campos agregados — o Core exige (SPEC-14 §2:
+  // sem romaneio de origem, não tem de onde derivar depois), mas o Zod
+  // gerado marca como `.nullish()` (mesmo quirk de anotação de R4/`Number`),
+  // então o resolver sozinho não barra o submit vazio.
+  const declaredItemsCount = createForm.watch("DeclaredItemsCount");
+  const declaredGrossWeight = createForm.watch("DeclaredGrossWeight");
+  const declaredNetWeight = createForm.watch("DeclaredNetWeight");
+  const hasDeclaredFields =
+    declaredItemsCount !== "" &&
+    declaredItemsCount != null &&
+    declaredGrossWeight !== "" &&
+    declaredGrossWeight != null &&
+    declaredNetWeight !== "" &&
+    declaredNetWeight != null;
+  const canSubmitCreate = hasFile && hasDeclaredFields;
 
   const openCreateModal = () => {
     createForm.reset({
@@ -112,6 +130,9 @@ export function Invoice({ operationId }: { operationId: string }) {
       EntryDate: "",
       ExitDate: "",
       ExitTime: "",
+      DeclaredItemsCount: "",
+      DeclaredGrossWeight: "",
+      DeclaredNetWeight: "",
       TotalInvoiceValue: "",
       TotalProductsValue: "",
       Observation: "",
@@ -121,7 +142,7 @@ export function Invoice({ operationId }: { operationId: string }) {
   };
 
   const handleCreateSubmit: SubmitHandler<CreateFormValues> = async (values) => {
-    if (!hasFile) return;
+    if (!canSubmitCreate) return;
     try {
       await createMutation.mutateAsync({ operationId, data: values });
       toast.success(t("administrative-operations.invoice.toast.created"));
@@ -337,6 +358,28 @@ export function Invoice({ operationId }: { operationId: string }) {
                 label={t("administrative-operations.invoice.form.exitTime")}
                 md={6}
               />
+              {/* Obrigatórios no Core pra criação manual (SPEC-14 §2) — sem
+                  fonte relacional (romaneio) pra derivar depois, então tem
+                  que vir informado aqui. InputText, não InputNumber/InputMoney,
+                  mesmo padrão de tara/maxWeight em registry/container. */}
+              <InputText<CreateFormValues>
+                methods={createForm}
+                fieldName="DeclaredItemsCount"
+                label={t("administrative-operations.invoice.form.declaredItemsCount")}
+                md={4}
+              />
+              <InputText<CreateFormValues>
+                methods={createForm}
+                fieldName="DeclaredGrossWeight"
+                label={t("administrative-operations.invoice.form.declaredGrossWeight")}
+                md={4}
+              />
+              <InputText<CreateFormValues>
+                methods={createForm}
+                fieldName="DeclaredNetWeight"
+                label={t("administrative-operations.invoice.form.declaredNetWeight")}
+                md={4}
+              />
               <InputMoney<CreateFormValues>
                 methods={createForm}
                 fieldName="TotalInvoiceValue"
@@ -366,6 +409,11 @@ export function Invoice({ operationId }: { operationId: string }) {
                   {t("administrative-operations.invoice.form.filesRequiredHint")}
                 </div>
               ) : null}
+              {!hasDeclaredFields ? (
+                <div className="text-body-secondary small px-3">
+                  {t("administrative-operations.invoice.form.declaredFieldsRequiredHint")}
+                </div>
+              ) : null}
             </div>
           </Modal.Body>
           <Modal.Footer>
@@ -375,7 +423,7 @@ export function Invoice({ operationId }: { operationId: string }) {
             <Button
               type="submit"
               variant="primary"
-              disabled={!hasFile || createForm.formState.isSubmitting}
+              disabled={!canSubmitCreate || createForm.formState.isSubmitting}
             >
               {createForm.formState.isSubmitting ? (
                 <Spinner size="sm" animation="border" className="me-2" />

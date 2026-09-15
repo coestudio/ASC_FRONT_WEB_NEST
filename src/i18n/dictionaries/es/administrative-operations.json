@@ -331,11 +331,15 @@
       "entryDate": "Fecha de entrada",
       "exitDate": "Fecha de salida",
       "exitTime": "Hora de salida",
+      "declaredItemsCount": "Cantidad",
+      "declaredGrossWeight": "Peso bruto total (kg)",
+      "declaredNetWeight": "Peso líquido total (kg)",
       "totalInvoiceValue": "Valor total de la factura",
       "totalProductsValue": "Valor de los productos",
       "observation": "Observaciones",
       "files": "Archivos",
-      "filesRequiredHint": "Seleccione al menos 1 archivo para crear la factura."
+      "filesRequiredHint": "Seleccione al menos 1 archivo para crear la factura.",
+      "declaredFieldsRequiredHint": "Indique cantidad, peso bruto y peso líquido para crear la factura."
     },
     "confirm": {
       "action": "Confirmar",

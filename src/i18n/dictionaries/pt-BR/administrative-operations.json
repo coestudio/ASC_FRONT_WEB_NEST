@@ -331,11 +331,15 @@
       "entryDate": "Data de entrada",
       "exitDate": "Data de saída",
       "exitTime": "Hora de saída",
+      "declaredItemsCount": "Quantidade",
+      "declaredGrossWeight": "Peso bruto total (kg)",
+      "declaredNetWeight": "Peso líquido total (kg)",
       "totalInvoiceValue": "Valor total da NF",
       "totalProductsValue": "Valor dos produtos",
       "observation": "Observação",
       "files": "Arquivos",
-      "filesRequiredHint": "Selecione ao menos 1 arquivo para criar a nota fiscal."
+      "filesRequiredHint": "Selecione ao menos 1 arquivo para criar a nota fiscal.",
+      "declaredFieldsRequiredHint": "Informe quantidade, peso bruto e peso líquido para criar a nota fiscal."
     },
     "confirm": {
       "action": "Confirmar",

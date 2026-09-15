@@ -331,11 +331,15 @@
       "entryDate": "Entry date",
       "exitDate": "Exit date",
       "exitTime": "Exit time",
+      "declaredItemsCount": "Quantity",
+      "declaredGrossWeight": "Total gross weight (kg)",
+      "declaredNetWeight": "Total net weight (kg)",
       "totalInvoiceValue": "Total invoice value",
       "totalProductsValue": "Total products value",
       "observation": "Notes",
       "files": "Files",
-      "filesRequiredHint": "Select at least 1 file to create the invoice."
+      "filesRequiredHint": "Select at least 1 file to create the invoice.",
+      "declaredFieldsRequiredHint": "Enter quantity, gross weight and net weight to create the invoice."
     },
     "confirm": {
       "action": "Confirm",
