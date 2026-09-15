@@ -27,6 +27,7 @@ import { Log } from "@/components/operations/tabs/Log";
 import { Reports } from "@/components/operations/tabs/Reports";
 import { Select } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
+import { useMounted } from "@/hooks/useMounted";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
@@ -63,8 +64,7 @@ const TABS: { key: Tab; labelKey: TranslationKey }[] = [
  */
 function OperationShellPage() {
   const { id } = Route.useParams();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   return (
     <PageLayout density="wide">

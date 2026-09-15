@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge, Card } from "react-bootstrap";
@@ -22,6 +22,7 @@ import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-rec
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
+import { useMounted } from "@/hooks/useMounted";
 import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user";
 import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -159,8 +160,7 @@ function toFormValues(user?: UserDTO): UserFormValues {
  */
 function AdminAccessPage() {
   const t = useT();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   if (!mounted) {
     return (

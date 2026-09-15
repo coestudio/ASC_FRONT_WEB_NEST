@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
-import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
@@ -20,10 +18,13 @@ import { PostApiTerminalBody } from "@/api/generated/zod/terminal/terminal.zod";
 import type { TerminalDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
+import { useCrudMutations } from "@/hooks/useCrudMutations";
+import { useMounted } from "@/hooks/useMounted";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -50,16 +51,15 @@ function HarborNameCell({ harborId }: { harborId: string }) {
 }
 
 /**
- * Gate de montagem (SPEC-10 §14): `selectedHarbor` abaixo usa
- * `useSsrSafeQuery` fora do `CrudListPage` — sem esse gate o hook existe na
- * árvore durante o SSR e a integração de streaming pode tentar buscá-lo
- * mesmo com `enabled: false` (mesma causa raiz do bug original de
- * `admin/access`, SPEC-10 §13). `TerminalPageBody` só monta depois de
- * `mounted = true` (nunca roda no servidor).
+ * Gate de montagem (SPEC-10 §14 / SPEC-18 `useMounted`): `selectedHarbor`
+ * abaixo usa `useSsrSafeQuery` fora do `CrudListPage` — sem esse gate o
+ * hook existe na árvore durante o SSR e a integração de streaming pode
+ * tentar buscá-lo mesmo com `enabled: false` (mesma causa raiz do bug
+ * original de `admin/access`, SPEC-10 §13). `TerminalPageBody` só monta
+ * depois de `mounted = true` (nunca roda no servidor).
  */
 function TerminalPage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   return mounted ? (
     <TerminalPageBody />
@@ -73,7 +73,6 @@ function TerminalPage() {
 function TerminalPageBody() {
   const t = useT();
   const locale = useLocale();
-  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -95,12 +94,22 @@ function TerminalPageBody() {
     }),
   );
 
-  const invalidateList = () =>
-    queryClient.invalidateQueries({ queryKey: getGetApiTerminalQueryKey() });
-
   const createMutation = usePostApiTerminal();
   const updateMutation = usePutApiTerminalId();
   const deleteMutation = useDeleteApiTerminalId();
+
+  const { submit, remove } = useCrudMutations<TerminalFormValues, TerminalDTO>({
+    onCreate: (values) => createMutation.mutateAsync({ data: values }),
+    onUpdate: (values, record) => updateMutation.mutateAsync({ id: record.id, data: values }),
+    onDelete: (record) => deleteMutation.mutateAsync({ id: record.id }),
+    invalidateKey: getGetApiTerminalQueryKey(),
+    messages: {
+      created: "administrative-registry.terminal.toast.created",
+      updated: "administrative-registry.terminal.toast.updated",
+      deleted: "administrative-registry.terminal.toast.deleted",
+      error: "administrative-registry.terminal.toast.error",
+    },
+  });
 
   const fields: LayoutField[] = [
     {
@@ -144,60 +153,25 @@ function TerminalPageBody() {
       key: "actions",
       headerKey: "administrative-registry.terminal.colActions",
       render: (r) => (
-        <div className="d-flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary"
-            onClick={() => setModal({ mode: "view", record: r })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-success"
-            onClick={() => setModal({ mode: "edit", record: r })}
-          >
-            <i className="bi bi-pencil" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-danger"
-            onClick={() => setPendingDelete(r)}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </button>
-        </div>
+        <CrudRowActions
+          onView={() => setModal({ mode: "view", record: r })}
+          onEdit={() => setModal({ mode: "edit", record: r })}
+          onDelete={() => setPendingDelete(r)}
+        />
       ),
     },
   ];
 
   const handleSubmit = async (values: TerminalFormValues) => {
-    try {
-      if (modal?.mode === "create") {
-        await createMutation.mutateAsync({ data: values });
-        toast.success(t("administrative-registry.terminal.toast.created"));
-      } else if (modal?.mode === "edit" && modal.record) {
-        await updateMutation.mutateAsync({ id: modal.record.id, data: values });
-        toast.success(t("administrative-registry.terminal.toast.updated"));
-      }
-      invalidateList();
-      setModal(null);
-    } catch {
-      toast.error(t("administrative-registry.terminal.toast.error"));
-    }
+    if (!modal) return;
+    const ok = await submit(modal.mode as "create" | "edit", values, modal.record);
+    if (ok) setModal(null);
   };
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    try {
-      await deleteMutation.mutateAsync({ id: pendingDelete.id });
-      toast.success(t("administrative-registry.terminal.toast.deleted"));
-      invalidateList();
-    } catch {
-      toast.error(t("administrative-registry.terminal.toast.error"));
-    } finally {
-      setPendingDelete(null);
-    }
+    await remove(pendingDelete);
+    setPendingDelete(null);
   };
 
   return (

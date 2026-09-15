@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
-import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
@@ -17,9 +15,11 @@ import { PostApiHarborBody } from "@/api/generated/zod/harbor/harbor.zod";
 import type { HarborDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
+import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -86,7 +86,6 @@ function RelatedTerminals({ harborId }: { harborId: string }) {
 function HarborPage() {
   const t = useT();
   const locale = useLocale();
-  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -99,12 +98,22 @@ function HarborPage() {
     Limit: PAGE_SIZE,
   });
 
-  const invalidateList = () =>
-    queryClient.invalidateQueries({ queryKey: getGetApiHarborQueryKey() });
-
   const createMutation = usePostApiHarbor();
   const updateMutation = usePutApiHarborId();
   const deleteMutation = useDeleteApiHarborId();
+
+  const { submit, remove } = useCrudMutations<HarborFormValues, HarborDTO>({
+    onCreate: (values) => createMutation.mutateAsync({ data: values }),
+    onUpdate: (values, record) => updateMutation.mutateAsync({ id: record.id, data: values }),
+    onDelete: (record) => deleteMutation.mutateAsync({ id: record.id }),
+    invalidateKey: getGetApiHarborQueryKey(),
+    messages: {
+      created: "administrative-registry.harbor.toast.created",
+      updated: "administrative-registry.harbor.toast.updated",
+      deleted: "administrative-registry.harbor.toast.deleted",
+      error: "administrative-registry.harbor.toast.error",
+    },
+  });
 
   const fields: LayoutField[] = [
     {
@@ -141,60 +150,25 @@ function HarborPage() {
       key: "actions",
       headerKey: "administrative-registry.harbor.colActions",
       render: (h) => (
-        <div className="d-flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary"
-            onClick={() => setModal({ mode: "view", record: h })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-success"
-            onClick={() => setModal({ mode: "edit", record: h })}
-          >
-            <i className="bi bi-pencil" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-danger"
-            onClick={() => setPendingDelete(h)}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </button>
-        </div>
+        <CrudRowActions
+          onView={() => setModal({ mode: "view", record: h })}
+          onEdit={() => setModal({ mode: "edit", record: h })}
+          onDelete={() => setPendingDelete(h)}
+        />
       ),
     },
   ];
 
   const handleSubmit = async (values: HarborFormValues) => {
-    try {
-      if (modal?.mode === "create") {
-        await createMutation.mutateAsync({ data: values });
-        toast.success(t("administrative-registry.harbor.toast.created"));
-      } else if (modal?.mode === "edit" && modal.record) {
-        await updateMutation.mutateAsync({ id: modal.record.id, data: values });
-        toast.success(t("administrative-registry.harbor.toast.updated"));
-      }
-      invalidateList();
-      setModal(null);
-    } catch {
-      toast.error(t("administrative-registry.harbor.toast.error"));
-    }
+    if (!modal) return;
+    const ok = await submit(modal.mode as "create" | "edit", values, modal.record);
+    if (ok) setModal(null);
   };
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    try {
-      await deleteMutation.mutateAsync({ id: pendingDelete.id });
-      toast.success(t("administrative-registry.harbor.toast.deleted"));
-      invalidateList();
-    } catch {
-      toast.error(t("administrative-registry.harbor.toast.error"));
-    } finally {
-      setPendingDelete(null);
-    }
+    await remove(pendingDelete);
+    setPendingDelete(null);
   };
 
   return (

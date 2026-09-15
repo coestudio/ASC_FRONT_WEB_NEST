@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -11,6 +11,7 @@ import { ViewToggle } from "@/components/ui/view-toggle";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { InputText } from "@/layouts/Form/Fields/Index";
+import { useMounted } from "@/hooks/useMounted";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./crud-list-page.module.css";
 
@@ -213,8 +214,7 @@ export function CrudListPage<
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   return (
     <div>

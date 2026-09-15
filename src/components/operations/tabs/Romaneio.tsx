@@ -31,10 +31,12 @@ import type {
 import { resolveRomaneioSourceLabel } from "@/api/generated/static/romaneioSourceOptions";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { InputFileSingle } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import type { TranslationKey } from "@/i18n/translate";
+import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
@@ -87,7 +89,6 @@ const DIFF_FIELD_LABELS: Record<string, TranslationKey> = {
 export function Romaneio({ operationId }: { operationId: string }) {
   const t = useT();
   const locale = useLocale();
-  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -101,14 +102,33 @@ export function Romaneio({ operationId }: { operationId: string }) {
     Limit: PAGE_SIZE,
   });
 
+  const createMutation = usePostApiOperationOperationIdRomaneio();
+  const updateMutation = usePutApiOperationOperationIdRomaneioId();
+  const deleteMutation = useDeleteApiOperationOperationIdRomaneioId();
+
+  const { submit, remove } = useCrudMutations<RomaneioFormValues, RomaneioDTO>({
+    onCreate: (values) => createMutation.mutateAsync({ operationId, data: values }),
+    onUpdate: (values, record) =>
+      updateMutation.mutateAsync({ operationId, id: record.id, data: values }),
+    onDelete: (record) => deleteMutation.mutateAsync({ operationId, id: record.id }),
+    invalidateKey: getGetApiOperationOperationIdRomaneioQueryKey(operationId),
+    messages: {
+      created: "administrative-operations.romaneio.toast.created",
+      updated: "administrative-operations.romaneio.toast.updated",
+      deleted: "administrative-operations.romaneio.toast.deleted",
+      error: "administrative-operations.romaneio.toast.error",
+    },
+  });
+
+  // `invalidateList` usado pelo wizard de import (`ImportRomaneioModal`),
+  // fora do fluxo create/update/delete do `useCrudMutations` — mesma
+  // `queryKey`, chamada direta (o wizard já mostra seu próprio toast de
+  // sucesso/erro, ver `handleApply` abaixo).
+  const queryClient = useQueryClient();
   const invalidateList = () =>
     queryClient.invalidateQueries({
       queryKey: getGetApiOperationOperationIdRomaneioQueryKey(operationId),
     });
-
-  const createMutation = usePostApiOperationOperationIdRomaneio();
-  const updateMutation = usePutApiOperationOperationIdRomaneioId();
-  const deleteMutation = useDeleteApiOperationOperationIdRomaneioId();
 
   const fields: LayoutField[] = [
     {
@@ -213,60 +233,25 @@ export function Romaneio({ operationId }: { operationId: string }) {
       key: "actions",
       headerKey: "administrative-operations.romaneio.colActions",
       render: (r) => (
-        <div className="d-flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary"
-            onClick={() => setModal({ mode: "view", record: r })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-success"
-            onClick={() => setModal({ mode: "edit", record: r })}
-          >
-            <i className="bi bi-pencil" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-danger"
-            onClick={() => setPendingDelete(r)}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </button>
-        </div>
+        <CrudRowActions
+          onView={() => setModal({ mode: "view", record: r })}
+          onEdit={() => setModal({ mode: "edit", record: r })}
+          onDelete={() => setPendingDelete(r)}
+        />
       ),
     },
   ];
 
   const handleSubmit = async (values: RomaneioFormValues) => {
-    try {
-      if (modal?.mode === "create") {
-        await createMutation.mutateAsync({ operationId, data: values });
-        toast.success(t("administrative-operations.romaneio.toast.created"));
-      } else if (modal?.mode === "edit" && modal.record) {
-        await updateMutation.mutateAsync({ operationId, id: modal.record.id, data: values });
-        toast.success(t("administrative-operations.romaneio.toast.updated"));
-      }
-      invalidateList();
-      setModal(null);
-    } catch {
-      toast.error(t("administrative-operations.romaneio.toast.error"));
-    }
+    if (!modal) return;
+    const ok = await submit(modal.mode as "create" | "edit", values, modal.record);
+    if (ok) setModal(null);
   };
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    try {
-      await deleteMutation.mutateAsync({ operationId, id: pendingDelete.id });
-      toast.success(t("administrative-operations.romaneio.toast.deleted"));
-      invalidateList();
-    } catch {
-      toast.error(t("administrative-operations.romaneio.toast.error"));
-    } finally {
-      setPendingDelete(null);
-    }
+    await remove(pendingDelete);
+    setPendingDelete(null);
   };
 
   return (
