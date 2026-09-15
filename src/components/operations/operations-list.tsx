@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge, Button, Card, Col, Row, Spinner, Table } from "react-bootstrap";
+import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -627,13 +628,9 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       </div>
 
       {!mounted ? (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
+        <LoadingState variant="inline" />
       ) : query.isLoading ? (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
+        <LoadingState variant="inline" />
       ) : query.isError ? (
         <div className="alert alert-danger">{t("crud.list.error")}</div>
       ) : items.length === 0 ? (

@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Spinner, Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
+import { LoadingState } from "@/components/ui/loading-state";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
 import { useT } from "@/lib/ui-prefs";
@@ -139,9 +140,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   return (
     <>
       {isLoading ? (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
+        <LoadingState variant="inline" />
       ) : isError ? (
         <div className="alert alert-danger">{t("crud.list.error")}</div>
       ) : items.length === 0 ? (
@@ -267,9 +266,7 @@ export function CrudListPage<
           viewMode={viewMode}
         />
       ) : (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
+        <LoadingState variant="inline" />
       )}
     </div>
   );

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Col, Form, Modal, Row, Spinner } from "react-bootstrap";
+import { Badge, Button, Card, Col, Form, Modal, Row } from "react-bootstrap";
+import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -186,9 +187,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
       </Row>
 
       {query.isLoading ? (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
+        <LoadingState variant="inline" />
       ) : query.isError ? (
         <div className="alert alert-danger d-flex align-items-center justify-content-between gap-3">
           <span>{t("administrative-operations.responsible.toast.loadError")}</span>

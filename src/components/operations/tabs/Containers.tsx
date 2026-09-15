@@ -3,6 +3,7 @@ import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "re
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge, Button, Form, Modal, Spinner, Table } from "react-bootstrap";
+import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import type { ZodType } from "zod";
 import { z } from "zod";
@@ -197,9 +198,7 @@ export function Containers({ operationId }: { operationId: string }) {
       </div>
 
       {query.isLoading ? (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
+        <LoadingState variant="inline" />
       ) : query.isError ? (
         <div className="alert alert-danger d-flex align-items-center justify-content-between gap-3">
           <span>{t("administrative-operations.containers.loadError")}</span>

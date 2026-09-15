@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Nav, Spinner } from "react-bootstrap";
+import { Nav } from "react-bootstrap";
+import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 
 import {
@@ -65,13 +66,7 @@ function OperationShellPage() {
 
   return (
     <PageLayout density="wide">
-      {mounted ? (
-        <OperationShellBody id={id} />
-      ) : (
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
-      )}
+      {mounted ? <OperationShellBody id={id} /> : <LoadingState variant="inline" />}
     </PageLayout>
   );
 }
@@ -85,11 +80,7 @@ function OperationShellBody({ id }: { id: string }) {
   const query = useSsrSafeQuery(getGetApiOperationIdQueryOptions(id));
 
   if (query.isLoading) {
-    return (
-      <div className="d-flex justify-content-center py-5">
-        <Spinner animation="border" />
-      </div>
-    );
+    return <LoadingState variant="inline" />;
   }
 
   // RF2 da SPEC-07-02: nunca some silenciosamente (bug conhecido do legado,

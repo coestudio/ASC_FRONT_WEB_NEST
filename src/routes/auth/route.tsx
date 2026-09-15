@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Card } from "react-bootstrap";
 
-import loginBg from "@/assets/images/login-bg.jpg";
+import loginBg from "@/assets/images/login-bg.webp";
 import { AppBrand } from "@/layouts/AppBrand";
 
 // Layout do grupo /auth (login, logout, forgot-password).
@@ -15,7 +15,7 @@ function AuthLayout() {
     <div
       className="auth-shell"
       style={{
-        backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.45), rgba(15, 23, 42, 0.45)), url(${loginBg})`,
+        backgroundImage: `linear-gradient(rgba(var(--bs-dark-rgb), 0.45), rgba(var(--bs-dark-rgb), 0.45)), url(${loginBg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

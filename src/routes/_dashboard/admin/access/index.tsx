@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Card, Spinner } from "react-bootstrap";
+import { Badge, Card } from "react-bootstrap";
+import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -164,9 +165,7 @@ function AdminAccessPage() {
     return (
       <div>
         <h1 className="h4 mb-3">{t("access.title")}</h1>
-        <div className="d-flex justify-content-center py-5">
-          <Spinner animation="border" />
-        </div>
+        <LoadingState variant="inline" />
       </div>
     );
   }
