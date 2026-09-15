@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
-import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
@@ -16,9 +14,11 @@ import { PostApiProductBody } from "@/api/generated/zod/product/product.zod";
 import type { ProductDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
+import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
@@ -40,7 +40,6 @@ function toFormValues(record?: ProductDTO): ProductFormValues {
 function ProductPage() {
   const t = useT();
   const locale = useLocale();
-  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -53,12 +52,22 @@ function ProductPage() {
     Limit: PAGE_SIZE,
   });
 
-  const invalidateList = () =>
-    queryClient.invalidateQueries({ queryKey: getGetApiProductQueryKey() });
-
   const createMutation = usePostApiProduct();
   const updateMutation = usePutApiProductId();
   const deleteMutation = useDeleteApiProductId();
+
+  const { submit, remove } = useCrudMutations<ProductFormValues, ProductDTO>({
+    onCreate: (values) => createMutation.mutateAsync({ data: values }),
+    onUpdate: (values, record) => updateMutation.mutateAsync({ id: record.id, data: values }),
+    onDelete: (record) => deleteMutation.mutateAsync({ id: record.id }),
+    invalidateKey: getGetApiProductQueryKey(),
+    messages: {
+      created: "administrative-registry.product.toast.created",
+      updated: "administrative-registry.product.toast.updated",
+      deleted: "administrative-registry.product.toast.deleted",
+      error: "administrative-registry.product.toast.error",
+    },
+  });
 
   const fields: LayoutField[] = [
     {
@@ -84,60 +93,25 @@ function ProductPage() {
       key: "actions",
       headerKey: "administrative-registry.product.colActions",
       render: (p) => (
-        <div className="d-flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary"
-            onClick={() => setModal({ mode: "view", record: p })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-success"
-            onClick={() => setModal({ mode: "edit", record: p })}
-          >
-            <i className="bi bi-pencil" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-danger"
-            onClick={() => setPendingDelete(p)}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </button>
-        </div>
+        <CrudRowActions
+          onView={() => setModal({ mode: "view", record: p })}
+          onEdit={() => setModal({ mode: "edit", record: p })}
+          onDelete={() => setPendingDelete(p)}
+        />
       ),
     },
   ];
 
   const handleSubmit = async (values: ProductFormValues) => {
-    try {
-      if (modal?.mode === "create") {
-        await createMutation.mutateAsync({ data: values });
-        toast.success(t("administrative-registry.product.toast.created"));
-      } else if (modal?.mode === "edit" && modal.record) {
-        await updateMutation.mutateAsync({ id: modal.record.id, data: values });
-        toast.success(t("administrative-registry.product.toast.updated"));
-      }
-      invalidateList();
-      setModal(null);
-    } catch {
-      toast.error(t("administrative-registry.product.toast.error"));
-    }
+    if (!modal) return;
+    const ok = await submit(modal.mode as "create" | "edit", values, modal.record);
+    if (ok) setModal(null);
   };
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    try {
-      await deleteMutation.mutateAsync({ id: pendingDelete.id });
-      toast.success(t("administrative-registry.product.toast.deleted"));
-      invalidateList();
-    } catch {
-      toast.error(t("administrative-registry.product.toast.error"));
-    } finally {
-      setPendingDelete(null);
-    }
+    await remove(pendingDelete);
+    setPendingDelete(null);
   };
 
   return (

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createFileRoute, getRouteApi } from "@tanstack/react-router";
-import { useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
+import type { UseQueryOptions } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
-import { toast } from "react-toastify";
 
 import {
   getApiClientClientIdCollaborator,
@@ -18,11 +17,14 @@ import {
   type CrudPagedResult,
 } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { collaboratorFormSchema, type CollaboratorFormValues } from "@/lib/validation/collaborator";
+import { useCrudMutations } from "@/hooks/useCrudMutations";
+import { useMounted } from "@/hooks/useMounted";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -86,8 +88,7 @@ function toPagedResult(
  * `CollaboratorsPageBody` só monta depois de `mounted = true`.
  */
 function CollaboratorsPage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   return mounted ? (
     <CollaboratorsPageBody />
@@ -101,7 +102,6 @@ function CollaboratorsPage() {
 function CollaboratorsPageBody() {
   const t = useT();
   const locale = useLocale();
-  const queryClient = useQueryClient();
   const { clientId } = clientRouteApi.useRouteContext();
 
   const [page, setPage] = useState(1);
@@ -118,13 +118,40 @@ function CollaboratorsPageBody() {
     enabled: Boolean(clientId),
   };
 
-  const invalidateList = () =>
-    queryClient.invalidateQueries({
-      queryKey: getGetApiClientClientIdCollaboratorQueryKey(clientId ?? ""),
-    });
-
   const createMutation = usePostApiClientClientIdCollaborator();
   const deleteMutation = useDeleteApiClientClientIdCollaboratorId();
+
+  // Sem `onUpdate` — o Core não expõe PUT/PATCH para Collaborator (R3 da
+  // SPEC-09), o `handleSubmit` só tem fluxo `create`. `onCreate`/`onDelete`
+  // só existem quando `clientId` já resolveu (mesmo guard do `if (!clientId)
+  // return` que o código tinha antes).
+  const { submit, remove } = useCrudMutations<CollaboratorFormValues, CollaboratorDTO>({
+    onCreate: clientId
+      ? (values) =>
+          createMutation.mutateAsync({
+            clientId,
+            data: {
+              userName: values.userName,
+              profile: {
+                fullName: values.fullName,
+                document: values.document,
+                email: values.email,
+                phone: values.phone || null,
+                birthDate: values.birthDate || null,
+              },
+            },
+          })
+      : undefined,
+    onDelete: clientId
+      ? (record) => deleteMutation.mutateAsync({ clientId, id: record.id })
+      : undefined,
+    invalidateKey: getGetApiClientClientIdCollaboratorQueryKey(clientId ?? ""),
+    messages: {
+      created: "client.collaborators.toast.created",
+      deleted: "client.collaborators.toast.deleted",
+      error: "client.collaborators.toast.error",
+    },
+  });
 
   // `view` refaz a busca por `GET /api/client/{clientId}/collaborator/{id}`
   // (endpoint de detalhe, nunca exercitado antes) em vez de reusar o item da
@@ -200,63 +227,24 @@ function CollaboratorsPageBody() {
       // Sem botão de editar — o Core não expõe PUT/PATCH para Collaborator
       // (R3 da SPEC-09). Só ver e excluir.
       render: (c) => (
-        <div className="d-flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary"
-            onClick={() => setModal({ mode: "view", record: c })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-danger"
-            onClick={() => setPendingDelete(c)}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </button>
-        </div>
+        <CrudRowActions
+          onView={() => setModal({ mode: "view", record: c })}
+          onDelete={() => setPendingDelete(c)}
+        />
       ),
     },
   ];
 
   const handleSubmit = async (values: CollaboratorFormValues) => {
-    if (!clientId) return;
-    try {
-      if (modal?.mode === "create") {
-        await createMutation.mutateAsync({
-          clientId,
-          data: {
-            userName: values.userName,
-            profile: {
-              fullName: values.fullName,
-              document: values.document,
-              email: values.email,
-              phone: values.phone || null,
-              birthDate: values.birthDate || null,
-            },
-          },
-        });
-        toast.success(t("client.collaborators.toast.created"));
-      }
-      invalidateList();
-      setModal(null);
-    } catch {
-      toast.error(t("client.collaborators.toast.error"));
-    }
+    if (!modal) return;
+    const ok = await submit(modal.mode as "create" | "edit", values, modal.record);
+    if (ok) setModal(null);
   };
 
   const confirmDelete = async () => {
-    if (!pendingDelete || !clientId) return;
-    try {
-      await deleteMutation.mutateAsync({ clientId, id: pendingDelete.id });
-      toast.success(t("client.collaborators.toast.deleted"));
-      invalidateList();
-    } catch {
-      toast.error(t("client.collaborators.toast.error"));
-    } finally {
-      setPendingDelete(null);
-    }
+    if (!pendingDelete) return;
+    await remove(pendingDelete);
+    setPendingDelete(null);
   };
 
   return (

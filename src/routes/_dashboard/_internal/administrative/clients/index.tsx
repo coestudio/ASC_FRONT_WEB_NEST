@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { Card, Spinner, Table } from "react-bootstrap";
+import { Card, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -17,11 +16,14 @@ import { PostApiClientBody } from "@/api/generated/zod/client/client.zod";
 import type { ClientDTO, ClientDetailDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
+import { useCrudMutations } from "@/hooks/useCrudMutations";
+import { useMounted } from "@/hooks/useMounted";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./index.module.css";
@@ -166,8 +168,7 @@ function ClientReportsSection({ client }: { client: ClientDetailDTO }) {
  * (nunca roda no servidor).
  */
 function ClientsPage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   return mounted ? (
     <ClientsPageBody />
@@ -181,7 +182,6 @@ function ClientsPage() {
 function ClientsPageBody() {
   const t = useT();
   const locale = useLocale();
-  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -203,12 +203,22 @@ function ClientsPageBody() {
     Limit: PAGE_SIZE,
   });
 
-  const invalidateList = () =>
-    queryClient.invalidateQueries({ queryKey: getGetApiClientQueryKey() });
-
   const createMutation = usePostApiClient();
   const updateMutation = usePutApiClientId();
   const deleteMutation = useDeleteApiClientId();
+
+  const { submit, remove } = useCrudMutations<ClientFormValues, ClientDetailDTO, ClientDTO>({
+    onCreate: (values) => createMutation.mutateAsync({ data: values }),
+    onUpdate: (values, record) => updateMutation.mutateAsync({ id: record.id, data: values }),
+    onDelete: (record) => deleteMutation.mutateAsync({ id: record.id }),
+    invalidateKey: getGetApiClientQueryKey(),
+    messages: {
+      created: "administrative-clients.toast.created",
+      updated: "administrative-clients.toast.updated",
+      deleted: "administrative-clients.toast.deleted",
+      error: "administrative-clients.toast.error",
+    },
+  });
 
   const detailQueryOptions = getGetApiClientIdQueryOptions(detailRequest?.id ?? "");
   const detailQuery = useSsrSafeQuery({
@@ -325,71 +335,28 @@ function ClientsPageBody() {
       render: (c) => {
         const isLoadingDetail = detailRequest?.id === c.id;
         return (
-          <div className="d-flex gap-2">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-primary"
-              disabled={isLoadingDetail}
-              onClick={() => setDetailRequest({ id: c.id, mode: "view" })}
-            >
-              {isLoadingDetail && detailRequest?.mode === "view" ? (
-                <Spinner size="sm" animation="border" />
-              ) : (
-                <i className="bi bi-eye" aria-hidden />
-              )}
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-success"
-              disabled={isLoadingDetail}
-              onClick={() => setDetailRequest({ id: c.id, mode: "edit" })}
-            >
-              {isLoadingDetail && detailRequest?.mode === "edit" ? (
-                <Spinner size="sm" animation="border" />
-              ) : (
-                <i className="bi bi-pencil" aria-hidden />
-              )}
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-danger"
-              onClick={() => setPendingDelete(c)}
-            >
-              <i className="bi bi-trash" aria-hidden />
-            </button>
-          </div>
+          <CrudRowActions
+            onView={() => setDetailRequest({ id: c.id, mode: "view" })}
+            onEdit={() => setDetailRequest({ id: c.id, mode: "edit" })}
+            onDelete={() => setPendingDelete(c)}
+            viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
+            editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
+          />
         );
       },
     },
   ];
 
   const handleSubmit = async (values: ClientFormValues) => {
-    try {
-      if (modal?.mode === "create") {
-        await createMutation.mutateAsync({ data: values });
-        toast.success(t("administrative-clients.toast.created"));
-      } else if (modal?.mode === "edit" && modal.record) {
-        await updateMutation.mutateAsync({ id: modal.record.id, data: values });
-        toast.success(t("administrative-clients.toast.updated"));
-      }
-      invalidateList();
-      setModal(null);
-    } catch {
-      toast.error(t("administrative-clients.toast.error"));
-    }
+    if (!modal) return;
+    const ok = await submit(modal.mode as "create" | "edit", values, modal.record);
+    if (ok) setModal(null);
   };
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    try {
-      await deleteMutation.mutateAsync({ id: pendingDelete.id });
-      toast.success(t("administrative-clients.toast.deleted"));
-      invalidateList();
-    } catch {
-      toast.error(t("administrative-clients.toast.error"));
-    } finally {
-      setPendingDelete(null);
-    }
+    await remove(pendingDelete);
+    setPendingDelete(null);
   };
 
   return (

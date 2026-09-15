@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
-import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
@@ -16,9 +14,11 @@ import { PostApiContainerBody } from "@/api/generated/zod/container/container.zo
 import type { ContainerDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
+import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
@@ -43,7 +43,6 @@ function toFormValues(record?: ContainerDTO): ContainerFormValues {
 function ContainerPage() {
   const t = useT();
   const locale = useLocale();
-  const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -56,12 +55,22 @@ function ContainerPage() {
     Limit: PAGE_SIZE,
   });
 
-  const invalidateList = () =>
-    queryClient.invalidateQueries({ queryKey: getGetApiContainerQueryKey() });
-
   const createMutation = usePostApiContainer();
   const updateMutation = usePutApiContainerId();
   const deleteMutation = useDeleteApiContainerId();
+
+  const { submit, remove } = useCrudMutations<ContainerFormValues, ContainerDTO>({
+    onCreate: (values) => createMutation.mutateAsync({ data: values }),
+    onUpdate: (values, record) => updateMutation.mutateAsync({ id: record.id, data: values }),
+    onDelete: (record) => deleteMutation.mutateAsync({ id: record.id }),
+    invalidateKey: getGetApiContainerQueryKey(),
+    messages: {
+      created: "administrative-registry.container.toast.created",
+      updated: "administrative-registry.container.toast.updated",
+      deleted: "administrative-registry.container.toast.deleted",
+      error: "administrative-registry.container.toast.error",
+    },
+  });
 
   const fields: LayoutField[] = [
     {
@@ -98,60 +107,25 @@ function ContainerPage() {
       key: "actions",
       headerKey: "administrative-registry.container.colActions",
       render: (c) => (
-        <div className="d-flex gap-2">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary"
-            onClick={() => setModal({ mode: "view", record: c })}
-          >
-            <i className="bi bi-eye" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-success"
-            onClick={() => setModal({ mode: "edit", record: c })}
-          >
-            <i className="bi bi-pencil" aria-hidden />
-          </button>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-danger"
-            onClick={() => setPendingDelete(c)}
-          >
-            <i className="bi bi-trash" aria-hidden />
-          </button>
-        </div>
+        <CrudRowActions
+          onView={() => setModal({ mode: "view", record: c })}
+          onEdit={() => setModal({ mode: "edit", record: c })}
+          onDelete={() => setPendingDelete(c)}
+        />
       ),
     },
   ];
 
   const handleSubmit = async (values: ContainerFormValues) => {
-    try {
-      if (modal?.mode === "create") {
-        await createMutation.mutateAsync({ data: values });
-        toast.success(t("administrative-registry.container.toast.created"));
-      } else if (modal?.mode === "edit" && modal.record) {
-        await updateMutation.mutateAsync({ id: modal.record.id, data: values });
-        toast.success(t("administrative-registry.container.toast.updated"));
-      }
-      invalidateList();
-      setModal(null);
-    } catch {
-      toast.error(t("administrative-registry.container.toast.error"));
-    }
+    if (!modal) return;
+    const ok = await submit(modal.mode as "create" | "edit", values, modal.record);
+    if (ok) setModal(null);
   };
 
   const confirmDelete = async () => {
     if (!pendingDelete) return;
-    try {
-      await deleteMutation.mutateAsync({ id: pendingDelete.id });
-      toast.success(t("administrative-registry.container.toast.deleted"));
-      invalidateList();
-    } catch {
-      toast.error(t("administrative-registry.container.toast.error"));
-    } finally {
-      setPendingDelete(null);
-    }
+    await remove(pendingDelete);
+    setPendingDelete(null);
   };
 
   return (

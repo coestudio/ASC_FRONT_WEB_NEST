@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Col, Row, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Card, Col, Row, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -35,6 +35,7 @@ import {
   resolveOperationServiceLabel,
 } from "@/api/generated/static/operationServiceOptions";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { InputText, Select, SelectAsync } from "@/layouts/Form/Fields/Index";
@@ -559,34 +560,12 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
   const renderRowActions = (operation: OperationDTO) => {
     const isLoadingDetail = detailRequest?.id === operation.id;
     return (
-      <div className="d-flex gap-2">
-        <button
-          type="button"
-          className="btn btn-sm btn-outline-primary"
-          disabled={isLoadingDetail}
-          onClick={() => viewOperation(operation.id)}
-        >
-          {isLoadingDetail && detailRequest?.mode === "view" ? (
-            <Spinner size="sm" animation="border" />
-          ) : (
-            <i className="bi bi-eye" aria-hidden />
-          )}
-        </button>
-        {!readOnly ? (
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-success"
-            disabled={isLoadingDetail}
-            onClick={() => setDetailRequest({ id: operation.id, mode: "edit" })}
-          >
-            {isLoadingDetail && detailRequest?.mode === "edit" ? (
-              <Spinner size="sm" animation="border" />
-            ) : (
-              <i className="bi bi-pencil" aria-hidden />
-            )}
-          </button>
-        ) : null}
-      </div>
+      <CrudRowActions
+        onView={() => viewOperation(operation.id)}
+        onEdit={!readOnly ? () => setDetailRequest({ id: operation.id, mode: "edit" }) : undefined}
+        viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
+        editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
+      />
     );
   };
 
