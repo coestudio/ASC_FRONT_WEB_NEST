@@ -45,6 +45,14 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
     unknown
   >;
   for (const [key, value] of Object.entries(rawHeaders)) {
+    // Endpoint de upload gerado pelo Orval manda `Content-Type:
+    // multipart/form-data` fixo, sem boundary (SPEC do OpenAPI não sabe o
+    // boundary de antemão). Se esse header for repassado pro `fetch` com
+    // body FormData, ele passa a valer no lugar do header automático que o
+    // browser geraria — e esse automático é o único que inclui o boundary.
+    // Resultado sem este skip: Core rejeita com "Missing content-type
+    // boundary" (400). Descarta aqui pra deixar o browser gerar sozinho.
+    if (isForm && key.toLowerCase() === "content-type") continue;
     if (value != null && typeof value !== "object") headers.set(key, String(value));
   }
   headers.set("x-core-path", buildCorePath(config));
