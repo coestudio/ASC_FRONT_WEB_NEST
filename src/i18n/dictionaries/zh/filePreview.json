@@ -1,0 +1,10 @@
+{
+  "titleFallback": "文件",
+  "error": "无法加载该文件的内容。",
+  "unavailable": {
+    "message": "此文件类型暂不支持预览。",
+    "noUrl": "该文件不可用。",
+    "open": "在新标签页中打开",
+    "download": "下载文件"
+  }
+}

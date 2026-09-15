@@ -264,6 +264,7 @@
     "colActions": "Acciones",
     "fileLink": "Abrir archivo",
     "download": "Descargar archivo",
+    "preview": "Ver archivo",
     "form": {
       "title": "Título",
       "type": "Tipo",

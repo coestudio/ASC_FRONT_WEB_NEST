@@ -32,6 +32,7 @@
     "brasilapi-sdk": "^2.0.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
+    "mammoth": "^1.12.3",
     "react": "19.2.8",
     "react-bootstrap": "^2.10.10",
     "react-bootstrap-icons": "^1.11.6",
@@ -45,6 +46,7 @@
     "react-toastify": "^11.1.0",
     "resolver": "^0.1.12",
     "vite-tsconfig-paths": "^6.0.2",
+    "xlsx": "^0.18.5",
     "zod": "^4.6.1"
   },
   "devDependencies": {
