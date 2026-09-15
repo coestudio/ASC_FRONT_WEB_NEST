@@ -51,4 +51,49 @@ processo formal: adiciona e risca como quiser.
   removido por bug (resetava o valor digitado a cada tecla) — revisar se
   dá pra trazer de volta sem esse problema, ou outra solução de seletor.
 
+- [ ] Modal de Profile — 3 problemas:
+  1. Trocar avatar dá toast de sucesso mas a imagem só atualiza depois de
+     recarregar a página (cache/estado não reflete de imediato).
+  2. Documento/Telefone/Data de nascimento não podem ser obrigatórios —
+     precisa aceitar vazio. Atenção: `Phone`/`BirthDate` já são opcionais
+     no Core, bug deve ser só do front; `Document` é `[Required]` de
+     verdade no Core (`Profile.ViewModel.cs`) — mudar isso é território
+     Core, não só front.
+  3. Botão Salvar e botão Cancelar ficam em lugares diferentes (Cancelar
+     no `Modal.Footer`, Salvar dentro de cada aba) — colocar um do lado
+     do outro.
+
+- [ ] Sidebar (topo): logo do brand não aparece. Nota: isso foi removido
+  de propósito antes (`.sidebarHeader` ficou vazio/`aria-hidden`,
+  decisão da SPEC-26 já implementada) — usuário quer trazer de volta,
+  é reversão de decisão anterior, não bug novo.
+
+- [ ] Relatórios de verdade (aba Reports hoje é mock, SPEC-07-07): Weight
+  Report, Packing List, Relatório Fotográfico (baseado nos containers +
+  fotos dos containers, emitido em .pdf **e** .docx). Todos em inglês
+  fixo, sem precisar de i18n.
+
+- [ ] Aba Nota Fiscal ganha sub-abas: (1) listagem atual, (2) "Comparação
+  NF" — quadro geral comparando quantidade de fardos/peso líquido/peso
+  bruto declarado da NF vs. o que já foi estufado (precisa de rota
+  dedicada no Core), (3) "Comparação Lotes" — mesma ideia mas orientada
+  por lote em vez de NF.
+
+- [ ] Tela nova: listar todos os fardos (romaneio) com checkbox,
+  selecionar vários de uma vez e estufar todos juntos num único
+  container (hoje só dá pra estufar um fardo específico por vez — Modo
+  A — ou por quantidade sem escolher qual — Modo B).
+
+- [ ] Lacre de container: investigar/revisar UI depois que o Core
+  definir lacrar/deslacrar com histórico (ver item equivalente no
+  TODO do Core).
+
+- [ ] Tela dedicada de "desestufagem" de fardos/sacas. Hoje só existe
+  via Cancelar dentro do modal "ver fardos estufados" (que já libera a
+  linha do romaneio de volta, mas sem tela própria/fluxo claro).
+
+- [ ] Investigar Split/Transferência de Containers (mover fardos de um
+  container pra outro, ou dividir um container em dois) — não existe
+  hoje.
+
 ## Feito
