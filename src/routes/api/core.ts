@@ -37,16 +37,27 @@ async function handler({ request }: { request: Request }): Promise<Response> {
 
   // CSRF: em métodos mutantes, exige mesma origem (SameSite=Lax já barra o
   // grosso; isto é a checagem equivalente ao createCsrfMiddleware dos server fns).
-  // Não usa `new URL(request.url).host`: no build Azure SWA, o preset azure-swa
-  // do nitro monta essa URL com host placeholder fixo ("localhost", ver
-  // scripts/patch-nitro-azure-swa.mjs, bug #1) — nunca o domínio público real.
-  // `x-forwarded-host`/`host` chegam corretos (a mesma requisição HTTP recebida
-  // pelo Azure Functions), então são a fonte confiável de host aqui.
+  // Não usa host/URL do lado do servidor: no build Azure SWA (função gerenciada
+  // atrás do proxy interno do SWA), nem `request.url` (preset azure-swa do
+  // nitro monta com host placeholder fixo, ver scripts/patch-nitro-azure-swa.mjs
+  // bug #1) nem `host`/`x-forwarded-host` reproduzem o domínio público real
+  // nesse ambiente. `Sec-Fetch-Site` é calculado pelo próprio browser — o
+  // mesmo mutator.ts sempre chama `fetch("/api/core", ...)` como path relativo,
+  // então um browser real sempre manda "same-origin" aqui, imune a qualquer
+  // reescrita de host do lado do servidor. Origin/host só entram como fallback
+  // pra browsers/proxies que não mandam esse header.
   if (MUTATING.has(request.method)) {
-    const origin = request.headers.get("origin");
-    const trustedHost = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-    if (origin && trustedHost && new URL(origin).host !== trustedHost) {
-      return Response.json({ message: "Origem não permitida." }, { status: 403 });
+    const fetchSite = request.headers.get("sec-fetch-site");
+    if (fetchSite !== null) {
+      if (fetchSite !== "same-origin") {
+        return Response.json({ message: "Origem não permitida." }, { status: 403 });
+      }
+    } else {
+      const origin = request.headers.get("origin");
+      const trustedHost = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+      if (origin && trustedHost && new URL(origin).host !== trustedHost) {
+        return Response.json({ message: "Origem não permitida." }, { status: 403 });
+      }
     }
   }
 
