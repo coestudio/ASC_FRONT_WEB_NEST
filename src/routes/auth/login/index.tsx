@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -37,12 +38,18 @@ function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: { userName: "", password: "" },
   });
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
+  const { handleSubmit } = methods;
+
+  // Estado próprio em vez de `formState.isSubmitting` do react-hook-form —
+  // o Super login chama `onSubmit` direto (bypassa `handleSubmit`, não tem
+  // campo pra validar), então `isSubmitting` nunca virava `true` nesse
+  // caminho: sem spinner/disabled durante o request, parecia que o clique
+  // não tinha feito nada (principalmente com o backend mais lento pra
+  // responder) e o usuário clicava de novo. `loading` cobre os dois botões.
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data: LoginInput) => {
+    setLoading(true);
     try {
       const { user } = await loginFn({ data });
       queryClient.setQueryData(profileMeQueryOptions().queryKey, user);
@@ -54,6 +61,8 @@ function LoginPage() {
       navigate({ to: "/dashboard" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível entrar.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,14 +108,14 @@ function LoginPage() {
               })
             }
             className="w-100 mb-2"
-            disabled={isSubmitting}
+            disabled={loading}
           >
-            Super login
+            {loading ? <Spinner size="sm" animation="border" /> : "Super login"}
           </Button>
         )}
 
-        <Button type="submit" className="w-100" disabled={isSubmitting}>
-          {isSubmitting ? (
+        <Button type="submit" className="w-100" disabled={loading}>
+          {loading ? (
             <>
               <Spinner size="sm" animation="border" className="me-2" />
               Entrando...
