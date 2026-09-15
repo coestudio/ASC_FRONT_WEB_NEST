@@ -37,10 +37,15 @@ async function handler({ request }: { request: Request }): Promise<Response> {
 
   // CSRF: em métodos mutantes, exige mesma origem (SameSite=Lax já barra o
   // grosso; isto é a checagem equivalente ao createCsrfMiddleware dos server fns).
+  // Não usa `new URL(request.url).host`: no build Azure SWA, o preset azure-swa
+  // do nitro monta essa URL com host placeholder fixo ("localhost", ver
+  // scripts/patch-nitro-azure-swa.mjs, bug #1) — nunca o domínio público real.
+  // `x-forwarded-host`/`host` chegam corretos (a mesma requisição HTTP recebida
+  // pelo Azure Functions), então são a fonte confiável de host aqui.
   if (MUTATING.has(request.method)) {
     const origin = request.headers.get("origin");
-    const url = new URL(request.url);
-    if (origin && new URL(origin).host !== url.host) {
+    const trustedHost = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+    if (origin && trustedHost && new URL(origin).host !== trustedHost) {
       return Response.json({ message: "Origem não permitida." }, { status: 403 });
     }
   }
