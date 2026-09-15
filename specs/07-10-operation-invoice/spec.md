@@ -347,8 +347,23 @@ já valida em cada chamada individual.
 status, shape idêntico ao anterior), `useGetApiOperationOperationIdInvoice`
 (lista). Ver §8.
 
+**D-NEW — RESOLVIDA (2026-09-15).** Usuário escolheu a **opção 2**: o
+Core corrigiu `FormFileUploadTransformer` pra reconhecer
+`List<IFormFile>`/`IFormFile[]` (commit no Core, branch
+`spec-14-16-integration`), e o `just map` foi rerodado nesta branch —
+`postApiOperationOperationIdInvoiceBody.Files` agora é `(Blob | File)[]`
+real, `multipart/form-data` de verdade, confirmado sem regressão no
+upload de arquivo único (`Document.File`). **RF3 volta ao desenho
+original**: upload real de N arquivos na própria criação da Invoice, uma
+chamada, sem o workaround de 2 chamadas nem o gap de
+`InvoiceDTO.documents[]` descrito abaixo (mantido só como registro
+histórico da investigação).
+
+<details>
+<summary>Registro histórico — análise antes da correção do Core</summary>
+
 ```
-[NEEDS_DECISION]
+[NEEDS_DECISION] (RESOLVIDO — ver acima)
 
 D-NEW — O que fazer com o campo `Files` quebrado no Core (§0.1)?
 
@@ -408,10 +423,13 @@ registrada aqui em vez de assumida.
 Aguardando decisão do usuário.
 ```
 
+</details>
+
 ---
 
-**Status:** `WAITING_APPROVAL`. D1/D2/D3 fechadas nesta reconciliação;
-falta `D-NEW` (§14) antes de `APROVAR SPEC-07-10`. Se o usuário escolher a
-opção 1 ou 3 de `D-NEW`, a SPEC pode ser aprovada como está (ajustando
-§3/§8/§9 conforme a opção). Se escolher a opção 2, volta a
-`BLOCKED` para a parte de RF3 até o Core corrigir e reampear.
+**Status:** `WAITING_APPROVAL`. D1/D2/D3/D-NEW todas fechadas. §3/§8/§9
+precisam de uma pequena revisão (remover o desenho de workaround de 2
+chamadas que foi escrito enquanto D-NEW estava aberta, voltar pro upload
+real de N arquivos numa chamada só) antes de `APROVAR SPEC-07-10` virar
+código — não é decisão nova, é só destravar o texto pra refletir a
+decisão já tomada.
