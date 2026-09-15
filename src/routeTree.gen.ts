@@ -19,6 +19,9 @@ import { Route as DashboardClientRouteRouteImport } from './routes/_dashboard/cl
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SystemNotFoundRouteImport } from './routes/_system/not-found'
 import { Route as ApiCoreRouteImport } from './routes/api/core'
+import { Route as DashboardInternalAdministrativeRouteRouteImport } from './routes/_dashboard/_internal/administrative/route'
+import { Route as DashboardInternalLaboratoryRouteRouteImport } from './routes/_dashboard/_internal/laboratory/route'
+import { Route as DashboardInternalOperationalRouteRouteImport } from './routes/_dashboard/_internal/operational/route'
 import { Route as DashboardAdminIndexRouteImport } from './routes/_dashboard/admin/index'
 import { Route as DashboardClientIndexRouteImport } from './routes/_dashboard/client/index'
 import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard/dashboard/index'
@@ -90,6 +93,24 @@ const ApiCoreRoute = ApiCoreRouteImport.update({
   path: '/api/core',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardInternalAdministrativeRouteRoute =
+  DashboardInternalAdministrativeRouteRouteImport.update({
+    id: '/administrative',
+    path: '/administrative',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalLaboratoryRouteRoute =
+  DashboardInternalLaboratoryRouteRouteImport.update({
+    id: '/laboratory',
+    path: '/laboratory',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalOperationalRouteRoute =
+  DashboardInternalOperationalRouteRouteImport.update({
+    id: '/operational',
+    path: '/operational',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
 const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -122,21 +143,21 @@ const AuthLogoutIndexRoute = AuthLogoutIndexRouteImport.update({
 } as any)
 const DashboardInternalAdministrativeIndexRoute =
   DashboardInternalAdministrativeIndexRouteImport.update({
-    id: '/administrative/',
-    path: '/administrative/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalLaboratoryIndexRoute =
   DashboardInternalLaboratoryIndexRouteImport.update({
-    id: '/laboratory/',
-    path: '/laboratory/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardInternalLaboratoryRouteRoute,
   } as any)
 const DashboardInternalOperationalIndexRoute =
   DashboardInternalOperationalIndexRouteImport.update({
-    id: '/operational/',
-    path: '/operational/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardInternalOperationalRouteRoute,
   } as any)
 const DashboardAdminAccessIndexRoute =
   DashboardAdminAccessIndexRouteImport.update({
@@ -170,63 +191,63 @@ const DashboardClientTrackingIndexRoute =
   } as any)
 const DashboardInternalAdministrativeClientsIndexRoute =
   DashboardInternalAdministrativeClientsIndexRouteImport.update({
-    id: '/administrative/clients/',
-    path: '/administrative/clients/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/clients/',
+    path: '/clients/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalAdministrativeOperationsIndexRoute =
   DashboardInternalAdministrativeOperationsIndexRouteImport.update({
-    id: '/administrative/operations/',
-    path: '/administrative/operations/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/operations/',
+    path: '/operations/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalOperationalOperationsIndexRoute =
   DashboardInternalOperationalOperationsIndexRouteImport.update({
-    id: '/operational/operations/',
-    path: '/operational/operations/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/operations/',
+    path: '/operations/',
+    getParentRoute: () => DashboardInternalOperationalRouteRoute,
   } as any)
 const DashboardInternalAdministrativeOperationsIdIndexRoute =
   DashboardInternalAdministrativeOperationsIdIndexRouteImport.update({
-    id: '/administrative/operations/$id/',
-    path: '/administrative/operations/$id/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/operations/$id/',
+    path: '/operations/$id/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalAdministrativeRegistryContainerIndexRoute =
   DashboardInternalAdministrativeRegistryContainerIndexRouteImport.update({
-    id: '/administrative/registry/container/',
-    path: '/administrative/registry/container/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/registry/container/',
+    path: '/registry/container/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalAdministrativeRegistryHarborIndexRoute =
   DashboardInternalAdministrativeRegistryHarborIndexRouteImport.update({
-    id: '/administrative/registry/harbor/',
-    path: '/administrative/registry/harbor/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/registry/harbor/',
+    path: '/registry/harbor/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalAdministrativeRegistryProductIndexRoute =
   DashboardInternalAdministrativeRegistryProductIndexRouteImport.update({
-    id: '/administrative/registry/product/',
-    path: '/administrative/registry/product/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/registry/product/',
+    path: '/registry/product/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalAdministrativeRegistryTerminalIndexRoute =
   DashboardInternalAdministrativeRegistryTerminalIndexRouteImport.update({
-    id: '/administrative/registry/terminal/',
-    path: '/administrative/registry/terminal/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/registry/terminal/',
+    path: '/registry/terminal/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalAdministrativeRegistryVesselIndexRoute =
   DashboardInternalAdministrativeRegistryVesselIndexRouteImport.update({
-    id: '/administrative/registry/vessel/',
-    path: '/administrative/registry/vessel/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/registry/vessel/',
+    path: '/registry/vessel/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalOperationalOperationsIdIndexRoute =
   DashboardInternalOperationalOperationsIdIndexRouteImport.update({
-    id: '/operational/operations/$id/',
-    path: '/operational/operations/$id/',
-    getParentRoute: () => DashboardInternalRoute,
+    id: '/operations/$id/',
+    path: '/operations/$id/',
+    getParentRoute: () => DashboardInternalOperationalRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -236,6 +257,9 @@ export interface FileRoutesByFullPath {
   '/client': typeof DashboardClientRouteRouteWithChildren
   '/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
+  '/administrative': typeof DashboardInternalAdministrativeRouteRouteWithChildren
+  '/laboratory': typeof DashboardInternalLaboratoryRouteRouteWithChildren
+  '/operational': typeof DashboardInternalOperationalRouteRouteWithChildren
   '/admin/': typeof DashboardAdminIndexRoute
   '/client/': typeof DashboardClientIndexRoute
   '/dashboard/': typeof DashboardDashboardIndexRoute
@@ -303,6 +327,9 @@ export interface FileRoutesById {
   '/_system/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
   '/_site/': typeof SiteIndexRoute
+  '/_dashboard/_internal/administrative': typeof DashboardInternalAdministrativeRouteRouteWithChildren
+  '/_dashboard/_internal/laboratory': typeof DashboardInternalLaboratoryRouteRouteWithChildren
+  '/_dashboard/_internal/operational': typeof DashboardInternalOperationalRouteRouteWithChildren
   '/_dashboard/admin/': typeof DashboardAdminIndexRoute
   '/_dashboard/client/': typeof DashboardClientIndexRoute
   '/_dashboard/dashboard/': typeof DashboardDashboardIndexRoute
@@ -337,6 +364,9 @@ export interface FileRouteTypes {
     | '/client'
     | '/not-found'
     | '/api/core'
+    | '/administrative'
+    | '/laboratory'
+    | '/operational'
     | '/admin/'
     | '/client/'
     | '/dashboard/'
@@ -403,6 +433,9 @@ export interface FileRouteTypes {
     | '/_system/not-found'
     | '/api/core'
     | '/_site/'
+    | '/_dashboard/_internal/administrative'
+    | '/_dashboard/_internal/laboratory'
+    | '/_dashboard/_internal/operational'
     | '/_dashboard/admin/'
     | '/_dashboard/client/'
     | '/_dashboard/dashboard/'
@@ -509,6 +542,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCoreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_dashboard/_internal/administrative': {
+      id: '/_dashboard/_internal/administrative'
+      path: '/administrative'
+      fullPath: '/administrative'
+      preLoaderRoute: typeof DashboardInternalAdministrativeRouteRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/laboratory': {
+      id: '/_dashboard/_internal/laboratory'
+      path: '/laboratory'
+      fullPath: '/laboratory'
+      preLoaderRoute: typeof DashboardInternalLaboratoryRouteRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/operational': {
+      id: '/_dashboard/_internal/operational'
+      path: '/operational'
+      fullPath: '/operational'
+      preLoaderRoute: typeof DashboardInternalOperationalRouteRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
     '/_dashboard/admin/': {
       id: '/_dashboard/admin/'
       path: '/'
@@ -553,24 +607,24 @@ declare module '@tanstack/react-router' {
     }
     '/_dashboard/_internal/administrative/': {
       id: '/_dashboard/_internal/administrative/'
-      path: '/administrative'
+      path: '/'
       fullPath: '/administrative/'
       preLoaderRoute: typeof DashboardInternalAdministrativeIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/laboratory/': {
       id: '/_dashboard/_internal/laboratory/'
-      path: '/laboratory'
+      path: '/'
       fullPath: '/laboratory/'
       preLoaderRoute: typeof DashboardInternalLaboratoryIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalLaboratoryRouteRoute
     }
     '/_dashboard/_internal/operational/': {
       id: '/_dashboard/_internal/operational/'
-      path: '/operational'
+      path: '/'
       fullPath: '/operational/'
       preLoaderRoute: typeof DashboardInternalOperationalIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalOperationalRouteRoute
     }
     '/_dashboard/admin/access/': {
       id: '/_dashboard/admin/access/'
@@ -609,73 +663,73 @@ declare module '@tanstack/react-router' {
     }
     '/_dashboard/_internal/administrative/clients/': {
       id: '/_dashboard/_internal/administrative/clients/'
-      path: '/administrative/clients'
+      path: '/clients'
       fullPath: '/administrative/clients/'
       preLoaderRoute: typeof DashboardInternalAdministrativeClientsIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/administrative/operations/': {
       id: '/_dashboard/_internal/administrative/operations/'
-      path: '/administrative/operations'
+      path: '/operations'
       fullPath: '/administrative/operations/'
       preLoaderRoute: typeof DashboardInternalAdministrativeOperationsIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/operational/operations/': {
       id: '/_dashboard/_internal/operational/operations/'
-      path: '/operational/operations'
+      path: '/operations'
       fullPath: '/operational/operations/'
       preLoaderRoute: typeof DashboardInternalOperationalOperationsIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalOperationalRouteRoute
     }
     '/_dashboard/_internal/administrative/operations/$id/': {
       id: '/_dashboard/_internal/administrative/operations/$id/'
-      path: '/administrative/operations/$id'
+      path: '/operations/$id'
       fullPath: '/administrative/operations/$id/'
       preLoaderRoute: typeof DashboardInternalAdministrativeOperationsIdIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/administrative/registry/container/': {
       id: '/_dashboard/_internal/administrative/registry/container/'
-      path: '/administrative/registry/container'
+      path: '/registry/container'
       fullPath: '/administrative/registry/container/'
       preLoaderRoute: typeof DashboardInternalAdministrativeRegistryContainerIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/administrative/registry/harbor/': {
       id: '/_dashboard/_internal/administrative/registry/harbor/'
-      path: '/administrative/registry/harbor'
+      path: '/registry/harbor'
       fullPath: '/administrative/registry/harbor/'
       preLoaderRoute: typeof DashboardInternalAdministrativeRegistryHarborIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/administrative/registry/product/': {
       id: '/_dashboard/_internal/administrative/registry/product/'
-      path: '/administrative/registry/product'
+      path: '/registry/product'
       fullPath: '/administrative/registry/product/'
       preLoaderRoute: typeof DashboardInternalAdministrativeRegistryProductIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/administrative/registry/terminal/': {
       id: '/_dashboard/_internal/administrative/registry/terminal/'
-      path: '/administrative/registry/terminal'
+      path: '/registry/terminal'
       fullPath: '/administrative/registry/terminal/'
       preLoaderRoute: typeof DashboardInternalAdministrativeRegistryTerminalIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/administrative/registry/vessel/': {
       id: '/_dashboard/_internal/administrative/registry/vessel/'
-      path: '/administrative/registry/vessel'
+      path: '/registry/vessel'
       fullPath: '/administrative/registry/vessel/'
       preLoaderRoute: typeof DashboardInternalAdministrativeRegistryVesselIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/operational/operations/$id/': {
       id: '/_dashboard/_internal/operational/operations/$id/'
-      path: '/operational/operations/$id'
+      path: '/operations/$id'
       fullPath: '/operational/operations/$id/'
       preLoaderRoute: typeof DashboardInternalOperationalOperationsIdIndexRouteImport
-      parentRoute: typeof DashboardInternalRoute
+      parentRoute: typeof DashboardInternalOperationalRouteRoute
     }
   }
 }
@@ -729,48 +783,94 @@ const DashboardClientRouteRouteChildren: DashboardClientRouteRouteChildren = {
 const DashboardClientRouteRouteWithChildren =
   DashboardClientRouteRoute._addFileChildren(DashboardClientRouteRouteChildren)
 
-interface DashboardInternalRouteChildren {
+interface DashboardInternalAdministrativeRouteRouteChildren {
   DashboardInternalAdministrativeIndexRoute: typeof DashboardInternalAdministrativeIndexRoute
-  DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
-  DashboardInternalOperationalIndexRoute: typeof DashboardInternalOperationalIndexRoute
   DashboardInternalAdministrativeClientsIndexRoute: typeof DashboardInternalAdministrativeClientsIndexRoute
   DashboardInternalAdministrativeOperationsIndexRoute: typeof DashboardInternalAdministrativeOperationsIndexRoute
-  DashboardInternalOperationalOperationsIndexRoute: typeof DashboardInternalOperationalOperationsIndexRoute
   DashboardInternalAdministrativeOperationsIdIndexRoute: typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   DashboardInternalAdministrativeRegistryContainerIndexRoute: typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
   DashboardInternalAdministrativeRegistryHarborIndexRoute: typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
   DashboardInternalAdministrativeRegistryProductIndexRoute: typeof DashboardInternalAdministrativeRegistryProductIndexRoute
   DashboardInternalAdministrativeRegistryTerminalIndexRoute: typeof DashboardInternalAdministrativeRegistryTerminalIndexRoute
   DashboardInternalAdministrativeRegistryVesselIndexRoute: typeof DashboardInternalAdministrativeRegistryVesselIndexRoute
+}
+
+const DashboardInternalAdministrativeRouteRouteChildren: DashboardInternalAdministrativeRouteRouteChildren =
+  {
+    DashboardInternalAdministrativeIndexRoute:
+      DashboardInternalAdministrativeIndexRoute,
+    DashboardInternalAdministrativeClientsIndexRoute:
+      DashboardInternalAdministrativeClientsIndexRoute,
+    DashboardInternalAdministrativeOperationsIndexRoute:
+      DashboardInternalAdministrativeOperationsIndexRoute,
+    DashboardInternalAdministrativeOperationsIdIndexRoute:
+      DashboardInternalAdministrativeOperationsIdIndexRoute,
+    DashboardInternalAdministrativeRegistryContainerIndexRoute:
+      DashboardInternalAdministrativeRegistryContainerIndexRoute,
+    DashboardInternalAdministrativeRegistryHarborIndexRoute:
+      DashboardInternalAdministrativeRegistryHarborIndexRoute,
+    DashboardInternalAdministrativeRegistryProductIndexRoute:
+      DashboardInternalAdministrativeRegistryProductIndexRoute,
+    DashboardInternalAdministrativeRegistryTerminalIndexRoute:
+      DashboardInternalAdministrativeRegistryTerminalIndexRoute,
+    DashboardInternalAdministrativeRegistryVesselIndexRoute:
+      DashboardInternalAdministrativeRegistryVesselIndexRoute,
+  }
+
+const DashboardInternalAdministrativeRouteRouteWithChildren =
+  DashboardInternalAdministrativeRouteRoute._addFileChildren(
+    DashboardInternalAdministrativeRouteRouteChildren,
+  )
+
+interface DashboardInternalLaboratoryRouteRouteChildren {
+  DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
+}
+
+const DashboardInternalLaboratoryRouteRouteChildren: DashboardInternalLaboratoryRouteRouteChildren =
+  {
+    DashboardInternalLaboratoryIndexRoute:
+      DashboardInternalLaboratoryIndexRoute,
+  }
+
+const DashboardInternalLaboratoryRouteRouteWithChildren =
+  DashboardInternalLaboratoryRouteRoute._addFileChildren(
+    DashboardInternalLaboratoryRouteRouteChildren,
+  )
+
+interface DashboardInternalOperationalRouteRouteChildren {
+  DashboardInternalOperationalIndexRoute: typeof DashboardInternalOperationalIndexRoute
+  DashboardInternalOperationalOperationsIndexRoute: typeof DashboardInternalOperationalOperationsIndexRoute
   DashboardInternalOperationalOperationsIdIndexRoute: typeof DashboardInternalOperationalOperationsIdIndexRoute
 }
 
+const DashboardInternalOperationalRouteRouteChildren: DashboardInternalOperationalRouteRouteChildren =
+  {
+    DashboardInternalOperationalIndexRoute:
+      DashboardInternalOperationalIndexRoute,
+    DashboardInternalOperationalOperationsIndexRoute:
+      DashboardInternalOperationalOperationsIndexRoute,
+    DashboardInternalOperationalOperationsIdIndexRoute:
+      DashboardInternalOperationalOperationsIdIndexRoute,
+  }
+
+const DashboardInternalOperationalRouteRouteWithChildren =
+  DashboardInternalOperationalRouteRoute._addFileChildren(
+    DashboardInternalOperationalRouteRouteChildren,
+  )
+
+interface DashboardInternalRouteChildren {
+  DashboardInternalAdministrativeRouteRoute: typeof DashboardInternalAdministrativeRouteRouteWithChildren
+  DashboardInternalLaboratoryRouteRoute: typeof DashboardInternalLaboratoryRouteRouteWithChildren
+  DashboardInternalOperationalRouteRoute: typeof DashboardInternalOperationalRouteRouteWithChildren
+}
+
 const DashboardInternalRouteChildren: DashboardInternalRouteChildren = {
-  DashboardInternalAdministrativeIndexRoute:
-    DashboardInternalAdministrativeIndexRoute,
-  DashboardInternalLaboratoryIndexRoute: DashboardInternalLaboratoryIndexRoute,
-  DashboardInternalOperationalIndexRoute:
-    DashboardInternalOperationalIndexRoute,
-  DashboardInternalAdministrativeClientsIndexRoute:
-    DashboardInternalAdministrativeClientsIndexRoute,
-  DashboardInternalAdministrativeOperationsIndexRoute:
-    DashboardInternalAdministrativeOperationsIndexRoute,
-  DashboardInternalOperationalOperationsIndexRoute:
-    DashboardInternalOperationalOperationsIndexRoute,
-  DashboardInternalAdministrativeOperationsIdIndexRoute:
-    DashboardInternalAdministrativeOperationsIdIndexRoute,
-  DashboardInternalAdministrativeRegistryContainerIndexRoute:
-    DashboardInternalAdministrativeRegistryContainerIndexRoute,
-  DashboardInternalAdministrativeRegistryHarborIndexRoute:
-    DashboardInternalAdministrativeRegistryHarborIndexRoute,
-  DashboardInternalAdministrativeRegistryProductIndexRoute:
-    DashboardInternalAdministrativeRegistryProductIndexRoute,
-  DashboardInternalAdministrativeRegistryTerminalIndexRoute:
-    DashboardInternalAdministrativeRegistryTerminalIndexRoute,
-  DashboardInternalAdministrativeRegistryVesselIndexRoute:
-    DashboardInternalAdministrativeRegistryVesselIndexRoute,
-  DashboardInternalOperationalOperationsIdIndexRoute:
-    DashboardInternalOperationalOperationsIdIndexRoute,
+  DashboardInternalAdministrativeRouteRoute:
+    DashboardInternalAdministrativeRouteRouteWithChildren,
+  DashboardInternalLaboratoryRouteRoute:
+    DashboardInternalLaboratoryRouteRouteWithChildren,
+  DashboardInternalOperationalRouteRoute:
+    DashboardInternalOperationalRouteRouteWithChildren,
 }
 
 const DashboardInternalRouteWithChildren =

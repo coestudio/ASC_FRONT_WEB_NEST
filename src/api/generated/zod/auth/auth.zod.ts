@@ -26,7 +26,7 @@ export const postApiAuthLoginResponseUserAddressCountryMax = 2;
 export const postApiAuthLoginResponseUserAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiAuthLoginResponseUserAddressPostalCodeMax = 20;
 
-export const postApiAuthLoginResponseUserAddressStateMax = 2;
+export const postApiAuthLoginResponseUserAddressStateMax = 100;
 
 export const postApiAuthLoginResponseUserAddressNeighborhoodMax = 100;
 
@@ -124,6 +124,12 @@ export const PostApiAuthLoginResponse = zod.object({
 })
 })
 
+export const PostApiAuthLogoutBody = zod.object({
+  "refreshToken": zod.string()
+})
+
+export const PostApiAuthLogoutResponse = zod.unknown()
+
 export const PostApiAuthForgotPasswordBody = zod.object({
   "email": zod.string()
 })
@@ -164,5 +170,19 @@ export const PostApiAuthResetPasswordBody = zod.object({
 
 export const PostApiAuthResetPasswordResponse = zod.object({
   "message": zod.string().optional()
+})
+
+export const PostApiAuthRefreshBody = zod.object({
+  "refreshToken": zod.string()
+})
+
+export const postApiAuthRefreshResponseExpiresInRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const PostApiAuthRefreshResponse = zod.object({
+  "accessToken": zod.string(),
+  "refreshToken": zod.string().nullish(),
+  "expiresAt": zod.iso.datetime({"offset":true}),
+  "expiresIn": zod.union([zod.int(),zod.stringFormat('int32', postApiAuthRefreshResponseExpiresInRegExpTwo)])
 })
 

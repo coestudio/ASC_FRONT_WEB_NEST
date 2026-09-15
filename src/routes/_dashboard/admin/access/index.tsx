@@ -57,9 +57,9 @@ export const Route = createFileRoute("/_dashboard/admin/access/")({
   component: AdminAccessPage,
 });
 
-// Schema unificado (create/edit/view usam o mesmo T; edit só não renderiza
-// isAdmin/roles nem manda no PUT — UserUpdate do Core não aceita esses
-// campos, ver spec §13 D3).
+// Schema unificado (create/edit/view usam o mesmo T). SPEC-23: o Core
+// passou a aceitar `isAdmin`/`roles` também em `UserUpdate` (antes só em
+// `UserCreate`) — edit agora renderiza e envia os dois campos, igual create.
 const userFormSchema = z.object({
   userName: PostApiUserBody.shape.userName,
   fullName: PostApiUserBody.shape.profile.shape.fullName,
@@ -225,7 +225,11 @@ function AdminAccessPageContent() {
   const resetPasswordMutation = usePostApiUserIdResetPassword();
   const deleteMutation = useDeleteApiUserId();
 
-  const createFields: LayoutField[] = [
+  // SPEC-23: create/edit/view usam exatamente os mesmos campos agora — o
+  // Core passou a aceitar `isAdmin`/`roles` em `UserUpdate` (antes só em
+  // `UserCreate`), então não há mais motivo pra edit esconder esses dois
+  // campos (antes um `editFields` separado, sem eles).
+  const fields: LayoutField[] = [
     { type: "InputText", fieldName: "fullName", label: t("access.form.fullName"), col: { md: 6 } },
     { type: "InputText", fieldName: "userName", label: t("access.form.username"), col: { md: 6 } },
     { type: "InputEmail", fieldName: "email", label: t("access.form.email"), col: { md: 6 } },
@@ -253,27 +257,6 @@ function AdminAccessPageContent() {
     },
     { type: "InputSwitch", fieldName: "isAdmin", label: t("access.form.isAdmin"), col: { md: 4 } },
   ];
-
-  const editFields: LayoutField[] = [
-    { type: "InputText", fieldName: "fullName", label: t("access.form.fullName"), col: { md: 6 } },
-    { type: "InputText", fieldName: "userName", label: t("access.form.username"), col: { md: 6 } },
-    { type: "InputEmail", fieldName: "email", label: t("access.form.email"), col: { md: 6 } },
-    {
-      type: "InputDocument",
-      fieldName: "document",
-      label: t("access.form.document"),
-      col: { md: 6 },
-    },
-    { type: "InputPhone", fieldName: "phone", label: t("access.form.phone"), col: { md: 6 } },
-    {
-      type: "InputDate",
-      fieldName: "birthDate",
-      label: t("access.form.birthDate"),
-      col: { md: 6 },
-    },
-  ];
-
-  const fields = modal?.mode === "create" || modal?.mode === "view" ? createFields : editFields;
 
   const columns: CrudColumn<UserDTO>[] = [
     { key: "name", headerKey: "access.colName", render: (u) => u.profile.fullName },
@@ -340,6 +323,9 @@ function AdminAccessPageContent() {
               phone: values.phone || null,
               birthDate: values.birthDate || null,
             },
+            // SPEC-23: Core agora aceita isAdmin/roles também no PUT.
+            isAdmin: values.isAdmin ?? false,
+            roles: values.roles ?? [],
           },
         });
         toast.success(t("access.toast.updated"));

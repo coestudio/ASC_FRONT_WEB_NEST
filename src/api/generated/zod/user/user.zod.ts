@@ -81,6 +81,44 @@ export const PatchApiUserIdDeactivateResponse = zod.object({
   "updatedAt": zod.iso.datetime({"offset":true})
 })
 
+export const PatchApiUserIdRolesParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const PatchApiUserIdRolesBody = zod.object({
+  "isAdmin": zod.boolean(),
+  "roles": zod.array(zod.enum(['Agent', 'Supervisor', 'Laboratory'])).optional()
+})
+
+export const PatchApiUserIdRolesResponse = zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.enum(['Internal', 'External']),
+  "roles": zod.array(zod.enum(['Agent', 'Supervisor', 'Laboratory'])),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+
 export const getApiUserRolesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -252,7 +290,7 @@ export const getApiUserIdResponseAddressCountryMax = 2;
 export const getApiUserIdResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiUserIdResponseAddressPostalCodeMax = 20;
 
-export const getApiUserIdResponseAddressStateMax = 2;
+export const getApiUserIdResponseAddressStateMax = 100;
 
 export const getApiUserIdResponseAddressNeighborhoodMax = 100;
 
@@ -363,6 +401,8 @@ export const putApiUserIdBodyUserNameMax = 150;
 
 
 export const PutApiUserIdBody = zod.object({
+  "roles": zod.array(zod.enum(['Agent', 'Supervisor', 'Laboratory'])).nullish(),
+  "isAdmin": zod.boolean().nullish(),
   "profile": zod.object({
   "fullName": zod.string().min(putApiUserIdBodyProfileFullNameMin).max(putApiUserIdBodyProfileFullNameMax),
   "document": zod.string().min(putApiUserIdBodyProfileDocumentMin).max(putApiUserIdBodyProfileDocumentMax),

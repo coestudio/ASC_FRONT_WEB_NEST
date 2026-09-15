@@ -46,7 +46,10 @@ function toFormValues(record?: HarborDTO): HarborFormValues {
       neighborhood: record?.address?.neighborhood ?? "",
       city: record?.address?.city ?? "",
       state: record?.address?.state ?? "",
-      country: record?.address?.country ?? "",
+      // Default "BR" (não string vazia — o Zod gerado exige exatamente 2
+      // letras quando o campo é preenchido; SPEC-24, mesmo padrão do
+      // AddressGroup, que assume Brasil quando o país vem vazio/ausente).
+      country: record?.address?.country ?? "BR",
     },
   };
 }

@@ -36,7 +36,7 @@ export const getApiProfileMeResponseAddressCountryMax = 2;
 export const getApiProfileMeResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiProfileMeResponseAddressPostalCodeMax = 20;
 
-export const getApiProfileMeResponseAddressStateMax = 2;
+export const getApiProfileMeResponseAddressStateMax = 100;
 
 export const getApiProfileMeResponseAddressNeighborhoodMax = 100;
 
@@ -108,6 +108,8 @@ export const postApiProfileMeBodyUserNameMax = 150;
 
 
 export const PostApiProfileMeBody = zod.object({
+  "roles": zod.array(zod.enum(['Agent', 'Supervisor', 'Laboratory'])).nullish(),
+  "isAdmin": zod.boolean().nullish(),
   "profile": zod.object({
   "fullName": zod.string().min(postApiProfileMeBodyProfileFullNameMin).max(postApiProfileMeBodyProfileFullNameMax),
   "document": zod.string().min(postApiProfileMeBodyProfileDocumentMin).max(postApiProfileMeBodyProfileDocumentMax),
@@ -124,7 +126,7 @@ export const postApiProfileMeResponseAddressCountryMax = 2;
 export const postApiProfileMeResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiProfileMeResponseAddressPostalCodeMax = 20;
 
-export const postApiProfileMeResponseAddressStateMax = 2;
+export const postApiProfileMeResponseAddressStateMax = 100;
 
 export const postApiProfileMeResponseAddressNeighborhoodMax = 100;
 
@@ -244,7 +246,7 @@ export const getApiProfileAddressResponseCountryMax = 2;
 export const getApiProfileAddressResponseCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const getApiProfileAddressResponsePostalCodeMax = 20;
 
-export const getApiProfileAddressResponseStateMax = 2;
+export const getApiProfileAddressResponseStateMax = 100;
 
 export const getApiProfileAddressResponseNeighborhoodMax = 100;
 
@@ -276,7 +278,7 @@ export const putApiProfileAddressBodyCountryMax = 2;
 export const putApiProfileAddressBodyCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiProfileAddressBodyPostalCodeMax = 10;
 
-export const putApiProfileAddressBodyStateMax = 2;
+export const putApiProfileAddressBodyStateMax = 100;
 
 export const putApiProfileAddressBodyNeighborhoodMax = 100;
 
@@ -307,7 +309,7 @@ export const putApiProfileAddressResponseCountryMax = 2;
 export const putApiProfileAddressResponseCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiProfileAddressResponsePostalCodeMax = 20;
 
-export const putApiProfileAddressResponseStateMax = 2;
+export const putApiProfileAddressResponseStateMax = 100;
 
 export const putApiProfileAddressResponseNeighborhoodMax = 100;
 
@@ -343,7 +345,7 @@ export const patchApiProfileAvatarResponseAddressCountryMax = 2;
 export const patchApiProfileAvatarResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const patchApiProfileAvatarResponseAddressPostalCodeMax = 20;
 
-export const patchApiProfileAvatarResponseAddressStateMax = 2;
+export const patchApiProfileAvatarResponseAddressStateMax = 100;
 
 export const patchApiProfileAvatarResponseAddressNeighborhoodMax = 100;
 

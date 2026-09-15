@@ -25,23 +25,12 @@
   z-index: 10;
   border-radius: 0 1.5rem 1.5rem 0;
 }
-/* height = 50px content + 15px padding-top + 15px padding-bottom + 1px border-bottom = 80px, matched by .topbar */
+/* height = 80px, matched by .topbar — faixa vazia (SPEC-26: brand da
+   sidebar escondido), mantida só pra alinhar a altura com o topbar. */
 .sidebarHeader {
   height: 80px;
   box-sizing: border-box;
-  padding: 15px 1.25rem;
   border-bottom: 1px solid var(--sidebar-border);
-}
-.sidebarBrand {
-  display: flex;
-  height: 100%;
-  align-items: center;
-  gap: 0.75rem;
-  text-decoration: none;
-  color: inherit;
-}
-.sidebarBrand :global(.app-brand__title) {
-  color: var(--sidebar-fg);
 }
 .sidebar :global(.brand-switcher-toggle) {
   color: var(--sidebar-fg);

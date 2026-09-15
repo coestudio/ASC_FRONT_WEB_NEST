@@ -18,9 +18,12 @@ import type {
   AuthControllerForgotPasswordRequest,
   AuthControllerLoginRequest,
   AuthControllerLoginResponse,
+  AuthControllerLogoutRequest,
+  AuthControllerRefreshRequest,
   AuthControllerResetPasswordRequest,
   AuthControllerValidateResetCodeRequest,
-  MessageDTO
+  MessageDTO,
+  TokenData
 } from '../../model';
 
 import { apiRequest } from '../../../mutator.ts';
@@ -88,6 +91,67 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getPostApiAuthLoginMutationOptions(options), queryClient);
+    }
+    export const postApiAuthLogout = (
+    authControllerLogoutRequest: AuthControllerLogoutRequest,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<void>(
+      {url: `/api/auth/logout`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: authControllerLogoutRequest, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiAuthLogoutMutationKey = () => ['postApiAuthLogout'] as const;
+
+export const getPostApiAuthLogoutMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,PostApiAuthLogoutMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,PostApiAuthLogoutMutationVariables, TContext> => {
+
+const mutationKey = getPostApiAuthLogoutMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthLogout>>, PostApiAuthLogoutMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAuthLogout(data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAuthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthLogout>>>
+    export type PostApiAuthLogoutMutationBody = AuthControllerLogoutRequest
+    export type PostApiAuthLogoutMutationError = void
+    export type PostApiAuthLogoutMutationVariables = {data: AuthControllerLogoutRequest}
+
+    export const usePostApiAuthLogout = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthLogout>>, TError,PostApiAuthLogoutMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAuthLogout>>,
+        TError,
+        PostApiAuthLogoutMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiAuthLogoutMutationOptions(options), queryClient);
     }
     export const postApiAuthForgotPassword = (
     authControllerForgotPasswordRequest: AuthControllerForgotPasswordRequest,
@@ -332,4 +396,65 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getPostApiAuthResetPasswordMutationOptions(options), queryClient);
+    }
+    export const postApiAuthRefresh = (
+    authControllerRefreshRequest: AuthControllerRefreshRequest,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<TokenData>(
+      {url: `/api/auth/refresh`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: authControllerRefreshRequest, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiAuthRefreshMutationKey = () => ['postApiAuthRefresh'] as const;
+
+export const getPostApiAuthRefreshMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRefresh>>, TError,PostApiAuthRefreshMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRefresh>>, TError,PostApiAuthRefreshMutationVariables, TContext> => {
+
+const mutationKey = getPostApiAuthRefreshMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthRefresh>>, PostApiAuthRefreshMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAuthRefresh(data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAuthRefreshMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthRefresh>>>
+    export type PostApiAuthRefreshMutationBody = AuthControllerRefreshRequest
+    export type PostApiAuthRefreshMutationError = void
+    export type PostApiAuthRefreshMutationVariables = {data: AuthControllerRefreshRequest}
+
+    export const usePostApiAuthRefresh = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthRefresh>>, TError,PostApiAuthRefreshMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAuthRefresh>>,
+        TError,
+        PostApiAuthRefreshMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiAuthRefreshMutationOptions(options), queryClient);
     }

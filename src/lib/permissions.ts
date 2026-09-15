@@ -22,6 +22,19 @@ export type PermissionUser = {
   type?: UserType;
 };
 
+/**
+ * Usuário Internal (independente de área específica) — guard "guarda-chuva"
+ * de `_internal.tsx`, que garante só que o usuário é Internal antes de cada
+ * sub-rota (`administrative/route.tsx`, `operational/route.tsx`,
+ * `laboratory/route.tsx`) checar a própria entrada em `getUserAreas`
+ * (achado R1 da SPEC-22 — antes `_internal.tsx` testava só
+ * `.includes("laboratorio")` pras três sub-áreas, o que funcionava por
+ * coincidência porque hoje elas sempre vêm juntas pra Internal).
+ */
+export function isInternalUser(user: PermissionUser | null | undefined): boolean {
+  return !!user && user.type === UserType.Internal;
+}
+
 export function getUserAreas(user: PermissionUser | null | undefined): AreaId[] {
   if (!user) return [];
 
