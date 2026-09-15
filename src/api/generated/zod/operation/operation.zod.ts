@@ -239,7 +239,10 @@ export const PostApiOperationResponse = zod.object({
   "updatedAt": zod.iso.datetime({"offset":true})
 })).optional(),
   "photos": zod.array(zod.object({
-  "slot": zod.enum(['None', 'EmptyExternal', 'EmptyInternal', 'FirstRow', 'Fifty', 'Hundred', 'FullExternal', 'Sealed', 'ShipownerSeal']),
+  "containerOperationId": zod.uuid().optional(),
+  "slot": zod.union([zod.null(),zod.union([zod.literal('None'),zod.literal('EmptyExternal'),zod.literal('EmptyInternal'),zod.literal('FirstRow'),zod.literal('Fifty'),zod.literal('Hundred'),zod.literal('FullExternal'),zod.literal('Sealed'),zod.literal('ShipownerSeal'),zod.literal(null)])]).optional(),
+  "observation": zod.string().optional(),
+  "visibleInReport": zod.boolean().optional(),
   "file": zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -248,7 +251,7 @@ export const PostApiOperationResponse = zod.object({
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
-}),
+}).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -431,7 +434,10 @@ export const GetApiOperationIdResponse = zod.object({
   "updatedAt": zod.iso.datetime({"offset":true})
 })).optional(),
   "photos": zod.array(zod.object({
-  "slot": zod.enum(['None', 'EmptyExternal', 'EmptyInternal', 'FirstRow', 'Fifty', 'Hundred', 'FullExternal', 'Sealed', 'ShipownerSeal']),
+  "containerOperationId": zod.uuid().optional(),
+  "slot": zod.union([zod.null(),zod.union([zod.literal('None'),zod.literal('EmptyExternal'),zod.literal('EmptyInternal'),zod.literal('FirstRow'),zod.literal('Fifty'),zod.literal('Hundred'),zod.literal('FullExternal'),zod.literal('Sealed'),zod.literal('ShipownerSeal'),zod.literal(null)])]).optional(),
+  "observation": zod.string().optional(),
+  "visibleInReport": zod.boolean().optional(),
   "file": zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -440,7 +446,7 @@ export const GetApiOperationIdResponse = zod.object({
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
-}),
+}).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -637,7 +643,10 @@ export const PutApiOperationIdResponse = zod.object({
   "updatedAt": zod.iso.datetime({"offset":true})
 })).optional(),
   "photos": zod.array(zod.object({
-  "slot": zod.enum(['None', 'EmptyExternal', 'EmptyInternal', 'FirstRow', 'Fifty', 'Hundred', 'FullExternal', 'Sealed', 'ShipownerSeal']),
+  "containerOperationId": zod.uuid().optional(),
+  "slot": zod.union([zod.null(),zod.union([zod.literal('None'),zod.literal('EmptyExternal'),zod.literal('EmptyInternal'),zod.literal('FirstRow'),zod.literal('Fifty'),zod.literal('Hundred'),zod.literal('FullExternal'),zod.literal('Sealed'),zod.literal('ShipownerSeal'),zod.literal(null)])]).optional(),
+  "observation": zod.string().optional(),
+  "visibleInReport": zod.boolean().optional(),
   "file": zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -646,7 +655,7 @@ export const PutApiOperationIdResponse = zod.object({
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
-}),
+}).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -839,7 +848,10 @@ export const PatchApiOperationIdStatusResponse = zod.object({
   "updatedAt": zod.iso.datetime({"offset":true})
 })).optional(),
   "photos": zod.array(zod.object({
-  "slot": zod.enum(['None', 'EmptyExternal', 'EmptyInternal', 'FirstRow', 'Fifty', 'Hundred', 'FullExternal', 'Sealed', 'ShipownerSeal']),
+  "containerOperationId": zod.uuid().optional(),
+  "slot": zod.union([zod.null(),zod.union([zod.literal('None'),zod.literal('EmptyExternal'),zod.literal('EmptyInternal'),zod.literal('FirstRow'),zod.literal('Fifty'),zod.literal('Hundred'),zod.literal('FullExternal'),zod.literal('Sealed'),zod.literal('ShipownerSeal'),zod.literal(null)])]).optional(),
+  "observation": zod.string().optional(),
+  "visibleInReport": zod.boolean().optional(),
   "file": zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -848,7 +860,7 @@ export const PatchApiOperationIdStatusResponse = zod.object({
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
-}),
+}).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})

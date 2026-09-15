@@ -430,7 +430,14 @@ function ContainerPhotos({
     }
   };
 
-  const photos = detailQuery.data?.photos ?? [];
+  // Contrato novo do Core: `ContainerPhotoDTO.file` é opcional (registro pode
+  // existir sem upload ainda, só metadata — `observation`/`visibleInReport`).
+  // Filtra da grade até essa tela ganhar UI própria pra esse estado
+  // "pendente" (decisão do usuário: comportamento visual idêntico ao de
+  // antes, sem placeholder novo por ora).
+  const photos = (detailQuery.data?.photos ?? []).filter(
+    (photo): photo is typeof photo & { file: NonNullable<typeof photo.file> } => !!photo.file,
+  );
 
   return (
     <div>
