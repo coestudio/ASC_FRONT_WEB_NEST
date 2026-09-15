@@ -29,7 +29,7 @@ import type { TranslationKey } from "@/i18n/translate";
 import { resolveInternalRoleLabel } from "@/api/generated/static/internalRoleOptions";
 import styles from "./index.module.css";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 
 export const Route = createFileRoute("/_dashboard/admin/access/")({
   head: () => ({ meta: [{ title: "Acesso — ASC" }] }),

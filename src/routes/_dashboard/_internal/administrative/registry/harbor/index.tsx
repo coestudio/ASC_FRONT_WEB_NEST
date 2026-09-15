@@ -23,7 +23,7 @@ import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/registry/harbor/")({
   head: () => ({ meta: [{ title: "Portos — ASC" }] }),

@@ -21,7 +21,7 @@ import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/registry/container/")({
   head: () => ({ meta: [{ title: "Containers — ASC" }] }),

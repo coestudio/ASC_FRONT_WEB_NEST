@@ -9,7 +9,7 @@ export const VIEW_MODE_STORAGE_KEY = "asc:view-mode";
 
 export type ViewMode = "cards" | "list";
 
-const MOBILE_BREAKPOINT_PX = 767.98;
+const MOBILE_BREAKPOINT_PX = 1024;
 
 const listeners = new Set<() => void>();
 
@@ -58,7 +58,7 @@ export function useViewMode(): [ViewMode, (mode: ViewMode) => void] {
   return [mode, setViewModeValue];
 }
 
-/** Detecta tela pequena (<768px) onde cards são ideais e a tabela não cabe. */
+/** Detecta tela pequena (<1024px, inclui tablet) onde cards são ideais e a tabela não cabe. */
 export function useIsMobile(breakpointPx: number = MOBILE_BREAKPOINT_PX): boolean {
   const query = `(max-width: ${breakpointPx}px)`;
   const [isMobile, setIsMobile] = useState<boolean>(() =>

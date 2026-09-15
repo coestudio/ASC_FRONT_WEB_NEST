@@ -1,5 +1,6 @@
 .shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   background-color: var(--bs-body-bg);
 }
@@ -13,7 +14,12 @@
   flex-direction: column;
   position: sticky;
   top: 0;
+  /* dvh acompanha esconder/mostrar da toolbar do browser (mobile e alguns
+     browsers desktop, ex. Comet) — vh puro trava na altura do load e sobra
+     espaço embaixo da sidebar quando a toolbar recolhe e o viewport cresce.
+     vh primeiro como fallback pra browser sem suporte a dvh. */
   height: 100vh;
+  height: 100dvh;
   overflow: visible;
   overflow-x: hidden;
   z-index: 10;

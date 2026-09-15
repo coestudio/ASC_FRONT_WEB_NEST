@@ -25,7 +25,7 @@ import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./index.module.css";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 
 // Formata `document` (só CNPJ cabe no shape gerado, `ClientCreate.document`
 // tem min/max 14) pro padrão `00.000.000/0000-00" — mesmo helper do
