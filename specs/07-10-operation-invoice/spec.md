@@ -15,20 +15,20 @@ administrative-operations.json` (editado)
   `administrative-operations.json`),
   SPEC-07-02 (shell de abas), SPEC-07-06 (`Documents.tsx`, padrão de upload
   reusado por esta aba — ver §0.1). Dependia também, fora deste repo, de
-  `warren/Core` **SPEC-14** (`invoice-source-and-documents`) e **SPEC-15**
+  `warren/Core` **SPEC-20** (`invoice-source-and-documents`) e **SPEC-21**
   (`romaneio-auto-invoice`) — **ambas `IMPLEMENTED`**, `just map` já rodado
   nesta branch (`spec-07-10-operation-invoice`, commit `43bad37`), `tsc
-  --noEmit` limpo. Esta SPEC **não** depende de SPEC-16
-  (`cargo-unit-redesign`) nem SPEC-17 (`cargo-stuffing-gates`) do Core.
+  --noEmit` limpo. Esta SPEC **não** depende de SPEC-22
+  (`cargo-unit-redesign`) nem SPEC-23 (`cargo-stuffing-gates`) do Core.
 
 ---
 
 ## 0. Desbloqueio (era `BLOCKED`, agora reconciliada)
 
-Esta SPEC nasceu `BLOCKED` esperando SPEC-14/15 do Core + `just map`. As
+Esta SPEC nasceu `BLOCKED` esperando SPEC-20/21 do Core + `just map`. As
 duas já estão `IMPLEMENTED`, o `just map` já rodou nesta branch e o diff de
 `src/api/generated/**` foi inspecionado linha a linha contra o texto real
-das SPECs 14/15 do Core (`warren/Core/specs/14-invoice-source-and-documents/
+das SPECs 20/21 do Core (`warren/Core/specs/20-invoice-source-and-documents/
 spec.md`, `warren/Core/Domain/Operations/Invoice/Invoice.ViewModel.cs`,
 `warren/Core/Plugins/OpenApi/FormFileUploadTransformer.cs`). Isso resolve
 D2/D3 originais (§14) — mas a inspeção revelou um **achado técnico novo e
@@ -41,7 +41,7 @@ sai de `BLOCKED` para `WAITING_APPROVAL` (não `APPROVED` direto) com um
 O Core (`Invoice.ViewModel.Create`) declara `Files` como
 `List<IFormFile>` (upload multipart real, N arquivos, obrigatório — o
 controller lança `MessageCode.InvoiceFileRequired` em 400 se vier vazio,
-confirmado no texto de SPEC-14 do Core, critério 3 da tabela de aceitação
+confirmado no texto de SPEC-20 do Core, critério 3 da tabela de aceitação
 e nota "VERIFIED" no fechamento daquela SPEC). O plugin que o Core usa pra
 consertar a geração de OpenAPI de `IFormFile`
 (`Plugins/OpenApi/FormFileUploadTransformer.cs`) **só trata `IFormFile` e
@@ -114,8 +114,8 @@ migração de UI-only existente.
 ## 2. Contexto
 
 Legado (`warren/Portal`): sem equivalente direto. Contrato de negócio:
-`warren/Core/specs/14-invoice-source-and-documents/spec.md` +
-`warren/Core/specs/15-romaneio-auto-invoice/spec.md` (`IMPLEMENTED`).
+`warren/Core/specs/20-invoice-source-and-documents/spec.md` +
+`warren/Core/specs/21-romaneio-auto-invoice/spec.md` (`IMPLEMENTED`).
 
 Resumo do que muda no domínio (já fechado no Core, não decisão desta SPEC):
 
@@ -526,7 +526,7 @@ chamadas).
 
 O formulário de criação manual saiu **sem** `DeclaredItemsCount`/
 `DeclaredGrossWeight`/`DeclaredNetWeight` na primeira versão — campos
-obrigatórios no Core pra Invoice `Manual` (SPEC-14 §2, mesmo quirk R4 de
+obrigatórios no Core pra Invoice `Manual` (SPEC-20 §2, mesmo quirk R4 de
 anotação: saem `.nullish()` no Zod gerado). Sem eles, toda criação manual
 falhava com 400. Corrigido: os três campos adicionados como `InputText`
 (mesmo padrão de `tara`/`maxWeight` em `registry/container`), com gate de

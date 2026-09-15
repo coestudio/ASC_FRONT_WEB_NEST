@@ -15,15 +15,15 @@ administrative-operations.json` (editado), e (fora da área de Operações)
   **SPEC-07-05** (`operation-containers`, `IMPLEMENTED` — esta SPEC
   **substitui/estende** a ação de vínculo container↔operação dela,
   adicionando a ação de estufagem; não reescreve o CRUD de vínculo em si).
-  **Dependia também, fora deste repo, de** `warren/Core` **SPEC-16**
+  **Dependia também, fora deste repo, de** `warren/Core` **SPEC-22**
   (`cargo-unit-redesign` — CargoUnit redesenhado, extinção de
-  `InvoiceItem`, `Container.MaxWeight`) **e SPEC-17**
+  `InvoiceItem`, `Container.MaxWeight`) **e SPEC-23**
   (`cargo-stuffing-gates` — endpoints de estufagem Modo A/B + gates de
   peso) — **ambas `IMPLEMENTED` agora no Core**, `just map` já rodou
   nesta branch e trouxe o contrato real (ver §0, histórico do bloqueio).
-  A SPEC-13 original do Core
-  (`specs/13-romaneio-invoice-container-flow/spec.md`) virou só o índice
-  dessas ondas. Esta aba **não** depende diretamente de SPEC-14/SPEC-15
+  A SPEC-19 original do Core
+  (`specs/19-romaneio-invoice-container-flow/spec.md`) virou só o índice
+  dessas ondas. Esta aba **não** depende diretamente de SPEC-20/SPEC-21
   do Core (as que bloqueiam/bloqueavam a SPEC-07-10, em progresso em
   paralelo, outra branch/agente). Depende ainda, indiretamente, de
   **SPEC-07-10** (`operation-invoice`) só como referência de UX (a
@@ -34,11 +34,13 @@ administrative-operations.json` (editado), e (fora da área de Operações)
 
 ## 0. Bloqueio (histórico — resolvido)
 
-**Desbloqueado em 2026-09-15.** `warren/Core` SPEC-16 (`cargo-unit-redesign`)
-e SPEC-17 (`cargo-stuffing-gates`) estão `IMPLEMENTED`; `just map` já rodou
+**Desbloqueado em 2026-09-15.** `warren/Core` SPEC-22 (`cargo-unit-redesign`)
+e SPEC-23 (`cargo-stuffing-gates`) estão `IMPLEMENTED`; `just map` já rodou
 nesta branch (`spec-07-11-operation-cargo-stuffing`, commit
-`4400ce9 just map: contrato SPEC-14 a 17`) e `tsc --noEmit` passou limpo. O
-client gerado hoje já reflete o modelo pós-SPEC-16/17:
+`4400ce9 just map: contrato SPEC-14 a 17`, mensagem de commit anterior à
+renumeração — ver nota de renumeração no índice do Core) e `tsc --noEmit`
+passou limpo. O
+client gerado hoje já reflete o modelo pós-SPEC-22/23:
 `src/api/generated/endpoints/cargo-unit/cargo-unit.ts` expõe
 `usePostApiOperationOperationIdCargoStuffIdentified` (Modo A) e
 `usePostApiOperationOperationIdCargoStuffQuantity` (Modo B), `CargoUnitDTO`
@@ -57,9 +59,9 @@ Igual à SPEC-07-10 (ver lá §0 para o texto completo do racional): o
 contrato consumido aqui — `CargoUnit` redesenhado (nasce só via
 `stuff/identified` ou `stuff/quantity`, sem mais `Open`/`Update()`/
 `StuffInto()`/`MarkDivergent`/`Reconcile`), `Container.MaxWeight` — era
-definido por `warren/Core` **SPEC-16** (`cargo-unit-redesign`) e
-**SPEC-17** (`cargo-stuffing-gates`). Nenhuma das duas estava implementada
-ainda; pior, **SPEC-16 estava ela própria `BLOCKED` no Core** por uma
+definido por `warren/Core` **SPEC-22** (`cargo-unit-redesign`) e
+**SPEC-23** (`cargo-stuffing-gates`). Nenhuma das duas estava implementada
+ainda; pior, **SPEC-22 estava ela própria `BLOCKED` no Core** por uma
 decisão de migração de dado de produção ainda pendente lá (quantas
 `CargoUnit`s existentes caem em `Status=Open` sem `ContainerOperationId`,
 e o que fazer com elas) — ou seja, esta SPEC de frontend estava bloqueada
@@ -85,10 +87,10 @@ ultrapassado) e bloqueia (erro do servidor) quando não houver saldo
 ## 2. Contexto
 
 `SPEC-07-05` implementou o vínculo container↔operação (fotos, lacres,
-status — `ContainerOperationStatus`) como CRUD simples. A SPEC-16/SPEC-17 do Core
+status — `ContainerOperationStatus`) como CRUD simples. A SPEC-22/SPEC-23 do Core
 introduz um conceito novo, **estufagem**, que não existia no modelo
 consumido por aquela SPEC: até então `CargoUnit` nem tinha tela no
-NewPortal. Depois da SPEC-16/SPEC-17 do Core, toda `CargoUnit` nasce **dentro**
+NewPortal. Depois da SPEC-22/SPEC-23 do Core, toda `CargoUnit` nasce **dentro**
 de um vínculo container↔operação existente (`ContainerOperationId`
 obrigatório) — ou seja, a ação de estufagem só faz sentido a partir de um
 container já vinculado (fluxo da SPEC-07-05 continua sendo pré-requisito,
@@ -135,7 +137,7 @@ livre do formulário.
 
 ### 3.2 Modo B bifurca pela origem (`Source`) da Invoice — mudança de contrato do Core
 
-`warren/Core/specs/17-cargo-stuffing-gates/spec.md` §2 (reescrito, decisão
+`warren/Core/specs/23-cargo-stuffing-gates/spec.md` §2 (reescrito, decisão
 do usuário 2026-09-15: "peso nunca é estimado, sempre vem de fonte
 relacional real") redefine o Modo B:
 
@@ -183,7 +185,7 @@ qual dos dois casos ocorreu:
   fardos identificados quando aplicável, ou contador simples no caso
   `Manual`).
 - **Aviso de peso excedido** (`Container.MaxWeight` ultrapassado, gate
-  não bloqueante da SPEC-16/SPEC-17 do Core §3.6 item 3): a resposta ainda é
+  não bloqueante da SPEC-22/SPEC-23 do Core §3.6 item 3): a resposta ainda é
   200/201, mas o frontend precisa **exibir visivelmente** o aviso (toast
   de warning, não de erro — a operação foi bem-sucedida). **D3 fechada
   (ver §14):** confirmado no client gerado — `CargoStuffResultDTO.warnings`
@@ -192,7 +194,7 @@ qual dos dois casos ocorreu:
   toast de warning por item da lista (ou concatenado, decisão de
   apresentação livre na implementação — não muda o parsing).
 - **Bloqueio de saldo do romaneio** (gate duro): erro 400 do servidor.
-  Com o redesenho da SPEC-17 do Core (§3.2 acima), esse gate **degenera
+  Com o redesenho da SPEC-23 do Core (§3.2 acima), esse gate **degenera
   em disponibilidade de linha**, não soma de peso — Modo A recusa se a
   linha específica já estiver vinculada a outra `CargoUnit`; Modo B
   recusa se não houver `quantity` linhas livres daquela NF (o payload de
@@ -248,18 +250,18 @@ que um campo (ex.: exigir reformular o formulário todo), é
   coberto pela SPEC-07-05, sem mudança aqui.
 - Reidentificação futura de uma `CargoUnit` criada no Modo B contra uma
   linha específica do romaneio — o próprio Core deixa isso fora do
-  escopo da SPEC-16 (§4).
+  escopo da SPEC-22 (§4).
 - Qualquer tela/hook de `InvoiceItem` — extinto, ver SPEC-07-10 §4.
 - Edição de `CargoUnit` — não existe mais no domínio (só criação e
   `Cancel`).
 - Valor default de `MaxWeight` por tipo de container (20'/40') — a
-  SPEC-16/SPEC-17 do Core explicitamente não define isso, é sempre entrada
+  SPEC-22/SPEC-23 do Core explicitamente não define isso, é sempre entrada
   manual.
 
 ## 5. Requisitos funcionais
 
 - **RF1** — Estufagem consome só hook(s) Orval gerado(s) pós-`just map`
-  da SPEC-16/SPEC-17 do Core (`stuff/identified`, `stuff/quantity`), nunca o
+  da SPEC-22/SPEC-23 do Core (`stuff/identified`, `stuff/quantity`), nunca o
   hook antigo de criação de `CargoUnit` vinculado a `InvoiceItem`.
 - **RF2** — Os dois modos (A/B) são **fluxos separados** (dois botões/
   ações distintos na aba Containers, cada um com seu próprio modal — D1,
@@ -289,9 +291,9 @@ que um campo (ex.: exigir reformular o formulário todo), é
 
 - RNF1 — `bun run check` + `lint` passam.
 - RNF2 — Zero Zod à mão — schemas vêm de `just map` sobre o contrato da
-  SPEC-16/SPEC-17 do Core.
+  SPEC-22/SPEC-23 do Core.
 - RNF3 — Criação de N `CargoUnit`s no Modo B é uma única chamada ao
-  endpoint de quantidade (o backend garante a transação, SPEC-16/SPEC-17 do Core
+  endpoint de quantidade (o backend garante a transação, SPEC-22/SPEC-23 do Core
   §6) — o frontend não faz N chamadas sequenciais.
 
 ## 7. Contrato de rota
@@ -399,7 +401,7 @@ espelhando `colTara`) — sem criar namespace novo.
   (`CargoUnitStuffIdentified`) exige `invoiceId` **explícito** — o Core
   não resolve implicitamente a partir do `NotaFiscal` da linha de
   romaneio. Ver D2 fechada (§14) e §3.1.
-- **R3 — Migração de dado existente no Core** (histórico, SPEC-16 do Core
+- **R3 — Migração de dado existente no Core** (histórico, SPEC-22 do Core
   §14): se o Core descartou `CargoUnit`s `Open` (nunca estufadas) na
   migração, containers hoje "vinculados mas sem carga" no NewPortal podem
   não ter mais nada pra mostrar de histórico — não é ação do frontend,
