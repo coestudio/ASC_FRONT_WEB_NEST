@@ -34,3 +34,18 @@ export function getUserAreas(user: PermissionUser | null | undefined): AreaId[] 
   areas.push("administrativo", "operacional", "laboratorio");
   return areas;
 }
+
+/**
+ * Home de cada área — usado por `/dashboard` (SPEC-19) pra redirecionar o
+ * usuário logado pra `AREA_HOME[getUserAreas(user)[0]]`, espelhando o
+ * `HomeRedirect`/`AREA_HOME` do legado (`warren/Portal`). Assim como
+ * `getUserAreas`, é decisão de **navegação/UI**, não de segurança — a
+ * proteção real de cada rota continua no `beforeLoad` de cada uma.
+ */
+export const AREA_HOME: Record<AreaId, string> = {
+  admin: "/admin/access",
+  administrativo: "/administrative",
+  operacional: "/operational",
+  client: "/client",
+  laboratorio: "/laboratory",
+};
