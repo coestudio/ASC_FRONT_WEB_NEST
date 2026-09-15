@@ -7,7 +7,6 @@ export * from './core/core.zod.ts';
 export * from './document/document.zod.ts';
 export * from './harbor/harbor.zod.ts';
 export * from './invoice/invoice.zod.ts';
-export * from './invoice-item/invoice-item.zod.ts';
 export * from './operation/operation.zod.ts';
 export * from './operation-container/operation-container.zod.ts';
 export * from './product/product.zod.ts';

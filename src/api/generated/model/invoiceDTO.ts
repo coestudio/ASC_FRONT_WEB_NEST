@@ -4,6 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { InvoiceDocumentDTO } from './invoiceDocumentDTO.ts';
+import type { InvoiceSource } from './invoiceSource.ts';
 import type { InvoiceStatus } from './invoiceStatus.ts';
 
 export interface InvoiceDTO {
@@ -11,6 +13,12 @@ export interface InvoiceDTO {
   number?: string;
   /** @nullable */
   issuedOn?: string | null;
+  /** @nullable */
+  entryDate?: string | null;
+  /** @nullable */
+  exitDate?: string | null;
+  /** @nullable */
+  exitTime?: string | null;
   /**
      * @nullable
      * @pattern ^-?(?:0|[1-9]\d*)$
@@ -26,11 +34,22 @@ export interface InvoiceDTO {
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
      */
   declaredNetWeight?: number | string | null;
+  /**
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
+  totalInvoiceValue?: number | string | null;
+  /**
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
+  totalProductsValue?: number | string | null;
   issuerCnpj?: string;
   issuerUf?: string;
   accessKey?: string;
   observation?: string;
   status?: InvoiceStatus;
+  source?: InvoiceSource;
   statusNote?: string;
   /** @nullable */
   confirmedBy?: string | null;
@@ -40,6 +59,7 @@ export interface InvoiceDTO {
   canceledBy?: string | null;
   /** @nullable */
   canceledOn?: string | null;
+  documents?: InvoiceDocumentDTO[];
   id: string;
   createdAt: string;
   updatedAt: string;

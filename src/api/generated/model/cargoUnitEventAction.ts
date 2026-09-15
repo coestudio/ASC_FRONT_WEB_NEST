@@ -10,14 +10,5 @@ export type CargoUnitEventAction = typeof CargoUnitEventAction[keyof typeof Carg
 
 export const CargoUnitEventAction = {
   Created: 'Created',
-  Stuffed: 'Stuffed',
-  Updated: 'Updated',
-  Identified: 'Identified',
-  LinkedToInvoice: 'LinkedToInvoice',
   Canceled: 'Canceled',
-  WeightRecorded: 'WeightRecorded',
-  LinkedToRomaneio: 'LinkedToRomaneio',
-  LinkedToInvoiceItem: 'LinkedToInvoiceItem',
-  MarkedDivergent: 'MarkedDivergent',
-  Reconciled: 'Reconciled',
 } as const;

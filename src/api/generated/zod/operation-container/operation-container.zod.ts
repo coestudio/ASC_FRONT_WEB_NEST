@@ -69,6 +69,7 @@ export const GetApiOperationOperationIdContainerQueryParams = zod.object({
 
 export const getApiOperationOperationIdContainerResponseItemsItemTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerResponseItemsItemContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerResponseItemsItemRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdContainerResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdContainerResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
@@ -85,6 +86,7 @@ export const GetApiOperationOperationIdContainerResponse = zod.object({
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerResponseItemsItemContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -151,6 +153,7 @@ export const PostApiOperationOperationIdContainerBody = zod.object({
 
 export const postApiOperationOperationIdContainerResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -163,6 +166,7 @@ export const PostApiOperationOperationIdContainerResponse = zod.object({
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -216,6 +220,7 @@ export const GetApiOperationOperationIdContainerIdParams = zod.object({
 
 export const getApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -228,6 +233,7 @@ export const GetApiOperationOperationIdContainerIdResponse = zod.object({
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -290,6 +296,7 @@ export const PutApiOperationOperationIdContainerIdBody = zod.object({
 
 export const putApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const putApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -302,6 +309,7 @@ export const PutApiOperationOperationIdContainerIdResponse = zod.object({
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -367,6 +375,7 @@ export const PostApiOperationOperationIdContainerIdPhotoBody = zod.object({
 
 export const postApiOperationOperationIdContainerIdPhotoResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdPhotoResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdPhotoResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -379,6 +388,7 @@ export const PostApiOperationOperationIdContainerIdPhotoResponse = zod.object({
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdPhotoResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -433,6 +443,7 @@ export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdParams = zod.ob
 
 export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -445,6 +456,7 @@ export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdResponse = zod.
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -511,6 +523,7 @@ export const PostApiOperationOperationIdContainerIdSealBody = zod.object({
 
 export const postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdSealResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdSealResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -523,6 +536,7 @@ export const PostApiOperationOperationIdContainerIdSealResponse = zod.object({
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdSealResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -577,6 +591,7 @@ export const DeleteApiOperationOperationIdContainerIdSealSealIdParams = zod.obje
 
 export const deleteApiOperationOperationIdContainerIdSealSealIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdSealSealIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -589,6 +604,7 @@ export const DeleteApiOperationOperationIdContainerIdSealSealIdResponse = zod.ob
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})

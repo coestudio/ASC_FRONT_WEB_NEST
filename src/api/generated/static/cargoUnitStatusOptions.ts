@@ -6,16 +6,6 @@ import type { Locale } from "@/i18n/config";
 export const cargoUnitStatusOptions: EnumOptionDTO[] = [
   {
     "value": 1,
-    "key": "Open",
-    "name": {
-      "pt-BR": "Aberta",
-      "en": "Open",
-      "es": "Abierta",
-      "zh": "开放"
-    }
-  },
-  {
-    "value": 2,
     "key": "Stuffed",
     "name": {
       "pt-BR": "Ovada",
@@ -25,7 +15,7 @@ export const cargoUnitStatusOptions: EnumOptionDTO[] = [
     }
   },
   {
-    "value": 3,
+    "value": 2,
     "key": "Canceled",
     "name": {
       "pt-BR": "Cancelada",

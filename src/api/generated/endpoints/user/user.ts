@@ -33,7 +33,8 @@ import type {
   UserAdminDTO,
   UserCreate,
   UserDTO,
-  UserUpdate
+  UserUpdate,
+  UserUpdateRoles
 } from '../../model';
 
 import { apiRequest } from '../../../mutator.ts';
@@ -232,6 +233,68 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getPatchApiUserIdDeactivateMutationOptions(options), queryClient);
+    }
+    export const patchApiUserIdRoles = (
+    id: string,
+    userUpdateRoles: UserUpdateRoles,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<UserDTO>(
+      {url: `/api/user/${id}/roles`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: userUpdateRoles, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatchApiUserIdRolesMutationKey = () => ['patchApiUserIdRoles'] as const;
+
+export const getPatchApiUserIdRolesMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiUserIdRoles>>, TError,PatchApiUserIdRolesMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchApiUserIdRoles>>, TError,PatchApiUserIdRolesMutationVariables, TContext> => {
+
+const mutationKey = getPatchApiUserIdRolesMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiUserIdRoles>>, PatchApiUserIdRolesMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  patchApiUserIdRoles(id,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchApiUserIdRolesMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiUserIdRoles>>>
+    export type PatchApiUserIdRolesMutationBody = UserUpdateRoles
+    export type PatchApiUserIdRolesMutationError = void
+    export type PatchApiUserIdRolesMutationVariables = {id: string;data: UserUpdateRoles}
+
+    export const usePatchApiUserIdRoles = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiUserIdRoles>>, TError,PatchApiUserIdRolesMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchApiUserIdRoles>>,
+        TError,
+        PatchApiUserIdRolesMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPatchApiUserIdRolesMutationOptions(options), queryClient);
     }
     export const getApiUserRoles = (
 

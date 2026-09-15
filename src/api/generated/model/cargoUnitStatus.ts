@@ -9,7 +9,6 @@ export type CargoUnitStatus = typeof CargoUnitStatus[keyof typeof CargoUnitStatu
 
 
 export const CargoUnitStatus = {
-  Open: 'Open',
   Stuffed: 'Stuffed',
   Canceled: 'Canceled',
 } as const;
