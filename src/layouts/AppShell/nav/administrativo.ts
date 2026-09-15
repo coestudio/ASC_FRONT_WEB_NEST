@@ -8,10 +8,13 @@ import type { NavFragment } from "./types";
  * migrou pra `nav/administrative-clients.ts` (SPEC-05, rota nova
  * `/administrative/clients`) — também não duplicar aqui. O item "Operações"
  * migrou pra `nav/administrative-operations.ts` (SPEC-07-01, rota nova
- * `/administrative/operations`) — idem, não duplicar.
+ * `/administrative/operations`) — idem, não duplicar. O item "Início" agora
+ * aponta pra `/administrative` (SPEC-17, Home real com quick actions —
+ * antes era link morto pra `/administrativo`, rota que nunca existiu).
  * `administrativoLog`/`administrativoOccurrences` continuam órfãos,
  * apontando pra rota antiga: SPEC-06 (que os removeria) foi cancelada, sem
- * spec própria ainda pra essas duas telas.
+ * spec própria ainda pra essas duas telas — SPEC-17 não reabre essa
+ * decisão, ver `specs/17-administrative-home/spec.md` §14 D2.
  */
 const fragment: NavFragment = {
   area: "administrativo",
@@ -20,7 +23,7 @@ const fragment: NavFragment = {
   items: [
     {
       labelKey: "navigation.administrativoHome",
-      to: "/administrativo",
+      to: "/administrative",
       icon: "bi-house-door",
       order: 1,
     },

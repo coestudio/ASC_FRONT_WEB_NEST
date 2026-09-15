@@ -10,6 +10,7 @@
 // migração (ex.: `t("theme.light")`), sem quebrar nenhum call-site (RF1/CA8).
 import ptBRAccess from "./dictionaries/pt-BR/access.json";
 import ptBRAdministrativeClients from "./dictionaries/pt-BR/administrative-clients.json";
+import ptBRAdministrativeHome from "./dictionaries/pt-BR/administrative-home.json";
 import ptBRAdministrativeOperations from "./dictionaries/pt-BR/administrative-operations.json";
 import ptBRAdministrativeRegistry from "./dictionaries/pt-BR/administrative-registry.json";
 import ptBRAuth from "./dictionaries/pt-BR/auth.json";
@@ -36,6 +37,10 @@ const ptBR = {
   "administrative-registry": ptBRAdministrativeRegistry,
   // Namespace da SPEC-05 (Clientes) — mesmo racional da chave acima.
   "administrative-clients": ptBRAdministrativeClients,
+  // Namespace da SPEC-17 (Home de Administrativo, quick actions) — próprio,
+  // não reaproveita `administrative-clients`/`-operations`/`-registry` pra
+  // não acoplar a Home ao ciclo de vida de cada namespace de tela.
+  "administrative-home": ptBRAdministrativeHome,
   // Namespace da árvore SPEC-07 (Operações) — único, compartilhado entre a
   // lista (SPEC-07-01) e todas as abas do shell de detalhe (SPEC-07-02 a
   // 07-09, ver `specs/07-operacoes/spec.md` §5). Criado pela SPEC-07-01,

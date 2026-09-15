@@ -25,6 +25,7 @@ import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard
 import { Route as AuthForgotPasswordIndexRouteImport } from './routes/auth/forgot-password/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 import { Route as AuthLogoutIndexRouteImport } from './routes/auth/logout/index'
+import { Route as DashboardInternalAdministrativeIndexRouteImport } from './routes/_dashboard/_internal/administrative/index'
 import { Route as DashboardInternalLaboratoryIndexRouteImport } from './routes/_dashboard/_internal/laboratory/index'
 import { Route as DashboardInternalOperationalIndexRouteImport } from './routes/_dashboard/_internal/operational/index'
 import { Route as DashboardAdminAccessIndexRouteImport } from './routes/_dashboard/admin/access/index'
@@ -119,6 +120,12 @@ const AuthLogoutIndexRoute = AuthLogoutIndexRouteImport.update({
   path: '/logout/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const DashboardInternalAdministrativeIndexRoute =
+  DashboardInternalAdministrativeIndexRouteImport.update({
+    id: '/administrative/',
+    path: '/administrative/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
 const DashboardInternalLaboratoryIndexRoute =
   DashboardInternalLaboratoryIndexRouteImport.update({
     id: '/laboratory/',
@@ -235,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/logout/': typeof AuthLogoutIndexRoute
+  '/administrative/': typeof DashboardInternalAdministrativeIndexRoute
   '/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
   '/operational/': typeof DashboardInternalOperationalIndexRoute
   '/admin/access/': typeof DashboardAdminAccessIndexRoute
@@ -264,6 +272,7 @@ export interface FileRoutesByTo {
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/logout': typeof AuthLogoutIndexRoute
+  '/administrative': typeof DashboardInternalAdministrativeIndexRoute
   '/laboratory': typeof DashboardInternalLaboratoryIndexRoute
   '/operational': typeof DashboardInternalOperationalIndexRoute
   '/admin/access': typeof DashboardAdminAccessIndexRoute
@@ -300,6 +309,7 @@ export interface FileRoutesById {
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/logout/': typeof AuthLogoutIndexRoute
+  '/_dashboard/_internal/administrative/': typeof DashboardInternalAdministrativeIndexRoute
   '/_dashboard/_internal/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
   '/_dashboard/_internal/operational/': typeof DashboardInternalOperationalIndexRoute
   '/_dashboard/admin/access/': typeof DashboardAdminAccessIndexRoute
@@ -333,6 +343,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/logout/'
+    | '/administrative/'
     | '/laboratory/'
     | '/operational/'
     | '/admin/access/'
@@ -362,6 +373,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
+    | '/administrative'
     | '/laboratory'
     | '/operational'
     | '/admin/access'
@@ -397,6 +409,7 @@ export interface FileRouteTypes {
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/logout/'
+    | '/_dashboard/_internal/administrative/'
     | '/_dashboard/_internal/laboratory/'
     | '/_dashboard/_internal/operational/'
     | '/_dashboard/admin/access/'
@@ -537,6 +550,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/logout/'
       preLoaderRoute: typeof AuthLogoutIndexRouteImport
       parentRoute: typeof AuthRouteRoute
+    }
+    '/_dashboard/_internal/administrative/': {
+      id: '/_dashboard/_internal/administrative/'
+      path: '/administrative'
+      fullPath: '/administrative/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
     }
     '/_dashboard/_internal/laboratory/': {
       id: '/_dashboard/_internal/laboratory/'
@@ -710,6 +730,7 @@ const DashboardClientRouteRouteWithChildren =
   DashboardClientRouteRoute._addFileChildren(DashboardClientRouteRouteChildren)
 
 interface DashboardInternalRouteChildren {
+  DashboardInternalAdministrativeIndexRoute: typeof DashboardInternalAdministrativeIndexRoute
   DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
   DashboardInternalOperationalIndexRoute: typeof DashboardInternalOperationalIndexRoute
   DashboardInternalAdministrativeClientsIndexRoute: typeof DashboardInternalAdministrativeClientsIndexRoute
@@ -725,6 +746,8 @@ interface DashboardInternalRouteChildren {
 }
 
 const DashboardInternalRouteChildren: DashboardInternalRouteChildren = {
+  DashboardInternalAdministrativeIndexRoute:
+    DashboardInternalAdministrativeIndexRoute,
   DashboardInternalLaboratoryIndexRoute: DashboardInternalLaboratoryIndexRoute,
   DashboardInternalOperationalIndexRoute:
     DashboardInternalOperationalIndexRoute,

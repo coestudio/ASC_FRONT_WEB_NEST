@@ -1,0 +1,36 @@
+{
+  "home": {
+    "title": "Administrative",
+    "description": "Shortcuts to the administrative area screens.",
+    "cards": {
+      "clients": {
+        "title": "Clients",
+        "description": "Registered clients and their contact details."
+      },
+      "operations": {
+        "title": "Operations",
+        "description": "Ongoing stuffing and shipping operations."
+      },
+      "vessel": {
+        "title": "Vessel",
+        "description": "Vessels used in operations."
+      },
+      "container": {
+        "title": "Container",
+        "description": "Containers used in operations."
+      },
+      "terminal": {
+        "title": "Terminal",
+        "description": "Terminals associated with harbors."
+      },
+      "harbor": {
+        "title": "Harbor",
+        "description": "Registered harbors and their terminals."
+      },
+      "product": {
+        "title": "Product",
+        "description": "Products used in operations."
+      }
+    }
+  }
+}

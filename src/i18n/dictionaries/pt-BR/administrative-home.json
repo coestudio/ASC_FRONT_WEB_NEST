@@ -1,0 +1,36 @@
+{
+  "home": {
+    "title": "Administrativo",
+    "description": "Atalhos para as telas da área administrativa.",
+    "cards": {
+      "clients": {
+        "title": "Clientes",
+        "description": "Clientes cadastrados e seus dados de contato."
+      },
+      "operations": {
+        "title": "Operações",
+        "description": "Operações de estufagem e embarque em andamento."
+      },
+      "vessel": {
+        "title": "Navio",
+        "description": "Navios utilizados nas operações."
+      },
+      "container": {
+        "title": "Container",
+        "description": "Containers utilizados nas operações."
+      },
+      "terminal": {
+        "title": "Terminal",
+        "description": "Terminais associados aos portos."
+      },
+      "harbor": {
+        "title": "Porto",
+        "description": "Portos cadastrados e seus terminais."
+      },
+      "product": {
+        "title": "Produto",
+        "description": "Produtos utilizados nas operações."
+      }
+    }
+  }
+}
