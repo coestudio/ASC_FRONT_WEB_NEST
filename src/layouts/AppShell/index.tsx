@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useLocation } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Nav } from "react-bootstrap";
 
 import { useCan, useUser } from "@/hooks";
@@ -21,9 +21,12 @@ import styles from "./index.module.css";
  * Nav config: as seções vêm de `getNavSections` (merge declarativo de
  * `nav/*.ts`, ver SPEC-02 §3.1) — não é mais um literal central aqui.
  *
- * Migração: os links apontam para rotas que ainda não existem (administrativo,
- * operacional, etc.) — por isso são <a> (navegação full-page) e não <Link>
- * tipado. Trocar por <Link> conforme as rotas forem migradas.
+ * Navegação: itens com rota real usam `<Link to>` tipado (client-side,
+ * sem full-page reload — antes todo o sidebar usava `<a href>`, causando um
+ * flash branco a cada clique). Os poucos itens `legacyOrphanRoute: true`
+ * (ver `nav/types.ts`) continuam em `<a href>` — apontam pra rota que não
+ * existe em `routeTree.gen.ts` (`administrativoLog`/`administrativoOccurrences`,
+ * SPEC-06 cancelada), `<Link to>` tipado não aceitaria.
  */
 
 function isChildActive(items: NavItem[], pathname: string): boolean {
@@ -94,10 +97,17 @@ function SidebarSection({
               const itemActive = pathname === item.to || pathname.startsWith(item.to + "/");
               return (
                 <Nav.Item as="li" key={item.to}>
-                  <Nav.Link as="a" href={item.to} active={itemActive}>
-                    {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
-                    {t(item.labelKey)}
-                  </Nav.Link>
+                  {item.legacyOrphanRoute ? (
+                    <Nav.Link as="a" href={item.to} active={itemActive}>
+                      {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
+                      {t(item.labelKey)}
+                    </Nav.Link>
+                  ) : (
+                    <Nav.Link as={Link} to={item.to} active={itemActive}>
+                      {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
+                      {t(item.labelKey)}
+                    </Nav.Link>
+                  )}
                 </Nav.Item>
               );
             })}

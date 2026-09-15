@@ -32,12 +32,14 @@ const fragment: NavFragment = {
       to: "/administrativo/log",
       icon: "bi-journal-text",
       order: 9,
+      legacyOrphanRoute: true,
     },
     {
       labelKey: "navigation.administrativoOccurrences",
       to: "/administrativo/ocorrencias",
       icon: "bi-exclamation-triangle",
       order: 10,
+      legacyOrphanRoute: true,
     },
   ],
 };

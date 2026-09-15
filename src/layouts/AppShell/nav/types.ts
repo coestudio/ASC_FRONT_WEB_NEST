@@ -13,6 +13,14 @@ export type NavItem = {
   to: string;
   icon?: string;
   order?: number;
+  /**
+   * `true` só nos poucos itens órfãos sem rota real ainda (ex.:
+   * `administrativoLog`/`administrativoOccurrences`, SPEC-06 cancelada) —
+   * força o sidebar (`AppShell`) a renderizar `<a href>` (navegação
+   * full-page) em vez de `<Link to>` tipado, porque `to` aqui não existe em
+   * `routeTree.gen.ts`. Remover a flag assim que o item ganhar rota real.
+   */
+  legacyOrphanRoute?: boolean;
 };
 
 /**
