@@ -29,8 +29,9 @@ import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 import { resolveInternalRoleLabel } from "@/api/generated/static/internalRoleOptions";
 import styles from "./index.module.css";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 export const Route = createFileRoute("/_dashboard/admin/access/")({
   head: () => ({ meta: [{ title: "Acesso — ASC" }] }),

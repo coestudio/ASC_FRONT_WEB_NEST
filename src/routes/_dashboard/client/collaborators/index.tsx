@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, getRouteApi } from "@tanstack/react-router";
 import { useQueryClient, type UseQueryOptions } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import {
   getApiClientClientIdCollaborator,
   getGetApiClientClientIdCollaboratorQueryKey,
-  useGetApiClientClientIdCollaboratorId,
+  getGetApiClientClientIdCollaboratorIdQueryOptions,
   usePostApiClientClientIdCollaborator,
   useDeleteApiClientClientIdCollaboratorId,
 } from "@/api/generated/endpoints/collaborator/collaborator";
@@ -19,12 +19,15 @@ import {
 } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { LoadingState } from "@/components/ui/loading-state";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { collaboratorFormSchema, type CollaboratorFormValues } from "@/lib/validation/collaborator";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 export const Route = createFileRoute("/_dashboard/client/collaborators/")({
   head: () => ({ meta: [{ title: "Colaboradores — ASC" }] }),
@@ -73,7 +76,29 @@ function toPagedResult(
   return { items: filtered.slice(start, start + PAGE_SIZE), total: filtered.length };
 }
 
+/**
+ * Gate de montagem (SPEC-10 §14): `detail` abaixo usa `useSsrSafeQuery` fora
+ * do `CrudListPage` — sem esse gate o hook existe na árvore durante o SSR e
+ * a integração de streaming pode tentar buscá-lo mesmo com `enabled: false`
+ * (mesma causa raiz do bug original de `admin/access`, SPEC-10 §13). Pior
+ * caso da §14: usava o hook Orval bruto (`useGetApiClientClientIdCollaboratorId`),
+ * nem passava por `useSsrSafeQuery` — trocado junto com o gate.
+ * `CollaboratorsPageBody` só monta depois de `mounted = true`.
+ */
 function CollaboratorsPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  return mounted ? (
+    <CollaboratorsPageBody />
+  ) : (
+    <PageLayout density="wide">
+      <LoadingState variant="inline" />
+    </PageLayout>
+  );
+}
+
+function CollaboratorsPageBody() {
   const t = useT();
   const locale = useLocale();
   const queryClient = useQueryClient();
@@ -104,13 +129,10 @@ function CollaboratorsPage() {
   // `view` refaz a busca por `GET /api/client/{clientId}/collaborator/{id}`
   // (endpoint de detalhe, nunca exercitado antes) em vez de reusar o item da
   // lista — confirma que também funciona de ponta a ponta (RF1/CA1).
-  const { data: detail } = useGetApiClientClientIdCollaboratorId(
-    clientId ?? "",
-    modal?.record?.id ?? "",
-    {
-      query: { enabled: modal?.mode === "view" && Boolean(clientId) && Boolean(modal?.record?.id) },
-    },
-  );
+  const { data: detail } = useSsrSafeQuery({
+    ...getGetApiClientClientIdCollaboratorIdQueryOptions(clientId ?? "", modal?.record?.id ?? ""),
+    enabled: modal?.mode === "view" && Boolean(clientId) && Boolean(modal?.record?.id),
+  });
 
   const fields: LayoutField[] = [
     {

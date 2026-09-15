@@ -2,8 +2,9 @@ import { useLocale, useT } from "@/lib/ui-prefs";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { usePagination } from "@/hooks/usePagination";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 // MOCK — SPEC-07-09 (§8): aba UI-only, sem endpoint no Core (legado também
 // era mock). Array local, nunca uma query — não passa por fetch/hook Orval.

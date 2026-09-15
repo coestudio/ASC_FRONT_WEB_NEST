@@ -18,14 +18,16 @@ import type { ClientDTO, ClientDetailDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { LoadingState } from "@/components/ui/loading-state";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./index.module.css";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 // Formata `document` (só CNPJ cabe no shape gerado, `ClientCreate.document`
 // tem min/max 14) pro padrão `00.000.000/0000-00" — mesmo helper do
@@ -155,7 +157,28 @@ function ClientReportsSection({ client }: { client: ClientDetailDTO }) {
   );
 }
 
+/**
+ * Gate de montagem (SPEC-10 §14): `detailQuery` abaixo usa `useSsrSafeQuery`
+ * fora do `CrudListPage` — sem esse gate o hook existe na árvore durante o
+ * SSR e a integração de streaming pode tentar buscá-lo mesmo com
+ * `enabled: false` (mesma causa raiz do bug original de `admin/access`,
+ * SPEC-10 §13). `ClientsPageBody` só monta depois de `mounted = true`
+ * (nunca roda no servidor).
+ */
 function ClientsPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  return mounted ? (
+    <ClientsPageBody />
+  ) : (
+    <PageLayout density="wide">
+      <LoadingState variant="inline" />
+    </PageLayout>
+  );
+}
+
+function ClientsPageBody() {
   const t = useT();
   const locale = useLocale();
   const queryClient = useQueryClient();

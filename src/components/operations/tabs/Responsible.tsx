@@ -22,8 +22,9 @@ import { usePagination } from "@/hooks/usePagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 type LinkedFilter = "all" | "linked" | "unlinked";
 
@@ -151,7 +152,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             config={{ containerClass: "mb-0" }}
           />
         </Col>
-        <Col md={4} className="d-flex align-items-start gap-2">
+        <Col md={4} className="d-flex align-items-center gap-2">
           <div
             className="btn-group"
             role="group"
@@ -171,7 +172,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             ))}
           </div>
         </Col>
-        <Col md={3} className="d-flex justify-content-end align-items-start">
+        <Col md={3} className="d-flex justify-content-end align-items-center">
           <Button
             variant="primary"
             size="sm"

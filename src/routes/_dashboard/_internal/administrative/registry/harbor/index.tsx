@@ -22,8 +22,9 @@ import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/registry/harbor/")({
   head: () => ({ meta: [{ title: "Portos — ASC" }] }),

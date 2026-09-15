@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { Nav } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 
 import {
   getGetApiOperationIdQueryOptions,
+  getGetApiOperationQueryKey,
   usePatchApiOperationIdStatus,
 } from "@/api/generated/endpoints/operation/operation";
 import { PatchApiOperationIdStatusBody } from "@/api/generated/zod/operation/operation.zod";
@@ -164,6 +166,7 @@ type StatusFormValues = { status: OperationStatus };
 function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
   const t = useT();
   const locale = useLocale();
+  const queryClient = useQueryClient();
   const statusMutation = usePatchApiOperationIdStatus();
 
   const methods = useForm<StatusFormValues>({
@@ -182,7 +185,20 @@ function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
     statusMutation.mutate(
       { id: operation.id, data: { status } },
       {
-        onSuccess: () => toast.success(t("administrative-operations.shell.statusUpdated")),
+        // Sem isso o cache do React Query (`operation`, vindo do
+        // `useSsrSafeQuery` do pai) não sabia do PATCH — o `<select>`
+        // mudava (é o valor local do react-hook-form), mas o resto da tela
+        // (badge de status aqui do lado) só atualizava com F5. `setQueryData`
+        // com a resposta já mapeada do Core evita um refetch redundante;
+        // a lista invalida pra não mostrar status velho se o usuário voltar.
+        onSuccess: (updated) => {
+          queryClient.setQueryData(
+            getGetApiOperationIdQueryOptions(operation.id).queryKey,
+            updated,
+          );
+          queryClient.invalidateQueries({ queryKey: getGetApiOperationQueryKey() });
+          toast.success(t("administrative-operations.shell.statusUpdated"));
+        },
         onError: () => {
           toast.error(t("administrative-operations.shell.statusError"));
           methods.setValue("status", operation.status);

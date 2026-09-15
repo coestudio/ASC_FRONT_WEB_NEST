@@ -44,8 +44,9 @@ import { useResponsiveViewMode } from "@/lib/view-mode";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./operations-list.module.css";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 // Cor semântica (token Bootstrap, nunca hex fixo — regra 8 do AGENTS.md) por
 // status real de `OperationStatus` (Core).
@@ -531,8 +532,13 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     }
   };
 
-  const renderStatusBadge = (status: OperationDTO["status"]) => (
-    <Badge bg={STATUS_VARIANT[status]}>{resolveOperationStatusLabel(status, locale)}</Badge>
+  // Só-leitura na lista (badge) — editar status é só no detalhe
+  // (`administrative/operations/$id`, `OperationHeader`), decisão do
+  // usuário (voltar atrás do select inline que existiu brevemente aqui).
+  const renderStatus = (operation: OperationDTO) => (
+    <Badge bg={STATUS_VARIANT[operation.status]}>
+      {resolveOperationStatusLabel(operation.status, locale)}
+    </Badge>
   );
 
   // Clique em "visualizar" — no modo completo (administrativo) navega pra
@@ -591,7 +597,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
         <p className="text-body-secondary mb-0">{t("administrative-operations.description")}</p>
       </div>
 
-      <div className="d-flex align-items-start gap-2 mb-4 flex-wrap">
+      <div className="d-flex align-items-center gap-2 mb-4 flex-wrap">
         <div style={{ minWidth: 220 }}>
           <OperationsSearchInput
             value={search}
@@ -643,6 +649,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
               operation={operation}
               locale={locale}
               onView={() => viewOperation(operation.id)}
+              renderStatus={renderStatus}
             />
           ))}
         </div>
@@ -668,7 +675,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
                   key={operation.id}
                   operation={operation}
                   locale={locale}
-                  renderStatusBadge={renderStatusBadge}
+                  renderStatus={renderStatus}
                   renderActions={renderRowActions}
                 />
               ))}
@@ -719,12 +726,12 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 function OperationRow({
   operation,
   locale,
-  renderStatusBadge,
+  renderStatus,
   renderActions,
 }: {
   operation: OperationDTO;
   locale: Locale;
-  renderStatusBadge: (status: OperationDTO["status"]) => ReactNode;
+  renderStatus: (operation: OperationDTO) => ReactNode;
   renderActions: (operation: OperationDTO) => ReactNode;
 }) {
   const { clientName, productName } = useOperationEnrichment(operation.id);
@@ -737,7 +744,7 @@ function OperationRow({
       <td className="text-body-secondary">{operation.booking || "—"}</td>
       <td>{resolveOperationTypeLabel(operation.opType, locale)}</td>
       <td>{resolveOperationServiceLabel(operation.opService, locale)}</td>
-      <td>{renderStatusBadge(operation.status)}</td>
+      <td>{renderStatus(operation)}</td>
       <td className="text-body-secondary">{formatDate(operation.opDate, locale)}</td>
       <td>{renderActions(operation)}</td>
     </tr>
@@ -749,10 +756,12 @@ function OperationCard({
   operation,
   locale,
   onView,
+  renderStatus,
 }: {
   operation: OperationDTO;
   locale: Locale;
   onView: () => void;
+  renderStatus: (operation: OperationDTO) => ReactNode;
 }) {
   const t = useT();
   const { clientName, productName } = useOperationEnrichment(operation.id);
@@ -763,9 +772,7 @@ function OperationCard({
         <Card.Body>
           <div className="d-flex justify-content-between align-items-start mb-2">
             <span className="small text-body-secondary font-monospace">Nº {operation.number}</span>
-            <Badge bg={STATUS_VARIANT[operation.status]}>
-              {resolveOperationStatusLabel(operation.status, locale)}
-            </Badge>
+            {renderStatus(operation)}
           </div>
           <Card.Title className="h6 mb-1">{clientName ?? operation.clientId}</Card.Title>
           <Card.Subtitle className="text-body-secondary small mb-2">

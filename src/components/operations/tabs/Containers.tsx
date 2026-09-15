@@ -44,8 +44,9 @@ import {
   type OperationContainerPhotosFormValues,
 } from "@/lib/validation/operation-container";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 type LinkFormValues = z.infer<typeof PostApiOperationOperationIdContainerBody>;
 type UpdateFormValues = z.infer<typeof PutApiOperationOperationIdContainerIdBody>;

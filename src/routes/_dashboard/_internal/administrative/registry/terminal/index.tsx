@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
@@ -21,12 +21,14 @@ import type { TerminalDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { LoadingState } from "@/components/ui/loading-state";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/registry/terminal/")({
   head: () => ({ meta: [{ title: "Terminais — ASC" }] }),
@@ -47,7 +49,28 @@ function HarborNameCell({ harborId }: { harborId: string }) {
   return <>{data?.name ?? harborId}</>;
 }
 
+/**
+ * Gate de montagem (SPEC-10 §14): `selectedHarbor` abaixo usa
+ * `useSsrSafeQuery` fora do `CrudListPage` — sem esse gate o hook existe na
+ * árvore durante o SSR e a integração de streaming pode tentar buscá-lo
+ * mesmo com `enabled: false` (mesma causa raiz do bug original de
+ * `admin/access`, SPEC-10 §13). `TerminalPageBody` só monta depois de
+ * `mounted = true` (nunca roda no servidor).
+ */
 function TerminalPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  return mounted ? (
+    <TerminalPageBody />
+  ) : (
+    <PageLayout density="wide">
+      <LoadingState variant="inline" />
+    </PageLayout>
+  );
+}
+
+function TerminalPageBody() {
   const t = useT();
   const locale = useLocale();
   const queryClient = useQueryClient();

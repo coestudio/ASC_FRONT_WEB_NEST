@@ -27,8 +27,9 @@ import { InputFileSingle, InputText, InputTextArea, Select } from "@/layouts/For
 import { ListPagination } from "@/components/ui/list-pagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 type CreateFormValues = z.infer<typeof PostApiOperationOperationIdDocumentBody>;
 type UpdateFormValues = z.infer<typeof PutApiOperationOperationIdDocumentIdBody>;

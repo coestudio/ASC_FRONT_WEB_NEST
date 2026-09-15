@@ -20,8 +20,9 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/registry/product/")({
   head: () => ({ meta: [{ title: "Produtos — ASC" }] }),

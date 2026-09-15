@@ -36,8 +36,9 @@ import { InputFileSingle } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import type { TranslationKey } from "@/i18n/translate";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 /**
  * Create/Update do Core têm o mesmo shape — reusa o schema do POST nos dois
