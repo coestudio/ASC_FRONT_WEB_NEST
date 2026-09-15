@@ -1,0 +1,17 @@
+{
+  "list": {
+    "new": "Novo",
+    "searchPlaceholder": "Buscar...",
+    "viewMode": "Modo de visualização",
+    "error": "Não foi possível carregar os dados.",
+    "empty": "Nenhum registro encontrado."
+  },
+  "recordModal": {
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "save": "Salvar"
+  },
+  "mockDataBanner": {
+    "message": "Dados de exemplo — sem endpoint no Core ainda."
+  }
+}

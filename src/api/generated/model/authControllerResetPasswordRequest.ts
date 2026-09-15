@@ -8,13 +8,13 @@
 export interface AuthControllerResetPasswordRequest {
   token: string;
   /**
-   * @minLength 6
-   * @maxLength 100
-   */
+     * @minLength 6
+     * @maxLength 100
+     */
   newPassword: string;
   /**
-   * @minLength 6
-   * @maxLength 100
-   */
+     * @minLength 6
+     * @maxLength 100
+     */
   newPasswordConfirm: string;
 }

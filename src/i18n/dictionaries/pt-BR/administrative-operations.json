@@ -1,0 +1,279 @@
+{
+  "title": "Operações",
+  "description": "Operações de estufagem e embarque em andamento.",
+  "colNumber": "Número",
+  "colClient": "Cliente",
+  "colProduct": "Produto",
+  "colType": "Tipo",
+  "colService": "Serviço",
+  "colStatus": "Status",
+  "colOpDate": "Data da operação",
+  "colBooking": "Booking",
+  "colActions": "Ações",
+  "emptyState": "Nenhuma operação encontrada.",
+  "newButton": "Nova operação",
+  "newTitle": "Nova operação",
+  "editTitle": "Editar operação",
+  "viewTitle": "Detalhes da operação",
+  "searchPlaceholder": "Buscar por número, booking...",
+  "filters": {
+    "type": "Tipo",
+    "typePlaceholder": "Todos os tipos",
+    "status": "Status",
+    "statusPlaceholder": "Todos os status",
+    "client": "Cliente",
+    "clientPlaceholder": "Buscar cliente..."
+  },
+  "form": {
+    "opType": "Tipo",
+    "opService": "Serviço",
+    "client": "Cliente",
+    "product": "Produto",
+    "vessel": "Navio",
+    "booking": "Booking",
+    "instruction": "Instrução",
+    "nameDate": "Data do nome",
+    "opDate": "Data da operação",
+    "startDate": "Data de início",
+    "observation": "Observação"
+  },
+  "detail": {
+    "number": "Número",
+    "status": "Status",
+    "type": "Tipo",
+    "service": "Serviço",
+    "booking": "Booking",
+    "instruction": "Instrução"
+  },
+  "details": {
+    "clientSection": "Cliente",
+    "productSection": "Produto",
+    "datesSection": "Datas",
+    "document": "Documento",
+    "phone": "Telefone",
+    "email": "E-mail",
+    "vesselEmpty": "Nenhum navio vinculado",
+    "createdAt": "Criado em",
+    "updatedAt": "Atualizado em"
+  },
+  "responsible": {
+    "searchPlaceholder": "Buscar por nome ou e-mail...",
+    "linkPlaceholder": "Digite para buscar um usuário...",
+    "link": "Vincular",
+    "unlink": "Desvincular",
+    "emptyState": "Nenhum responsável encontrado.",
+    "filter": {
+      "all": "Todos os vínculos",
+      "linked": "Vinculados",
+      "unlinked": "Não vinculados"
+    },
+    "roles": {
+      "Internal": "Interno",
+      "External": "Externo",
+      "Agent": "Agente",
+      "Supervisor": "Supervisor(a)",
+      "Laboratory": "Laboratório"
+    },
+    "toast": {
+      "linked": "Responsável vinculado com sucesso.",
+      "unlinked": "Responsável desvinculado com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente.",
+      "loadError": "Não foi possível carregar os responsáveis da operação."
+    }
+  },
+  "toast": {
+    "created": "Operação criada com sucesso.",
+    "updated": "Operação atualizada com sucesso.",
+    "error": "Não foi possível concluir a ação. Tente novamente.",
+    "loadError": "Não foi possível carregar os dados da operação."
+  },
+  "romaneio": {
+    "title": "Romaneio",
+    "description": "Fardos cadastrados para esta operação.",
+    "newButton": "Novo fardo",
+    "newTitle": "Novo fardo",
+    "editTitle": "Editar fardo",
+    "viewTitle": "Detalhes do fardo",
+    "searchPlaceholder": "Buscar por identificador, código...",
+    "emptyState": "Nenhum fardo cadastrado.",
+    "colItemIdentifier": "Fardo",
+    "colItemCode": "Código",
+    "colLote": "Lote",
+    "colPeso": "Peso (kg)",
+    "colSource": "Origem",
+    "colActions": "Ações",
+    "form": {
+      "itemIdentifier": "Identificador do fardo",
+      "itemCode": "Código do item",
+      "tipo": "Tipo",
+      "contrato": "Contrato",
+      "peso": "Peso líquido (kg)",
+      "pesoTara": "Tara (kg)",
+      "pesoBruto": "Peso bruto (kg)",
+      "instruction": "Instrução",
+      "notaFiscal": "Nota fiscal",
+      "lote": "Lote",
+      "pilha": "Pilha"
+    },
+    "confirm": {
+      "deleteTitle": "Excluir fardo",
+      "deleteMessage": "Excluir o fardo {name}? Esta ação não pode ser desfeita."
+    },
+    "toast": {
+      "created": "Fardo cadastrado com sucesso.",
+      "updated": "Fardo atualizado com sucesso.",
+      "deleted": "Fardo excluído com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "import": {
+      "button": "Importar planilha",
+      "title": "Importar romaneio",
+      "stepUpload": "Enviar planilha",
+      "stepReview": "Revisar",
+      "fileLabel": "Planilha (.xlsx ou .csv)",
+      "analyze": "Analisar",
+      "analyzing": "Analisando...",
+      "back": "Voltar",
+      "cancel": "Cancelar",
+      "apply": "Aplicar",
+      "applying": "Aplicando...",
+      "sheetRowLabel": "Linha {row}",
+      "summary": {
+        "totalDataRows": "Linhas na planilha",
+        "new": "Novos",
+        "missing": "Ausentes",
+        "conflicts": "Conflitos",
+        "foreign": "De outra operação",
+        "invalid": "Inválidos",
+        "duplicated": "Duplicados",
+        "unchanged": "Sem alteração"
+      },
+      "sections": {
+        "new": "Novos fardos",
+        "newHint": "Serão criados os fardos marcados abaixo.",
+        "missing": "Fardos ausentes na planilha",
+        "missingHint": "Marque para excluir o fardo que não aparece mais na planilha.",
+        "conflicts": "Fardos com divergência",
+        "conflictsHint": "Marque os campos que devem ser atualizados com o valor da planilha.",
+        "foreign": "Pertencem a outra operação",
+        "foreignHint": "Estes fardos já existem em outra operação e não serão alterados.",
+        "invalid": "Linhas inválidas",
+        "invalidHint": "Estas linhas têm erro e não serão importadas.",
+        "duplicated": "Linhas duplicadas na planilha",
+        "duplicatedHint": "Este fardo aparece mais de uma vez na planilha e não será importado."
+      },
+      "toast": {
+        "analyzeError": "Não foi possível analisar a planilha. Tente novamente.",
+        "applyError": "Não foi possível aplicar o import. Tente novamente.",
+        "applySuccess": "Import aplicado: {created} criados, {updated} atualizados, {deleted} excluídos."
+      },
+      "fields": {
+        "itemCode": "Código do item",
+        "tipo": "Tipo",
+        "contrato": "Contrato",
+        "peso": "Peso líquido",
+        "pesoTara": "Tara",
+        "pesoBruto": "Peso bruto",
+        "instruction": "Instrução",
+        "notaFiscal": "Nota fiscal",
+        "lote": "Lote",
+        "pilha": "Pilha"
+      }
+    }
+  },
+  "shell": {
+    "pageTitle": "Operação {number} — ASC",
+    "eyebrow": "Operação {number}",
+    "tabs": {
+      "details": "Detalhes",
+      "romaneio": "Romaneio",
+      "containers": "Containers",
+      "documents": "Documentos",
+      "reports": "Relatórios",
+      "responsible": "Responsáveis",
+      "log": "Log"
+    },
+    "statusLabel": "Status da operação",
+    "statusUpdated": "Status da operação atualizado com sucesso.",
+    "statusError": "Não foi possível atualizar o status. Tente novamente.",
+    "notFound": "Operação não encontrada.",
+    "loadError": "Não foi possível carregar esta operação.",
+    "retry": "Tentar novamente",
+    "tabPlaceholder": "O conteúdo desta aba ainda não foi implementado nesta etapa."
+  },
+  "reports": {
+    "description": "Lista de relatórios já emitidos para esta operação.",
+    "colType": "Tipo",
+    "colGeneratedAt": "Gerado em",
+    "colFormat": "Formato",
+    "colStatus": "Status",
+    "colActions": "Ações",
+    "statusReady": "Disponível",
+    "statusPending": "Pendente",
+    "download": "Baixar",
+    "emptyState": "Nenhum relatório disponível."
+  },
+  "log": {
+    "description": "Histórico de eventos registrados nesta operação.",
+    "byUser": "por {user}",
+    "emptyState": "Nenhum evento registrado."
+  },
+  "containers": {
+    "new": "Vincular container",
+    "newTitle": "Vincular container",
+    "loadError": "Não foi possível carregar os containers da operação.",
+    "empty": "Nenhum container vinculado a esta operação.",
+    "colIdentifier": "Container",
+    "colTara": "Tara",
+    "colStatus": "Status",
+    "colPhotos": "Fotos",
+    "colActions": "Ações",
+    "form": {
+      "container": "Container",
+      "tara": "Tara",
+      "status": "Status do vínculo",
+      "sealDate": "Data do lacre"
+    },
+    "photosTitle": "Fotos do container",
+    "photosAdd": "Fotos",
+    "photosUpload": "Enviar fotos",
+    "photosRemove": "Remover foto",
+    "confirm": {
+      "deleteTitle": "Desvincular container",
+      "deleteMessage": "Desvincular o container {identifier} desta operação?"
+    },
+    "toast": {
+      "linked": "Container vinculado com sucesso.",
+      "updated": "Vínculo atualizado com sucesso.",
+      "unlinked": "Container desvinculado com sucesso.",
+      "photoUploaded": "Fotos enviadas com sucesso.",
+      "photoDeleted": "Foto removida com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    }
+  },
+  "documents": {
+    "new": "Novo documento",
+    "newTitle": "Novo documento",
+    "editTitle": "Editar documento",
+    "loadError": "Não foi possível carregar os documentos da operação.",
+    "empty": "Nenhum documento cadastrado para esta operação.",
+    "colTitle": "Título",
+    "colType": "Tipo",
+    "colFile": "Arquivo",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "fileLink": "Abrir arquivo",
+    "download": "Baixar arquivo",
+    "form": {
+      "title": "Título",
+      "type": "Tipo",
+      "observation": "Observação",
+      "file": "Arquivo"
+    },
+    "toast": {
+      "created": "Documento criado com sucesso.",
+      "updated": "Documento atualizado com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    }
+  }
+}

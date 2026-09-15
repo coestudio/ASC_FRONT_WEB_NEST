@@ -1,0 +1,69 @@
+{
+  "home": {
+    "title": "Área do cliente",
+    "description": "Acompanhe seus relatórios, operações e colaboradores.",
+    "cards": {
+      "collaborators": {
+        "title": "Colaboradores",
+        "description": "Gerencie os colaboradores da sua empresa com acesso ao portal."
+      },
+      "finalReport": {
+        "title": "Relatório Final",
+        "description": "Consulte os relatórios finais das suas operações."
+      },
+      "tracking": {
+        "title": "Acompanhamento",
+        "description": "Acompanhe o andamento das suas operações."
+      }
+    }
+  },
+  "collaborators": {
+    "title": "Colaboradores",
+    "description": "Colaboradores da sua empresa com acesso ao portal.",
+    "colFullName": "Nome",
+    "colUserName": "Usuário",
+    "colEmail": "E-mail",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "emptyState": "Nenhum colaborador encontrado.",
+    "newTitle": "Novo colaborador",
+    "viewTitle": "Detalhes do colaborador",
+    "form": {
+      "fullName": "Nome",
+      "userName": "Usuário",
+      "email": "E-mail",
+      "document": "Documento (CPF/CNPJ)",
+      "phone": "Telefone",
+      "birthDate": "Data de nascimento"
+    },
+    "toast": {
+      "created": "Colaborador criado com sucesso.",
+      "deleted": "Colaborador excluído.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "confirm": {
+      "deleteTitle": "Excluir colaborador",
+      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+    }
+  },
+  "finalReport": {
+    "title": "Relatório Final",
+    "description": "Relatórios finais das suas operações.",
+    "colOperation": "Operação",
+    "colProduct": "Produto",
+    "colIssuedAt": "Emitido em",
+    "colStatus": "Status",
+    "statusIssued": "Emitido",
+    "statusPending": "Pendente"
+  },
+  "tracking": {
+    "title": "Acompanhamento",
+    "description": "Andamento das suas operações.",
+    "steps": {
+      "received": "Recebido",
+      "inspection": "Inspeção",
+      "processing": "Processamento",
+      "shipped": "Embarcado"
+    }
+  }
+}

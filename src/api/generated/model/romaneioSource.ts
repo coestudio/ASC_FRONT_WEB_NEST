@@ -5,4 +5,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RomaneioSource = number;
+export type RomaneioSource = typeof RomaneioSource[keyof typeof RomaneioSource];
+
+
+export const RomaneioSource = {
+  AdministrativeImport: 'AdministrativeImport',
+  ManualAdministrative: 'ManualAdministrative',
+  OperationalInvoice: 'OperationalInvoice',
+  AdministrativeCorrection: 'AdministrativeCorrection',
+} as const;

@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { useLocation } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Nav } from "react-bootstrap";
 
-import { useCan } from "@/hooks";
-import type { AreaId } from "@/lib/permissions";
+import { useCan, useUser } from "@/hooks";
+import { useT } from "@/lib/ui-prefs";
+import { APP_VERSION } from "@/lib/app-version";
+import { getUserAreas, type AreaId, type PermissionUser } from "@/lib/permissions";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { BrandSwitcher } from "@/components/theme/brand-switcher";
+import { AppBrand } from "@/layouts/AppBrand";
+import { getNavSections, type NavItem, type NavSection } from "./nav";
 import { UserMenu } from "./UserMenu";
 import styles from "./index.module.css";
 
@@ -11,76 +18,16 @@ import styles from "./index.module.css";
  * Shell da área autenticada — sidebar + topbar. Montado pelo layout
  * /_dashboard (src/routes/_dashboard.tsx), envolve todas as rotas do dashboard.
  *
- * Migração: os links apontam para rotas que ainda não existem (administrativo,
- * operacional, etc.) — por isso são <a> (navegação full-page) e não <Link>
- * tipado. Trocar por <Link> conforme as rotas forem migradas.
+ * Nav config: as seções vêm de `getNavSections` (merge declarativo de
+ * `nav/*.ts`, ver SPEC-02 §3.1) — não é mais um literal central aqui.
  *
- * Tema / idioma: o slot no topbar (`.topbar`) e o menu do usuário têm TODOs
- * para os controles — a implementação fica a cargo de quem migrar o i18n.
+ * Navegação: itens com rota real usam `<Link to>` tipado (client-side,
+ * sem full-page reload — antes todo o sidebar usava `<a href>`, causando um
+ * flash branco a cada clique). Os poucos itens `legacyOrphanRoute: true`
+ * (ver `nav/types.ts`) continuam em `<a href>` — apontam pra rota que não
+ * existe em `routeTree.gen.ts` (`administrativoLog`/`administrativoOccurrences`,
+ * SPEC-06 cancelada), `<Link to>` tipado não aceitaria.
  */
-
-type NavItem = { to: string; icon: string; label: string };
-type NavSection = { id: string; area: AreaId; icon: string; label: string; items: NavItem[] };
-
-const SECTIONS: NavSection[] = [
-  {
-    id: "administrador",
-    area: "admin",
-    icon: "bi-shield-lock",
-    label: "Administrador",
-    items: [
-      { to: "/admin/acesso", icon: "bi-shield-lock", label: "Acesso" },
-      { to: "/admin/acessos", icon: "bi-shield-check", label: "Perfis de acesso" },
-    ],
-  },
-  {
-    id: "administrativo",
-    area: "administrativo",
-    icon: "bi-grid-1x2",
-    label: "Administrativo",
-    items: [
-      { to: "/administrativo", icon: "bi-house", label: "Início" },
-      { to: "/administrativo/clientes", icon: "bi-people", label: "Clientes" },
-      { to: "/operacoes", icon: "bi-clipboard-data", label: "Operações" },
-      { to: "/administrativo/cadastro/navio", icon: "bi-water", label: "Navio" },
-      { to: "/administrativo/cadastro/container", icon: "bi-box-seam", label: "Container" },
-      { to: "/administrativo/cadastro/terminal", icon: "bi-building", label: "Terminal" },
-      { to: "/administrativo/cadastro/porto", icon: "bi-geo-alt", label: "Porto" },
-      { to: "/administrativo/cadastro/produto", icon: "bi-box2", label: "Produto" },
-      { to: "/administrativo/log", icon: "bi-journal-text", label: "Log" },
-      { to: "/administrativo/ocorrencias", icon: "bi-exclamation-triangle", label: "Ocorrências" },
-    ],
-  },
-  {
-    id: "operacional",
-    area: "operacional",
-    icon: "bi-diagram-3",
-    label: "Operacional",
-    items: [
-      { to: "/operacional", icon: "bi-house", label: "Início" },
-      { to: "/operacional/operacoes", icon: "bi-clipboard-data", label: "Operações" },
-    ],
-  },
-  {
-    id: "area-cliente",
-    area: "client",
-    icon: "bi-person-badge",
-    label: "Área do cliente",
-    items: [
-      { to: "/client", icon: "bi-house", label: "Início" },
-      { to: "/client/relatorio-final", icon: "bi-file-earmark-text", label: "Relatório Final" },
-      { to: "/client/acompanhamento", icon: "bi-graph-up-arrow", label: "Acompanhamento" },
-      { to: "/client/colaboradores", icon: "bi-people", label: "Colaboradores" },
-    ],
-  },
-  {
-    id: "laboratorio",
-    area: "laboratorio",
-    icon: "bi-flask",
-    label: "Laboratório",
-    items: [{ to: "/laboratory", icon: "bi-flask-fill", label: "Laboratório" }],
-  },
-];
 
 function isChildActive(items: NavItem[], pathname: string): boolean {
   return items.some((i) => pathname === i.to || pathname.startsWith(i.to + "/"));
@@ -91,15 +38,23 @@ function SidebarSection({
   pathname,
   expanded,
   onToggle,
+  t,
 }: {
   section: NavSection;
   pathname: string;
   expanded: boolean;
   onToggle: () => void;
+  t: (key: NavSection["sectionLabelKey"]) => string;
 }) {
   const active = isChildActive(section.items, pathname);
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  // Depois que a animação de abertura termina, solta o teto de altura
+  // (`max-height: none`) — daí em diante o acordeão nunca mais fica "com
+  // limite", mesmo que os itens mudem (ex.: permissão carregada depois) sem
+  // disparar um novo resize a tempo do próximo clique. Só volta a usar a
+  // altura medida enquanto está de fato animando a abertura.
+  const [settled, setSettled] = useState(false);
 
   useEffect(() => {
     const el = contentRef.current;
@@ -108,6 +63,10 @@ function SidebarSection({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (!expanded) setSettled(false);
+  }, [expanded]);
 
   return (
     <div className="mb-1">
@@ -118,24 +77,37 @@ function SidebarSection({
         aria-expanded={expanded}
       >
         <span>
-          <i className={`bi ${section.icon} me-2`} />
-          {section.label}
+          <i className={`bi ${section.icon || "bi-grid-1x2"} me-2`} />
+          {t(section.sectionLabelKey)}
         </span>
         <i
           className={`bi bi-chevron-right ${styles.submenuCaret} ${expanded ? styles.submenuCaretOpen : ""}`}
         />
       </div>
-      <div className={styles.sidebarAccordionInner} style={{ maxHeight: expanded ? height : 0 }}>
+      <div
+        className={styles.sidebarAccordionInner}
+        style={{ maxHeight: expanded ? (settled ? "none" : height) : 0 }}
+        onTransitionEnd={() => {
+          if (expanded) setSettled(true);
+        }}
+      >
         <div ref={contentRef}>
           <Nav as="ul" className={`${styles.navSub} flex-column`}>
             {section.items.map((item) => {
               const itemActive = pathname === item.to || pathname.startsWith(item.to + "/");
               return (
                 <Nav.Item as="li" key={item.to}>
-                  <Nav.Link as="a" href={item.to} active={itemActive}>
-                    <i className={`bi ${item.icon} me-2`} />
-                    {item.label}
-                  </Nav.Link>
+                  {item.legacyOrphanRoute ? (
+                    <Nav.Link as="a" href={item.to} active={itemActive}>
+                      {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
+                      {t(item.labelKey)}
+                    </Nav.Link>
+                  ) : (
+                    <Nav.Link as={Link} to={item.to} active={itemActive}>
+                      {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
+                      {t(item.labelKey)}
+                    </Nav.Link>
+                  )}
                 </Nav.Item>
               );
             })}
@@ -149,8 +121,17 @@ function SidebarSection({
 export function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const pathname = location.pathname;
+  const t = useT();
+  const { user } = useUser();
+  const themeLabels = {
+    light: t("theme.light"),
+    dark: t("theme.dark"),
+    system: t("theme.system"),
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  const sections = getNavSections(getUserAreas(user as PermissionUser | null));
 
   // fecha o menu mobile ao navegar
   useEffect(() => {
@@ -161,11 +142,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     setExpanded((prev) => {
       const next = { ...prev };
-      for (const s of SECTIONS) {
-        if (isChildActive(s.items, pathname)) next[s.id] = true;
+      for (const s of sections) {
+        if (isChildActive(s.items, pathname)) next[s.area] = true;
       }
       return next;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (
@@ -178,27 +160,29 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div
           className={`${styles.sidebarHeader} d-flex align-items-center justify-content-between`}
         >
-          <a href="/dashboard" className={styles.sidebarBrand}>
-            <span className={styles.sidebarTitle}>Alex Stewart</span>
-          </a>
+          <AppBrand as="link" to="/dashboard" size="md" className={styles.sidebarBrand} />
         </div>
 
         <Nav className={`${styles.sidebarNav} flex-column`}>
-          {SECTIONS.map((section) => (
+          {sections.map((section) => (
             <GatedSection
-              key={section.id}
+              key={section.area}
               section={section}
               pathname={pathname}
-              expanded={!!expanded[section.id]}
+              expanded={!!expanded[section.area]}
               onToggle={() =>
-                setExpanded((prev) => ({ ...prev, [section.id]: !prev[section.id] }))
+                setExpanded((prev) => ({ ...prev, [section.area]: !prev[section.area] }))
               }
+              t={t}
             />
           ))}
         </Nav>
 
         <div className={styles.sidebarFooter}>
           <UserMenu />
+          {/* Versão do app — SPEC-11 item 7 (decisão do usuário: só a
+              string da versão, sem duplicar dado que já existe no UserMenu). */}
+          <div className={styles.appVersion}>v{APP_VERSION}</div>
         </div>
       </aside>
 
@@ -207,13 +191,17 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             className={styles.menuButton}
-            aria-label="Abrir menu"
+            aria-label={t("shell.openMenu")}
             onClick={() => setMenuOpen(true)}
           >
             <i className="bi bi-list" />
           </button>
           <div className={`${styles.topbarTitle} flex-grow-1`}>Portal interno</div>
-          {/* TODO(user): controles de tema / idioma entram aqui. */}
+          <div className="d-flex align-items-center gap-2">
+            <BrandSwitcher />
+            <LanguageSwitcher />
+            <ThemeToggle labels={themeLabels} />
+          </div>
         </header>
         <div className={styles.content}>{children}</div>
       </div>
@@ -227,8 +215,9 @@ function GatedSection(props: {
   pathname: string;
   expanded: boolean;
   onToggle: () => void;
+  t: (key: NavSection["sectionLabelKey"]) => string;
 }) {
-  const can = useCan(props.section.area);
+  const can = useCan(props.section.area as AreaId);
   if (!can) return null;
   return <SidebarSection {...props} />;
 }

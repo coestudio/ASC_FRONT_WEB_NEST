@@ -5,4 +5,15 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type DocumentType = number;
+export type DocumentType = typeof DocumentType[keyof typeof DocumentType];
+
+
+export const DocumentType = {
+  Other: 'Other',
+  Booking: 'Booking',
+  Instruction: 'Instruction',
+  PackingList: 'PackingList',
+  Invoice: 'Invoice',
+  Certificate: 'Certificate',
+  Report: 'Report',
+} as const;

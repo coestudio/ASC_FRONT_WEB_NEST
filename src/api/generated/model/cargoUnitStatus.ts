@@ -5,4 +5,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CargoUnitStatus = number;
+export type CargoUnitStatus = typeof CargoUnitStatus[keyof typeof CargoUnitStatus];
+
+
+export const CargoUnitStatus = {
+  Open: 'Open',
+  Stuffed: 'Stuffed',
+  Canceled: 'Canceled',
+} as const;

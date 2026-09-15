@@ -56,6 +56,12 @@ async function handler({ request }: { request: Request }): Promise<Response> {
   });
   headers.set("Authorization", `Bearer ${session.accessToken}`);
 
+  // Locale ativo do usuário (cookie asc_locale) — repassado pro Core pra
+  // resolver mensagens localizadas (SPEC-15). Sem cookie, o Core cai em
+  // pt-BR sozinho (fallback já garantido do lado dele).
+  const localeCookie = request.headers.get("cookie")?.match(/(?:^|;\s*)asc_locale=([^;]+)/)?.[1];
+  if (localeCookie) headers.set("x-locale", localeCookie);
+
   let coreRes: Response;
   try {
     coreRes = await fetch(`${API_URL}${corePath}`, {

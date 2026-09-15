@@ -5,4 +5,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CargoIdentificationStatus = number;
+export type CargoIdentificationStatus = typeof CargoIdentificationStatus[keyof typeof CargoIdentificationStatus];
+
+
+export const CargoIdentificationStatus = {
+  Unidentified: 'Unidentified',
+  Partial: 'Partial',
+  Identified: 'Identified',
+  Divergent: 'Divergent',
+  Reconciled: 'Reconciled',
+} as const;

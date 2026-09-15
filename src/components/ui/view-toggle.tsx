@@ -1,36 +1,38 @@
-"use client";
-
-import { Grid3x3GapFill, ListUl } from "react-bootstrap-icons";
 import type { ViewMode } from "@/lib/view-mode";
 
 type ViewToggleProps = {
   value: ViewMode;
   onChange: (mode: ViewMode) => void;
   hidden?: boolean;
+  ariaLabel?: string;
 };
 
-export function ViewToggle({ value, onChange, hidden = false }: ViewToggleProps) {
+/** Toggle cards/lista — consome `useViewMode`/`useResponsiveViewMode` (src/lib/view-mode.ts). */
+export function ViewToggle({
+  value,
+  onChange,
+  hidden = false,
+  ariaLabel = "Modo de visualização",
+}: ViewToggleProps) {
   if (hidden) return null;
 
   return (
-    <div className="btn-group flex-shrink-0" role="group" aria-label="Modo de visualização">
+    <div className="btn-group flex-shrink-0" role="group" aria-label={ariaLabel}>
       <button
         type="button"
-        className={`btn btn-sm ${value === "cards" ? "btn-success" : "btn-outline-success"}`}
+        className={`btn btn-sm ${value === "cards" ? "btn-primary" : "btn-soft"}`}
         onClick={() => onChange("cards")}
         aria-pressed={value === "cards"}
-        title="Visualizar em cards"
       >
-        <Grid3x3GapFill aria-hidden />
+        <i className="bi bi-grid-3x3-gap" aria-hidden />
       </button>
       <button
         type="button"
-        className={`btn btn-sm ${value === "list" ? "btn-success" : "btn-outline-success"}`}
+        className={`btn btn-sm ${value === "list" ? "btn-primary" : "btn-soft"}`}
         onClick={() => onChange("list")}
         aria-pressed={value === "list"}
-        title="Visualizar em lista"
       >
-        <ListUl aria-hidden />
+        <i className="bi bi-list-ul" aria-hidden />
       </button>
     </div>
   );

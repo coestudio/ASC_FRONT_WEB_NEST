@@ -111,7 +111,7 @@ function InputDate<T extends FieldValues>({
               top: "50%",
               transform: "translateY(-50%)",
               pointerEvents: "none",
-              color: "#6c757d",
+              color: "var(--bs-secondary-color)",
               fontSize: "18px",
             }}
           />

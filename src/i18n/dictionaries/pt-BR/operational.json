@@ -1,0 +1,65 @@
+{
+  "home": {
+    "title": "Operacional",
+    "description": "Acompanhamento das operações da área operacional.",
+    "cards": {
+      "operations": {
+        "title": "Operações",
+        "description": "Acompanhamento das operações (somente leitura)."
+      }
+    }
+  },
+  "detail": {
+    "eyebrow": "Operação {code}",
+    "notFound": "Operação não encontrada.",
+    "backToList": "Voltar para operações",
+    "backToOperation": "Operação",
+    "sections": {
+      "details": { "label": "Detalhes", "description": "Dados da operação" },
+      "containers": { "label": "Containers", "description": "Containers vinculados" },
+      "operational": { "label": "Operacional", "description": "Fluxo de estufagem" },
+      "split": { "label": "Split", "description": "Divisão da operação" }
+    },
+    "operationalPlaceholder": "Fluxo operacional em construção.",
+    "splitPlaceholder": "Split em construção.",
+    "fields": {
+      "client": "Cliente",
+      "type": "Tipo",
+      "mode": "Modo",
+      "status": "Status",
+      "product": "Produto"
+    },
+    "status": {
+      "inProgress": "Em andamento",
+      "finished": "Finalizada",
+      "pending": "Pendente"
+    },
+    "type": {
+      "import": "Importação",
+      "export": "Exportação"
+    },
+    "mode": {
+      "fcl": "FCL",
+      "lcl": "LCL"
+    },
+    "containers": {
+      "empty": "Nenhum container vinculado.",
+      "colIdentifier": "Container",
+      "colType": "Tipo",
+      "colSeal": "Lacre",
+      "colStatus": "Status",
+      "colVolumes": "Volumes estufados",
+      "detailTitle": "Detalhes do container",
+      "detailWeight": "Peso atual",
+      "detailNetWeight": "Peso líquido",
+      "detailTare": "Tara",
+      "close": "Fechar"
+    },
+    "containerStatus": {
+      "empty": "Vazio",
+      "loading": "Em carregamento",
+      "sealed": "Lacrado",
+      "shipped": "Embarcado"
+    }
+  }
+}

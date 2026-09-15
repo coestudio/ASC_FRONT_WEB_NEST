@@ -4,6 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import * as zod from "zod";
+import * as zod from 'zod';
 
-export const GetResponse = zod.unknown();
+
+export const GetResponse = zod.unknown()
+

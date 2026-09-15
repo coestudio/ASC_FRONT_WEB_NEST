@@ -5,4 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type RomaneioImportRomaneioFormat = number;
+export type RomaneioImportRomaneioFormat = typeof RomaneioImportRomaneioFormat[keyof typeof RomaneioImportRomaneioFormat];
+
+
+export const RomaneioImportRomaneioFormat = {
+  Xlsx: 'Xlsx',
+  Csv: 'Csv',
+} as const;

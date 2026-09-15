@@ -4,22 +4,22 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { InternalRole } from "./internalRole";
-import type { UserType } from "./userType";
+import type { InternalRole } from './internalRole.ts';
+import type { UserType } from './userType.ts';
 
 export type GetApiUserParams = {
-  Search?: string;
-  IsActive?: boolean;
-  IsAdmin?: boolean;
-  Type?: UserType;
-  Role?: InternalRole;
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  Offset?: number | string;
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  Limit?: number | string;
-  Sort?: string;
+Search?: string;
+IsActive?: boolean;
+IsAdmin?: boolean;
+Type?: UserType;
+Role?: InternalRole;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+Offset?: number | string;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+Limit?: number | string;
+Sort?: string;
 };

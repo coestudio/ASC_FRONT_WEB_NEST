@@ -1,0 +1,279 @@
+{
+  "title": "作业",
+  "description": "进行中的装箱和装运作业。",
+  "colNumber": "编号",
+  "colClient": "客户",
+  "colProduct": "产品",
+  "colType": "类型",
+  "colService": "服务",
+  "colStatus": "状态",
+  "colOpDate": "作业日期",
+  "colBooking": "订舱号",
+  "colActions": "操作",
+  "emptyState": "未找到任何作业。",
+  "newButton": "新建作业",
+  "newTitle": "新建作业",
+  "editTitle": "编辑作业",
+  "viewTitle": "作业详情",
+  "searchPlaceholder": "按编号、订舱号搜索...",
+  "filters": {
+    "type": "类型",
+    "typePlaceholder": "所有类型",
+    "status": "状态",
+    "statusPlaceholder": "所有状态",
+    "client": "客户",
+    "clientPlaceholder": "搜索客户..."
+  },
+  "form": {
+    "opType": "类型",
+    "opService": "服务",
+    "client": "客户",
+    "product": "产品",
+    "vessel": "船舶",
+    "booking": "订舱号",
+    "instruction": "说明",
+    "nameDate": "命名日期",
+    "opDate": "作业日期",
+    "startDate": "开始日期",
+    "observation": "备注"
+  },
+  "detail": {
+    "number": "编号",
+    "status": "状态",
+    "type": "类型",
+    "service": "服务",
+    "booking": "订舱号",
+    "instruction": "说明"
+  },
+  "details": {
+    "clientSection": "客户",
+    "productSection": "产品",
+    "datesSection": "日期",
+    "document": "证件",
+    "phone": "电话",
+    "email": "邮箱",
+    "vesselEmpty": "未关联船舶",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间"
+  },
+  "responsible": {
+    "searchPlaceholder": "按姓名或邮箱搜索...",
+    "linkPlaceholder": "输入以搜索用户...",
+    "link": "关联",
+    "unlink": "取消关联",
+    "emptyState": "未找到负责人。",
+    "filter": {
+      "all": "全部关联状态",
+      "linked": "已关联",
+      "unlinked": "未关联"
+    },
+    "roles": {
+      "Internal": "内部",
+      "External": "外部",
+      "Agent": "代理",
+      "Supervisor": "主管",
+      "Laboratory": "实验室"
+    },
+    "toast": {
+      "linked": "负责人关联成功。",
+      "unlinked": "负责人取消关联成功。",
+      "error": "无法完成该操作，请重试。",
+      "loadError": "无法加载该操作的负责人。"
+    }
+  },
+  "toast": {
+    "created": "作业创建成功。",
+    "updated": "作业更新成功。",
+    "error": "无法完成该操作，请重试。",
+    "loadError": "无法加载作业数据。"
+  },
+  "romaneio": {
+    "title": "装箱单",
+    "description": "此作业已登记的包裹。",
+    "newButton": "新建包裹",
+    "newTitle": "新建包裹",
+    "editTitle": "编辑包裹",
+    "viewTitle": "包裹详情",
+    "searchPlaceholder": "按标识、代码搜索...",
+    "emptyState": "未登记任何包裹。",
+    "colItemIdentifier": "包裹",
+    "colItemCode": "代码",
+    "colLote": "批次",
+    "colPeso": "重量（千克）",
+    "colSource": "来源",
+    "colActions": "操作",
+    "form": {
+      "itemIdentifier": "包裹标识",
+      "itemCode": "项目代码",
+      "tipo": "类型",
+      "contrato": "合同",
+      "peso": "净重（千克）",
+      "pesoTara": "皮重（千克）",
+      "pesoBruto": "毛重（千克）",
+      "instruction": "说明",
+      "notaFiscal": "发票",
+      "lote": "批次",
+      "pilha": "堆垛"
+    },
+    "confirm": {
+      "deleteTitle": "删除包裹",
+      "deleteMessage": "删除包裹 {name}？此操作无法撤销。"
+    },
+    "toast": {
+      "created": "包裹登记成功。",
+      "updated": "包裹更新成功。",
+      "deleted": "包裹删除成功。",
+      "error": "无法完成该操作，请重试。"
+    },
+    "import": {
+      "button": "导入表格",
+      "title": "导入装箱单",
+      "stepUpload": "上传表格",
+      "stepReview": "审核",
+      "fileLabel": "表格（.xlsx 或 .csv）",
+      "analyze": "分析",
+      "analyzing": "正在分析...",
+      "back": "返回",
+      "cancel": "取消",
+      "apply": "应用",
+      "applying": "正在应用...",
+      "sheetRowLabel": "第 {row} 行",
+      "summary": {
+        "totalDataRows": "表格行数",
+        "new": "新增",
+        "missing": "缺失",
+        "conflicts": "冲突",
+        "foreign": "属于其他作业",
+        "invalid": "无效",
+        "duplicated": "重复",
+        "unchanged": "未变更"
+      },
+      "sections": {
+        "new": "新包裹",
+        "newHint": "下方勾选的包裹将被创建。",
+        "missing": "表格中缺失的包裹",
+        "missingHint": "勾选以删除表格中不再出现的包裹。",
+        "conflicts": "有差异的包裹",
+        "conflictsHint": "勾选应使用表格值更新的字段。",
+        "foreign": "属于其他作业",
+        "foreignHint": "这些包裹已存在于其他作业中，不会被更改。",
+        "invalid": "无效行",
+        "invalidHint": "这些行存在错误，不会被导入。",
+        "duplicated": "表格中重复的行",
+        "duplicatedHint": "此包裹在表格中出现多次，不会被导入。"
+      },
+      "toast": {
+        "analyzeError": "无法分析表格，请重试。",
+        "applyError": "无法应用导入，请重试。",
+        "applySuccess": "导入已应用：新建 {created} 个，更新 {updated} 个，删除 {deleted} 个。"
+      },
+      "fields": {
+        "itemCode": "项目代码",
+        "tipo": "类型",
+        "contrato": "合同",
+        "peso": "净重",
+        "pesoTara": "皮重",
+        "pesoBruto": "毛重",
+        "instruction": "说明",
+        "notaFiscal": "发票",
+        "lote": "批次",
+        "pilha": "堆垛"
+      }
+    }
+  },
+  "shell": {
+    "pageTitle": "作业 {number} — ASC",
+    "eyebrow": "作业 {number}",
+    "tabs": {
+      "details": "详情",
+      "romaneio": "装箱单",
+      "containers": "集装箱",
+      "documents": "文件",
+      "reports": "报告",
+      "responsible": "负责人",
+      "log": "日志"
+    },
+    "statusLabel": "作业状态",
+    "statusUpdated": "作业状态更新成功。",
+    "statusError": "无法更新状态，请重试。",
+    "notFound": "未找到该作业。",
+    "loadError": "无法加载该作业。",
+    "retry": "重试",
+    "tabPlaceholder": "此标签页的内容尚未实现。"
+  },
+  "reports": {
+    "description": "此作业已生成的报告列表。",
+    "colType": "类型",
+    "colGeneratedAt": "生成时间",
+    "colFormat": "格式",
+    "colStatus": "状态",
+    "colActions": "操作",
+    "statusReady": "可用",
+    "statusPending": "待处理",
+    "download": "下载",
+    "emptyState": "暂无可用报告。"
+  },
+  "log": {
+    "description": "此作业记录的事件历史。",
+    "byUser": "由 {user}",
+    "emptyState": "暂无记录的事件。"
+  },
+  "containers": {
+    "new": "关联集装箱",
+    "newTitle": "关联集装箱",
+    "loadError": "无法加载该作业的集装箱。",
+    "empty": "此作业尚未关联任何集装箱。",
+    "colIdentifier": "集装箱",
+    "colTara": "皮重",
+    "colStatus": "状态",
+    "colPhotos": "照片",
+    "colActions": "操作",
+    "form": {
+      "container": "集装箱",
+      "tara": "皮重",
+      "status": "关联状态",
+      "sealDate": "封条日期"
+    },
+    "photosTitle": "集装箱照片",
+    "photosAdd": "照片",
+    "photosUpload": "上传照片",
+    "photosRemove": "移除照片",
+    "confirm": {
+      "deleteTitle": "取消关联集装箱",
+      "deleteMessage": "确定要将集装箱 {identifier} 从此作业中取消关联吗？"
+    },
+    "toast": {
+      "linked": "集装箱关联成功。",
+      "updated": "关联更新成功。",
+      "unlinked": "集装箱取消关联成功。",
+      "photoUploaded": "照片上传成功。",
+      "photoDeleted": "照片删除成功。",
+      "error": "无法完成该操作，请重试。"
+    }
+  },
+  "documents": {
+    "new": "新建文件",
+    "newTitle": "新建文件",
+    "editTitle": "编辑文件",
+    "loadError": "无法加载该作业的文件。",
+    "empty": "此作业尚未登记任何文件。",
+    "colTitle": "标题",
+    "colType": "类型",
+    "colFile": "文件",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "fileLink": "打开文件",
+    "download": "下载文件",
+    "form": {
+      "title": "标题",
+      "type": "类型",
+      "observation": "备注",
+      "file": "文件"
+    },
+    "toast": {
+      "created": "文件创建成功。",
+      "updated": "文件更新成功。",
+      "error": "无法完成该操作，请重试。"
+    }
+  }
+}

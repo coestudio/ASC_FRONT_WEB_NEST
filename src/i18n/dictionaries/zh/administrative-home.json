@@ -1,0 +1,36 @@
+{
+  "home": {
+    "title": "行政管理",
+    "description": "行政管理区域各页面的快捷入口。",
+    "cards": {
+      "clients": {
+        "title": "客户",
+        "description": "已注册的客户及其联系方式。"
+      },
+      "operations": {
+        "title": "作业",
+        "description": "进行中的装箱和装运作业。"
+      },
+      "vessel": {
+        "title": "船舶",
+        "description": "作业中使用的船舶。"
+      },
+      "container": {
+        "title": "集装箱",
+        "description": "作业中使用的集装箱。"
+      },
+      "terminal": {
+        "title": "码头",
+        "description": "与港口关联的码头。"
+      },
+      "harbor": {
+        "title": "港口",
+        "description": "已注册的港口及其码头。"
+      },
+      "product": {
+        "title": "产品",
+        "description": "作业中使用的产品。"
+      }
+    }
+  }
+}

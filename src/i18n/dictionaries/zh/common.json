@@ -1,0 +1,67 @@
+{
+  "metadata": {
+    "title": "ASC",
+    "description": "ASC 应用"
+  },
+  "theme": {
+    "light": "浅色主题",
+    "dark": "深色主题",
+    "system": "跟随系统"
+  },
+  "shell": {
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单",
+    "profile": "个人资料",
+    "preferences": "偏好设置",
+    "theme": "主题",
+    "language": "语言",
+    "viewMode": "视图",
+    "viewModeCards": "卡片视图",
+    "viewModeList": "列表视图",
+    "underConstruction": "建设中",
+    "underConstructionDescription": "此页面仍在开发中。",
+    "areaWelcome": "欢迎来到{area}区域。",
+    "brand": "品牌",
+    "profileModal": {
+      "title": "我的资料",
+      "avatar": "头像",
+      "avatarSaved": "头像已更新。",
+      "detailTab": "个人资料",
+      "addressTab": "地址",
+      "passwordTab": "密码",
+      "fullName": "全名",
+      "userName": "用户名",
+      "email": "邮箱",
+      "document": "证件号",
+      "phone": "电话",
+      "birthDate": "出生日期",
+      "postalCode": "邮政编码",
+      "state": "省/州",
+      "city": "城市",
+      "neighborhood": "街区",
+      "street": "街道",
+      "number": "门牌号",
+      "complement": "补充地址",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认密码",
+      "save": "保存",
+      "saved": "更改已保存。",
+      "saveError": "无法保存，请重试。",
+      "cancel": "取消",
+      "changeAvatar": "更换",
+      "selectAvatar": "选择",
+      "removeAvatar": "移除图片",
+      "avatarHint": "将鼠标悬停在照片上即可更换。JPG 或 PNG，最大 2 MB。",
+      "avatarTooLarge": "文件过大，最大 2 MB。",
+      "uploadingAvatar": "正在上传...",
+      "selectState": "选择州/省"
+    }
+  },
+  "devTools": {
+    "clearCacheButton": "清除本地缓存（开发）",
+    "clearCacheTitle": "清除本地缓存",
+    "clearCacheMessage": "此操作将清除 localStorage、sessionStorage、Cookie 和 React Query 缓存，并退出登录。是否继续？",
+    "clearCacheSuccess": "本地缓存已清除。"
+  }
+}

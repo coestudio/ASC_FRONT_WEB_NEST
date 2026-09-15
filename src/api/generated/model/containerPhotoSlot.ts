@@ -5,4 +5,17 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ContainerPhotoSlot = number;
+export type ContainerPhotoSlot = typeof ContainerPhotoSlot[keyof typeof ContainerPhotoSlot];
+
+
+export const ContainerPhotoSlot = {
+  None: 'None',
+  EmptyExternal: 'EmptyExternal',
+  EmptyInternal: 'EmptyInternal',
+  FirstRow: 'FirstRow',
+  Fifty: 'Fifty',
+  Hundred: 'Hundred',
+  FullExternal: 'FullExternal',
+  Sealed: 'Sealed',
+  ShipownerSeal: 'ShipownerSeal',
+} as const;

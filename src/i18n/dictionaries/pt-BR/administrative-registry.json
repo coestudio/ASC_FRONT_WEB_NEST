@@ -1,0 +1,130 @@
+{
+  "terminal": {
+    "title": "Terminais",
+    "description": "Terminais associados aos portos.",
+    "colName": "Nome",
+    "colHarbor": "Porto",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "emptyState": "Nenhum terminal encontrado.",
+    "newTitle": "Novo terminal",
+    "editTitle": "Editar terminal",
+    "viewTitle": "Detalhes do terminal",
+    "form": {
+      "name": "Nome",
+      "harbor": "Porto"
+    },
+    "toast": {
+      "created": "Terminal criado com sucesso.",
+      "updated": "Terminal atualizado com sucesso.",
+      "deleted": "Terminal excluído.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "confirm": {
+      "deleteTitle": "Excluir terminal",
+      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+    }
+  },
+  "harbor": {
+    "title": "Portos",
+    "description": "Portos cadastrados e seus terminais.",
+    "colName": "Nome",
+    "colAddress": "Endereço",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "emptyState": "Nenhum porto encontrado.",
+    "newTitle": "Novo porto",
+    "editTitle": "Editar porto",
+    "viewTitle": "Detalhes do porto",
+    "form": {
+      "name": "Nome",
+      "address": "Endereço"
+    },
+    "relatedTerminalsTitle": "Terminais deste porto",
+    "relatedTerminalsEmpty": "Nenhum terminal vinculado a este porto.",
+    "toast": {
+      "created": "Porto criado com sucesso.",
+      "updated": "Porto atualizado com sucesso.",
+      "deleted": "Porto excluído.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "confirm": {
+      "deleteTitle": "Excluir porto",
+      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+    }
+  },
+  "container": {
+    "title": "Containers",
+    "description": "Containers utilizados nas operações.",
+    "colIdentifier": "Identificador",
+    "colTara": "Tara",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "emptyState": "Nenhum container encontrado.",
+    "newTitle": "Novo container",
+    "editTitle": "Editar container",
+    "viewTitle": "Detalhes do container",
+    "form": {
+      "identifier": "Identificador",
+      "tara": "Tara (kg)"
+    },
+    "toast": {
+      "created": "Container criado com sucesso.",
+      "updated": "Container atualizado com sucesso.",
+      "deleted": "Container excluído.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "confirm": {
+      "deleteTitle": "Excluir container",
+      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+    }
+  },
+  "vessel": {
+    "title": "Navios",
+    "description": "Navios utilizados nas operações.",
+    "colName": "Nome",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "emptyState": "Nenhum navio encontrado.",
+    "newTitle": "Novo navio",
+    "editTitle": "Editar navio",
+    "viewTitle": "Detalhes do navio",
+    "form": {
+      "name": "Nome"
+    },
+    "toast": {
+      "created": "Navio criado com sucesso.",
+      "updated": "Navio atualizado com sucesso.",
+      "deleted": "Navio excluído.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "confirm": {
+      "deleteTitle": "Excluir navio",
+      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+    }
+  },
+  "product": {
+    "title": "Produtos",
+    "description": "Produtos utilizados nas operações.",
+    "colName": "Nome",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "emptyState": "Nenhum produto encontrado.",
+    "newTitle": "Novo produto",
+    "editTitle": "Editar produto",
+    "viewTitle": "Detalhes do produto",
+    "form": {
+      "name": "Nome"
+    },
+    "toast": {
+      "created": "Produto criado com sucesso.",
+      "updated": "Produto atualizado com sucesso.",
+      "deleted": "Produto excluído.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "confirm": {
+      "deleteTitle": "Excluir produto",
+      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
+    }
+  }
+}

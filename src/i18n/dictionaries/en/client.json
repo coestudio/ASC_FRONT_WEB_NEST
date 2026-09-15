@@ -1,0 +1,69 @@
+{
+  "home": {
+    "title": "Client area",
+    "description": "Track your reports, operations and collaborators.",
+    "cards": {
+      "collaborators": {
+        "title": "Collaborators",
+        "description": "Manage your company's collaborators with portal access."
+      },
+      "finalReport": {
+        "title": "Final Report",
+        "description": "Check the final reports for your operations."
+      },
+      "tracking": {
+        "title": "Tracking",
+        "description": "Follow the progress of your operations."
+      }
+    }
+  },
+  "collaborators": {
+    "title": "Collaborators",
+    "description": "Your company's collaborators with portal access.",
+    "colFullName": "Name",
+    "colUserName": "Username",
+    "colEmail": "Email",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "emptyState": "No collaborator found.",
+    "newTitle": "New collaborator",
+    "viewTitle": "Collaborator details",
+    "form": {
+      "fullName": "Name",
+      "userName": "Username",
+      "email": "Email",
+      "document": "Tax ID",
+      "phone": "Phone",
+      "birthDate": "Birth date"
+    },
+    "toast": {
+      "created": "Collaborator created successfully.",
+      "deleted": "Collaborator deleted.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "confirm": {
+      "deleteTitle": "Delete collaborator",
+      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
+    }
+  },
+  "finalReport": {
+    "title": "Final Report",
+    "description": "Final reports for your operations.",
+    "colOperation": "Operation",
+    "colProduct": "Product",
+    "colIssuedAt": "Issued at",
+    "colStatus": "Status",
+    "statusIssued": "Issued",
+    "statusPending": "Pending"
+  },
+  "tracking": {
+    "title": "Tracking",
+    "description": "Progress of your operations.",
+    "steps": {
+      "received": "Received",
+      "inspection": "Inspection",
+      "processing": "Processing",
+      "shipped": "Shipped"
+    }
+  }
+}

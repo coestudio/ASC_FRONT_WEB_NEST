@@ -4,21 +4,21 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { OperationStatus } from "./operationStatus";
-import type { OperationType } from "./operationType";
+import type { OperationStatus } from './operationStatus.ts';
+import type { OperationType } from './operationType.ts';
 
 export type GetApiOperationParams = {
-  Search?: string;
-  ClientId?: string;
-  Status?: OperationStatus;
-  OpType?: OperationType;
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  Offset?: number | string;
-  /**
-   * @pattern ^-?(?:0|[1-9]\d*)$
-   */
-  Limit?: number | string;
-  Sort?: string;
+Search?: string;
+ClientId?: string;
+Status?: OperationStatus;
+OpType?: OperationType;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+Offset?: number | string;
+/**
+ * @pattern ^-?(?:0|[1-9]\d*)$
+ */
+Limit?: number | string;
+Sort?: string;
 };

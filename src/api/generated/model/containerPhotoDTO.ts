@@ -4,12 +4,15 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ContainerPhotoSlot } from "./containerPhotoSlot";
-import type { FileDTO } from "./fileDTO";
+import type { ContainerPhotoSlot } from './containerPhotoSlot.ts';
+import type { FileDTO } from './fileDTO.ts';
 
 export interface ContainerPhotoDTO {
-  slot: ContainerPhotoSlot;
-  file: FileDTO;
+  containerOperationId?: string;
+  slot?: null | ContainerPhotoSlot;
+  observation?: string;
+  visibleInReport?: boolean;
+  file?: FileDTO;
   id: string;
   createdAt: string;
   updatedAt: string;

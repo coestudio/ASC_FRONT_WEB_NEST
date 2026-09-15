@@ -1,13 +1,15 @@
+import { useState } from "react";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { Button, Form, Spinner } from "react-bootstrap";
 
-import type { AuthControllerLoginRequest } from "@/api/generated/model";
 import { loginFn } from "@/lib/auth-fns";
 import { profileMeQueryOptions } from "@/lib/queries/profile";
-import { PasswordField } from "@/components/ui/password-field";
+import { loginSchema, type LoginInput } from "@/lib/validation/login";
+import { InputText, InputPassword } from "@/layouts/Form/Fields/Index";
 
 type LoginSearch = { redirect?: string };
 
@@ -19,21 +21,35 @@ export const Route = createFileRoute("/auth/login/")({
   component: LoginPage,
 });
 
+// Super login (credenciais de teste) — só aparece quando as duas vars estão
+// definidas no build. Nomes versionados em .env (valor vazio); valor real de
+// dev vai em .env.local (gitignored).
+const SUPER_LOGIN_USER = import.meta.env.VITE_SUPER_LOGIN_USER;
+const SUPER_LOGIN_PASSWORD = import.meta.env.VITE_SUPER_LOGIN_PASSWORD;
+const hasSuperLogin = !!SUPER_LOGIN_USER && !!SUPER_LOGIN_PASSWORD;
+
 function LoginPage() {
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { redirect } = Route.useSearch();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<AuthControllerLoginRequest>({
+  const methods = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
     defaultValues: { userName: "", password: "" },
   });
+  const { handleSubmit } = methods;
 
-  const onSubmit = async (data: AuthControllerLoginRequest) => {
+  // Estado próprio em vez de `formState.isSubmitting` do react-hook-form —
+  // o Super login chama `onSubmit` direto (bypassa `handleSubmit`, não tem
+  // campo pra validar), então `isSubmitting` nunca virava `true` nesse
+  // caminho: sem spinner/disabled durante o request, parecia que o clique
+  // não tinha feito nada (principalmente com o backend mais lento pra
+  // responder) e o usuário clicava de novo. `loading` cobre os dois botões.
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (data: LoginInput) => {
+    setLoading(true);
     try {
       const { user } = await loginFn({ data });
       queryClient.setQueryData(profileMeQueryOptions().queryKey, user);
@@ -45,6 +61,8 @@ function LoginPage() {
       navigate({ to: "/dashboard" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Não foi possível entrar.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -54,35 +72,50 @@ function LoginPage() {
       <p className="auth-subtitle">Acesse o portal interno.</p>
 
       <Form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <Form.Group className="mb-3">
-          <Form.Label>Usuário</Form.Label>
-          <Form.Control
-            type="text"
-            autoComplete="username"
-            placeholder="Seu usuário"
-            isInvalid={!!errors.userName}
-            {...register("userName", { required: "Informe o usuário", minLength: 3, maxLength: 150 })}
-          />
-          <Form.Control.Feedback type="invalid">{errors.userName?.message}</Form.Control.Feedback>
-        </Form.Group>
-
-        <PasswordField
-          label="Senha"
-          autoComplete="current-password"
-          placeholder="Sua senha"
-          className="mb-4"
-          isInvalid={!!errors.password}
-          feedback={errors.password?.message}
-          labelAction={
-            <Link to="/auth/forgot-password" className="small text-body-secondary">
-              Esqueci minha senha
-            </Link>
-          }
-          {...register("password", { required: "Informe a senha", minLength: 6, maxLength: 100 })}
+        {/* Ícone de envelope (não de pessoa) — decisão final da revisão 3 da
+            SPEC-11: usuário pediu "ícone de email" mesmo o campo sendo
+            userName. */}
+        <InputText
+          methods={methods}
+          fieldName="userName"
+          label="Usuário"
+          placeholder="Seu usuário"
+          config={{ containerClass: "mb-3", icon: "bi-envelope" }}
         />
 
-        <Button type="submit" className="w-100" disabled={isSubmitting}>
-          {isSubmitting ? (
+        {/* Wrapper com posição relativa pra alinhar "Esqueceu a senha?" na
+            mesma linha da label SENHA (SPEC-11 revisão 2, item 6). */}
+        <div className="auth-password-wrap position-relative mb-4">
+          <Link to="/auth/forgot-password" className="auth-forgot-link small">
+            Esqueceu a senha?
+          </Link>
+          <InputPassword
+            methods={methods}
+            fieldName="password"
+            label="Senha"
+            config={{ icon: "bi-lock" }}
+          />
+        </div>
+
+        {hasSuperLogin && (
+          <Button
+            type="button"
+            variant="outline-primary"
+            onClick={() =>
+              onSubmit({
+                userName: SUPER_LOGIN_USER,
+                password: SUPER_LOGIN_PASSWORD,
+              })
+            }
+            className="w-100 mb-2"
+            disabled={loading}
+          >
+            {loading ? <Spinner size="sm" animation="border" /> : "Super login"}
+          </Button>
+        )}
+
+        <Button type="submit" className="w-100" disabled={loading}>
+          {loading ? (
             <>
               <Spinner size="sm" animation="border" className="me-2" />
               Entrando...

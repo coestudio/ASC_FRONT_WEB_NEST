@@ -1,6 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import { LoadingState } from "@/components/ui/loading-state";
 import { routeTree } from "./routeTree.gen";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -14,6 +15,11 @@ export const getRouter = () => {
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
+    // Sem isso a troca de rota/chunk lazy ficava em tela branca até renderizar.
+    // pendingMs/pendingMinMs evita flash do spinner em navegação já em cache.
+    defaultPendingComponent: () => <LoadingState variant="page" />,
+    defaultPendingMs: 300,
+    defaultPendingMinMs: 200,
   });
 
   // Desidrata o cache do React Query no SSR e re-hidrata no client

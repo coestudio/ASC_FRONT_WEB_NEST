@@ -5,4 +5,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UserType = number;
+export type UserType = typeof UserType[keyof typeof UserType];
+
+
+export const UserType = {
+  Internal: 'Internal',
+  External: 'External',
+} as const;

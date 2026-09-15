@@ -1,0 +1,36 @@
+{
+  "home": {
+    "title": "Administrativo",
+    "description": "Atajos a las pantallas del área administrativa.",
+    "cards": {
+      "clients": {
+        "title": "Clientes",
+        "description": "Clientes registrados y sus datos de contacto."
+      },
+      "operations": {
+        "title": "Operaciones",
+        "description": "Operaciones de estiba y embarque en curso."
+      },
+      "vessel": {
+        "title": "Buque",
+        "description": "Buques utilizados en las operaciones."
+      },
+      "container": {
+        "title": "Contenedor",
+        "description": "Contenedores utilizados en las operaciones."
+      },
+      "terminal": {
+        "title": "Terminal",
+        "description": "Terminales asociadas a los puertos."
+      },
+      "harbor": {
+        "title": "Puerto",
+        "description": "Puertos registrados y sus terminales."
+      },
+      "product": {
+        "title": "Producto",
+        "description": "Productos utilizados en las operaciones."
+      }
+    }
+  }
+}

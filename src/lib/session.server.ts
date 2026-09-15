@@ -15,6 +15,13 @@ export interface SessionData {
   expiresAt: string;
   /** `UserAdminDTO.id` — para revalidar via /api/profile/me. */
   userId: string;
+  /**
+   * `UserAdminDTO.collaborator?.clientId` — só presente pra usuário externo
+   * (ele próprio é um `Collaborator`). Persistido aqui porque `UserDetailDTO`
+   * (`/api/profile/me`, fonte de `useUser()`) não expõe `collaborator` — ver
+   * specs/09-client-area/spec.md §8/D1. `undefined` pra usuário Internal.
+   */
+  clientId?: string;
 }
 
 const password = process.env.SESSION_SECRET;

@@ -14,14 +14,35 @@ import { Route as SiteRouteImport } from './routes/_site'
 import { Route as SystemRouteImport } from './routes/_system'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as DashboardInternalRouteImport } from './routes/_dashboard/_internal'
+import { Route as DashboardAdminRouteRouteImport } from './routes/_dashboard/admin/route'
+import { Route as DashboardClientRouteRouteImport } from './routes/_dashboard/client/route'
 import { Route as SiteIndexRouteImport } from './routes/_site/index'
 import { Route as SystemNotFoundRouteImport } from './routes/_system/not-found'
 import { Route as ApiCoreRouteImport } from './routes/api/core'
+import { Route as DashboardAdminIndexRouteImport } from './routes/_dashboard/admin/index'
+import { Route as DashboardClientIndexRouteImport } from './routes/_dashboard/client/index'
 import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard/dashboard/index'
 import { Route as AuthForgotPasswordIndexRouteImport } from './routes/auth/forgot-password/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 import { Route as AuthLogoutIndexRouteImport } from './routes/auth/logout/index'
+import { Route as DashboardInternalAdministrativeIndexRouteImport } from './routes/_dashboard/_internal/administrative/index'
 import { Route as DashboardInternalLaboratoryIndexRouteImport } from './routes/_dashboard/_internal/laboratory/index'
+import { Route as DashboardInternalOperationalIndexRouteImport } from './routes/_dashboard/_internal/operational/index'
+import { Route as DashboardAdminAccessIndexRouteImport } from './routes/_dashboard/admin/access/index'
+import { Route as DashboardAdminRolesIndexRouteImport } from './routes/_dashboard/admin/roles/index'
+import { Route as DashboardClientCollaboratorsIndexRouteImport } from './routes/_dashboard/client/collaborators/index'
+import { Route as DashboardClientFinalReportIndexRouteImport } from './routes/_dashboard/client/final-report/index'
+import { Route as DashboardClientTrackingIndexRouteImport } from './routes/_dashboard/client/tracking/index'
+import { Route as DashboardInternalAdministrativeClientsIndexRouteImport } from './routes/_dashboard/_internal/administrative/clients/index'
+import { Route as DashboardInternalAdministrativeOperationsIndexRouteImport } from './routes/_dashboard/_internal/administrative/operations/index'
+import { Route as DashboardInternalOperationalOperationsIndexRouteImport } from './routes/_dashboard/_internal/operational/operations/index'
+import { Route as DashboardInternalAdministrativeOperationsIdIndexRouteImport } from './routes/_dashboard/_internal/administrative/operations/$id/index'
+import { Route as DashboardInternalAdministrativeRegistryContainerIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/container/index'
+import { Route as DashboardInternalAdministrativeRegistryHarborIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/harbor/index'
+import { Route as DashboardInternalAdministrativeRegistryProductIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/product/index'
+import { Route as DashboardInternalAdministrativeRegistryTerminalIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/terminal/index'
+import { Route as DashboardInternalAdministrativeRegistryVesselIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/vessel/index'
+import { Route as DashboardInternalOperationalOperationsIdIndexRouteImport } from './routes/_dashboard/_internal/operational/operations/$id/index'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
@@ -44,6 +65,16 @@ const DashboardInternalRoute = DashboardInternalRouteImport.update({
   id: '/_internal',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAdminRouteRoute = DashboardAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardClientRouteRoute = DashboardClientRouteRouteImport.update({
+  id: '/client',
+  path: '/client',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const SiteIndexRoute = SiteIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -58,6 +89,16 @@ const ApiCoreRoute = ApiCoreRouteImport.update({
   id: '/api/core',
   path: '/api/core',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardAdminRouteRoute,
+} as any)
+const DashboardClientIndexRoute = DashboardClientIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardClientRouteRoute,
 } as any)
 const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
   id: '/dashboard/',
@@ -79,34 +120,176 @@ const AuthLogoutIndexRoute = AuthLogoutIndexRouteImport.update({
   path: '/logout/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const DashboardInternalAdministrativeIndexRoute =
+  DashboardInternalAdministrativeIndexRouteImport.update({
+    id: '/administrative/',
+    path: '/administrative/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
 const DashboardInternalLaboratoryIndexRoute =
   DashboardInternalLaboratoryIndexRouteImport.update({
     id: '/laboratory/',
     path: '/laboratory/',
     getParentRoute: () => DashboardInternalRoute,
   } as any)
+const DashboardInternalOperationalIndexRoute =
+  DashboardInternalOperationalIndexRouteImport.update({
+    id: '/operational/',
+    path: '/operational/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardAdminAccessIndexRoute =
+  DashboardAdminAccessIndexRouteImport.update({
+    id: '/access/',
+    path: '/access/',
+    getParentRoute: () => DashboardAdminRouteRoute,
+  } as any)
+const DashboardAdminRolesIndexRoute =
+  DashboardAdminRolesIndexRouteImport.update({
+    id: '/roles/',
+    path: '/roles/',
+    getParentRoute: () => DashboardAdminRouteRoute,
+  } as any)
+const DashboardClientCollaboratorsIndexRoute =
+  DashboardClientCollaboratorsIndexRouteImport.update({
+    id: '/collaborators/',
+    path: '/collaborators/',
+    getParentRoute: () => DashboardClientRouteRoute,
+  } as any)
+const DashboardClientFinalReportIndexRoute =
+  DashboardClientFinalReportIndexRouteImport.update({
+    id: '/final-report/',
+    path: '/final-report/',
+    getParentRoute: () => DashboardClientRouteRoute,
+  } as any)
+const DashboardClientTrackingIndexRoute =
+  DashboardClientTrackingIndexRouteImport.update({
+    id: '/tracking/',
+    path: '/tracking/',
+    getParentRoute: () => DashboardClientRouteRoute,
+  } as any)
+const DashboardInternalAdministrativeClientsIndexRoute =
+  DashboardInternalAdministrativeClientsIndexRouteImport.update({
+    id: '/administrative/clients/',
+    path: '/administrative/clients/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalAdministrativeOperationsIndexRoute =
+  DashboardInternalAdministrativeOperationsIndexRouteImport.update({
+    id: '/administrative/operations/',
+    path: '/administrative/operations/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalOperationalOperationsIndexRoute =
+  DashboardInternalOperationalOperationsIndexRouteImport.update({
+    id: '/operational/operations/',
+    path: '/operational/operations/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalAdministrativeOperationsIdIndexRoute =
+  DashboardInternalAdministrativeOperationsIdIndexRouteImport.update({
+    id: '/administrative/operations/$id/',
+    path: '/administrative/operations/$id/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalAdministrativeRegistryContainerIndexRoute =
+  DashboardInternalAdministrativeRegistryContainerIndexRouteImport.update({
+    id: '/administrative/registry/container/',
+    path: '/administrative/registry/container/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalAdministrativeRegistryHarborIndexRoute =
+  DashboardInternalAdministrativeRegistryHarborIndexRouteImport.update({
+    id: '/administrative/registry/harbor/',
+    path: '/administrative/registry/harbor/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalAdministrativeRegistryProductIndexRoute =
+  DashboardInternalAdministrativeRegistryProductIndexRouteImport.update({
+    id: '/administrative/registry/product/',
+    path: '/administrative/registry/product/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalAdministrativeRegistryTerminalIndexRoute =
+  DashboardInternalAdministrativeRegistryTerminalIndexRouteImport.update({
+    id: '/administrative/registry/terminal/',
+    path: '/administrative/registry/terminal/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalAdministrativeRegistryVesselIndexRoute =
+  DashboardInternalAdministrativeRegistryVesselIndexRouteImport.update({
+    id: '/administrative/registry/vessel/',
+    path: '/administrative/registry/vessel/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
+const DashboardInternalOperationalOperationsIdIndexRoute =
+  DashboardInternalOperationalOperationsIdIndexRouteImport.update({
+    id: '/operational/operations/$id/',
+    path: '/operational/operations/$id/',
+    getParentRoute: () => DashboardInternalRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof SiteIndexRoute
+  '/admin': typeof DashboardAdminRouteRouteWithChildren
+  '/client': typeof DashboardClientRouteRouteWithChildren
   '/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
+  '/admin/': typeof DashboardAdminIndexRoute
+  '/client/': typeof DashboardClientIndexRoute
   '/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/logout/': typeof AuthLogoutIndexRoute
+  '/administrative/': typeof DashboardInternalAdministrativeIndexRoute
   '/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
+  '/operational/': typeof DashboardInternalOperationalIndexRoute
+  '/admin/access/': typeof DashboardAdminAccessIndexRoute
+  '/admin/roles/': typeof DashboardAdminRolesIndexRoute
+  '/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
+  '/client/final-report/': typeof DashboardClientFinalReportIndexRoute
+  '/client/tracking/': typeof DashboardClientTrackingIndexRoute
+  '/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/administrative/operations/': typeof DashboardInternalAdministrativeOperationsIndexRoute
+  '/operational/operations/': typeof DashboardInternalOperationalOperationsIndexRoute
+  '/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
+  '/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
+  '/administrative/registry/harbor/': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
+  '/administrative/registry/product/': typeof DashboardInternalAdministrativeRegistryProductIndexRoute
+  '/administrative/registry/terminal/': typeof DashboardInternalAdministrativeRegistryTerminalIndexRoute
+  '/administrative/registry/vessel/': typeof DashboardInternalAdministrativeRegistryVesselIndexRoute
+  '/operational/operations/$id/': typeof DashboardInternalOperationalOperationsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
   '/': typeof SiteIndexRoute
   '/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
+  '/admin': typeof DashboardAdminIndexRoute
+  '/client': typeof DashboardClientIndexRoute
   '/dashboard': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
   '/auth/logout': typeof AuthLogoutIndexRoute
+  '/administrative': typeof DashboardInternalAdministrativeIndexRoute
   '/laboratory': typeof DashboardInternalLaboratoryIndexRoute
+  '/operational': typeof DashboardInternalOperationalIndexRoute
+  '/admin/access': typeof DashboardAdminAccessIndexRoute
+  '/admin/roles': typeof DashboardAdminRolesIndexRoute
+  '/client/collaborators': typeof DashboardClientCollaboratorsIndexRoute
+  '/client/final-report': typeof DashboardClientFinalReportIndexRoute
+  '/client/tracking': typeof DashboardClientTrackingIndexRoute
+  '/administrative/clients': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/administrative/operations': typeof DashboardInternalAdministrativeOperationsIndexRoute
+  '/operational/operations': typeof DashboardInternalOperationalOperationsIndexRoute
+  '/administrative/operations/$id': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
+  '/administrative/registry/container': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
+  '/administrative/registry/harbor': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
+  '/administrative/registry/product': typeof DashboardInternalAdministrativeRegistryProductIndexRoute
+  '/administrative/registry/terminal': typeof DashboardInternalAdministrativeRegistryTerminalIndexRoute
+  '/administrative/registry/vessel': typeof DashboardInternalAdministrativeRegistryVesselIndexRoute
+  '/operational/operations/$id': typeof DashboardInternalOperationalOperationsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,54 +297,136 @@ export interface FileRoutesById {
   '/_dashboard': typeof DashboardRouteWithChildren
   '/_site': typeof SiteRouteWithChildren
   '/_system': typeof SystemRouteWithChildren
+  '/_dashboard/admin': typeof DashboardAdminRouteRouteWithChildren
+  '/_dashboard/client': typeof DashboardClientRouteRouteWithChildren
   '/_dashboard/_internal': typeof DashboardInternalRouteWithChildren
   '/_system/not-found': typeof SystemNotFoundRoute
   '/api/core': typeof ApiCoreRoute
   '/_site/': typeof SiteIndexRoute
+  '/_dashboard/admin/': typeof DashboardAdminIndexRoute
+  '/_dashboard/client/': typeof DashboardClientIndexRoute
   '/_dashboard/dashboard/': typeof DashboardDashboardIndexRoute
   '/auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
   '/auth/logout/': typeof AuthLogoutIndexRoute
+  '/_dashboard/_internal/administrative/': typeof DashboardInternalAdministrativeIndexRoute
   '/_dashboard/_internal/laboratory/': typeof DashboardInternalLaboratoryIndexRoute
+  '/_dashboard/_internal/operational/': typeof DashboardInternalOperationalIndexRoute
+  '/_dashboard/admin/access/': typeof DashboardAdminAccessIndexRoute
+  '/_dashboard/admin/roles/': typeof DashboardAdminRolesIndexRoute
+  '/_dashboard/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
+  '/_dashboard/client/final-report/': typeof DashboardClientFinalReportIndexRoute
+  '/_dashboard/client/tracking/': typeof DashboardClientTrackingIndexRoute
+  '/_dashboard/_internal/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/_dashboard/_internal/administrative/operations/': typeof DashboardInternalAdministrativeOperationsIndexRoute
+  '/_dashboard/_internal/operational/operations/': typeof DashboardInternalOperationalOperationsIndexRoute
+  '/_dashboard/_internal/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
+  '/_dashboard/_internal/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
+  '/_dashboard/_internal/administrative/registry/harbor/': typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
+  '/_dashboard/_internal/administrative/registry/product/': typeof DashboardInternalAdministrativeRegistryProductIndexRoute
+  '/_dashboard/_internal/administrative/registry/terminal/': typeof DashboardInternalAdministrativeRegistryTerminalIndexRoute
+  '/_dashboard/_internal/administrative/registry/vessel/': typeof DashboardInternalAdministrativeRegistryVesselIndexRoute
+  '/_dashboard/_internal/operational/operations/$id/': typeof DashboardInternalOperationalOperationsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/auth'
     | '/'
+    | '/admin'
+    | '/client'
     | '/not-found'
     | '/api/core'
+    | '/admin/'
+    | '/client/'
     | '/dashboard/'
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/logout/'
+    | '/administrative/'
     | '/laboratory/'
+    | '/operational/'
+    | '/admin/access/'
+    | '/admin/roles/'
+    | '/client/collaborators/'
+    | '/client/final-report/'
+    | '/client/tracking/'
+    | '/administrative/clients/'
+    | '/administrative/operations/'
+    | '/operational/operations/'
+    | '/administrative/operations/$id/'
+    | '/administrative/registry/container/'
+    | '/administrative/registry/harbor/'
+    | '/administrative/registry/product/'
+    | '/administrative/registry/terminal/'
+    | '/administrative/registry/vessel/'
+    | '/operational/operations/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/'
     | '/not-found'
     | '/api/core'
+    | '/admin'
+    | '/client'
     | '/dashboard'
     | '/auth/forgot-password'
     | '/auth/login'
     | '/auth/logout'
+    | '/administrative'
     | '/laboratory'
+    | '/operational'
+    | '/admin/access'
+    | '/admin/roles'
+    | '/client/collaborators'
+    | '/client/final-report'
+    | '/client/tracking'
+    | '/administrative/clients'
+    | '/administrative/operations'
+    | '/operational/operations'
+    | '/administrative/operations/$id'
+    | '/administrative/registry/container'
+    | '/administrative/registry/harbor'
+    | '/administrative/registry/product'
+    | '/administrative/registry/terminal'
+    | '/administrative/registry/vessel'
+    | '/operational/operations/$id'
   id:
     | '__root__'
     | '/auth'
     | '/_dashboard'
     | '/_site'
     | '/_system'
+    | '/_dashboard/admin'
+    | '/_dashboard/client'
     | '/_dashboard/_internal'
     | '/_system/not-found'
     | '/api/core'
     | '/_site/'
+    | '/_dashboard/admin/'
+    | '/_dashboard/client/'
     | '/_dashboard/dashboard/'
     | '/auth/forgot-password/'
     | '/auth/login/'
     | '/auth/logout/'
+    | '/_dashboard/_internal/administrative/'
     | '/_dashboard/_internal/laboratory/'
+    | '/_dashboard/_internal/operational/'
+    | '/_dashboard/admin/access/'
+    | '/_dashboard/admin/roles/'
+    | '/_dashboard/client/collaborators/'
+    | '/_dashboard/client/final-report/'
+    | '/_dashboard/client/tracking/'
+    | '/_dashboard/_internal/administrative/clients/'
+    | '/_dashboard/_internal/administrative/operations/'
+    | '/_dashboard/_internal/operational/operations/'
+    | '/_dashboard/_internal/administrative/operations/$id/'
+    | '/_dashboard/_internal/administrative/registry/container/'
+    | '/_dashboard/_internal/administrative/registry/harbor/'
+    | '/_dashboard/_internal/administrative/registry/product/'
+    | '/_dashboard/_internal/administrative/registry/terminal/'
+    | '/_dashboard/_internal/administrative/registry/vessel/'
+    | '/_dashboard/_internal/operational/operations/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,6 +474,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInternalRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/admin': {
+      id: '/_dashboard/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof DashboardAdminRouteRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/client': {
+      id: '/_dashboard/client'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof DashboardClientRouteRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_site/': {
       id: '/_site/'
       path: '/'
@@ -229,6 +508,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/core'
       preLoaderRoute: typeof ApiCoreRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard/admin/': {
+      id: '/_dashboard/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof DashboardAdminIndexRouteImport
+      parentRoute: typeof DashboardAdminRouteRoute
+    }
+    '/_dashboard/client/': {
+      id: '/_dashboard/client/'
+      path: '/'
+      fullPath: '/client/'
+      preLoaderRoute: typeof DashboardClientIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
     }
     '/_dashboard/dashboard/': {
       id: '/_dashboard/dashboard/'
@@ -258,11 +551,130 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLogoutIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_dashboard/_internal/administrative/': {
+      id: '/_dashboard/_internal/administrative/'
+      path: '/administrative'
+      fullPath: '/administrative/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
     '/_dashboard/_internal/laboratory/': {
       id: '/_dashboard/_internal/laboratory/'
       path: '/laboratory'
       fullPath: '/laboratory/'
       preLoaderRoute: typeof DashboardInternalLaboratoryIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/operational/': {
+      id: '/_dashboard/_internal/operational/'
+      path: '/operational'
+      fullPath: '/operational/'
+      preLoaderRoute: typeof DashboardInternalOperationalIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/admin/access/': {
+      id: '/_dashboard/admin/access/'
+      path: '/access'
+      fullPath: '/admin/access/'
+      preLoaderRoute: typeof DashboardAdminAccessIndexRouteImport
+      parentRoute: typeof DashboardAdminRouteRoute
+    }
+    '/_dashboard/admin/roles/': {
+      id: '/_dashboard/admin/roles/'
+      path: '/roles'
+      fullPath: '/admin/roles/'
+      preLoaderRoute: typeof DashboardAdminRolesIndexRouteImport
+      parentRoute: typeof DashboardAdminRouteRoute
+    }
+    '/_dashboard/client/collaborators/': {
+      id: '/_dashboard/client/collaborators/'
+      path: '/collaborators'
+      fullPath: '/client/collaborators/'
+      preLoaderRoute: typeof DashboardClientCollaboratorsIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
+    }
+    '/_dashboard/client/final-report/': {
+      id: '/_dashboard/client/final-report/'
+      path: '/final-report'
+      fullPath: '/client/final-report/'
+      preLoaderRoute: typeof DashboardClientFinalReportIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
+    }
+    '/_dashboard/client/tracking/': {
+      id: '/_dashboard/client/tracking/'
+      path: '/tracking'
+      fullPath: '/client/tracking/'
+      preLoaderRoute: typeof DashboardClientTrackingIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
+    }
+    '/_dashboard/_internal/administrative/clients/': {
+      id: '/_dashboard/_internal/administrative/clients/'
+      path: '/administrative/clients'
+      fullPath: '/administrative/clients/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeClientsIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/administrative/operations/': {
+      id: '/_dashboard/_internal/administrative/operations/'
+      path: '/administrative/operations'
+      fullPath: '/administrative/operations/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeOperationsIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/operational/operations/': {
+      id: '/_dashboard/_internal/operational/operations/'
+      path: '/operational/operations'
+      fullPath: '/operational/operations/'
+      preLoaderRoute: typeof DashboardInternalOperationalOperationsIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/administrative/operations/$id/': {
+      id: '/_dashboard/_internal/administrative/operations/$id/'
+      path: '/administrative/operations/$id'
+      fullPath: '/administrative/operations/$id/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeOperationsIdIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/administrative/registry/container/': {
+      id: '/_dashboard/_internal/administrative/registry/container/'
+      path: '/administrative/registry/container'
+      fullPath: '/administrative/registry/container/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeRegistryContainerIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/administrative/registry/harbor/': {
+      id: '/_dashboard/_internal/administrative/registry/harbor/'
+      path: '/administrative/registry/harbor'
+      fullPath: '/administrative/registry/harbor/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeRegistryHarborIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/administrative/registry/product/': {
+      id: '/_dashboard/_internal/administrative/registry/product/'
+      path: '/administrative/registry/product'
+      fullPath: '/administrative/registry/product/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeRegistryProductIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/administrative/registry/terminal/': {
+      id: '/_dashboard/_internal/administrative/registry/terminal/'
+      path: '/administrative/registry/terminal'
+      fullPath: '/administrative/registry/terminal/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeRegistryTerminalIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/administrative/registry/vessel/': {
+      id: '/_dashboard/_internal/administrative/registry/vessel/'
+      path: '/administrative/registry/vessel'
+      fullPath: '/administrative/registry/vessel/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeRegistryVesselIndexRouteImport
+      parentRoute: typeof DashboardInternalRoute
+    }
+    '/_dashboard/_internal/operational/operations/$id/': {
+      id: '/_dashboard/_internal/operational/operations/$id/'
+      path: '/operational/operations/$id'
+      fullPath: '/operational/operations/$id/'
+      preLoaderRoute: typeof DashboardInternalOperationalOperationsIdIndexRouteImport
       parentRoute: typeof DashboardInternalRoute
     }
   }
@@ -284,23 +696,96 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface DashboardAdminRouteRouteChildren {
+  DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
+  DashboardAdminAccessIndexRoute: typeof DashboardAdminAccessIndexRoute
+  DashboardAdminRolesIndexRoute: typeof DashboardAdminRolesIndexRoute
+}
+
+const DashboardAdminRouteRouteChildren: DashboardAdminRouteRouteChildren = {
+  DashboardAdminIndexRoute: DashboardAdminIndexRoute,
+  DashboardAdminAccessIndexRoute: DashboardAdminAccessIndexRoute,
+  DashboardAdminRolesIndexRoute: DashboardAdminRolesIndexRoute,
+}
+
+const DashboardAdminRouteRouteWithChildren =
+  DashboardAdminRouteRoute._addFileChildren(DashboardAdminRouteRouteChildren)
+
+interface DashboardClientRouteRouteChildren {
+  DashboardClientIndexRoute: typeof DashboardClientIndexRoute
+  DashboardClientCollaboratorsIndexRoute: typeof DashboardClientCollaboratorsIndexRoute
+  DashboardClientFinalReportIndexRoute: typeof DashboardClientFinalReportIndexRoute
+  DashboardClientTrackingIndexRoute: typeof DashboardClientTrackingIndexRoute
+}
+
+const DashboardClientRouteRouteChildren: DashboardClientRouteRouteChildren = {
+  DashboardClientIndexRoute: DashboardClientIndexRoute,
+  DashboardClientCollaboratorsIndexRoute:
+    DashboardClientCollaboratorsIndexRoute,
+  DashboardClientFinalReportIndexRoute: DashboardClientFinalReportIndexRoute,
+  DashboardClientTrackingIndexRoute: DashboardClientTrackingIndexRoute,
+}
+
+const DashboardClientRouteRouteWithChildren =
+  DashboardClientRouteRoute._addFileChildren(DashboardClientRouteRouteChildren)
+
 interface DashboardInternalRouteChildren {
+  DashboardInternalAdministrativeIndexRoute: typeof DashboardInternalAdministrativeIndexRoute
   DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
+  DashboardInternalOperationalIndexRoute: typeof DashboardInternalOperationalIndexRoute
+  DashboardInternalAdministrativeClientsIndexRoute: typeof DashboardInternalAdministrativeClientsIndexRoute
+  DashboardInternalAdministrativeOperationsIndexRoute: typeof DashboardInternalAdministrativeOperationsIndexRoute
+  DashboardInternalOperationalOperationsIndexRoute: typeof DashboardInternalOperationalOperationsIndexRoute
+  DashboardInternalAdministrativeOperationsIdIndexRoute: typeof DashboardInternalAdministrativeOperationsIdIndexRoute
+  DashboardInternalAdministrativeRegistryContainerIndexRoute: typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
+  DashboardInternalAdministrativeRegistryHarborIndexRoute: typeof DashboardInternalAdministrativeRegistryHarborIndexRoute
+  DashboardInternalAdministrativeRegistryProductIndexRoute: typeof DashboardInternalAdministrativeRegistryProductIndexRoute
+  DashboardInternalAdministrativeRegistryTerminalIndexRoute: typeof DashboardInternalAdministrativeRegistryTerminalIndexRoute
+  DashboardInternalAdministrativeRegistryVesselIndexRoute: typeof DashboardInternalAdministrativeRegistryVesselIndexRoute
+  DashboardInternalOperationalOperationsIdIndexRoute: typeof DashboardInternalOperationalOperationsIdIndexRoute
 }
 
 const DashboardInternalRouteChildren: DashboardInternalRouteChildren = {
+  DashboardInternalAdministrativeIndexRoute:
+    DashboardInternalAdministrativeIndexRoute,
   DashboardInternalLaboratoryIndexRoute: DashboardInternalLaboratoryIndexRoute,
+  DashboardInternalOperationalIndexRoute:
+    DashboardInternalOperationalIndexRoute,
+  DashboardInternalAdministrativeClientsIndexRoute:
+    DashboardInternalAdministrativeClientsIndexRoute,
+  DashboardInternalAdministrativeOperationsIndexRoute:
+    DashboardInternalAdministrativeOperationsIndexRoute,
+  DashboardInternalOperationalOperationsIndexRoute:
+    DashboardInternalOperationalOperationsIndexRoute,
+  DashboardInternalAdministrativeOperationsIdIndexRoute:
+    DashboardInternalAdministrativeOperationsIdIndexRoute,
+  DashboardInternalAdministrativeRegistryContainerIndexRoute:
+    DashboardInternalAdministrativeRegistryContainerIndexRoute,
+  DashboardInternalAdministrativeRegistryHarborIndexRoute:
+    DashboardInternalAdministrativeRegistryHarborIndexRoute,
+  DashboardInternalAdministrativeRegistryProductIndexRoute:
+    DashboardInternalAdministrativeRegistryProductIndexRoute,
+  DashboardInternalAdministrativeRegistryTerminalIndexRoute:
+    DashboardInternalAdministrativeRegistryTerminalIndexRoute,
+  DashboardInternalAdministrativeRegistryVesselIndexRoute:
+    DashboardInternalAdministrativeRegistryVesselIndexRoute,
+  DashboardInternalOperationalOperationsIdIndexRoute:
+    DashboardInternalOperationalOperationsIdIndexRoute,
 }
 
 const DashboardInternalRouteWithChildren =
   DashboardInternalRoute._addFileChildren(DashboardInternalRouteChildren)
 
 interface DashboardRouteChildren {
+  DashboardAdminRouteRoute: typeof DashboardAdminRouteRouteWithChildren
+  DashboardClientRouteRoute: typeof DashboardClientRouteRouteWithChildren
   DashboardInternalRoute: typeof DashboardInternalRouteWithChildren
   DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAdminRouteRoute: DashboardAdminRouteRouteWithChildren,
+  DashboardClientRouteRoute: DashboardClientRouteRouteWithChildren,
   DashboardInternalRoute: DashboardInternalRouteWithChildren,
   DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
 }

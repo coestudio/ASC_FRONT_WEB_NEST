@@ -1,4 +1,4 @@
-import axios, { type AxiosAdapter, type AxiosRequestConfig } from "axios";
+import axios, { AxiosError, type AxiosAdapter, type AxiosRequestConfig } from "axios";
 import { toast } from "react-toastify";
 
 /**
@@ -40,8 +40,19 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
   const isForm = typeof FormData !== "undefined" && config.data instanceof FormData;
 
   const headers = new Headers();
-  const rawHeaders = (config.headers?.toJSON?.() ?? config.headers ?? {}) as Record<string, unknown>;
+  const rawHeaders = (config.headers?.toJSON?.() ?? config.headers ?? {}) as Record<
+    string,
+    unknown
+  >;
   for (const [key, value] of Object.entries(rawHeaders)) {
+    // Endpoint de upload gerado pelo Orval manda `Content-Type:
+    // multipart/form-data` fixo, sem boundary (SPEC do OpenAPI não sabe o
+    // boundary de antemão). Se esse header for repassado pro `fetch` com
+    // body FormData, ele passa a valer no lugar do header automático que o
+    // browser geraria — e esse automático é o único que inclui o boundary.
+    // Resultado sem este skip: Core rejeita com "Missing content-type
+    // boundary" (400). Descarta aqui pra deixar o browser gerar sozinho.
+    if (isForm && key.toLowerCase() === "content-type") continue;
     if (value != null && typeof value !== "object") headers.set(key, String(value));
   }
   headers.set("x-core-path", buildCorePath(config));
@@ -50,12 +61,16 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
   }
 
   const hasBody = method !== "GET" && method !== "HEAD" && config.data != null;
+  // O Axios já serializa `config.data` (via transformRequest padrão) antes de
+  // chamar este adapter customizado — usar o valor direto como body, sem
+  // `JSON.stringify` de novo (senão dobra a codificação e quebra a
+  // desserialização no Core). FormData é a única exceção, já vem correto.
   const res = await fetch("/api/core", {
     method,
     headers,
     credentials: "same-origin",
     signal: config.signal as AbortSignal | undefined,
-    body: hasBody ? (isForm ? (config.data as FormData) : JSON.stringify(config.data)) : undefined,
+    body: hasBody ? (isForm ? (config.data as FormData) : (config.data as BodyInit)) : undefined,
   });
 
   const contentType = res.headers.get("content-type") ?? "";
@@ -65,7 +80,7 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
   else if (contentType.includes("application/json")) data = await res.json().catch(() => null);
   else data = await res.text();
 
-  return {
+  const response = {
     data,
     status: res.status,
     statusText: res.statusText,
@@ -73,6 +88,24 @@ const coreProxyAdapter: AxiosAdapter = async (config) => {
     config,
     request: null,
   };
+
+  // Adapters custom do Axios não passam pelo `settle()` interno (só os
+  // built-in xhr/http/fetch chamam isso sozinhos) — sem isso, qualquer status
+  // HTTP vira promise resolvida pro Axios inteiro e nenhum interceptor de
+  // erro roda. Replica a mesma lógica de `axios/lib/core/settle.js`.
+  const validateStatus = config.validateStatus;
+  if (!validateStatus || validateStatus(response.status)) {
+    return response;
+  }
+  throw new AxiosError(
+    `Request failed with status code ${response.status}`,
+    [AxiosError.ERR_BAD_REQUEST, AxiosError.ERR_BAD_RESPONSE][
+      Math.floor(response.status / 100) - 4
+    ],
+    config,
+    null,
+    response,
+  );
 };
 
 export const axiosInstance = axios.create({ adapter: coreProxyAdapter });
@@ -104,6 +137,14 @@ function extractBackendMessage(err: unknown): string | undefined {
   const data = (err as { response?: { data?: Record<string, unknown> } }).response?.data;
   if (!data || typeof data !== "object") return undefined;
 
+  // `ProblemDetails.Detail` — campo real que o GlobalExceptionHandler do
+  // Core preenche via MessageCatalog.Resolve(code, locale, args) (SPEC-15).
+  // Checado antes dos fallbacks abaixo, que continuam cobrindo mensagens
+  // fora do catálogo (construtor legado DomainException(string), sempre
+  // pt-BR) e respostas de erro que não são ProblemDetails (ex. o proxy BFF
+  // src/routes/api/core.ts, que devolve { message: "..." }).
+  if (typeof data.detail === "string") return data.detail;
+
   if (data.errors && typeof data.errors === "object") {
     const messages = Object.values(data.errors).flat().filter(Boolean);
     if (messages.length > 0) return translateBackendMessage(messages.join(" "));
@@ -117,10 +158,17 @@ function extractBackendMessage(err: unknown): string | undefined {
 
 let isRedirectingToLogin = false;
 
-function redirectToLogin() {
+/**
+ * Joga o usuário pro login — usado tanto pra sessão expirada (401 do Core)
+ * quanto, a pedido explícito, pra falha de servidor (erro de rede sem
+ * resposta — servidor fora do ar — ou 5xx): nesses casos não dá pra saber se
+ * é a sessão que caiu ou o Core que caiu, mas a decisão tomada foi tratar os
+ * dois como "não dá pra continuar autenticado agora, volta pro login".
+ */
+function redirectToLogin(message = "Sessão expirada. Faça login novamente.") {
   if (isRedirectingToLogin) return;
   isRedirectingToLogin = true;
-  toast.error("Sessão expirada. Faça login novamente.");
+  toast.error(message);
   if (typeof window !== "undefined") {
     window.location.href = "/auth/login";
   }
@@ -151,6 +199,14 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error);
       }
 
+      // Erro 5xx (Core fora do ar/instável) — decisão explícita do usuário:
+      // trata como "não dá pra continuar", volta pro login (não só mostra
+      // toast). Difere de 4xx, que é erro de requisição/negócio normal.
+      if (status && status >= 500) {
+        redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
+        return Promise.reject(error);
+      }
+
       const backendMessage = extractBackendMessage(error);
 
       let message: string;
@@ -166,19 +222,19 @@ axiosInstance.interceptors.response.use(
         message = backendMessage ?? "Conflito de dados.";
       } else if (status === 422) {
         message = backendMessage ?? "Dados inválidos.";
-      } else if (status && status >= 500) {
-        message = "Erro ao se comunicar com o servidor. Tente novamente.";
       } else {
+        // Nunca é >= 500 aqui (tratado acima, com redirect) — sobra 4xx sem
+        // handler específico e o caso sem `status` (erro sem resposta que
+        // ainda assim é um AxiosError, ex. timeout de config do axios).
         message = error.message ?? "Erro desconhecido.";
       }
 
-      if (status && status >= 400 && status < 500) {
-        toast.warning(message);
-      } else {
-        toast.error(message);
-      }
+      toast.warning(message);
     } else {
-      toast.error("Erro de conexão. Verifique sua rede.");
+      // Erro sem `response` e que nem é um `AxiosError` — falha de rede pura
+      // do `fetch` dentro do adapter (`coreProxyAdapter`), ex. servidor fora
+      // do ar. Mesma decisão do 5xx acima: volta pro login.
+      redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
     }
 
     return Promise.reject(error);

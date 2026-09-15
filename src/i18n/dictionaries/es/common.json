@@ -1,0 +1,67 @@
+{
+  "metadata": {
+    "title": "ASC",
+    "description": "Aplicación ASC"
+  },
+  "theme": {
+    "light": "Tema claro",
+    "dark": "Tema oscuro",
+    "system": "Tema del sistema"
+  },
+  "shell": {
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "profile": "Perfil",
+    "preferences": "Preferencias",
+    "theme": "Tema",
+    "language": "Idioma",
+    "viewMode": "Visualización",
+    "viewModeCards": "Tarjetas",
+    "viewModeList": "Lista",
+    "underConstruction": "En construcción",
+    "underConstructionDescription": "Esta pantalla todavía está en desarrollo.",
+    "areaWelcome": "Bienvenido(a) al área {area}.",
+    "brand": "Marca",
+    "profileModal": {
+      "title": "Mi perfil",
+      "avatar": "Avatar",
+      "avatarSaved": "Avatar actualizado.",
+      "detailTab": "Perfil",
+      "addressTab": "Dirección",
+      "passwordTab": "Contraseña",
+      "fullName": "Nombre completo",
+      "userName": "Usuario",
+      "email": "Correo electrónico",
+      "document": "Documento",
+      "phone": "Teléfono",
+      "birthDate": "Fecha de nacimiento",
+      "postalCode": "Código postal",
+      "state": "Estado",
+      "city": "Ciudad",
+      "neighborhood": "Barrio",
+      "street": "Calle",
+      "number": "Número",
+      "complement": "Complemento",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "save": "Guardar",
+      "saved": "Cambios guardados.",
+      "saveError": "No se pudo guardar. Inténtalo de nuevo.",
+      "cancel": "Cancelar",
+      "changeAvatar": "Cambiar",
+      "selectAvatar": "Seleccionar",
+      "removeAvatar": "Eliminar imagen",
+      "avatarHint": "Pasa el mouse sobre la foto para cambiarla. JPG o PNG hasta 2 MB.",
+      "avatarTooLarge": "Archivo muy grande. Máximo 2 MB.",
+      "uploadingAvatar": "Enviando...",
+      "selectState": "Seleccione el estado"
+    }
+  },
+  "devTools": {
+    "clearCacheButton": "Limpiar caché local (dev)",
+    "clearCacheTitle": "Limpiar caché local",
+    "clearCacheMessage": "Esto borra localStorage, sessionStorage, cookies y el caché de React Query, y cierra tu sesión. ¿Continuar?",
+    "clearCacheSuccess": "Caché local limpiado."
+  }
+}

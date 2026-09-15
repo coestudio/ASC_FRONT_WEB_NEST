@@ -19,10 +19,20 @@ const RenderFields: React.FC<{
           fieldName={field.fieldName}
           label={field.label}
           placeholder={field.placeholder}
+          // `Select` (layouts/Form/Fields/Select.tsx) lê `enumOptions` como
+          // prop irmã de `config`, não de dentro dela — sem repassar aqui,
+          // `config.enumOptions` nunca chegava no componente e o dropdown
+          // ficava só com o placeholder (débito documentado desde
+          // SPEC-07-01, contornado até agora só nos modais manuais de
+          // Containers/Documents). Outros tipos de campo simplesmente
+          // ignoram essa prop extra.
+          enumOptions={field.config?.enumOptions}
           config={{
-            placeholder: field.placeholder,
-            containerClass: field.config?.containerClass,
-            className: field.config?.className,
+            // Repassa toda a config declarativa (inclui `enumOptions`,
+            // `fetchOptions`, `accept`, `previewUrl`, `selectedLabel` — SPEC-SHARE-01)
+            // e mantém o `placeholder` do topo como fallback, como antes.
+            ...field.config,
+            placeholder: field.config?.placeholder ?? field.placeholder,
           }}
           {...field.col}
         />

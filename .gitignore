@@ -18,6 +18,7 @@
 /.output
 /.nitro
 /.tanstack
+/.wrangler
 
 # production
 /build
@@ -49,3 +50,6 @@ yarn-error.log*
 .DS
 src/vite-env.d.ts
 .env.prod.json
+
+# checkouts isolados de agente (nunca versionar — cada um é um repo git à parte)
+.claude/worktrees/
