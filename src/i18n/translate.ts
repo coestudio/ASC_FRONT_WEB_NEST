@@ -1,3 +1,4 @@
+import { isDevToolsEnabled } from "@/lib/dev-tools";
 import type { Dictionary } from "./dictionaries";
 
 /** Chaves com ponto de um objeto aninhado: "auth.loginTitle", "theme.light"... */
@@ -25,7 +26,7 @@ export function translate(dict: Dictionary, key: TranslationKey, params?: Transl
   }
 
   if (typeof node !== "string") {
-    if (import.meta.env.DEV) console.warn(`[i18n] chave ausente: "${key}"`);
+    if (isDevToolsEnabled) console.warn(`[i18n] chave ausente: "${key}"`);
     return key;
   }
 

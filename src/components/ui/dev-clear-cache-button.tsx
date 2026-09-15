@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import { logoutFn } from "@/lib/auth-fns";
+import { isDevToolsEnabled } from "@/lib/dev-tools";
 import { useT } from "@/lib/ui-prefs";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
@@ -13,17 +14,18 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
  * sem precisar abrir o DevTools manualmente (útil depurando cache velho de
  * SSR, ver SPEC-10).
  *
- * Só renderiza em dev (`import.meta.env.DEV`) — nunca aparece em produção,
- * decisão do agente: expor "apagar todos os meus dados" pra usuário final
- * de um portal de negócio seria uma escolha de UX/segurança arriscada e não
- * foi pedida; se quiser em produção também, é um ajuste de uma linha aqui.
+ * Só renderiza com `VITE_DEVELOPMENT=true` (`@/lib/dev-tools`) — nunca
+ * aparece em produção, decisão do agente: expor "apagar todos os meus
+ * dados" pra usuário final de um portal de negócio seria uma escolha de
+ * UX/segurança arriscada e não foi pedida; se quiser em produção também, é
+ * só ligar a env var lá.
  */
 export function DevClearCacheButton() {
   const t = useT();
   const queryClient = useQueryClient();
   const [show, setShow] = useState(false);
 
-  if (!import.meta.env.DEV) return null;
+  if (!isDevToolsEnabled) return null;
 
   const handleConfirm = async () => {
     try {
