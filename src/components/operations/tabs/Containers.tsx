@@ -24,17 +24,34 @@ import {
   PostApiOperationOperationIdContainerBody,
   PutApiOperationOperationIdContainerIdBody,
 } from "@/api/generated/zod/operation-container/operation-container.zod";
-import type { ContainerOperationDTO } from "@/api/generated/model";
+import {
+  getGetApiOperationOperationIdCargoQueryKey,
+  getGetApiOperationOperationIdCargoQueryOptions,
+  usePostApiOperationOperationIdCargoIdCancel,
+  usePostApiOperationOperationIdCargoStuffIdentified,
+  usePostApiOperationOperationIdCargoStuffQuantity,
+} from "@/api/generated/endpoints/cargo-unit/cargo-unit";
+import {
+  PostApiOperationOperationIdCargoIdCancelBody,
+  PostApiOperationOperationIdCargoStuffIdentifiedBody,
+  PostApiOperationOperationIdCargoStuffQuantityBody,
+} from "@/api/generated/zod/cargo-unit/cargo-unit.zod";
+import { getApiOperationOperationIdInvoice } from "@/api/generated/endpoints/invoice/invoice";
+import { getApiOperationOperationIdRomaneio } from "@/api/generated/endpoints/romaneio/romaneio";
+import type { CargoUnitDTO, ContainerOperationDTO } from "@/api/generated/model";
 import {
   containerOperationStatusOptions,
   resolveContainerOperationStatusLabel,
 } from "@/api/generated/static/containerOperationStatusOptions";
+import { resolveCargoUnitStatusLabel } from "@/api/generated/static/cargoUnitStatusOptions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
   InputDate,
+  InputNumber,
   InputPhotoMulti,
   InputText,
+  InputTextArea,
   Select,
   SelectAsync,
 } from "@/layouts/Form/Fields/Index";
@@ -50,6 +67,11 @@ const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 type LinkFormValues = z.infer<typeof PostApiOperationOperationIdContainerBody>;
 type UpdateFormValues = z.infer<typeof PutApiOperationOperationIdContainerIdBody>;
+type StuffIdentifiedFormValues = z.infer<
+  typeof PostApiOperationOperationIdCargoStuffIdentifiedBody
+>;
+type StuffQuantityFormValues = z.infer<typeof PostApiOperationOperationIdCargoStuffQuantityBody>;
+type CancelCargoFormValues = z.infer<typeof PostApiOperationOperationIdCargoIdCancelBody>;
 
 /**
  * Normaliza `""` pra `null` (mesma causa raiz documentada em
@@ -93,6 +115,14 @@ function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Reso
  * container existente + tara), edição (tara/data do lacre/status via
  * `Select`) e fotos por container (`InputPhotoMulti`). Sem rota própria
  * (D2 revertida em SPEC-07-02 §13) — montada pelo shell via estado local.
+ *
+ * SPEC-07-11 estende a lista com a ação de **estufagem** (criação de
+ * `CargoUnit`): dois fluxos separados por botão (D1 fechada, não modal
+ * único com toggle) — "Estufar fardo específico" (Modo A,
+ * `stuff/identified`) e "Estufar por quantidade" (Modo B,
+ * `stuff/quantity`) — mais um terceiro botão pra ver/cancelar as
+ * `CargoUnit`s já estufadas de um container (`CargoUnit` nunca é editável,
+ * só criada ou cancelada com motivo, §3.4).
  */
 export function Containers({ operationId }: { operationId: string }) {
   const t = useT();
@@ -103,6 +133,9 @@ export function Containers({ operationId }: { operationId: string }) {
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [editing, setEditing] = useState<ContainerOperationDTO | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
+  const [stuffIdentifiedFor, setStuffIdentifiedFor] = useState<ContainerOperationDTO | null>(null);
+  const [stuffQuantityFor, setStuffQuantityFor] = useState<ContainerOperationDTO | null>(null);
+  const [cargoUnitsFor, setCargoUnitsFor] = useState<ContainerOperationDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
     Offset: (page - 1) * PAGE_SIZE,
@@ -113,6 +146,14 @@ export function Containers({ operationId }: { operationId: string }) {
   const invalidateList = () =>
     queryClient.invalidateQueries({
       queryKey: getGetApiOperationOperationIdContainerQueryKey(operationId),
+    });
+
+  // Estufagem não muda o vínculo container↔operação em si (só cria/cancela
+  // `CargoUnit`), então invalida só a lista de cargas — a lista de
+  // containers (`invalidateList`) não precisa recarregar.
+  const invalidateCargo = () =>
+    queryClient.invalidateQueries({
+      queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
     });
 
   const linkMutation = usePostApiOperationOperationIdContainer();
@@ -239,7 +280,31 @@ export function Containers({ operationId }: { operationId: string }) {
                   </td>
                   <td>{item.photos?.length ?? 0}</td>
                   <td>
-                    <div className="d-flex gap-2">
+                    <div className="d-flex gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        title={t("administrative-operations.containers.stuffing.actionIdentified")}
+                        onClick={() => setStuffIdentifiedFor(item)}
+                      >
+                        <i className="bi bi-box-seam" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        title={t("administrative-operations.containers.stuffing.actionQuantity")}
+                        onClick={() => setStuffQuantityFor(item)}
+                      >
+                        <i className="bi bi-stack" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        title={t("administrative-operations.containers.stuffing.actionViewCargo")}
+                        onClick={() => setCargoUnitsFor(item)}
+                      >
+                        <i className="bi bi-list-ul" aria-hidden />
+                      </button>
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-primary"
@@ -356,6 +421,32 @@ export function Containers({ operationId }: { operationId: string }) {
           variant="danger"
           onConfirm={confirmDelete}
           onCancel={() => setPendingDelete(null)}
+        />
+      ) : null}
+
+      {stuffIdentifiedFor ? (
+        <StuffIdentifiedModal
+          operationId={operationId}
+          containerLink={stuffIdentifiedFor}
+          onClose={() => setStuffIdentifiedFor(null)}
+          onStuffed={invalidateCargo}
+        />
+      ) : null}
+
+      {stuffQuantityFor ? (
+        <StuffQuantityModal
+          operationId={operationId}
+          containerLink={stuffQuantityFor}
+          onClose={() => setStuffQuantityFor(null)}
+          onStuffed={invalidateCargo}
+        />
+      ) : null}
+
+      {cargoUnitsFor ? (
+        <CargoUnitsModal
+          operationId={operationId}
+          containerLink={cargoUnitsFor}
+          onClose={() => setCargoUnitsFor(null)}
         />
       ) : null}
     </div>
@@ -488,5 +579,422 @@ function ContainerPhotos({
         </Button>
       </Form>
     </div>
+  );
+}
+
+/**
+ * Modo A da estufagem (SPEC-07-11 §3.1) — cria uma `CargoUnit` identificada
+ * a partir de um fardo específico do romaneio (`romaneioId`) mais a Invoice
+ * explícita (`invoiceId`, D2 fechada: o Core não resolve a Invoice
+ * implicitamente a partir do `NotaFiscal` da linha). `containerOperationId`
+ * vem implícito da linha clicada, não é campo do formulário.
+ */
+function StuffIdentifiedModal({
+  operationId,
+  containerLink,
+  onClose,
+  onStuffed,
+}: {
+  operationId: string;
+  containerLink: ContainerOperationDTO;
+  onClose: () => void;
+  onStuffed: () => void;
+}) {
+  const t = useT();
+  const mutation = usePostApiOperationOperationIdCargoStuffIdentified();
+
+  const methods = useForm<StuffIdentifiedFormValues>({
+    resolver: zodResolver(PostApiOperationOperationIdCargoStuffIdentifiedBody),
+    defaultValues: {
+      containerOperationId: containerLink.id,
+      romaneioId: "",
+      invoiceId: "",
+    },
+  });
+
+  const fetchInvoiceOptions = (search: string) =>
+    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) =>
+      res.items.map((invoice) => ({ value: invoice.id, label: invoice.number ?? invoice.id })),
+    );
+
+  // "Lote" não é campo do payload (D2) — só filtro de UI dentro deste
+  // `SelectAsync`: o rótulo já combina lote/NF/identificador do fardo pra
+  // o operador achar a linha certa digitando qualquer um dos três.
+  const fetchRomaneioOptions = (search: string) =>
+    getApiOperationOperationIdRomaneio(operationId, { Search: search, Limit: 20 }).then((res) =>
+      res.items.map((romaneio) => ({
+        value: romaneio.id,
+        label: `${romaneio.lote} · NF ${romaneio.notaFiscal ?? "—"} · ${romaneio.itemIdentifier}`,
+      })),
+    );
+
+  const handleSubmit: SubmitHandler<StuffIdentifiedFormValues> = async (values) => {
+    try {
+      const result = await mutation.mutateAsync({ operationId, data: values });
+      toast.success(t("administrative-operations.containers.stuffing.toast.identifiedSuccess"));
+      (result.warnings ?? []).forEach((warning) => toast.warning(warning));
+      onStuffed();
+      onClose();
+    } catch {
+      toast.error(t("administrative-operations.containers.toast.error"));
+    }
+  };
+
+  return (
+    <Modal show onHide={onClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title className="h5 mb-0">
+          {t("administrative-operations.containers.stuffing.identifiedTitle", {
+            identifier: containerLink.container.identifier,
+          })}
+        </Modal.Title>
+      </Modal.Header>
+      <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
+        <Modal.Body>
+          <SelectAsync<StuffIdentifiedFormValues>
+            methods={methods}
+            fieldName="invoiceId"
+            label={t("administrative-operations.containers.stuffing.form.invoice")}
+            fetchOptions={fetchInvoiceOptions}
+          />
+          <SelectAsync<StuffIdentifiedFormValues>
+            methods={methods}
+            fieldName="romaneioId"
+            label={t("administrative-operations.containers.stuffing.form.romaneio")}
+            fetchOptions={fetchRomaneioOptions}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={onClose}>
+            {t("crud.recordModal.cancel")}
+          </Button>
+          <Button type="submit" variant="primary" disabled={methods.formState.isSubmitting}>
+            {methods.formState.isSubmitting ? (
+              <Spinner size="sm" animation="border" className="me-2" />
+            ) : null}
+            {t("administrative-operations.containers.stuffing.submit")}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
+}
+
+/**
+ * Modo B da estufagem (SPEC-07-11 §3.2) — cria `quantity` `CargoUnit`s numa
+ * única chamada ao backend (RNF3). O resultado bifurca pela origem da
+ * Invoice escolhida (`CargoStuffResultDTO.cargoUnits`, D5 fechada): quando a
+ * Invoice tem romaneio (`Source=RomaneioImport`), o backend identifica
+ * automaticamente `quantity` fardos livres e cada item do array vem com
+ * `romaneioId` preenchido — a tela lista esses fardos (CA9). Quando a
+ * Invoice é `Manual`, os itens vêm com `romaneioId: null` — a tela mostra só
+ * o contador e o peso médio, sem prometer rastreabilidade individual.
+ */
+function StuffQuantityModal({
+  operationId,
+  containerLink,
+  onClose,
+  onStuffed,
+}: {
+  operationId: string;
+  containerLink: ContainerOperationDTO;
+  onClose: () => void;
+  onStuffed: () => void;
+}) {
+  const t = useT();
+  const mutation = usePostApiOperationOperationIdCargoStuffQuantity();
+  const [result, setResult] = useState<CargoUnitDTO[] | null>(null);
+
+  const methods = useForm<StuffQuantityFormValues>({
+    resolver: zodResolver(PostApiOperationOperationIdCargoStuffQuantityBody),
+    defaultValues: {
+      containerOperationId: containerLink.id,
+      invoiceId: "",
+      quantity: 1,
+    },
+  });
+
+  const fetchInvoiceOptions = (search: string) =>
+    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) =>
+      res.items.map((invoice) => ({ value: invoice.id, label: invoice.number ?? invoice.id })),
+    );
+
+  const handleSubmit: SubmitHandler<StuffQuantityFormValues> = async (values) => {
+    try {
+      const response = await mutation.mutateAsync({ operationId, data: values });
+      (response.warnings ?? []).forEach((warning) => toast.warning(warning));
+      toast.success(t("administrative-operations.containers.stuffing.toast.quantitySuccess"));
+      setResult(response.cargoUnits ?? []);
+      onStuffed();
+    } catch {
+      toast.error(t("administrative-operations.containers.toast.error"));
+    }
+  };
+
+  const handleClose = () => {
+    setResult(null);
+    onClose();
+  };
+
+  // R5/D5: o próprio array `cargoUnits` já diz qual dos dois casos ocorreu
+  // (todos os itens de uma mesma resposta vêm da mesma Invoice, então basta
+  // olhar o primeiro) — sem precisar consultar `Invoice.source` de novo.
+  const identifiedUnits = (result ?? []).filter((unit) => unit.romaneioId != null);
+  const isIdentifiedResult = result != null && result.length > 0 && identifiedUnits.length > 0;
+  const averageGrossWeight =
+    result && result.length > 0 && result[0]?.grossWeight != null
+      ? String(result[0].grossWeight)
+      : null;
+
+  return (
+    <Modal show onHide={handleClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title className="h5 mb-0">
+          {t("administrative-operations.containers.stuffing.quantityTitle", {
+            identifier: containerLink.container.identifier,
+          })}
+        </Modal.Title>
+      </Modal.Header>
+
+      {result ? (
+        <>
+          <Modal.Body>
+            {isIdentifiedResult ? (
+              <>
+                <p className="mb-2">
+                  {t("administrative-operations.containers.stuffing.resultIdentifiedTitle", {
+                    count: String(result.length),
+                  })}
+                </p>
+                <ul className="mb-0">
+                  {result.map((unit) => (
+                    <li key={unit.id}>{unit.romaneioId}</li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="mb-0">
+                {t("administrative-operations.containers.stuffing.resultManualTitle", {
+                  count: String(result.length),
+                  weight: averageGrossWeight ?? "—",
+                })}
+              </p>
+            )}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" onClick={handleClose}>
+              {t("crud.recordModal.close")}
+            </Button>
+          </Modal.Footer>
+        </>
+      ) : (
+        <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
+          <Modal.Body>
+            <SelectAsync<StuffQuantityFormValues>
+              methods={methods}
+              fieldName="invoiceId"
+              label={t("administrative-operations.containers.stuffing.form.invoice")}
+              fetchOptions={fetchInvoiceOptions}
+            />
+            <InputNumber<StuffQuantityFormValues>
+              methods={methods}
+              fieldName="quantity"
+              label={t("administrative-operations.containers.stuffing.form.quantity")}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="outline-primary" onClick={onClose}>
+              {t("crud.recordModal.cancel")}
+            </Button>
+            <Button type="submit" variant="primary" disabled={methods.formState.isSubmitting}>
+              {methods.formState.isSubmitting ? (
+                <Spinner size="sm" animation="border" className="me-2" />
+              ) : null}
+              {t("administrative-operations.containers.stuffing.submit")}
+            </Button>
+          </Modal.Footer>
+        </Form>
+      )}
+    </Modal>
+  );
+}
+
+/**
+ * Lista as `CargoUnit`s já estufadas de um vínculo container↔operação
+ * (`GET /cargo` filtrado por `ContainerOperationId`, §8) e oferece a única
+ * ação disponível sobre uma unidade existente: cancelar com motivo
+ * obrigatório (§3.4/RF5 — `CargoUnit` nunca é editável).
+ */
+function CargoUnitsModal({
+  operationId,
+  containerLink,
+  onClose,
+}: {
+  operationId: string;
+  containerLink: ContainerOperationDTO;
+  onClose: () => void;
+}) {
+  const t = useT();
+  const locale = useLocale();
+  const queryClient = useQueryClient();
+  const [cancelTarget, setCancelTarget] = useState<CargoUnitDTO | null>(null);
+
+  const listQueryOptions = getGetApiOperationOperationIdCargoQueryOptions(operationId, {
+    ContainerOperationId: containerLink.id,
+    Limit: 100,
+  });
+  const query = useSsrSafeQuery(listQueryOptions);
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({
+      queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
+    });
+
+  const items = query.data?.items ?? [];
+
+  return (
+    <>
+      <Modal show onHide={onClose} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title className="h5 mb-0">
+            {t("administrative-operations.containers.stuffing.cargoUnitsTitle", {
+              identifier: containerLink.container.identifier,
+            })}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {query.isLoading ? (
+            <LoadingState variant="inline" />
+          ) : items.length === 0 ? (
+            <div className="alert alert-secondary mb-0">
+              {t("administrative-operations.containers.stuffing.cargoUnitsEmpty")}
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <Table hover size="sm" className="align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>{t("administrative-operations.containers.stuffing.colStatus")}</th>
+                    <th>{t("administrative-operations.containers.stuffing.colIdentified")}</th>
+                    <th>{t("administrative-operations.containers.stuffing.colGrossWeight")}</th>
+                    <th>{t("administrative-operations.containers.stuffing.colActions")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((unit) => (
+                    <tr key={unit.id}>
+                      <td>
+                        <Badge bg="secondary">
+                          {resolveCargoUnitStatusLabel(unit.status ?? "Stuffed", locale)}
+                        </Badge>
+                      </td>
+                      <td>
+                        {unit.identified
+                          ? t("administrative-operations.containers.stuffing.yes")
+                          : t("administrative-operations.containers.stuffing.no")}
+                      </td>
+                      <td>{unit.grossWeight != null ? String(unit.grossWeight) : "—"}</td>
+                      <td>
+                        {unit.status !== "Canceled" ? (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            title={t("administrative-operations.containers.stuffing.cancelTitle")}
+                            onClick={() => setCancelTarget(unit)}
+                          >
+                            <i className="bi bi-x-circle" aria-hidden />
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={onClose}>
+            {t("crud.recordModal.close")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {cancelTarget ? (
+        <CancelCargoUnitModal
+          operationId={operationId}
+          cargoUnit={cancelTarget}
+          onClose={() => setCancelTarget(null)}
+          onCanceled={invalidate}
+        />
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * Cancelamento de `CargoUnit` (§3.4) — motivo obrigatório (`reason`,
+ * `maxLength 500`), mesmo padrão de `InvoiceStatusChange.note` usado em
+ * Confirmar/Cancelar de Invoice (SPEC-07-10 §5 RF4).
+ */
+function CancelCargoUnitModal({
+  operationId,
+  cargoUnit,
+  onClose,
+  onCanceled,
+}: {
+  operationId: string;
+  cargoUnit: CargoUnitDTO;
+  onClose: () => void;
+  onCanceled: () => void;
+}) {
+  const t = useT();
+  const mutation = usePostApiOperationOperationIdCargoIdCancel();
+
+  const methods = useForm<CancelCargoFormValues>({
+    resolver: zodResolver(PostApiOperationOperationIdCargoIdCancelBody),
+    defaultValues: { reason: "" },
+  });
+
+  const handleSubmit: SubmitHandler<CancelCargoFormValues> = async (values) => {
+    try {
+      await mutation.mutateAsync({ operationId, id: cargoUnit.id, data: values });
+      toast.success(t("administrative-operations.containers.stuffing.toast.canceled"));
+      onCanceled();
+      onClose();
+    } catch {
+      toast.error(t("administrative-operations.containers.toast.error"));
+    }
+  };
+
+  return (
+    <Modal show onHide={onClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title className="h5 mb-0">
+          {t("administrative-operations.containers.stuffing.cancelTitle")}
+        </Modal.Title>
+      </Modal.Header>
+      <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
+        <Modal.Body>
+          <InputTextArea<CancelCargoFormValues>
+            methods={methods}
+            fieldName="reason"
+            label={t("administrative-operations.containers.stuffing.cancelReason")}
+            maxLength={500}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={onClose}>
+            {t("crud.recordModal.cancel")}
+          </Button>
+          <Button type="submit" variant="danger" disabled={methods.formState.isSubmitting}>
+            {methods.formState.isSubmitting ? (
+              <Spinner size="sm" animation="border" className="me-2" />
+            ) : null}
+            {t("administrative-operations.containers.stuffing.cancelConfirm")}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
   );
 }

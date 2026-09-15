@@ -58,6 +58,7 @@
     "description": "作业中使用的集装箱。",
     "colIdentifier": "编号",
     "colTara": "皮重",
+    "colMaxWeight": "最大载重",
     "colCreatedAt": "创建时间",
     "colActions": "操作",
     "emptyState": "未找到任何集装箱。",
@@ -66,7 +67,8 @@
     "viewTitle": "集装箱详情",
     "form": {
       "identifier": "编号",
-      "tara": "皮重（千克）"
+      "tara": "皮重（千克）",
+      "maxWeight": "最大载重（千克）"
     },
     "toast": {
       "created": "集装箱创建成功。",

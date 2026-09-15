@@ -250,6 +250,37 @@
       "photoUploaded": "Fotos enviadas com sucesso.",
       "photoDeleted": "Foto removida com sucesso.",
       "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "stuffing": {
+      "actionIdentified": "Estufar fardo específico",
+      "actionQuantity": "Estufar por quantidade",
+      "actionViewCargo": "Ver fardos estufados",
+      "identifiedTitle": "Estufar fardo específico — {identifier}",
+      "quantityTitle": "Estufar por quantidade — {identifier}",
+      "submit": "Estufar",
+      "form": {
+        "invoice": "Nota fiscal",
+        "romaneio": "Fardo do romaneio",
+        "quantity": "Quantidade"
+      },
+      "resultIdentifiedTitle": "{count} fardo(s) estufado(s): identificadores abaixo.",
+      "resultManualTitle": "{count} unidade(s) anônima(s) estufada(s) (peso bruto médio: {weight} kg).",
+      "cargoUnitsTitle": "Fardos estufados — {identifier}",
+      "cargoUnitsEmpty": "Nenhuma unidade estufada neste container.",
+      "colStatus": "Status",
+      "colIdentified": "Identificado",
+      "colGrossWeight": "Peso bruto (kg)",
+      "colActions": "Ações",
+      "yes": "Sim",
+      "no": "Não",
+      "cancelTitle": "Cancelar fardo",
+      "cancelReason": "Motivo do cancelamento",
+      "cancelConfirm": "Confirmar cancelamento",
+      "toast": {
+        "identifiedSuccess": "Fardo estufado com sucesso.",
+        "quantitySuccess": "Estufagem concluída com sucesso.",
+        "canceled": "Fardo cancelado com sucesso."
+      }
     }
   },
   "documents": {
