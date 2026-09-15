@@ -2,74 +2,70 @@
 
 - **ID:** SPEC-07-11
 - **Nome:** operation-cargo-stuffing
-- **Status:** BLOCKED
-- **Autor:** portal-dev-agent (rascunho)
+- **Status:** WAITING_APPROVAL
+- **Autor:** portal-dev-agent (reconciliado pós-`just map`, 2026-09-15)
 - **Área:** `src/components/operations/tabs/Containers.tsx` (editado —
   criado pela SPEC-07-05, `IMPLEMENTED`), `src/i18n/dictionaries/*/
 administrative-operations.json` (editado), e (fora da área de Operações)
   o formulário de cadastro de Container em
-  `src/routes/_dashboard/_internal/administrative/registry/container/**`
-  (editado — novo campo `MaxWeight`, ver §3.5)
+  `src/routes/_dashboard/_internal/administrative/registry/container/index.tsx`
+  (editado — novo campo `maxWeight`, ver §3.5)
 - **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`Select`/`SelectAsync`,
   já usados pela SPEC-07-05), SPEC-07-01 (namespace), SPEC-07-02 (shell),
   **SPEC-07-05** (`operation-containers`, `IMPLEMENTED` — esta SPEC
   **substitui/estende** a ação de vínculo container↔operação dela,
   adicionando a ação de estufagem; não reescreve o CRUD de vínculo em si).
-  **Depende também, fora deste repo, de** `warren/Core` **SPEC-16**
+  **Dependia também, fora deste repo, de** `warren/Core` **SPEC-16**
   (`cargo-unit-redesign` — CargoUnit redesenhado, extinção de
-  `InvoiceItem`, `Container.MaxWeight`; hoje `BLOCKED` no Core por uma
-  decisão de migração de dado ainda pendente lá) **e SPEC-17**
+  `InvoiceItem`, `Container.MaxWeight`) **e SPEC-17**
   (`cargo-stuffing-gates` — endpoints de estufagem Modo A/B + gates de
-  peso; depende de SPEC-15 **e** SPEC-16 no Core) — ver §0. A SPEC-13
-  original do Core (`specs/13-romaneio-invoice-container-flow/spec.md`)
-  virou só o índice dessas ondas. Esta aba **não** depende diretamente de
-  SPEC-14/SPEC-15 do Core (as que bloqueiam a SPEC-07-10) — só
-  transitivamente, porque SPEC-17 do Core já exige SPEC-15 como
-  pré-requisito lá dentro. Depende ainda, indiretamente, de
+  peso) — **ambas `IMPLEMENTED` agora no Core**, `just map` já rodou
+  nesta branch e trouxe o contrato real (ver §0, histórico do bloqueio).
+  A SPEC-13 original do Core
+  (`specs/13-romaneio-invoice-container-flow/spec.md`) virou só o índice
+  dessas ondas. Esta aba **não** depende diretamente de SPEC-14/SPEC-15
+  do Core (as que bloqueiam/bloqueavam a SPEC-07-10, em progresso em
+  paralelo, outra branch/agente). Depende ainda, indiretamente, de
   **SPEC-07-10** (`operation-invoice`) só como referência de UX (a
   estufagem escolhe uma Invoice existente) — sem ordem de implementação
-  obrigatória entre as duas no NewPortal (07-10 tende a destravar bem
-  antes, já que só precisa de SPEC-14+15 do Core).
+  obrigatória entre as duas no NewPortal.
 
 ---
 
-## 0. Bloqueio (leia antes de tudo)
+## 0. Bloqueio (histórico — resolvido)
+
+**Desbloqueado em 2026-09-15.** `warren/Core` SPEC-16 (`cargo-unit-redesign`)
+e SPEC-17 (`cargo-stuffing-gates`) estão `IMPLEMENTED`; `just map` já rodou
+nesta branch (`spec-07-11-operation-cargo-stuffing`, commit
+`4400ce9 just map: contrato SPEC-14 a 17`) e `tsc --noEmit` passou limpo. O
+client gerado hoje já reflete o modelo pós-SPEC-16/17:
+`src/api/generated/endpoints/cargo-unit/cargo-unit.ts` expõe
+`usePostApiOperationOperationIdCargoStuffIdentified` (Modo A) e
+`usePostApiOperationOperationIdCargoStuffQuantity` (Modo B), `CargoUnitDTO`
+não tem mais `Open`/vínculo a `InvoiceItem` (`cargoUnitLinkInvoiceItem.ts`
+não existe mais no client gerado), `CargoUnitStatus` ficou só
+`Stuffed | Canceled`, e `ContainerDTO`/`ContainerCreate`/`ContainerUpdate`
+já têm `maxWeight` (decimal nullable, mesmo shape/pattern de `tara`).
+
+Este texto original do racional de bloqueio permanece abaixo só como
+histórico de por que a SPEC nasceu `BLOCKED` — não é mais aplicável.
+
+<details>
+<summary>Racional original (histórico, já resolvido)</summary>
 
 Igual à SPEC-07-10 (ver lá §0 para o texto completo do racional): o
 contrato consumido aqui — `CargoUnit` redesenhado (nasce só via
 `stuff/identified` ou `stuff/quantity`, sem mais `Open`/`Update()`/
-`StuffInto()`/`MarkDivergent`/`Reconcile`), `Container.MaxWeight` — é
+`StuffInto()`/`MarkDivergent`/`Reconcile`), `Container.MaxWeight` — era
 definido por `warren/Core` **SPEC-16** (`cargo-unit-redesign`) e
-**SPEC-17** (`cargo-stuffing-gates`). Nenhuma das duas está implementada
-ainda; pior, **SPEC-16 hoje está ela própria `BLOCKED` no Core** por uma
+**SPEC-17** (`cargo-stuffing-gates`). Nenhuma das duas estava implementada
+ainda; pior, **SPEC-16 estava ela própria `BLOCKED` no Core** por uma
 decisão de migração de dado de produção ainda pendente lá (quantas
 `CargoUnit`s existentes caem em `Status=Open` sem `ContainerOperationId`,
-e o que fazer com elas) — ou seja, esta SPEC de frontend está bloqueada
-por uma cadeia de duas dependências, não uma. O client gerado atual
-(`src/api/generated/endpoints/cargo-unit/cargo-unit.ts`, `model/
-cargoUnitDTO.ts`, `model/cargoUnitLinkInvoiceItem.ts`) reflete o modelo
-**pré-SPEC-16/17**: `CargoUnit` editável, vínculo a `InvoiceItem`
-(extinto só com SPEC-16), sem noção de `stuff/identified`/`stuff/
-quantity`, sem gate de peso, sem `Container.MaxWeight`.
+e o que fazer com elas) — ou seja, esta SPEC de frontend estava bloqueada
+por uma cadeia de duas dependências, não uma.
 
-Esta SPEC **não pode sair de `BLOCKED`** até:
-
-1. `warren/Core` SPEC-16 (incluindo a decisão de migração de dado que a
-   bloqueia hoje) e SPEC-17 serem aprovadas e implementadas;
-2. `just map` trazer os hooks/DTOs novos (`stuff/identified`, `stuff/
-   quantity`, `CargoUnitStatus` simplificado, `CargoUnitDTO` com campos
-   derivados, `ContainerDTO.maxWeight`) e a **remoção** do vínculo direto
-   a `InvoiceItem` (`cargoUnitLinkInvoiceItem.ts` deve desaparecer ou
-   mudar de shape);
-3. Revisão desta SPEC contra o shape real — a SPEC-17 do Core deixa
-   aberto (§3.6 da antiga SPEC-13, herdado por SPEC-17, "a decidir na
-   implementação") se o Modo A recebe `invoiceId` explícito ou resolve a
-   Invoice a partir do `NotaFiscal` da linha do romaneio — isso muda o
-   formulário do Modo A e **precisa** ser fechado antes de codar (ver
-   §14 D2).
-
-Enquanto isso não acontece, **nenhum código desta SPEC deve ser
-escrito.**
+</details>
 
 ## 1. Objetivo
 
@@ -109,15 +105,28 @@ vinculados à operação (já existente, SPEC-07-05), cada linha ganha
 e **"Estufar por quantidade"** (Modo B) — cada um abre seu próprio modal/
 formulário independente, sem alternância dentro de uma mesma tela.
 
-- **Modo A — fardo específico:** formulário pede NF (Invoice da
-  operação, `SelectAsync` ou `Select` dependendo do volume) + Lote
-  (`RomaneioModel.Lote`, texto/filtro) + o fardo exato do romaneio
-  (linha específica, provavelmente `SelectAsync` sobre as linhas de
-  romaneio filtradas por NF+Lote — shape exato depende do endpoint real,
-  ver §14 D2).
-- **Modo B — quantidade:** formulário pede NF (Invoice) + Lote +
-  quantidade de fardos (`InputNumber`). **Importante (ver §3.2):** o
-  resultado desse modo depende da origem da Invoice escolhida — não é
+- **Modo A — fardo específico.** Payload real do endpoint
+  (`CargoUnitStuffIdentified`, `src/api/generated/model/
+  cargoUnitStuffIdentified.ts`): `{ containerOperationId, romaneioId,
+  invoiceId }` — **`invoiceId` é explícito e obrigatório** (D2 fechada,
+  ver §14). O Core não resolve a Invoice implicitamente a partir do
+  `NotaFiscal` da linha de romaneio; o formulário precisa dos dois campos
+  de fato: NF (`Select`/`SelectAsync` sobre as Invoices da operação →
+  `invoiceId`) e o fardo específico do romaneio (`SelectAsync` sobre
+  `RomaneioDTO` da operação, que já tem `lote`/`notaFiscal`/
+  `itemIdentifier` para filtrar/exibir na lista → `romaneioId`). "Lote"
+  não é campo do payload — é só filtro de UI para achar a linha certa
+  dentro do `SelectAsync` (o endpoint de leitura de romaneio,
+  `GET /api/operation/{operationId}/romaneio`, só tem `Search`/`Offset`/
+  `Limit`/`Sort` como params — o filtro por NF/lote é client-side sobre o
+  texto de busca ou por correspondência exata no rótulo da opção,
+  detalhe de implementação, não de contrato).
+- **Modo B — quantidade.** Payload real
+  (`CargoUnitStuffByQuantity`, `model/cargoUnitStuffByQuantity.ts`):
+  `{ containerOperationId, invoiceId, quantity }` — também sem campo de
+  "lote" no contrato; só NF (`invoiceId`) + quantidade (`InputNumber`
+  sobre o schema gerado). **Importante (ver §3.2):** o resultado desse
+  modo depende da origem (`Invoice.source`) da Invoice escolhida — não é
   sempre "unidade anônima".
 
 Em ambos os modos, `containerOperationId` já vem implícito (é a linha da
@@ -147,19 +156,26 @@ relacional real") redefine o Modo B:
 **Impacto no desenho de tela:** o resultado do Modo B precisa comunicar
 qual dos dois casos ocorreu:
 
-- Se a Invoice escolhida for `RomaneioImport`, a resposta do backend
-  inclui (presumivelmente) quais linhas de romaneio foram selecionadas
-  automaticamente — a tela deve **exibir essa lista** (ex.: "3 fardos
-  estufados: identificadores X, Y, Z"), não só um contador genérico,
-  porque o resultado é equivalente a ter feito 3 vezes o Modo A e o
+- **D5 fechada (ver §14):** confirmado — os dois endpoints de estufagem
+  devolvem `CargoStuffResultDTO` (`model/cargoStuffResultDTO.ts`):
+  `{ cargoUnits?: CargoUnitDTO[], warnings?: string[] }`. `cargoUnits` traz
+  as `CargoUnit`s recém-criadas já completas (`id`, `romaneioId`
+  nullable, `identified`, pesos), então a tela **não precisa** de uma
+  segunda leitura (GET) para montar a lista — o próprio response do
+  `stuff/quantity` já contém, por unidade, o `romaneioId` de cada linha
+  que o backend escolheu (identificador rastreável, item §3.2). No caso
+  `Manual`, os itens de `cargoUnits` vêm com `romaneioId: null` e
+  `identified: false` — dá pra distinguir os dois casos só olhando o array
+  retornado (sem precisar nem checar `Invoice.source` de novo no cliente,
+  embora a UI já saiba isso de antemão pela Invoice escolhida, R5).
+- Se a Invoice escolhida for `RomaneioImport`, a tela **exibe a lista**
+  (ex.: "3 fardos estufados: identificadores X, Y, Z") a partir do array
+  `cargoUnits` do próprio response, não só um contador genérico — o
   operador precisa poder conferir/rastrear quais fardos específicos
   saíram do romaneio.
-- Se a Invoice for `Manual`, a tela mostra só a contagem (não há linha
-  física para listar) e, opcionalmente, o peso médio usado — sem
+- Se a Invoice for `Manual`, a tela mostra só a contagem (`cargoUnits.length`,
+  todos com `romaneioId: null`) e, opcionalmente, o peso médio usado — sem
   prometer rastreabilidade individual, porque não existe.
-- Shape exato da resposta (se o backend devolve os identificadores das
-  linhas selecionadas no Modo B `RomaneioImport`) ainda não existe no
-  contrato — confirmar pós-`just map` (ver §14 D5).
 
 ### 3.3 Exibição do resultado da estufagem
 
@@ -169,43 +185,62 @@ qual dos dois casos ocorreu:
 - **Aviso de peso excedido** (`Container.MaxWeight` ultrapassado, gate
   não bloqueante da SPEC-16/SPEC-17 do Core §3.6 item 3): a resposta ainda é
   200/201, mas o frontend precisa **exibir visivelmente** o aviso (toast
-  de warning, não de erro — a operação foi bem-sucedida) — texto e
-  formato dependem de como o Core expuser o campo (`warnings: [...]` no
-  body ou header, "a decidir na implementação" segundo a SPEC-16/SPEC-17 do Core
-  §3.6; revisar o shape real pós-`just map` antes de implementar,
-  §14 D3).
+  de warning, não de erro — a operação foi bem-sucedida). **D3 fechada
+  (ver §14):** confirmado no client gerado — `CargoStuffResultDTO.warnings`
+  (`model/cargoStuffResultDTO.ts`) é `string[]` **no corpo da resposta**
+  (não header). A UI lê `response.warnings` (se não vazio) e mostra um
+  toast de warning por item da lista (ou concatenado, decisão de
+  apresentação livre na implementação — não muda o parsing).
 - **Bloqueio de saldo do romaneio** (gate duro): erro 400 do servidor.
   Com o redesenho da SPEC-17 do Core (§3.2 acima), esse gate **degenera
   em disponibilidade de linha**, não soma de peso — Modo A recusa se a
   linha específica já estiver vinculada a outra `CargoUnit`; Modo B
-  recusa se não houver `quantity` linhas livres daquele NF/Lote. A
-  mensagem de erro exibida deve refletir isso (ex. "fardo já estufado" /
-  "não há fardos suficientes disponíveis para essa NF/Lote"), não um
-  genérico "peso excedido" — exibir como erro de formulário/toast comum,
-  sem esconder a mensagem real do servidor (anti-silent-fail, herdado de
-  SPEC-07-02 RF2).
+  recusa se não houver `quantity` linhas livres daquela NF (o payload de
+  `stuff/quantity` só tem `invoiceId`, sem `lote` — o texto anterior desta
+  SPEC citava "NF/Lote" por analogia ao Modo A, mas o gate real do Modo B
+  é só por NF/Invoice, não por lote, já que `CargoUnitStuffByQuantity` não
+  aceita lote como filtro). A mensagem de erro exibida deve refletir isso
+  (ex. "fardo já estufado" / "não há fardos suficientes disponíveis para
+  essa NF"), não um genérico "peso excedido" — exibir como erro de
+  formulário/toast comum, sem esconder a mensagem real do servidor
+  (anti-silent-fail, herdado de SPEC-07-02 RF2).
 
 ### 3.4 `CargoUnit` não é mais editável
 
 Nenhuma tela desta SPEC oferece edição de uma `CargoUnit` já criada — só
-criação (Modo A/B) e, se existir ação de cancelar exposta pelo Core
-(`Cancel(reason)`, SPEC-16/SPEC-17 do Core §3.5), um botão **Cancelar** por
-`CargoUnit` com campo de motivo obrigatório (mesmo padrão de
-`InvoiceStatusChange.note` usado em Confirmar/Cancelar de Invoice,
-SPEC-07-10 §5 RF4).
+criação (Modo A/B) e cancelamento: o Core **já expõe** o endpoint
+(`POST /api/operation/{operationId}/cargo/{id}/cancel`,
+`usePostApiOperationOperationIdCargoIdCancel`, confirmado em
+`endpoints/cargo-unit/cargo-unit.ts`) com payload `CargoUnitCancel`
+(`model/cargoUnitCancel.ts`): `{ reason: string }` (`maxLength 500`,
+obrigatório) — não é mais condicional ("se existir"), a ação existe no
+contrato. Um botão **Cancelar** por `CargoUnit` com campo de motivo
+obrigatório (mesmo padrão de `InvoiceStatusChange.note` usado em
+Confirmar/Cancelar de Invoice, SPEC-07-10 §5 RF4).
 
 ### 3.5 Cadastro de Container — campo `MaxWeight`
 
 Fora da área de Operações: o cadastro de Container
-(`administrative/registry/container`, SPEC-04) precisa ganhar o campo
-novo `MaxWeight` (peso máximo em kg, decimal, opcional/nullable conforme
-o DTO gerado) no formulário de criação/edição — é pré-requisito para o
-aviso do §3.3 fazer sentido (sem `MaxWeight` cadastrado, não há o que
-comparar). Tratado aqui como escopo desta SPEC (não uma SPEC-04 nova)
-porque é um campo pontual de formulário existente, na mesma tela, sem
-mudança estrutural — se na implementação isso se mostrar maior que um
-campo (ex.: exigir reformular o formulário todo), é `SCOPE CONFLICT`,
-parar e perguntar.
+(`administrative/registry/container`, SPEC-04,
+`src/routes/_dashboard/_internal/administrative/registry/container/index.tsx`)
+precisa ganhar o campo novo `maxWeight` (confirmado em `ContainerDTO`/
+`ContainerCreate`/`ContainerUpdate`: `number | string | null`, opcional,
+mesmo shape/pattern decimal de `tara`) no formulário de criação/edição — é
+pré-requisito para o aviso do §3.3 fazer sentido (sem `maxWeight`
+cadastrado, não há o que comparar). **RF6/D4 fechados (ver §14):** o
+formulário existente já trata `tara` (shape idêntico a `maxWeight`) com
+`InputText` (`layouts/Form/Fields`, ver o array `fields: LayoutField[]` na
+própria tela) — `maxWeight` segue o mesmo padrão, mesmo Field, mesma
+tela, sem `InputNumber`. Namespace i18n confirmado:
+`administrative-registry.json`, chaves já usadas no padrão
+`administrative-registry.container.form.<campo>` (ex.: `...form.tara`) —
+a chave nova é `administrative-registry.container.form.maxWeight` (mais,
+se a tabela/coluna também expuser o campo, `...colMaxWeight`, seguindo o
+padrão de `colTara`). Tratado aqui como escopo desta SPEC (não uma
+SPEC-04 nova) porque é um campo pontual de formulário existente, na mesma
+tela, sem mudança estrutural — se na implementação isso se mostrar maior
+que um campo (ex.: exigir reformular o formulário todo), é
+`SCOPE CONFLICT`, parar e perguntar.
 
 ## 4. Fora do escopo
 
@@ -237,13 +272,13 @@ parar e perguntar.
   (bloqueia a ação, mensagem do servidor visível, sem genérico "peso
   excedido").
 - **RF5** — Nenhuma tela permite editar uma `CargoUnit` existente — só
-  criar (Modo A/B) e, se exposto, cancelar com motivo.
-- **RF6** — Cadastro de Container ganha campo `MaxWeight` usando o Field
-  apropriado de `layouts/Form/Fields` (provavelmente `InputMoney` não
-  serve — é peso, não moeda; mesmo precedente da SPEC-07-04 decisão 1,
-  usar `InputText` sobre o schema gerado, ou `InputNumber` se o schema
-  gerado for numérico puro — decidir na implementação conforme o shape
-  real do campo gerado).
+  criar (Modo A/B) e cancelar com motivo (`Cancel`, endpoint confirmado
+  §3.4).
+- **RF6** — Cadastro de Container ganha campo `maxWeight` usando
+  `InputText` de `layouts/Form/Fields`, mesmo padrão já usado pelo campo
+  `tara` na mesma tela (shape decimal nullable idêntico, confirmado em
+  `ContainerCreate`/`ContainerUpdate` — sem `InputNumber`, sem
+  `InputMoney`, ver §3.5).
 - **RF7** — Sem silent-fail (herda RF2 da SPEC-07-02).
 - **RF8** — Resultado do Modo B distingue visualmente o caso
   `Invoice.Source == RomaneioImport` (lista os fardos identificados
@@ -267,17 +302,42 @@ sem sub-rota nova (segue o precedente D2 revertida, SPEC-07-02 §13).
 
 ## 8. Camada de dados
 
-Hooks Orval gerados por `just map` sobre o contrato da SPEC-16/SPEC-17 do Core:
+Hooks Orval confirmados em `src/api/generated/endpoints/cargo-unit/
+cargo-unit.ts` (nomes reais dos hooks gerados):
 
-- `POST /api/operation/{operationId}/cargo/stuff/identified` (Modo A).
-- `POST /api/operation/{operationId}/cargo/stuff/quantity` (Modo B).
-- Leitura de `CargoUnit`s por container/operação (para exibir contagem/
-  lista, se o Core expuser um GET correspondente — confirmar pós-map).
-- `Cancel` de `CargoUnit`, se exposto como endpoint próprio.
-- Cadastro de Container: hook de update já existente
-  (`administrative/registry/container`, SPEC-04) ganha o campo
-  `maxWeight` no DTO gerado — reusa o hook de update existente, só muda o
-  formulário.
+- `usePostApiOperationOperationIdCargoStuffIdentified` — Modo A
+  (`POST /api/operation/{operationId}/cargo/stuff/identified`), variáveis
+  `{ operationId, data: CargoUnitStuffIdentified }`.
+- `usePostApiOperationOperationIdCargoStuffQuantity` — Modo B
+  (`POST /api/operation/{operationId}/cargo/stuff/quantity`), variáveis
+  `{ operationId, data: CargoUnitStuffByQuantity }`.
+- `useGetApiOperationOperationIdCargo` — leitura de `CargoUnit`s por
+  operação, com `params: GetApiOperationOperationIdCargoParams` que já
+  filtra por `ContainerOperationId`, `InvoiceId`, `WithoutRomaneio`,
+  `Status` — usar filtrado por `ContainerOperationId` para listar as
+  `CargoUnit`s de um container específico na aba (contagem/lista
+  existente, complementar ao resultado imediato do POST, §3.2/§3.3).
+- `usePostApiOperationOperationIdCargoIdCancel` — `Cancel` de `CargoUnit`
+  (`POST /api/operation/{operationId}/cargo/{id}/cancel`), payload
+  `CargoUnitCancel { reason }` — confirmado como endpoint próprio (não é
+  mais condicional, §3.4).
+- `useGetApiOperationOperationIdCargoIdEvents` — histórico de eventos
+  (`CargoUnitEventDTO`: `action: Created | Canceled`, `note`,
+  `beforeState`/`afterState`) — disponível caso a tela queira mostrar
+  trilha de auditoria por `CargoUnit` (não obrigatório pelos critérios de
+  aceitação atuais, mas existe no contrato se for útil).
+- `useGetApiOperationOperationIdRomaneio` — leitura de `RomaneioDTO` da
+  operação (tem `lote`, `notaFiscal`, `itemIdentifier`) para popular o
+  `SelectAsync` do fardo específico no Modo A (§3.1); só tem
+  `Search`/`Offset`/`Limit`/`Sort` como params — sem filtro server-side
+  dedicado por NF/lote nem flag de "linha livre/já vinculada" (a
+  disponibilidade real só é sabida no momento do POST, pelo 400 do gate
+  de saldo, §3.3).
+- Cadastro de Container: hooks já existentes
+  (`usePostApiContainer`/`usePutApiContainerId`, SPEC-04) ganham o campo
+  `maxWeight` já presente em `ContainerCreate`/`ContainerUpdate` — reusa
+  os hooks existentes, só muda o formulário (`fields: LayoutField[]`
+  ganha uma entrada a mais, mesmo padrão de `tara`).
 
 ## 9. UI
 
@@ -286,7 +346,8 @@ Hooks Orval gerados por `just map` sobre o contrato da SPEC-16/SPEC-17 do Core:
   quantidade" (Modo B), cada uma com modal próprio (D1, §14 fechada —
   fluxos separados, não modal único com toggle).
 - Editado: formulário de cadastro de Container
-  (`administrative/registry/container`) — campo `MaxWeight` novo.
+  (`administrative/registry/container`) — campo `maxWeight` novo
+  (`InputText`, mesmo padrão de `tara`, §3.5/RF6).
 - Toast de warning (peso do container excedido) — reusar o mecanismo de
   toast já padrão do projeto (`react-toastify`), variante de warning se
   existir, senão `info` (não inventar variante nova de componente sem
@@ -295,20 +356,23 @@ Hooks Orval gerados por `just map` sobre o contrato da SPEC-16/SPEC-17 do Core:
 ## 10. i18n
 
 Namespace existente `administrative-operations.json`, chaves novas em
-`containers.stuffing.*` (modos A/B, aviso de peso, erro de saldo). Campo
-`maxWeight` do cadastro de container entra no namespace já usado por
-aquele formulário (`administrative-registry.json` ou equivalente —
-confirmar o namespace real usado hoje por `registry/container` antes de
-criar um novo).
+`containers.stuffing.*` (modos A/B, aviso de peso, erro de saldo). **D4
+fechada (ver §14):** confirmado em código — o formulário de
+`registry/container` usa o namespace `administrative-registry.json`, com
+chaves no padrão `administrative-registry.container.form.<campo>` (ex.:
+`...form.tara` já existe). A chave nova do campo `maxWeight` é
+`administrative-registry.container.form.maxWeight` (e, se a listagem
+também expuser a coluna, `administrative-registry.container.colMaxWeight`,
+espelhando `colTara`) — sem criar namespace novo.
 
 ## 11. Arquivos esperados
 
 | Arquivo                                                                  | Ação                                        |
 | -------------------------------------------------------------------------- | --------------------------------------------- |
-| `src/components/operations/tabs/Containers.tsx`                          | editar — ação de estufagem (só pós-desbloqueio) |
-| `src/routes/.../registry/container/**` (formulário existente)            | editar — campo `MaxWeight`                   |
+| `src/components/operations/tabs/Containers.tsx`                          | editar — ação de estufagem |
+| `src/routes/_dashboard/_internal/administrative/registry/container/index.tsx` | editar — campo `maxWeight` |
 | `src/i18n/dictionaries/*/administrative-operations.json`                 | editar — chaves de estufagem                 |
-| `src/i18n/dictionaries/*/<namespace do cadastro de container>`           | editar — chave `maxWeight`                   |
+| `src/i18n/dictionaries/*/administrative-registry.json`                   | editar — chave `container.form.maxWeight` (e `colMaxWeight` se aplicável) |
 
 ## 12. Critérios de aceitação
 
@@ -319,40 +383,38 @@ criar um novo).
 | CA3 | Estufagem que excede saldo de romaneio (linha indisponível/insuficiente) mostra erro visível, não é silenciosa |
 | CA4 | Estufagem que excede `Container.MaxWeight` é aceita e mostra aviso visível (não bloqueia)        |
 | CA5 | Nenhuma tela permite editar `CargoUnit` existente                                                |
-| CA6 | Cadastro de Container tem campo `MaxWeight` funcional                                            |
+| CA6 | Cadastro de Container tem campo `maxWeight` funcional                                            |
 | CA7 | `bun run check` + `lint` passam                                                                  |
 | CA8 | Modo A e Modo B são acionados por botões/ações separados, sem modal único com toggle             |
 | CA9 | Modo B sobre Invoice `RomaneioImport` exibe os fardos identificados automaticamente selecionados; sobre Invoice `Manual` exibe só contador/peso médio |
 
 ## 13. Riscos
 
-- **R1 — Contrato ainda não existe** (ver §0), mesmo risco central da
+- **R1 — Contrato agora existe (histórico).** `just map` já rodou nesta
+  branch e trouxe o contrato real (`stuff/identified`, `stuff/quantity`,
+  `CargoStuffResultDTO`, `Container.maxWeight`) — risco encerrado. Mantido
+  aqui só como registro de que era o risco central original, espelhando a
   SPEC-07-10.
-- **R2 — Ergonomia do Modo A em aberto no próprio Core** (SPEC-16/SPEC-17 do Core
-  §3.6: "Resolve a Invoice a partir do NotaFiscal da linha do romaneio
-  informada (ou exige invoiceId explícito — a decidir na implementação)")
-  — o formulário do Modo A muda dependendo dessa escolha (campo
-  `invoiceId` explícito vs. resolvido implicitamente pelo backend a
-  partir da linha escolhida). Não fechar o desenho do formulário antes de
-  saber a resposta real.
-- **R3 — Migração de dado existente no Core** (SPEC-16/SPEC-17 do Core §14): se o
-  Core decidir descartar `CargoUnit`s `Open` (nunca estufadas) na
+- **R2 — Ergonomia do Modo A: resolvida.** O contrato real
+  (`CargoUnitStuffIdentified`) exige `invoiceId` **explícito** — o Core
+  não resolve implicitamente a partir do `NotaFiscal` da linha de
+  romaneio. Ver D2 fechada (§14) e §3.1.
+- **R3 — Migração de dado existente no Core** (histórico, SPEC-16 do Core
+  §14): se o Core descartou `CargoUnit`s `Open` (nunca estufadas) na
   migração, containers hoje "vinculados mas sem carga" no NewPortal podem
-  simplesmente não ter mais nada pra mostrar de histórico — não é ação do
-  frontend, mas pode gerar confusão ("sumiu a carga") se não for
-  comunicado ao usuário final antes do deploy. Registrar como aviso de
-  comunicação, não como código.
-- **R4 — Formato do aviso de peso excedido é "a decidir na
-  implementação"** pelo Core (§3.6 item 3, `warnings` no body ou header)
-  — esta SPEC não pode fixar o parsing exato até o shape real existir.
-- **R5 — Modo B ficou mais complexo de exibir do que uma simples
-  "quantidade estufada"** (§3.2): a tela precisa saber, a partir da
-  `Invoice` escolhida, se o resultado vai ser identificado (lista de
-  fardos) ou anônimo (só contador) — isso é conhecido **antes** de
-  chamar o endpoint (basta olhar `Invoice.Source` já carregada na lista
-  de Invoices), então a UI pode antecipar a mensagem/expectativa antes
-  do submit, mas o parsing do resultado (quais fardos vieram na
-  resposta) só existe depois do `just map` real (ver §14 D5).
+  não ter mais nada pra mostrar de histórico — não é ação do frontend,
+  mas pode gerar confusão ("sumiu a carga") se não for comunicado ao
+  usuário final. Continua como aviso de comunicação, não como código;
+  não verificado nesta reconciliação se a migração já rodou em produção
+  (fora do escopo desta SPEC de frontend confirmar).
+- **R4 — Formato do aviso de peso excedido: resolvido.** Confirmado em
+  `CargoStuffResultDTO.warnings: string[]` no corpo da resposta (não
+  header). Ver D3 fechada (§14) e §3.3.
+- **R5 — Modo B, exibição do resultado: resolvida.** O response de
+  `stuff/quantity` (`CargoStuffResultDTO.cargoUnits`) já traz as
+  `CargoUnit`s criadas com `romaneioId` (nullable) e `identified` — a UI
+  monta a lista/contador direto da resposta do POST, sem chamada extra.
+  Ver D5 fechada (§14) e §3.2.
 
 ## 14. Decisões
 
@@ -361,62 +423,44 @@ ações distintos na aba Containers — "Estufar fardo específico" / Modo A,
 e "Estufar por quantidade" / Modo B), cada um com seu próprio modal —
 **não** modal único com toggle. Decisão do usuário; ver §3.1, §5 RF2, §9.
 
-Decisões ainda pendentes:
+**D2 — fechada (pós-`just map`, dado técnico, não decisão de negócio).**
+`CargoUnitStuffIdentified` (`model/cargoUnitStuffIdentified.ts`) exige
+`invoiceId` explícito: `{ containerOperationId, romaneioId, invoiceId }`.
+O Core **não** resolve a Invoice implicitamente a partir do `NotaFiscal`
+da linha de romaneio. O formulário do Modo A tem, portanto, dois campos
+efetivos além do `containerOperationId` implícito: NF (`invoiceId`) e
+fardo específico (`romaneioId`) — "Lote" é só filtro de UI dentro do
+`SelectAsync` do fardo, não um campo do payload. Ver §3.1.
 
-```
-[NEEDS_DECISION]
+**D3 — fechada (pós-`just map`, dado técnico).** O aviso de peso excedido
+vem em `CargoStuffResultDTO.warnings: string[]`, no **corpo** da resposta
+(não header). Ver §3.3.
 
-D2 — Modo A: `invoiceId` explícito no formulário, ou resolvido
-implicitamente pelo backend a partir da linha de romaneio escolhida?
+**D4 — fechada (confirmado em código, sem ambiguidade real).** O
+formulário de `registry/container` usa o namespace
+`administrative-registry.json`, chaves em
+`administrative-registry.container.form.<campo>` (ex.: `...form.tara`
+existente). Chave nova: `administrative-registry.container.form.maxWeight`.
+Ver §3.5/§10.
 
-A própria SPEC-16/SPEC-17 do Core (§3.6) deixa isso em aberto como "decisão de
-implementação". O formulário do frontend muda dependendo da resposta:
-se o backend resolve implicitamente, o operador só escolhe NF+Lote+fardo;
-se exige `invoiceId` explícito, o formulário precisa de mais um campo
-(provavelmente `SelectAsync` sobre as Invoices da operação).
+**D5 — fechada (pós-`just map`, dado técnico).** `CargoStuffResultDTO`
+inclui `cargoUnits?: CargoUnitDTO[]` — cada item já vem com `romaneioId`
+(nullable) e `identified`, então o response do `stuff/quantity` sozinho
+já é suficiente para a UI montar a lista de fardos identificados
+(`RomaneioImport`) ou o contador anônimo (`Manual`), sem segunda leitura.
+Ver §3.2.
 
-Aguardando o shape real do endpoint pós-`just map` — não decidir a UI
-antes disso.
-
----
-
-D3 — Formato exato do aviso de peso excedido do container.
-
-A SPEC-16/SPEC-17 do Core (§3.6 item 3) deixa em aberto se o aviso vem no corpo
-da resposta (`warnings: [...]`) ou em header. Esta SPEC não pode
-implementar o parsing até saber — registrado para revisão pós-`just map`.
-
----
-
-D4 — Nome do namespace i18n do formulário de cadastro de Container.
-
-Não verificado nesta SPEC qual namespace exato (`administrative-registry.
-json` ou outro) o formulário de `registry/container` usa hoje — confirmar
-na implementação, sem criar um namespace novo se já existir um.
-
----
-
-D5 — Shape da resposta do Modo B quando `Invoice.Source ==
-RomaneioImport` — o backend devolve os identificadores das linhas de
-romaneio selecionadas automaticamente?
-
-A SPEC-17 do Core (§2, reescrita) não especifica se o response do
-`stuff/quantity` inclui a lista das linhas de `Romaneio` que o backend
-escolheu (necessário para a UI cumprir RF8/CA9 — exibir quais fardos
-foram estufados, não só um contador). Se o response não trouxer isso, a
-UI teria que fazer uma segunda leitura (GET de `CargoUnit`s do container)
-para montar a lista — mais uma chamada, não é decisão de UX, é
-consequência do shape do contrato.
-
-Aguardando o shape real do endpoint pós-`just map` para fechar como a
-tela busca/exibe essa lista.
-```
+Nenhuma decisão de negócio ficou pendente nesta reconciliação — todas as
+que restavam eram consequência direta do shape do contrato gerado, já
+observável no client após o `just map` desta branch. Não há
+`[NEEDS_DECISION]` em aberto nesta SPEC.
 
 ---
 
-**Status:** `BLOCKED`. Não implementar. Retomar só depois que
-`warren/Core` SPEC-16 (e o desbloqueio da decisão de migração de dado que
-a trava hoje) e SPEC-17 saírem de `DRAFT`/`BLOCKED`, forem implementadas,
-e `just map` trazer o contrato real — então resolver D2/D3/D4/D5 acima
-(D1 já fechada, §14), seguir o ciclo normal (`WAITING_APPROVAL` →
-aprovação explícita `APROVAR SPEC-07-11` → implementação).
+**Status:** `WAITING_APPROVAL`. `warren/Core` SPEC-16 e SPEC-17 estão
+`IMPLEMENTED`; `just map` já rodou nesta branch
+(`spec-07-11-operation-cargo-stuffing`, commit
+`4400ce9 just map: contrato SPEC-14 a 17`) e `tsc --noEmit` passou limpo
+sobre o novo client gerado. D1–D5 fechadas (§14). Aguardando aprovação
+explícita do usuário (`APROVAR SPEC-07-11`) antes de qualquer
+implementação — nenhum código desta SPEC foi escrito nesta reconciliação.
