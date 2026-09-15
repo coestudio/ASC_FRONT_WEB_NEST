@@ -1,5 +1,9 @@
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { usePagination } from "@/hooks/usePagination";
+
+const PAGE_SIZE = 10;
 
 // MOCK — SPEC-07-09 (§8): aba UI-only, sem endpoint no Core (legado também
 // era mock). Array local, nunca uma query — não passa por fetch/hook Orval.
@@ -48,6 +52,7 @@ const MOCK_LOG: MockOperationLogEntry[] = [
 export function Log({ operationId: _operationId }: { operationId: string }) {
   const t = useT();
   const locale = useLocale();
+  const { page, setPage, totalPages, pageItems } = usePagination(MOCK_LOG, PAGE_SIZE);
 
   return (
     <div>
@@ -59,7 +64,7 @@ export function Log({ operationId: _operationId }: { operationId: string }) {
         </p>
       ) : (
         <ul className="list-unstyled d-flex flex-column gap-3 mb-0">
-          {MOCK_LOG.map((entry) => (
+          {pageItems.map((entry) => (
             <li key={entry.id} className="soft-card p-3">
               <div className="d-flex flex-wrap justify-content-between gap-2">
                 <span className="fw-semibold">{entry.action}</span>
@@ -75,6 +80,7 @@ export function Log({ operationId: _operationId }: { operationId: string }) {
           ))}
         </ul>
       )}
+      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }

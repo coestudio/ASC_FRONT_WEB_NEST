@@ -16,9 +16,13 @@ import {
 import { PostApiOperationOperationIdResponsibleBody } from "@/api/generated/zod/responsible/responsible.zod";
 import type { ResponsibleDTO } from "@/api/generated/model";
 import { InputText, SelectAsync } from "@/layouts/Form/Fields/Index";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { usePagination } from "@/hooks/usePagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
+
+const PAGE_SIZE = 10;
 
 type LinkedFilter = "all" | "linked" | "unlinked";
 
@@ -127,6 +131,8 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
     });
   }, [search, linkedFilter, query.data]);
 
+  const { page, setPage, totalPages, pageItems } = usePagination(list, PAGE_SIZE);
+
   const linkedFilterOptions: { key: LinkedFilter; labelKey: TranslationKey }[] = [
     { key: "all", labelKey: "administrative-operations.responsible.filter.all" },
     { key: "linked", labelKey: "administrative-operations.responsible.filter.linked" },
@@ -196,7 +202,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
         </div>
       ) : (
         <div className="d-flex flex-column gap-2">
-          {list.map((item) => {
+          {pageItems.map((item) => {
             const name = item.user.profile.fullName || item.user.userName;
             return (
               <Card
@@ -250,6 +256,8 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
           ) : null}
         </div>
       )}
+
+      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
       <Modal show={linkModalOpen} onHide={() => setLinkModalOpen(false)} centered>
         <Modal.Header closeButton>

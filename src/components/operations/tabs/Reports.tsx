@@ -1,7 +1,11 @@
 import { Badge, Table } from "react-bootstrap";
 
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
+import { ListPagination } from "@/components/ui/list-pagination";
+import { usePagination } from "@/hooks/usePagination";
 import { useLocale, useT } from "@/lib/ui-prefs";
+
+const PAGE_SIZE = 10;
 
 // MOCK — SPEC-07-07 (§8): aba UI-only, sem endpoint no Core (legado também
 // era mock). Array local, nunca uma query — não passa por fetch/hook Orval.
@@ -45,6 +49,7 @@ const MOCK_REPORTS: MockOperationReport[] = [
 export function Reports({ operationId: _operationId }: { operationId: string }) {
   const t = useT();
   const locale = useLocale();
+  const { page, setPage, totalPages, pageItems } = usePagination(MOCK_REPORTS, PAGE_SIZE);
 
   return (
     <div>
@@ -70,7 +75,7 @@ export function Reports({ operationId: _operationId }: { operationId: string }) 
               </td>
             </tr>
           ) : (
-            MOCK_REPORTS.map((report) => (
+            pageItems.map((report) => (
               <tr key={report.id}>
                 <td>{report.type}</td>
                 <td>{new Date(report.generatedAt).toLocaleDateString(locale)}</td>
@@ -98,6 +103,7 @@ export function Reports({ operationId: _operationId }: { operationId: string }) 
           )}
         </tbody>
       </Table>
+      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }
