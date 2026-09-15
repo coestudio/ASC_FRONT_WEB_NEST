@@ -17,6 +17,7 @@ import ptBRAuth from "./dictionaries/pt-BR/auth.json";
 import ptBRClient from "./dictionaries/pt-BR/client.json";
 import ptBRCommon from "./dictionaries/pt-BR/common.json";
 import ptBRCrud from "./dictionaries/pt-BR/crud.json";
+import ptBRFilePreview from "./dictionaries/pt-BR/filePreview.json";
 import ptBRHome from "./dictionaries/pt-BR/home.json";
 import ptBRNavigation from "./dictionaries/pt-BR/navigation.json";
 import ptBROperational from "./dictionaries/pt-BR/operational.json";
@@ -30,6 +31,11 @@ const ptBR = {
   auth: ptBRAuth,
   access: ptBRAccess,
   crud: ptBRCrud,
+  // Namespace do `FilePreviewModal` (SPEC-20) — componente genérico
+  // compartilhado (`src/components/ui/file-preview-modal.tsx`), não
+  // aninhado em `common.json` nem em `administrative-operations` porque
+  // não é específico de uma tela.
+  filePreview: ptBRFilePreview,
   // Chave com hífen (mesmo nome do arquivo, `administrative-registry.json`,
   // SPEC-04 §10) — `buildLocale` abaixo deriva o namespace do nome do
   // arquivo verbatim, então o nome da chave aqui precisa bater com o nome

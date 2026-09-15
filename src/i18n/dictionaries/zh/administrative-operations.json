@@ -264,6 +264,7 @@
     "colActions": "操作",
     "fileLink": "打开文件",
     "download": "下载文件",
+    "preview": "预览文件",
     "form": {
       "title": "标题",
       "type": "类型",

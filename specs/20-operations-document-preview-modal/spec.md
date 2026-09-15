@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-20
 - **Nome:** operations-document-preview-modal
-- **Status:** APPROVED
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho), aprovado pelo usuário
   (`APROVAR SPEC-20` recebido depois de decidir a Opção C do
   `[NEEDS_DECISION]` de §6 — spec completa, incluindo imagem/PDF/fallback)
@@ -494,10 +494,19 @@ PPTX/fallback, botão na aba Documentos).
 
 ---
 
-**Status:** `APPROVED` — usuário decidiu o `[NEEDS_DECISION]` de §6 (Opção
-C: `mammoth` + `xlsx`, PPTX no fallback §6.3) e aprovou a SPEC por inteiro
-(`APROVAR SPEC-20`, imagem/PDF/DOCX/XLSX/fallback todos juntos). Pronta
-pra virar `IN_PROGRESS` quando a implementação começar — ver §12 pra
-branch (ainda a confirmar/criar) e §10 pro primeiro passo prático
-(`bun add mammoth xlsx`, revisar se a trava de 24h dispara antes de
-seguir pro resto dos arquivos).
+**Status:** `IMPLEMENTED` — implementado direto em `main` (mesmo precedente
+de SPEC-19/SPEC-20, sem branch própria). `bun add mammoth xlsx` não
+acionou a trava de 24h do `bunfig.toml` (nenhuma edição necessária lá).
+`FilePreviewModal` criado em `src/components/ui/file-preview-modal.tsx`;
+botão "visualizar" adicionado na coluna de ações de
+`src/components/operations/tabs/Documents.tsx`; namespace `filePreview`
+criado nas 4 pastas de locale; chave `documents.preview` adicionada em
+`administrative-operations.json` (4 locales). `bun run check` e
+`bun run lint` sem novos erros/warnings introduzidos (os 3 erros
+pré-existentes de `src/lib/session.server.ts` não têm relação com esta
+SPEC). Bundling de `mammoth`/`xlsx` confirmado via Vite dev server
+(dependências pré-otimizadas servidas com 200, sem erro no log). Teste
+manual ponta-a-ponta (login → aba Documentos → abrir preview de cada
+tipo de arquivo) **não foi executado** neste ambiente por falta de
+credenciais/sessão contra o Core de dev — fica como verificação
+pendente para quem revisar/usar a feature.

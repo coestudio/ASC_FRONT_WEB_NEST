@@ -1,0 +1,10 @@
+{
+  "titleFallback": "File",
+  "error": "Could not load this file's content.",
+  "unavailable": {
+    "message": "No preview available for this file type.",
+    "noUrl": "This file is not available.",
+    "open": "Open in new tab",
+    "download": "Download file"
+  }
+}

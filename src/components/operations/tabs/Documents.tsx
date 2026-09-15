@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge, Button, Form, Modal, Spinner, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
+import { FilePreviewModal } from "@/components/ui/file-preview-modal";
 import { toast } from "react-toastify";
 import type { ZodType } from "zod";
 import { z } from "zod";
@@ -81,6 +82,7 @@ export function Documents({ operationId }: { operationId: string }) {
   const [page, setPage] = useState(1);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editing, setEditing] = useState<DocumentDTO | null>(null);
+  const [previewing, setPreviewing] = useState<DocumentDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdDocumentQueryOptions(operationId, {
     Offset: (page - 1) * PAGE_SIZE,
@@ -205,6 +207,15 @@ export function Documents({ operationId }: { operationId: string }) {
                   <td>{new Date(item.createdAt).toLocaleDateString(locale)}</td>
                   <td>
                     <div className="d-flex gap-1">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => setPreviewing(item)}
+                        title={t("administrative-operations.documents.preview")}
+                        aria-label={t("administrative-operations.documents.preview")}
+                      >
+                        <i className="bi bi-eye" aria-hidden />
+                      </button>
                       {/* `download` só força o nome de arquivo quando o link
                           é mesma origem — em storage externo (S3/blob) o
                           browser ainda assim baixa em vez de navegar, contanto
@@ -238,6 +249,12 @@ export function Documents({ operationId }: { operationId: string }) {
       )}
 
       <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+
+      <FilePreviewModal
+        show={!!previewing}
+        onHide={() => setPreviewing(null)}
+        file={previewing?.file ?? null}
+      />
 
       <Modal show={createModalOpen} onHide={() => setCreateModalOpen(false)} centered>
         <Modal.Header closeButton>

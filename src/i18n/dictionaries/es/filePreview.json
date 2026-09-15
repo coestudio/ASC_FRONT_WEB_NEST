@@ -1,0 +1,10 @@
+{
+  "titleFallback": "Archivo",
+  "error": "No fue posible cargar el contenido de este archivo.",
+  "unavailable": {
+    "message": "No hay vista previa disponible para este tipo de archivo.",
+    "noUrl": "Este archivo no está disponible.",
+    "open": "Abrir en una pestaña nueva",
+    "download": "Descargar archivo"
+  }
+}
