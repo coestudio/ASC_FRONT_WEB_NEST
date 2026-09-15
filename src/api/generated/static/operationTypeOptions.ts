@@ -8,7 +8,7 @@ export const operationTypeOptions: EnumOptionDTO[] = [
     "value": 1,
     "key": "Stuffing",
     "name": {
-      "pt-BR": "Ova de Contêiner",
+      "pt-BR": "Estufagem",
       "en": "Container Stuffing",
       "es": "Llenado de Contenedor",
       "zh": "集装箱装箱"

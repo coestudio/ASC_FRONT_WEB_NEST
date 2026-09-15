@@ -276,7 +276,7 @@ export const putApiProfileAddressBodyCountryMax = 2;
 export const putApiProfileAddressBodyCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiProfileAddressBodyPostalCodeMax = 10;
 
-export const putApiProfileAddressBodyStateMax = -1;
+export const putApiProfileAddressBodyStateMax = 2;
 
 export const putApiProfileAddressBodyNeighborhoodMax = 100;
 

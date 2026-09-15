@@ -18,7 +18,7 @@ export interface AddressCreate {
      */
   postalCode: string | null;
   /**
-     * @maxLength -1
+     * @maxLength 2
      * @nullable
      */
   state?: string | null;

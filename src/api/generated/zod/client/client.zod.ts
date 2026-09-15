@@ -47,7 +47,7 @@ export const postApiClientBodyAddressCountryMax = 2;
 export const postApiClientBodyAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const postApiClientBodyAddressPostalCodeMax = 10;
 
-export const postApiClientBodyAddressStateMax = -1;
+export const postApiClientBodyAddressStateMax = 2;
 
 export const postApiClientBodyAddressNeighborhoodMax = 100;
 
@@ -275,7 +275,7 @@ export const putApiClientIdBodyAddressCountryMax = 2;
 export const putApiClientIdBodyAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
 export const putApiClientIdBodyAddressPostalCodeMax = 10;
 
-export const putApiClientIdBodyAddressStateMax = -1;
+export const putApiClientIdBodyAddressStateMax = 2;
 
 export const putApiClientIdBodyAddressNeighborhoodMax = 100;
 
