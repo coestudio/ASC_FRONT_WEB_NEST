@@ -242,7 +242,7 @@ export function Containers({ operationId }: { operationId: string }) {
                     <div className="d-flex gap-2">
                       <button
                         type="button"
-                        className="btn btn-sm btn-outline-secondary"
+                        className="btn btn-sm btn-outline-primary"
                         onClick={() => setEditing(item)}
                       >
                         <i className="bi bi-pencil" aria-hidden />
@@ -286,7 +286,7 @@ export function Containers({ operationId }: { operationId: string }) {
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="outline-secondary" onClick={() => setLinkModalOpen(false)}>
+            <Button variant="outline-primary" onClick={() => setLinkModalOpen(false)}>
               {t("crud.recordModal.cancel")}
             </Button>
             <Button type="submit" variant="primary" disabled={linkForm.formState.isSubmitting}>
@@ -324,7 +324,7 @@ export function Containers({ operationId }: { operationId: string }) {
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="outline-secondary" onClick={() => setEditing(null)}>
+              <Button variant="outline-primary" onClick={() => setEditing(null)}>
                 {t("crud.recordModal.cancel")}
               </Button>
               <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting}>

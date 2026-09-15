@@ -44,7 +44,7 @@ function InputFileSingle<T extends FieldValues>({
               <div className="d-flex align-items-center gap-2">
                 <Button
                   type="button"
-                  variant="outline-secondary"
+                  variant="outline-primary"
                   size="sm"
                   onClick={() => inputRef.current?.click()}
                 >

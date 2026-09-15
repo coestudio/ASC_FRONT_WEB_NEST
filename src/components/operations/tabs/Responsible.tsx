@@ -155,7 +155,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
                 key={item.key}
                 type="button"
                 size="sm"
-                variant={linkedFilter === item.key ? "primary" : "outline-secondary"}
+                variant={linkedFilter === item.key ? "primary" : "outline-primary"}
                 onClick={() => setLinkedFilter(item.key)}
                 aria-pressed={linkedFilter === item.key}
               >
@@ -268,7 +268,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="outline-secondary" onClick={() => setLinkModalOpen(false)}>
+            <Button variant="outline-primary" onClick={() => setLinkModalOpen(false)}>
               {t("crud.recordModal.cancel")}
             </Button>
           </Modal.Footer>

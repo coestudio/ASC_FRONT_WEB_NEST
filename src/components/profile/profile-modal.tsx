@@ -132,7 +132,7 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-secondary" onClick={onClose}>
+        <Button variant="outline-primary" onClick={onClose}>
           {t("shell.profileModal.cancel")}
         </Button>
       </Modal.Footer>

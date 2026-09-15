@@ -211,7 +211,7 @@ export function Documents({ operationId }: { operationId: string }) {
                           que o servidor não force Content-Disposition:inline;
                           `target="_blank"` cobre o caso de acabar abrindo. */}
                       <a
-                        className={`btn btn-sm btn-outline-secondary${item.file.url ? "" : " disabled"}`}
+                        className={`btn btn-sm btn-outline-primary${item.file.url ? "" : " disabled"}`}
                         href={item.file.url}
                         download={item.file.name}
                         target="_blank"
@@ -223,7 +223,7 @@ export function Documents({ operationId }: { operationId: string }) {
                       </a>
                       <button
                         type="button"
-                        className="btn btn-sm btn-outline-secondary"
+                        className="btn btn-sm btn-outline-primary"
                         onClick={() => setEditing(item)}
                       >
                         <i className="bi bi-pencil" aria-hidden />
@@ -270,7 +270,7 @@ export function Documents({ operationId }: { operationId: string }) {
             />
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="outline-secondary" onClick={() => setCreateModalOpen(false)}>
+            <Button variant="outline-primary" onClick={() => setCreateModalOpen(false)}>
               {t("crud.recordModal.cancel")}
             </Button>
             <Button type="submit" variant="primary" disabled={createForm.formState.isSubmitting}>
@@ -310,7 +310,7 @@ export function Documents({ operationId }: { operationId: string }) {
               />
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="outline-secondary" onClick={() => setEditing(null)}>
+              <Button variant="outline-primary" onClick={() => setEditing(null)}>
                 {t("crud.recordModal.cancel")}
               </Button>
               <Button type="submit" variant="primary" disabled={updateForm.formState.isSubmitting}>

@@ -42,7 +42,7 @@ function InputFileMulti<T extends FieldValues>({
               <div>
                 <Button
                   type="button"
-                  variant="outline-secondary"
+                  variant="outline-primary"
                   size="sm"
                   onClick={() => inputRef.current?.click()}
                 >

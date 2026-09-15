@@ -68,7 +68,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
           >
             Try again
           </button>
-          <a href="/" className="btn btn-outline-secondary btn-sm">
+          <a href="/" className="btn btn-outline-primary btn-sm">
             Go home
           </a>
         </div>

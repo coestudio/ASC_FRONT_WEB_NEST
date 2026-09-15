@@ -124,7 +124,7 @@ export function CrudRecordModal<T extends FieldValues>({
           {extraContent}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={onClose}>
+          <Button variant="outline-primary" onClick={onClose}>
             {t(readOnly ? "crud.recordModal.close" : "crud.recordModal.cancel")}
           </Button>
           {!readOnly ? (

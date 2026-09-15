@@ -215,7 +215,7 @@ export function Romaneio({ operationId }: { operationId: string }) {
         <div className="d-flex gap-2">
           <button
             type="button"
-            className="btn btn-sm btn-outline-secondary"
+            className="btn btn-sm btn-outline-primary"
             onClick={() => setModal({ mode: "view", record: r })}
           >
             <i className="bi bi-eye" aria-hidden />
@@ -483,7 +483,7 @@ function ImportRomaneioModal({
             </Row>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="outline-secondary" onClick={onClose}>
+            <Button variant="outline-primary" onClick={onClose}>
               {t("administrative-operations.romaneio.import.cancel")}
             </Button>
             <Button type="submit" variant="primary" disabled={!file || analyzeMutation.isPending}>
@@ -523,10 +523,10 @@ function ImportRomaneioModal({
             <ImportDuplicatedSection rows={analysis!.duplicated ?? []} />
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="outline-secondary" onClick={() => setAnalysis(null)}>
+            <Button variant="outline-primary" onClick={() => setAnalysis(null)}>
               {t("administrative-operations.romaneio.import.back")}
             </Button>
-            <Button variant="outline-secondary" onClick={onClose}>
+            <Button variant="outline-primary" onClick={onClose}>
               {t("administrative-operations.romaneio.import.cancel")}
             </Button>
             <Button variant="primary" onClick={handleApply} disabled={applyMutation.isPending}>

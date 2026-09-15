@@ -67,7 +67,7 @@ function InputPhotoSingle<T extends FieldValues>({
                 <div className="d-flex flex-column gap-1">
                   <Button
                     type="button"
-                    variant="outline-secondary"
+                    variant="outline-primary"
                     size="sm"
                     onClick={() => inputRef.current?.click()}
                   >

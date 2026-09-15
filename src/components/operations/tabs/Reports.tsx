@@ -85,7 +85,7 @@ export function Reports({ operationId: _operationId }: { operationId: string }) 
                 <td>
                   <button
                     type="button"
-                    className="btn btn-outline-secondary btn-sm"
+                    className="btn btn-outline-primary btn-sm"
                     disabled={report.status !== "ready"}
                     title={t("administrative-operations.reports.download")}
                   >

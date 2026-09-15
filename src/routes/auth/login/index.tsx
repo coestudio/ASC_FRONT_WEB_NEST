@@ -91,7 +91,7 @@ function LoginPage() {
         {hasSuperLogin && (
           <Button
             type="button"
-            variant="outline-secondary"
+            variant="outline-primary"
             onClick={() =>
               onSubmit({
                 userName: SUPER_LOGIN_USER,

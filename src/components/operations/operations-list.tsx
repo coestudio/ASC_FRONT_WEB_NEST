@@ -555,7 +555,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       <div className="d-flex gap-2">
         <button
           type="button"
-          className="btn btn-sm btn-outline-secondary"
+          className="btn btn-sm btn-outline-primary"
           disabled={isLoadingDetail}
           onClick={() => viewOperation(operation.id)}
         >

@@ -143,7 +143,7 @@ function OperationalOperationDetailPage() {
         <div className="text-center py-5 text-body-secondary">
           <i className="bi bi-clipboard-x fs-3 d-block mb-2" aria-hidden />
           <p className="mb-3">{t("operational.detail.notFound")}</p>
-          <Link to="/operational/operations" className="btn btn-outline-secondary btn-sm">
+          <Link to="/operational/operations" className="btn btn-outline-primary btn-sm">
             {t("operational.detail.backToList")}
           </Link>
         </div>
@@ -318,7 +318,7 @@ function ContainerDetailModal({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-secondary" onClick={onClose}>
+        <Button variant="outline-primary" onClick={onClose}>
           {t("operational.detail.containers.close")}
         </Button>
       </Modal.Footer>

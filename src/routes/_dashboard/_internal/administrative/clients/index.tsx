@@ -305,7 +305,7 @@ function ClientsPage() {
           <div className="d-flex gap-2">
             <button
               type="button"
-              className="btn btn-sm btn-outline-secondary"
+              className="btn btn-sm btn-outline-primary"
               disabled={isLoadingDetail}
               onClick={() => setDetailRequest({ id: c.id, mode: "view" })}
             >
