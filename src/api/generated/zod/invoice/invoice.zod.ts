@@ -180,6 +180,7 @@ export const postApiOperationOperationIdInvoiceBodyObservationMax = 500;
 
 
 export const PostApiOperationOperationIdInvoiceBody = zod.object({
+  "Files": zod.array(zod.instanceof(Blob)).optional(),
   "Number": zod.string().max(postApiOperationOperationIdInvoiceBodyNumberMax).optional(),
   "IssuedOn": zod.iso.date().optional(),
   "EntryDate": zod.iso.date().optional(),
@@ -193,8 +194,7 @@ export const PostApiOperationOperationIdInvoiceBody = zod.object({
   "IssuerCnpj": zod.string().max(postApiOperationOperationIdInvoiceBodyIssuerCnpjMax).optional(),
   "IssuerUf": zod.string().min(postApiOperationOperationIdInvoiceBodyIssuerUfMin).max(postApiOperationOperationIdInvoiceBodyIssuerUfMax).optional(),
   "AccessKey": zod.string().min(postApiOperationOperationIdInvoiceBodyAccessKeyMin).max(postApiOperationOperationIdInvoiceBodyAccessKeyMax).optional(),
-  "Observation": zod.string().max(postApiOperationOperationIdInvoiceBodyObservationMax).optional(),
-  "Files": zod.array(zod.string()).optional()
+  "Observation": zod.string().max(postApiOperationOperationIdInvoiceBodyObservationMax).optional()
 })
 
 export const postApiOperationOperationIdInvoiceResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');

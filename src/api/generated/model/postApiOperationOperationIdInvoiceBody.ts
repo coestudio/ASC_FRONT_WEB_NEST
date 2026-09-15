@@ -6,6 +6,7 @@
  */
 
 export type PostApiOperationOperationIdInvoiceBody = {
+  Files?: (Blob | File)[];
   /** @maxLength 50 */
   Number?: string;
   IssuedOn?: string;
@@ -52,5 +53,4 @@ export type PostApiOperationOperationIdInvoiceBody = {
   AccessKey?: string;
   /** @maxLength 500 */
   Observation?: string;
-  Files?: string[];
 };

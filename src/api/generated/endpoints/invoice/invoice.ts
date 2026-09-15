@@ -497,57 +497,57 @@ export const postApiOperationOperationIdInvoice = (
  signal?: AbortSignal
 ) => {
 
-      const formUrlEncoded = new URLSearchParams();
+      const formData = new FormData();
+if(postApiOperationOperationIdInvoiceBody.Files !== undefined) {
+ postApiOperationOperationIdInvoiceBody.Files.forEach(value => formData.append(`Files`, value));
+ }
 if(postApiOperationOperationIdInvoiceBody.Number !== undefined) {
- formUrlEncoded.append(`Number`, postApiOperationOperationIdInvoiceBody.Number);
+ formData.append(`Number`, postApiOperationOperationIdInvoiceBody.Number);
  }
 if(postApiOperationOperationIdInvoiceBody.IssuedOn !== undefined) {
- formUrlEncoded.append(`IssuedOn`, postApiOperationOperationIdInvoiceBody.IssuedOn);
+ formData.append(`IssuedOn`, postApiOperationOperationIdInvoiceBody.IssuedOn);
  }
 if(postApiOperationOperationIdInvoiceBody.EntryDate !== undefined) {
- formUrlEncoded.append(`EntryDate`, postApiOperationOperationIdInvoiceBody.EntryDate);
+ formData.append(`EntryDate`, postApiOperationOperationIdInvoiceBody.EntryDate);
  }
 if(postApiOperationOperationIdInvoiceBody.ExitDate !== undefined) {
- formUrlEncoded.append(`ExitDate`, postApiOperationOperationIdInvoiceBody.ExitDate);
+ formData.append(`ExitDate`, postApiOperationOperationIdInvoiceBody.ExitDate);
  }
 if(postApiOperationOperationIdInvoiceBody.ExitTime !== undefined) {
- formUrlEncoded.append(`ExitTime`, postApiOperationOperationIdInvoiceBody.ExitTime);
+ formData.append(`ExitTime`, postApiOperationOperationIdInvoiceBody.ExitTime);
  }
 if(postApiOperationOperationIdInvoiceBody.DeclaredItemsCount !== undefined) {
- formUrlEncoded.append(`DeclaredItemsCount`, postApiOperationOperationIdInvoiceBody.DeclaredItemsCount.toString())
+ formData.append(`DeclaredItemsCount`, postApiOperationOperationIdInvoiceBody.DeclaredItemsCount.toString())
  }
 if(postApiOperationOperationIdInvoiceBody.DeclaredGrossWeight !== undefined) {
- formUrlEncoded.append(`DeclaredGrossWeight`, postApiOperationOperationIdInvoiceBody.DeclaredGrossWeight.toString())
+ formData.append(`DeclaredGrossWeight`, postApiOperationOperationIdInvoiceBody.DeclaredGrossWeight.toString())
  }
 if(postApiOperationOperationIdInvoiceBody.DeclaredNetWeight !== undefined) {
- formUrlEncoded.append(`DeclaredNetWeight`, postApiOperationOperationIdInvoiceBody.DeclaredNetWeight.toString())
+ formData.append(`DeclaredNetWeight`, postApiOperationOperationIdInvoiceBody.DeclaredNetWeight.toString())
  }
 if(postApiOperationOperationIdInvoiceBody.TotalInvoiceValue !== undefined) {
- formUrlEncoded.append(`TotalInvoiceValue`, postApiOperationOperationIdInvoiceBody.TotalInvoiceValue.toString())
+ formData.append(`TotalInvoiceValue`, postApiOperationOperationIdInvoiceBody.TotalInvoiceValue.toString())
  }
 if(postApiOperationOperationIdInvoiceBody.TotalProductsValue !== undefined) {
- formUrlEncoded.append(`TotalProductsValue`, postApiOperationOperationIdInvoiceBody.TotalProductsValue.toString())
+ formData.append(`TotalProductsValue`, postApiOperationOperationIdInvoiceBody.TotalProductsValue.toString())
  }
 if(postApiOperationOperationIdInvoiceBody.IssuerCnpj !== undefined) {
- formUrlEncoded.append(`IssuerCnpj`, postApiOperationOperationIdInvoiceBody.IssuerCnpj);
+ formData.append(`IssuerCnpj`, postApiOperationOperationIdInvoiceBody.IssuerCnpj);
  }
 if(postApiOperationOperationIdInvoiceBody.IssuerUf !== undefined) {
- formUrlEncoded.append(`IssuerUf`, postApiOperationOperationIdInvoiceBody.IssuerUf);
+ formData.append(`IssuerUf`, postApiOperationOperationIdInvoiceBody.IssuerUf);
  }
 if(postApiOperationOperationIdInvoiceBody.AccessKey !== undefined) {
- formUrlEncoded.append(`AccessKey`, postApiOperationOperationIdInvoiceBody.AccessKey);
+ formData.append(`AccessKey`, postApiOperationOperationIdInvoiceBody.AccessKey);
  }
 if(postApiOperationOperationIdInvoiceBody.Observation !== undefined) {
- formUrlEncoded.append(`Observation`, postApiOperationOperationIdInvoiceBody.Observation);
- }
-if(postApiOperationOperationIdInvoiceBody.Files !== undefined) {
- postApiOperationOperationIdInvoiceBody.Files.forEach(value => formUrlEncoded.append(`Files`, value));
+ formData.append(`Observation`, postApiOperationOperationIdInvoiceBody.Observation);
  }
 
       return apiRequest<InvoiceDTO>(
       {url: `/api/operation/${operationId}/invoice`, method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded', },
-       data: formUrlEncoded, signal
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
     },
       );
     }
