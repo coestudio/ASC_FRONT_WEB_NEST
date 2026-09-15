@@ -249,6 +249,37 @@
       "photoUploaded": "照片上传成功。",
       "photoDeleted": "照片删除成功。",
       "error": "无法完成该操作，请重试。"
+    },
+    "stuffing": {
+      "actionIdentified": "装箱指定包件",
+      "actionQuantity": "按数量装箱",
+      "actionViewCargo": "查看已装箱包件",
+      "identifiedTitle": "装箱指定包件 — {identifier}",
+      "quantityTitle": "按数量装箱 — {identifier}",
+      "submit": "装箱",
+      "form": {
+        "invoice": "发票",
+        "romaneio": "分捡单包件",
+        "quantity": "数量"
+      },
+      "resultIdentifiedTitle": "已装箱 {count} 个包件：标识如下。",
+      "resultManualTitle": "已装箱 {count} 个匿名单元（平均毛重：{weight} 千克）。",
+      "cargoUnitsTitle": "已装箱包件 — {identifier}",
+      "cargoUnitsEmpty": "此集装箱尚无已装箱单元。",
+      "colStatus": "状态",
+      "colIdentified": "已识别",
+      "colGrossWeight": "毛重（千克）",
+      "colActions": "操作",
+      "yes": "是",
+      "no": "否",
+      "cancelTitle": "取消包件",
+      "cancelReason": "取消原因",
+      "cancelConfirm": "确认取消",
+      "toast": {
+        "identifiedSuccess": "包件装箱成功。",
+        "quantitySuccess": "装箱完成成功。",
+        "canceled": "包件已取消。"
+      }
     }
   },
   "documents": {

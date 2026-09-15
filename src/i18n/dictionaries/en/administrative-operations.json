@@ -249,6 +249,37 @@
       "photoUploaded": "Photos uploaded successfully.",
       "photoDeleted": "Photo removed successfully.",
       "error": "Could not complete the action. Please try again."
+    },
+    "stuffing": {
+      "actionIdentified": "Stuff specific bale",
+      "actionQuantity": "Stuff by quantity",
+      "actionViewCargo": "View stuffed cargo",
+      "identifiedTitle": "Stuff specific bale — {identifier}",
+      "quantityTitle": "Stuff by quantity — {identifier}",
+      "submit": "Stuff",
+      "form": {
+        "invoice": "Invoice",
+        "romaneio": "Bale (romaneio)",
+        "quantity": "Quantity"
+      },
+      "resultIdentifiedTitle": "{count} bale(s) stuffed: identifiers below.",
+      "resultManualTitle": "{count} anonymous unit(s) stuffed (average gross weight: {weight} kg).",
+      "cargoUnitsTitle": "Stuffed cargo — {identifier}",
+      "cargoUnitsEmpty": "No cargo unit stuffed in this container yet.",
+      "colStatus": "Status",
+      "colIdentified": "Identified",
+      "colGrossWeight": "Gross weight (kg)",
+      "colActions": "Actions",
+      "yes": "Yes",
+      "no": "No",
+      "cancelTitle": "Cancel cargo unit",
+      "cancelReason": "Cancellation reason",
+      "cancelConfirm": "Confirm cancellation",
+      "toast": {
+        "identifiedSuccess": "Bale stuffed successfully.",
+        "quantitySuccess": "Stuffing completed successfully.",
+        "canceled": "Cargo unit canceled successfully."
+      }
     }
   },
   "documents": {

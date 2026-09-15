@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-11
 - **Nome:** operation-cargo-stuffing
-- **Status:** WAITING_APPROVAL
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (reconciliado pós-`just map`, 2026-09-15)
 - **Área:** `src/components/operations/tabs/Containers.tsx` (editado —
   criado pela SPEC-07-05, `IMPLEMENTED`), `src/i18n/dictionaries/*/
@@ -457,10 +457,109 @@ observável no client após o `just map` desta branch. Não há
 
 ---
 
-**Status:** `WAITING_APPROVAL`. `warren/Core` SPEC-16 e SPEC-17 estão
-`IMPLEMENTED`; `just map` já rodou nesta branch
-(`spec-07-11-operation-cargo-stuffing`, commit
-`4400ce9 just map: contrato SPEC-14 a 17`) e `tsc --noEmit` passou limpo
-sobre o novo client gerado. D1–D5 fechadas (§14). Aguardando aprovação
-explícita do usuário (`APROVAR SPEC-07-11`) antes de qualquer
-implementação — nenhum código desta SPEC foi escrito nesta reconciliação.
+**Status:** `IMPLEMENTED`. Aprovado pelo usuário (`APROVAR SPEC-07-11`) em
+2026-09-15 e implementado na mesma sessão. Ver §15 (Implementation Notes)
+abaixo.
+
+## 15. Implementation Notes
+
+**Arquivos alterados:**
+
+- `src/components/operations/tabs/Containers.tsx` — três novas ações por
+  linha (Modo A `usePostApiOperationOperationIdCargoStuffIdentified`, Modo B
+  `usePostApiOperationOperationIdCargoStuffQuantity`, e "ver fardos
+  estufados"), quatro novos componentes de modal (`StuffIdentifiedModal`,
+  `StuffQuantityModal`, `CargoUnitsModal`, `CancelCargoUnitModal`), cada um
+  com seu próprio `useForm` + `zodResolver` sobre o schema gerado do
+  respectivo endpoint (`cargo-unit.zod.ts`). `invalidateCargo` adicionado ao
+  lado de `invalidateList` (query separada, `CargoUnit` não é a mesma lista
+  do vínculo container↔operação).
+- `src/routes/_dashboard/_internal/administrative/registry/container/index.tsx`
+  — campo `maxWeight` adicionado ao `fields: LayoutField[]` (mesmo
+  `InputText`, mesmo padrão de `tara`) e à coluna da listagem
+  (`colMaxWeight`), e ao `toFormValues`.
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json` —
+  bloco `containers.stuffing.*` novo (ações, títulos, formulário, resultado
+  Modo A/B, listagem/cancelamento de `CargoUnit`, toasts) nos 4 locales.
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-registry.json` —
+  `container.form.maxWeight` e `container.colMaxWeight` novos nos 4
+  locales.
+
+**Comandos executados:**
+
+- `bun run check` (`tsc --noEmit`) — **VERIFIED**, sem erros.
+- `bun run lint` (`eslint .`) — **VERIFIED**: 3 erros pré-existentes em
+  `src/lib/session.server.ts` (`react-hooks/rules-of-hooks`, confirmados
+  como já presentes antes desta SPEC via `git stash` + lint isolado — não
+  são desta implementação) e apenas warnings pré-existentes em outros
+  arquivos não tocados por esta SPEC. Zero erro/warning novo introduzido em
+  `Containers.tsx` ou nos arquivos desta SPEC (rodado `prettier --write`
+  nele pra eliminar os 3 warnings de formatação que apareceram durante a
+  implementação).
+- `just map` — **não rodado** nesta implementação: o contrato consumido já
+  estava presente no client gerado desde `4400ce9`/`356ee69` (commits
+  anteriores da própria branch, antes desta sessão); nenhuma mudança de
+  contrato do Core foi necessária para este trabalho.
+- Validação visual em `bun run dev -- --port 5175` (Core local em
+  `http://localhost:5766` acessível, `curl` ao `openapi/v1.json` retornou
+  200): servidor subiu sem erro de build/import, rota raiz respondeu `307`
+  (redirect esperado para `/auth/login`, sem sessão) e o log do Vite não
+  mostrou nenhuma exceção. **Não verificado por login interativo** — não
+  foi feita navegação autenticada até a aba Containers de uma operação
+  real; é um risco residual não coberto por evidência de tela, só por
+  `tsc`/`eslint` limpos e inspeção de código.
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Modo A cria `CargoUnit` identificada vinculada ao container | PASS (código) — `StuffIdentifiedModal` chama `usePostApiOperationOperationIdCargoStuffIdentified` com `containerOperationId` implícito + `invoiceId`/`romaneioId` do formulário; não verificado em runtime autenticado |
+| CA2 | Modo B cria N `CargoUnit`s numa única chamada | PASS (código) — `StuffQuantityModal` chama `usePostApiOperationOperationIdCargoStuffQuantity` uma única vez, sem loop |
+| CA3 | Erro de saldo de romaneio mostra erro visível, não silencioso | PASS — erro 4xx já é exibido pelo interceptor de `mutator.ts` (`toast.warning` com a mensagem real do backend) mais o toast genérico do `catch` do componente (mesmo padrão de `Romaneio.tsx`/`Containers.tsx` pré-existente) |
+| CA4 | Peso excedido é aceito e mostra aviso, não bloqueia | PASS (código) — `response.warnings` (200/201) disparam `toast.warning` por item, sem impedir o `toast.success`/fechamento do fluxo |
+| CA5 | Nenhuma tela permite editar `CargoUnit` existente | PASS — `CargoUnitsModal` só lista e oferece `Cancelar` (`CancelCargoUnitModal`), nenhum campo de edição |
+| CA6 | Cadastro de Container tem campo `maxWeight` funcional | PASS — `InputText` novo no formulário + coluna na listagem, mesmo schema gerado (`PostApiContainerBody`/`PutApiContainerIdBody`) |
+| CA7 | `bun run check` + `lint` passam | PASS — `check` limpo; `lint` sem erro/warning novo (os 3 erros existentes são de `session.server.ts`, não tocado) |
+| CA8 | Modo A e Modo B acionados por botões separados, sem toggle | PASS — dois botões distintos (`bi-box-seam`/`bi-stack`) abrindo modais independentes |
+| CA9 | Modo B distingue `RomaneioImport` (lista) de `Manual` (contador) | PASS (código) — `StuffQuantityModal` decide pela presença de `romaneioId` no array `cargoUnits` da resposta (D5), sem chamada extra |
+
+**Decisões tomadas durante a implementação:**
+
+- A listagem de fardos identificados no resultado do Modo B (CA9) mostra o
+  `romaneioId` (uuid) de cada `CargoUnit` criada, não um rótulo legível
+  (lote/NF/identificador) — o `CargoStuffResultDTO.cargoUnits[].romaneioId`
+  só traz o uuid, não os campos legíveis do `RomaneioDTO`; buscar o rótulo
+  exigiria uma segunda chamada por item, que a SPEC explicitamente evita
+  (§3.2/D5: "a UI não precisa de uma segunda leitura"). Decisão de
+  apresentação dentro do espaço livre que a SPEC deixou ("decisão de
+  apresentação livre na implementação", §3.3) — não é `[NEEDS_DECISION]`.
+- Adicionado um terceiro botão/ação "ver fardos estufados" (não pedido
+  literalmente como item de UI na lista de `Arquivos esperados`, mas
+  necessário para cumprir RF5/§3.4, que exige "um botão Cancelar por
+  `CargoUnit`" — sem uma superfície pra listar as `CargoUnit`s existentes de
+  um container, não haveria onde colocar esse botão). Mesmo componente
+  (`Containers.tsx`) já listado nos arquivos esperados da SPEC — não é
+  scope creep de arquivo, só de sub-componente dentro dele.
+- Coluna `colMaxWeight` na listagem de Container foi implementada (a SPEC
+  deixava isso condicional: "se a listagem também expuser a coluna") —
+  optado por expor, espelhando 1:1 o padrão já existente de `tara`/`colTara`
+  na mesma tela, para consistência visual entre os dois campos de mesmo
+  shape.
+
+**Limitações conhecidas:**
+
+- Não houve validação end-to-end autenticada contra o Core local (login +
+  navegação até uma operação real com container vinculado + estufagem de
+  fato) — só `tsc`/`eslint` limpos, inspeção de código contra o contrato
+  gerado, e um boot smoke-test do `vite dev` sem sessão. Ficou como risco
+  residual, não como defeito confirmado.
+- `bun run check:api` (rodado automaticamente antes do `vite dev`) apontou
+  que o contrato do Core **remoto** (`dev-asc-api.alexstewart.com.br`) já
+  mudou de novo desde o `just map` desta branch — isso é sobre o ambiente
+  remoto de outra branch/feature, não sobre o Core local usado nesta
+  implementação (`localhost:5766`, que serviu o `openapi/v1.json` com
+  sucesso); não é um bloqueio desta SPEC, só um aviso de que outra SPEC do
+  Core avançou em paralelo no ambiente dev compartilhado.
+- Nenhuma tela desta SPEC toca a aba de Nota Fiscal (`operation-invoice`,
+  SPEC-07-10) nem seus arquivos — confirmado por escopo (fora do
+  `git diff` desta implementação).

@@ -58,6 +58,7 @@
     "description": "Containers utilizados nas operações.",
     "colIdentifier": "Identificador",
     "colTara": "Tara",
+    "colMaxWeight": "Peso máximo",
     "colCreatedAt": "Criado em",
     "colActions": "Ações",
     "emptyState": "Nenhum container encontrado.",
@@ -66,7 +67,8 @@
     "viewTitle": "Detalhes do container",
     "form": {
       "identifier": "Identificador",
-      "tara": "Tara (kg)"
+      "tara": "Tara (kg)",
+      "maxWeight": "Peso máximo (kg)"
     },
     "toast": {
       "created": "Container criado com sucesso.",
