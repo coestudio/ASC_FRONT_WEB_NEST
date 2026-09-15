@@ -189,6 +189,7 @@
       "romaneio": "Romaneo",
       "containers": "Contenedores",
       "documents": "Documentos",
+      "invoice": "Factura",
       "reports": "Informes",
       "responsible": "Responsables",
       "log": "Registro"
@@ -274,6 +275,51 @@
     "toast": {
       "created": "Documento creado con éxito.",
       "updated": "Documento actualizado con éxito.",
+      "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    }
+  },
+  "invoice": {
+    "new": "Nueva factura",
+    "newTitle": "Nueva factura",
+    "loadError": "No fue posible cargar las facturas de la operación.",
+    "empty": "Ninguna factura registrada para esta operación.",
+    "colNumber": "Número",
+    "colSource": "Origen",
+    "colStatus": "Estado",
+    "colDates": "Fechas",
+    "colValues": "Valores",
+    "colDocuments": "Documentos",
+    "colActions": "Acciones",
+    "entryDate": "Entrada",
+    "exitDate": "Salida",
+    "totalInvoiceValue": "Valor total de la factura",
+    "totalProductsValue": "Valor de los productos",
+    "documentFallbackName": "Archivo adjunto",
+    "form": {
+      "number": "Número",
+      "entryDate": "Fecha de entrada",
+      "exitDate": "Fecha de salida",
+      "exitTime": "Hora de salida",
+      "totalInvoiceValue": "Valor total de la factura",
+      "totalProductsValue": "Valor de los productos",
+      "observation": "Observaciones",
+      "files": "Archivos",
+      "filesRequiredHint": "Seleccione al menos 1 archivo para crear la factura."
+    },
+    "confirm": {
+      "action": "Confirmar",
+      "title": "Confirmar factura",
+      "noteLabel": "Observación (opcional)"
+    },
+    "cancel": {
+      "action": "Cancelar",
+      "title": "Cancelar factura",
+      "noteLabel": "Motivo de la cancelación (opcional)"
+    },
+    "toast": {
+      "created": "Factura creada con éxito.",
+      "confirmed": "Factura confirmada con éxito.",
+      "canceled": "Factura cancelada con éxito.",
       "error": "No fue posible completar la acción. Inténtelo de nuevo."
     }
   }

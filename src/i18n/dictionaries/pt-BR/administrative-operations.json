@@ -189,6 +189,7 @@
       "romaneio": "Romaneio",
       "containers": "Containers",
       "documents": "Documentos",
+      "invoice": "Nota Fiscal",
       "reports": "Relatórios",
       "responsible": "Responsáveis",
       "log": "Log"
@@ -274,6 +275,51 @@
     "toast": {
       "created": "Documento criado com sucesso.",
       "updated": "Documento atualizado com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    }
+  },
+  "invoice": {
+    "new": "Nova nota fiscal",
+    "newTitle": "Nova nota fiscal",
+    "loadError": "Não foi possível carregar as notas fiscais da operação.",
+    "empty": "Nenhuma nota fiscal cadastrada para esta operação.",
+    "colNumber": "Número",
+    "colSource": "Origem",
+    "colStatus": "Status",
+    "colDates": "Datas",
+    "colValues": "Valores",
+    "colDocuments": "Documentos",
+    "colActions": "Ações",
+    "entryDate": "Entrada",
+    "exitDate": "Saída",
+    "totalInvoiceValue": "Valor total da NF",
+    "totalProductsValue": "Valor dos produtos",
+    "documentFallbackName": "Arquivo anexado",
+    "form": {
+      "number": "Número",
+      "entryDate": "Data de entrada",
+      "exitDate": "Data de saída",
+      "exitTime": "Hora de saída",
+      "totalInvoiceValue": "Valor total da NF",
+      "totalProductsValue": "Valor dos produtos",
+      "observation": "Observação",
+      "files": "Arquivos",
+      "filesRequiredHint": "Selecione ao menos 1 arquivo para criar a nota fiscal."
+    },
+    "confirm": {
+      "action": "Confirmar",
+      "title": "Confirmar nota fiscal",
+      "noteLabel": "Observação (opcional)"
+    },
+    "cancel": {
+      "action": "Cancelar",
+      "title": "Cancelar nota fiscal",
+      "noteLabel": "Motivo do cancelamento (opcional)"
+    },
+    "toast": {
+      "created": "Nota fiscal criada com sucesso.",
+      "confirmed": "Nota fiscal confirmada com sucesso.",
+      "canceled": "Nota fiscal cancelada com sucesso.",
       "error": "Não foi possível concluir a ação. Tente novamente."
     }
   }

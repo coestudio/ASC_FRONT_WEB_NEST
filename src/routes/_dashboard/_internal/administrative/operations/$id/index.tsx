@@ -33,6 +33,7 @@ import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 import { Containers } from "@/components/operations/tabs/Containers";
 import { Documents } from "@/components/operations/tabs/Documents";
+import { Invoice } from "@/components/operations/tabs/Invoice";
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/operations/$id/")({
   head: () => ({ meta: [{ title: "Operação — ASC" }] }),
@@ -44,13 +45,22 @@ export const Route = createFileRoute("/_dashboard/_internal/administrative/opera
  * sub-rota — o conteúdo real de cada uma (SPEC-07-03 a SPEC-07-09) ainda não
  * existe, então cada aba mostra o mesmo placeholder genérico por enquanto.
  */
-type Tab = "details" | "romaneio" | "containers" | "documents" | "reports" | "responsible" | "log";
+type Tab =
+  | "details"
+  | "romaneio"
+  | "containers"
+  | "documents"
+  | "invoice"
+  | "reports"
+  | "responsible"
+  | "log";
 
 const TABS: { key: Tab; labelKey: TranslationKey }[] = [
   { key: "details", labelKey: "administrative-operations.shell.tabs.details" },
   { key: "romaneio", labelKey: "administrative-operations.shell.tabs.romaneio" },
   { key: "containers", labelKey: "administrative-operations.shell.tabs.containers" },
   { key: "documents", labelKey: "administrative-operations.shell.tabs.documents" },
+  { key: "invoice", labelKey: "administrative-operations.shell.tabs.invoice" },
   { key: "reports", labelKey: "administrative-operations.shell.tabs.reports" },
   { key: "responsible", labelKey: "administrative-operations.shell.tabs.responsible" },
   { key: "log", labelKey: "administrative-operations.shell.tabs.log" },
@@ -133,6 +143,8 @@ function OperationShellBody({ id }: { id: string }) {
           <Containers operationId={id} />
         ) : tab === "documents" ? (
           <Documents operationId={id} />
+        ) : tab === "invoice" ? (
+          <Invoice operationId={id} />
         ) : tab === "reports" ? (
           <Reports operationId={operation.id} />
         ) : tab === "responsible" ? (

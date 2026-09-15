@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-07-10
 - **Nome:** operation-invoice
-- **Status:** WAITING_APPROVAL
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (reconciliada pós-`just map`)
 - **Área:** `src/components/operations/tabs/Invoice.tsx` (nova),
   `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
@@ -418,7 +418,106 @@ Aguardando decisão do usuário.
 
 ---
 
-**Status:** `WAITING_APPROVAL`. D1/D2/D3/D-NEW todas fechadas. §3/§8/§9
-já refletem o desenho final (upload real de N arquivos numa única
-chamada `usePostApiOperationOperationIdInvoice`, sem o workaround de 2
-chamadas) — pronta para `APROVAR SPEC-07-10`.
+**Status:** `IMPLEMENTED` (2026-09-15). D1/D2/D3/D-NEW todas fechadas.
+§3/§8/§9 refletiram o desenho final (upload real de N arquivos numa única
+chamada `usePostApiOperationOperationIdInvoice`, sem workaround de 2
+chamadas).
+
+## Implementation Notes
+
+**Arquivos alterados:**
+
+- `src/components/operations/tabs/Invoice.tsx` — **criado**. Lista paginada
+  (`useSsrSafeQuery` + `getGetApiOperationOperationIdInvoiceQueryOptions`,
+  mesmo padrão de `Documents.tsx`/`Containers.tsx`), badges de `Source`/
+  `Status` (`resolveInvoiceSourceLabel`/`resolveInvoiceStatusLabel`), modal
+  de criação manual (`react-hook-form` + `zodResolver` sobre
+  `PostApiOperationOperationIdInvoiceBody`, campo `Files` via
+  `InputFileMulti`, gate de UI "≥1 arquivo" via `watch("Files")` +
+  `disabled`), preview de documento anexado reusando `FilePreviewModal`, e
+  um `StatusChangeModal` interno reusado por Confirmar/Cancelar (schema
+  `PostApiOperationOperationIdInvoiceIdConfirmBody` — mesmo shape do
+  `...CancelBody`, D3 §14).
+- `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+  — editado: `Tab` ganhou `"invoice"`, nova entrada em `TABS`, import e
+  renderização de `<Invoice operationId={id} />`.
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json` —
+  editado: chave `shell.tabs.invoice` + bloco `invoice.*` completo (lista,
+  form, confirm/cancel, toasts) nos 4 locales, `pt-BR` como fonte.
+
+**Comandos executados e resultado:**
+
+- `bun run check` (`tsc --noEmit`) — **VERIFIED**, saída limpa, sem erros.
+- `bun run lint` (`eslint .`) — **VERIFIED**. 66 problemas (3 erros + 63
+  warnings), todos pré-existentes fora do escopo desta SPEC: os 3 erros são
+  em `src/lib/session.server.ts` (`react-hooks/rules-of-hooks` em
+  `readServerSession`/`writeServerSession`/`clearServerSession`, débito
+  anterior a esta branch — confirmado rodando `git stash` + `bun run lint`
+  antes de tocar em qualquer arquivo: os mesmos 3 erros já existiam). Zero
+  warning/erro novo em `Invoice.tsx` após `bunx prettier --write` (fix de
+  formatação, sem mudança de lógica).
+- `just map` — **não rodado nesta sessão**: contrato já veio pronto
+  (commits anteriores desta branch, `Files: (Blob | File)[]` real,
+  confirmado no client gerado antes de codar).
+- `bun run dev -- --port 4321` — **VERIFIED parcialmente**. Servidor subiu
+  limpo (Vite 8.3.0, sem erro de SSR), `curl localhost:4321/` respondeu
+  `307` (redirect pro guard de `_dashboard`, comportamento esperado sem
+  sessão). **Validação visual da aba Nota Fiscal em si NÃO foi feita** — sem
+  credencial de usuário autenticado disponível nesta sessão pra navegar até
+  `/administrative/operations/$id` e abrir a aba; não inventado como
+  testado. `bun run check:api` (rodado automaticamente antes do `dev`)
+  emitiu um aviso pré-existente e não-bloqueante de que o contrato "live"
+  (`dev-asc-api.alexstewart.com.br`) diverge do `local` — não é o Core local
+  em `localhost:5766` mencionado na tarefa, é uma comparação fixa contra
+  outro ambiente feita por `scripts/checkApiContract.ts`; não bloqueou o
+  dev server nem indica problema com o `just map` já commitado nesta
+  branch.
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Aba lista Invoices reais da operação, distinguindo `Source` e `Status` visualmente | PASS — `useSsrSafeQuery` sobre o hook gerado, badges `<Badge bg="...">` por `Source`/`Status`, sem dado mockado |
+| CA2 | Criação manual exige ≥1 arquivo (gate de UI) e usa uma única chamada multipart com `Files` | PASS — `hasFile` desabilita o submit; `createMutation.mutateAsync({ operationId, data: values })` único, `values.Files` vem do `InputFileMulti` |
+| CA3 | Confirmar/Cancelar só aparecem em `Pending`+`Manual` e mudam o status observável na lista | PASS — `canChangeStatus = item.status === "Pending" && item.source === "Manual"`; `invalidateList()` após cada ação |
+| CA4 | Nenhum hook/tipo de `InvoiceItem` é referenciado em código novo | PASS — nenhuma referência (confere, `endpoints/invoice-item/` não existe mais no client) |
+| CA5 | `bun run check` + `lint` passam | PASS — `check` limpo; `lint` sem novo warning/erro (os 3 erros restantes são pré-existentes em `session.server.ts`, fora de escopo) |
+
+**Decisões tomadas durante a implementação:**
+
+- Campo `Files` do formulário de criação usa `InputFileMulti`
+  (`layouts/Form/Fields`) em vez de N `InputFileSingle` — cobre o shape
+  `File[]` sem gambiarra (§9 deixava a escolha em aberto entre as duas
+  opções válidas).
+- Formulário de criação expõe o DTO quase inteiro (`Number`, `EntryDate`,
+  `ExitDate`, `ExitTime`, `TotalInvoiceValue`, `TotalProductsValue`,
+  `Observation`, `Files`) — não só o mínimo pra passar nos critérios —
+  porque a lista (CA1) já promete mostrar datas/valores por linha (§3.2);
+  campos numéricos avulsos (`DeclaredItemsCount`/`DeclaredGrossWeight`/
+  `DeclaredNetWeight`) e de identificação fiscal (`IssuerCnpj`/`IssuerUf`/
+  `AccessKey`/`IssuedOn`) ficaram fora do formulário nesta rodada (não
+  pedidos explicitamente pelo RF3/UI da SPEC) — podem ser adicionados depois
+  sem mudança de contrato, é só mais campo no mesmo schema já usado.
+- `StatusChangeModal` é um componente único reusado por Confirmar e
+  Cancelar (mesmo `note: string, max 500`, D3) em vez de dois modais quase
+  idênticos — reduz duplicação, mantém `zodResolver` sobre o schema gerado
+  (usei `PostApiOperationOperationIdInvoiceIdConfirmBody` para tipar as
+  duas ações, já que o `...CancelBody` tem shape idêntico, confirmado no
+  client gerado).
+- Preview de documento anexado reusa `FilePreviewModal`
+  (`components/ui/file-preview-modal.tsx`, já usado por `Documents.tsx`)
+  em vez de criar um componente novo — `InvoiceDocumentDTO.file` é
+  estruturalmente compatível com o tipo `FilePreviewFile` que o modal
+  espera.
+
+**Limitações conhecidas:**
+
+- Validação visual completa da aba (abrir de fato `/administrative/
+  operations/$id`, clicar em "Nota Fiscal", criar/confirmar/cancelar uma
+  Invoice contra o Core local em `localhost:5766`) não foi feita nesta
+  sessão por falta de credencial de usuário autenticado — só a verificação
+  estática (`tsc`, `eslint`, subida limpa do dev server) foi possível.
+- R4 (quirk de `[Required]` no Core não se refletindo em `.optional()` no
+  Zod gerado para `Number`) permanece como risco aceito, sem mitigação no
+  front — documentado desde a SPEC original, não é regressão desta
+  implementação.

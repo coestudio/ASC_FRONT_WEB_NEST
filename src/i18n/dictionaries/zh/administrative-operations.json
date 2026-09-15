@@ -189,6 +189,7 @@
       "romaneio": "装箱单",
       "containers": "集装箱",
       "documents": "文件",
+      "invoice": "发票",
       "reports": "报告",
       "responsible": "负责人",
       "log": "日志"
@@ -274,6 +275,51 @@
     "toast": {
       "created": "文件创建成功。",
       "updated": "文件更新成功。",
+      "error": "无法完成该操作，请重试。"
+    }
+  },
+  "invoice": {
+    "new": "新建发票",
+    "newTitle": "新建发票",
+    "loadError": "无法加载该作业的发票。",
+    "empty": "此作业尚未登记任何发票。",
+    "colNumber": "编号",
+    "colSource": "来源",
+    "colStatus": "状态",
+    "colDates": "日期",
+    "colValues": "金额",
+    "colDocuments": "文件",
+    "colActions": "操作",
+    "entryDate": "入库",
+    "exitDate": "出库",
+    "totalInvoiceValue": "发票总金额",
+    "totalProductsValue": "货物总金额",
+    "documentFallbackName": "附件",
+    "form": {
+      "number": "编号",
+      "entryDate": "入库日期",
+      "exitDate": "出库日期",
+      "exitTime": "出库时间",
+      "totalInvoiceValue": "发票总金额",
+      "totalProductsValue": "货物总金额",
+      "observation": "备注",
+      "files": "文件",
+      "filesRequiredHint": "请至少选择1个文件以创建发票。"
+    },
+    "confirm": {
+      "action": "确认",
+      "title": "确认发票",
+      "noteLabel": "备注（可选）"
+    },
+    "cancel": {
+      "action": "取消",
+      "title": "取消发票",
+      "noteLabel": "取消原因（可选）"
+    },
+    "toast": {
+      "created": "发票创建成功。",
+      "confirmed": "发票确认成功。",
+      "canceled": "发票取消成功。",
       "error": "无法完成该操作，请重试。"
     }
   }
