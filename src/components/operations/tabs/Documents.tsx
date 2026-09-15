@@ -204,13 +204,31 @@ export function Documents({ operationId }: { operationId: string }) {
                   </td>
                   <td>{new Date(item.createdAt).toLocaleDateString(locale)}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-secondary"
-                      onClick={() => setEditing(item)}
-                    >
-                      <i className="bi bi-pencil" aria-hidden />
-                    </button>
+                    <div className="d-flex gap-1">
+                      {/* `download` só força o nome de arquivo quando o link
+                          é mesma origem — em storage externo (S3/blob) o
+                          browser ainda assim baixa em vez de navegar, contanto
+                          que o servidor não force Content-Disposition:inline;
+                          `target="_blank"` cobre o caso de acabar abrindo. */}
+                      <a
+                        className={`btn btn-sm btn-outline-secondary${item.file.url ? "" : " disabled"}`}
+                        href={item.file.url}
+                        download={item.file.name}
+                        target="_blank"
+                        rel="noreferrer"
+                        title={t("administrative-operations.documents.download")}
+                        aria-disabled={!item.file.url}
+                      >
+                        <i className="bi bi-download" aria-hidden />
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
+                        onClick={() => setEditing(item)}
+                      >
+                        <i className="bi bi-pencil" aria-hidden />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -263,6 +263,7 @@
     "colCreatedAt": "Created at",
     "colActions": "Actions",
     "fileLink": "Open file",
+    "download": "Download file",
     "form": {
       "title": "Title",
       "type": "Type",
