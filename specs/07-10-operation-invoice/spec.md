@@ -8,9 +8,11 @@
   `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
   (editado — nova aba no shell), `src/i18n/dictionaries/*/
 administrative-operations.json` (editado)
-- **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`InputFileSingle`, ver
-  §0.1/§3/§14 — **não** `InputFileMulti`, decisão revertida por achado
-  técnico pós-map), SPEC-07-01 (namespace `administrative-operations.json`),
+- **Depende de:** SPEC-00, SPEC-02, SPEC-SHARE-01 (`InputFileMulti`/
+  `InputFileSingle`, ver §9/§14 — voltou a ser `InputFileMulti` como
+  opção válida agora que o Core aceita `Files` real; decisão final de
+  qual componente usar fica pra implementação), SPEC-07-01 (namespace
+  `administrative-operations.json`),
   SPEC-07-02 (shell de abas), SPEC-07-06 (`Documents.tsx`, padrão de upload
   reusado por esta aba — ver §0.1). Dependia também, fora deste repo, de
   `warren/Core` **SPEC-14** (`invoice-source-and-documents`) e **SPEC-15**
@@ -146,17 +148,14 @@ Resumo do que muda no domínio (já fechado no Core, não decisão desta SPEC):
 3. Ação **Criar Nota Fiscal manual** — modal com formulário
    `react-hook-form` + `zodResolver` sobre
    `PostApiOperationOperationIdInvoiceBody` (schema gerado). Upload de
-   arquivo(s): ver §0.1/§14 `D-NEW` — **decisão de escopo desta rodada**:
-   enquanto o Core não expõe um `Files` multipart funcional no endpoint
-   de criação de Invoice, o upload de arquivo(s) reusa o padrão já
-   existente e funcional de `Documents.tsx`
-   (`postApiOperationOperationIdDocument`, `InputFileSingle`, um arquivo
-   por chamada, `Content-Type: multipart/form-data` de verdade) marcando
-   o documento com `InvoiceId` = id da Invoice recém-criada (`Document`
-   já tem esse campo pronto e testado, `PostApiOperationOperationIdDocumentBody.InvoiceId`).
-   Fluxo de 2 passos: `POST invoice` (sem `Files`, já que esse campo do
-   Core não é utilizável hoje) → para cada arquivo selecionado no
-   formulário, `POST document` com `InvoiceId` setado. Ver §8/§14.
+   arquivo(s): ver §0.1/§14 `D-NEW` (RESOLVIDA) — o Core corrigiu o
+   `FormFileUploadTransformer` e o campo `Files` do próprio endpoint de
+   criação (`Files?: (Blob | File)[]`) já sobe N arquivos em
+   `multipart/form-data` real, numa única chamada
+   `usePostApiOperationOperationIdInvoice`. O formulário exige ≥1 arquivo
+   selecionado antes de habilitar o submit (gate de UI, já que o schema
+   Zod gerado não expressa a obrigatoriedade — o servidor também exige e
+   rejeita com `MessageCode.InvoiceFileRequired`, D2 §14). Ver §8/§14.
 4. Ação **Confirmar** / **Cancelar** — visível só em linhas
    `Status=Pending` **e** `Source=Manual`. Usa
    `usePostApiOperationOperationIdInvoiceIdConfirm`/`...Cancel`
@@ -191,32 +190,28 @@ Resumo do que muda no domínio (já fechado no Core, não decisão desta SPEC):
   `resolveInvoiceStatusLabel`.
 - **RF3** — Criação manual de Invoice usa `react-hook-form` +
   `zodResolver` sobre `PostApiOperationOperationIdInvoiceBody` (schema
-  gerado). Upload de arquivo(s) via o fluxo de 2 passos do §3 item 3
-  (reuso de `postApiOperationOperationIdDocument` com `InvoiceId`), **não**
-  via o campo `Files` do próprio `PostApiOperationOperationIdInvoiceBody`
-  (inutilizável hoje, §0.1). Regra "≥1 arquivo obrigatório": o schema
-  gerado **não** expressa isso (`Files` nem é usado; nada no schema de
-  Invoice teria como validar quantidade de documentos que serão criados
-  depois, em chamadas separadas) — então o gate de "≥1 arquivo" é
-  **só estado local da UI** (desabilitar submit até ter 1+ arquivo
-  selecionado no formulário), nunca `.min()` inventado num schema Zod
-  (regra 2 do AGENTS.md) — e o erro real de negócio, se o usuário
-  conseguir burlar a UI, vem do 400 do servidor na criação do `Document`
-  ou é simplesmente não replicável (a Invoice já existe `Pending` sem
-  documento se a segunda chamada falhar — ver risco R5).
+  gerado), incluindo o campo `Files` (`(Blob | File)[]`) da própria
+  chamada `usePostApiOperationOperationIdInvoice` — upload de N arquivos
+  em `multipart/form-data` real, uma única chamada (§0.1/D-NEW,
+  resolvida). Regra "≥1 arquivo obrigatório": o schema Zod gerado **não**
+  expressa isso (quirk de `[FromForm]` multipart, mesma classe do R4) —
+  então o gate de "≥1 arquivo" é **só estado local da UI** (desabilitar
+  submit até ter 1+ arquivo selecionado no formulário), nunca `.min()`
+  inventado num schema Zod (regra 2 do AGENTS.md); o erro real de
+  negócio, se o usuário conseguir burlar a UI, vem do 400 do servidor
+  (`MessageCode.InvoiceFileRequired`).
 - **RF4** — Ação Confirmar/Cancelar só aparece para `Status=Pending` e
   `Source=Manual`; dispara `usePostApiOperationOperationIdInvoiceIdConfirm`/
   `usePostApiOperationOperationIdInvoiceIdCancel`.
 - **RF5** — Sem silent-fail (herda RF2 da SPEC-07-02): toda falha de
-  chamada (criação da invoice, criação de cada documento, confirmar,
-  cancelar) mostra toast de erro; nenhuma etapa falha em silêncio.
+  chamada (criação da invoice com seus arquivos, confirmar, cancelar)
+  mostra toast de erro; nenhuma etapa falha em silêncio.
 
 ## 6. Requisitos não funcionais
 
 - RNF1 — `bun run check` + `lint` passam.
-- RNF2 — Zero Zod à mão — todo schema de formulário vem de `just map`
-  (`PostApiOperationOperationIdInvoiceBody`,
-  `PostApiOperationOperationIdDocumentBody`) ou remapeamento de shape
+- RNF2 — Zero Zod à mão — o schema de formulário vem de `just map`
+  (`PostApiOperationOperationIdInvoiceBody`) ou remapeamento de shape
   (regra 2).
 - RNF3 — Nenhum hook/tipo de `InvoiceItem` é referenciado (não existe
   mais no client gerado, não há como violar isso por acidente).
@@ -236,16 +231,12 @@ Hooks Orval gerados (nomes reais confirmados pós-`just map`):
   params)` — `GET /api/operation/{operationId}/invoice`, retorna
   `PagedDTOOfInvoiceDTO` (paginação `Offset`/`Limit`, mesmo padrão das
   outras abas). `queryKey` = `getGetApiOperationOperationIdInvoiceQueryKey`.
-- Criação manual (passo 1 — dados da nota): `usePostApiOperationOperationIdInvoice`
-  — `POST /api/operation/{operationId}/invoice`, corpo
-  `PostApiOperationOperationIdInvoiceBody` **sem** preencher `Files` (campo
-  inutilizável, §0.1). Retorna `InvoiceDTO` (contém `id` da Invoice
-  criada).
-- Criação manual (passo 2 — anexos, N chamadas): `usePostApiOperationOperationIdDocument`
-  (já existente, usado por `Documents.tsx`) — uma chamada por arquivo
-  selecionado, `{ File: file, InvoiceId: invoiceCriada.id, Type: <definir
-  default>, Title: <definir> }`. Ver §14 `D-NEW` pra decisão de fallback
-  se algum upload falhar após a Invoice já ter sido criada (R5).
+- Criação manual: `usePostApiOperationOperationIdInvoice` — `POST
+  /api/operation/{operationId}/invoice`, corpo
+  `PostApiOperationOperationIdInvoiceBody` **incluindo** `Files` (N
+  arquivos, `(Blob | File)[]`), enviado como `multipart/form-data` de
+  verdade numa única chamada (§0.1/D-NEW, resolvida). Retorna
+  `InvoiceDTO` já com `documents[]` populado pelo próprio Core.
 - Confirmar: `usePostApiOperationOperationIdInvoiceIdConfirm` — `POST
   /api/operation/{operationId}/invoice/{id}/confirm`, corpo
   `InvoiceStatusChange` (`{ note: string, max 500 }`).
@@ -266,22 +257,24 @@ inventado.
 - Formulário de criação manual: `Modal` do react-bootstrap (mesmo padrão
   de `Documents.tsx`/`Containers.tsx`, não `CrudRecordModal` — este
   formulário mistura campos de `Invoice` com um upload de múltiplos
-  arquivos que dispara chamadas separadas depois do submit principal,
-  fora do que `CrudRecordModal` genérico cobre).
-- Upload: **`InputFileSingle` usado N vezes** (um campo de arquivo por
-  "slot" que o usuário adicionar) OU um componente de lista de arquivos
-  local (estado `File[]` + input de arquivo simples que agrega ao array)
-  — decisão de implementação, documentar a escolha no código quando
-  implementar; **não** é `InputFileMulti` (§0.1 invalidou a premissa de
-  que o backend aceitaria N arquivos numa única chamada multipart).
+  arquivos no mesmo submit, fora do que `CrudRecordModal` genérico
+  cobre).
+- Upload: campo `Files` do formulário aceita N arquivos, enviados na
+  própria chamada `usePostApiOperationOperationIdInvoice`. Decisão de
+  implementação (documentar a escolha no código): usar `InputFileMulti`
+  (`layouts/Form/Fields`, SPEC-SHARE-01) se cobrir o shape `(Blob |
+  File)[]` sem gambiarra, ou `InputFileSingle` usado N vezes / lista
+  local de `File[]` como alternativa equivalente — qualquer uma das duas
+  é válida desde que o resultado final vá inteiro no campo `Files` de uma
+  única chamada de criação (não mais bloqueado pelo achado de §0.1, já
+  resolvido).
 
 ## 10. i18n
 
 Namespace existente `administrative-operations.json`, chave nova
 `invoice.*` (lista, badges de Source/Status, formulário de criação,
-ações de Confirmar/Cancelar, mensagens de erro parcial do fluxo de 2
-passos — ver R5), mesma partição usada pelas demais abas, 4 locales,
-`pt-BR` fonte de verdade.
+ações de Confirmar/Cancelar, mensagem de erro de criação), mesma
+partição usada pelas demais abas, 4 locales, `pt-BR` fonte de verdade.
 
 ## 11. Arquivos esperados
 
@@ -296,7 +289,7 @@ passos — ver R5), mesma partição usada pelas demais abas, 4 locales,
 | #   | Critério                                                                                          |
 | --- | -------------------------------------------------------------------------------------------------- |
 | CA1 | Aba lista Invoices reais da operação, distinguindo `Source` e `Status` visualmente                |
-| CA2 | Criação manual exige ≥1 arquivo (gate de UI, §5 RF3) e usa o fluxo de 2 chamadas do §3 item 3      |
+| CA2 | Criação manual exige ≥1 arquivo (gate de UI, §5 RF3) e usa uma única chamada multipart com `Files` |
 | CA3 | Confirmar/Cancelar só aparecem em `Pending`+`Manual` e mudam o status observável na lista          |
 | CA4 | Nenhum hook/tipo de `InvoiceItem` é referenciado em código novo                                    |
 | CA5 | `bun run check` + `lint` passam                                                                    |
@@ -309,31 +302,29 @@ passos — ver R5), mesma partição usada pelas demais abas, 4 locales,
   runtime), só perde validação client-side antecipada nesse campo
   específico — aceitável, não é motivo pra inventar `.min()`/`.nonempty()`
   a mais no schema (regra 2).
-- **R5 — Consistência do fluxo de 2 chamadas (criar Invoice, depois N
-  documentos).** Se a criação da Invoice for bem-sucedida mas algum
-  upload de documento falhar no meio, a Invoice fica `Pending` sem (ou
-  com só parte dos) anexo(s) — o Core não expõe transação atômica pra
-  isso (o `Files` do endpoint de Invoice existiria pra resolver isso
-  atomicamente, mas está inutilizável, §0.1). Mitigação mínima nesta
-  SPEC: RF5 (toast de erro claro por chamada) + mensagem indicando que a
-  nota foi criada mas nem todos os arquivos subiram, permitindo tentar de
-  novo (reusar o botão de anexar da aba Documentos, já existente,
-  passando o `InvoiceId`). Não é solução completa — registrar como
-  limitação conhecida na implementação.
-- **R6 — Se o Core corrigir `FormFileUploadTransformer.cs` e regenerar
-  antes desta SPEC ser implementada**, o fluxo de 2 chamadas vira débito
-  a simplificar (voltar pra 1 chamada com `Files` de verdade) — não
-  reescrever esta SPEC preventivamente; tratar como follow-up quando/se
-  acontecer.
+- **R5 — resolvido.** Existia enquanto a criação manual dependia do
+  workaround de 2 chamadas (criar Invoice, depois N documentos avulsos);
+  com `Files` funcionando de verdade na própria chamada de criação
+  (`multipart/form-data`, D-NEW resolvida), a criação é atômica do ponto
+  de vista do client — não há mais janela entre "Invoice criada" e
+  "anexos subindo" que dependa de chamadas separadas. Mantido aqui só
+  como registro histórico do risco que motivou D-NEW.
+- **R6 — resolvido.** Era a previsão de que o Core corrigiria
+  `FormFileUploadTransformer.cs` depois desta SPEC estar em código,
+  virando débito de simplificação. Aconteceu antes da implementação
+  (D-NEW, 2026-09-15) — não há débito a carregar, o desenho já nasce
+  simplificado (§3/§8/§9).
 
 ## 14. Decisões
 
-**D1 — fechada** (herdada, revisada). Tipo de anexo: qualquer tipo de
-arquivo (PDF, imagem, etc.), sem preview de imagem forçado. Mecanismo
-mudou de `InputFileMulti` numa chamada multipart única para N chamadas de
-`InputFileSingle` via `postApiOperationOperationIdDocument`, por causa do
-achado técnico de §0.1 — a intenção de negócio (aceitar qualquer tipo de
-arquivo) continua igual, só o transporte muda.
+**D1 — fechada** (herdada, revisada, depois reconfirmada pós-D-NEW).
+Tipo de anexo: qualquer tipo de arquivo (PDF, imagem, etc.), sem preview
+de imagem forçado. O mecanismo chegou a ser desenhado como N chamadas de
+`InputFileSingle` via `postApiOperationOperationIdDocument` enquanto D-NEW
+estava aberta (§0.1); com D-NEW resolvida (Core corrigido), volta ao
+desenho original de uma única chamada multipart com N arquivos no campo
+`Files` — a intenção de negócio (aceitar qualquer tipo de arquivo)
+sempre foi a mesma, só o transporte foi e voltou.
 
 **D2 — fechada.** A regra "≥1 arquivo obrigatório" **não** vem expressa
 no schema Zod gerado (nem faria sentido vir, já que o upload não passa
@@ -428,8 +419,6 @@ Aguardando decisão do usuário.
 ---
 
 **Status:** `WAITING_APPROVAL`. D1/D2/D3/D-NEW todas fechadas. §3/§8/§9
-precisam de uma pequena revisão (remover o desenho de workaround de 2
-chamadas que foi escrito enquanto D-NEW estava aberta, voltar pro upload
-real de N arquivos numa chamada só) antes de `APROVAR SPEC-07-10` virar
-código — não é decisão nova, é só destravar o texto pra refletir a
-decisão já tomada.
+já refletem o desenho final (upload real de N arquivos numa única
+chamada `usePostApiOperationOperationIdInvoice`, sem o workaround de 2
+chamadas) — pronta para `APROVAR SPEC-07-10`.
