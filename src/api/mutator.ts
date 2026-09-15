@@ -164,13 +164,24 @@ let isRedirectingToLogin = false;
  * resposta — servidor fora do ar — ou 5xx): nesses casos não dá pra saber se
  * é a sessão que caiu ou o Core que caiu, mas a decisão tomada foi tratar os
  * dois como "não dá pra continuar autenticado agora, volta pro login".
+ *
+ * O toast é mostrado aqui só como reforço pra quem já está vendo a tela no
+ * instante do erro — não é a fonte confiável do aviso. `window.location.href`
+ * troca de página no mesmo instante, e o react-toastify quase nunca chega a
+ * animar/renderizar antes da navegação cortar a árvore (usuário nunca vê o
+ * toast de verdade, só o redirect "seco" pro login). Por isso o motivo
+ * também vai como `reason` na própria URL do login — `auth/login/index.tsx`
+ * lê esse param e mostra o toast de novo, já na tela nova, garantido.
  */
-function redirectToLogin(message = "Sessão expirada. Faça login novamente.") {
+function redirectToLogin(
+  message = "Sessão expirada. Faça login novamente.",
+  reason = "session_expired",
+) {
   if (isRedirectingToLogin) return;
   isRedirectingToLogin = true;
   toast.error(message);
   if (typeof window !== "undefined") {
-    window.location.href = "/auth/login";
+    window.location.href = `/auth/login?reason=${encodeURIComponent(reason)}`;
   }
 }
 
@@ -204,7 +215,7 @@ axiosInstance.interceptors.response.use(
           corePath: error.config?.headers?.["x-core-path"],
           responseBody: error.response?.data,
         });
-        redirectToLogin();
+        redirectToLogin(undefined, "session_expired");
         return Promise.reject(error);
       }
 
@@ -212,7 +223,10 @@ axiosInstance.interceptors.response.use(
       // trata como "não dá pra continuar", volta pro login (não só mostra
       // toast). Difere de 4xx, que é erro de requisição/negócio normal.
       if (status && status >= 500) {
-        redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
+        redirectToLogin(
+          "Não foi possível conectar ao servidor. Faça login novamente.",
+          "server_error",
+        );
         return Promise.reject(error);
       }
 
@@ -243,7 +257,10 @@ axiosInstance.interceptors.response.use(
       // Erro sem `response` e que nem é um `AxiosError` — falha de rede pura
       // do `fetch` dentro do adapter (`coreProxyAdapter`), ex. servidor fora
       // do ar. Mesma decisão do 5xx acima: volta pro login.
-      redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
+      redirectToLogin(
+        "Não foi possível conectar ao servidor. Faça login novamente.",
+        "server_error",
+      );
     }
 
     return Promise.reject(error);
