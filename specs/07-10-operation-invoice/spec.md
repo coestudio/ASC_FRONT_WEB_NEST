@@ -521,3 +521,15 @@ chamadas).
   Zod gerado para `Number`) permanece como risco aceito, sem mitigação no
   front — documentado desde a SPEC original, não é regressão desta
   implementação.
+
+### Correção pós-implementação (2026-09-15)
+
+O formulário de criação manual saiu **sem** `DeclaredItemsCount`/
+`DeclaredGrossWeight`/`DeclaredNetWeight` na primeira versão — campos
+obrigatórios no Core pra Invoice `Manual` (SPEC-14 §2, mesmo quirk R4 de
+anotação: saem `.nullish()` no Zod gerado). Sem eles, toda criação manual
+falhava com 400. Corrigido: os três campos adicionados como `InputText`
+(mesmo padrão de `tara`/`maxWeight` em `registry/container`), com gate de
+UI (`canSubmitCreate`) igual ao já existente pra arquivo — desabilita o
+submit até os três estarem preenchidos, já que o Zod sozinho não barra.
+`bun run check`/`lint` revalidados, sem regressão.
