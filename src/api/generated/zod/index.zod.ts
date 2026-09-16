@@ -9,6 +9,7 @@ export * from './harbor/harbor.zod.ts';
 export * from './invoice/invoice.zod.ts';
 export * from './operation/operation.zod.ts';
 export * from './operation-container/operation-container.zod.ts';
+export * from './operation-occurrence/operation-occurrence.zod.ts';
 export * from './product/product.zod.ts';
 export * from './profile/profile.zod.ts';
 export * from './responsible/responsible.zod.ts';

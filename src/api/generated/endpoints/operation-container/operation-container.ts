@@ -31,7 +31,8 @@ import type {
   GetApiOperationOperationIdContainerParams,
   PagedDTOOfContainerOperationDTO,
   PostApiOperationOperationIdContainerIdPhotoBody,
-  SealCreate
+  SealCreate,
+  SealDTO
 } from '../../model';
 
 import { apiRequest } from '../../../mutator.ts';
@@ -387,6 +388,178 @@ export function useGetApiContainerSealsValue<TData = Awaited<ReturnType<typeof g
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetApiContainerSealsValueQueryOptions(value,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getApiContainerSealStatuses = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<EnumOptionDTO[]>(
+      {url: `/api/container/seal-statuses`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiContainerSealStatusesQueryKey = () => {
+    return [
+    `/api/container/seal-statuses`
+    ] as const;
+    }
+
+
+export const getGetApiContainerSealStatusesQueryOptions = <TData = Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiContainerSealStatusesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiContainerSealStatuses>>> = ({ signal }) => getApiContainerSealStatuses(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiContainerSealStatusesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiContainerSealStatuses>>>
+export type GetApiContainerSealStatusesQueryError = void
+
+
+export function useGetApiContainerSealStatuses<TData = Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError = void>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiContainerSealStatuses>>,
+          TError,
+          Awaited<ReturnType<typeof getApiContainerSealStatuses>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiContainerSealStatuses<TData = Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiContainerSealStatuses>>,
+          TError,
+          Awaited<ReturnType<typeof getApiContainerSealStatuses>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiContainerSealStatuses<TData = Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiContainerSealStatuses<TData = Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatuses>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiContainerSealStatusesQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getApiContainerSealStatusesValue = (
+    value: number,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<EnumOptionDTO>(
+      {url: `/api/container/seal-statuses/${value}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiContainerSealStatusesValueQueryKey = (value: number,) => {
+    return [
+    `/api/container/seal-statuses/${value}`
+    ] as const;
+    }
+
+
+export const getGetApiContainerSealStatusesValueQueryOptions = <TData = Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError = void>(value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiContainerSealStatusesValueQueryKey(value);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>> = ({ signal }) => getApiContainerSealStatusesValue(value, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: value !== null && value !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiContainerSealStatusesValueQueryResult = NonNullable<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>>
+export type GetApiContainerSealStatusesValueQueryError = void
+
+
+export function useGetApiContainerSealStatusesValue<TData = Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError = void>(
+ value: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>,
+          TError,
+          Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiContainerSealStatusesValue<TData = Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError = void>(
+ value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>,
+          TError,
+          Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiContainerSealStatusesValue<TData = Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError = void>(
+ value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiContainerSealStatusesValue<TData = Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError = void>(
+ value: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiContainerSealStatusesValue>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiContainerSealStatusesValueQueryOptions(value,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1025,3 +1198,96 @@ const {mutation: mutationOptions} = options ?
       > => {
       return useMutation(getDeleteApiOperationOperationIdContainerIdSealSealIdMutationOptions(options), queryClient);
     }
+    export const getApiOperationOperationIdContainerIdSealCurrent = (
+    operationId: string,
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<SealDTO>(
+      {url: `/api/operation/${operationId}/container/${id}/seal/current`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiOperationOperationIdContainerIdSealCurrentQueryKey = (operationId: string,
+    id: string,) => {
+    return [
+    `/api/operation/${operationId}/container/${id}/seal/current`
+    ] as const;
+    }
+
+
+export const getGetApiOperationOperationIdContainerIdSealCurrentQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError = void>(operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdContainerIdSealCurrentQueryKey(operationId,id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>> = ({ signal }) => getApiOperationOperationIdContainerIdSealCurrent(operationId,id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiOperationOperationIdContainerIdSealCurrentQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>>
+export type GetApiOperationOperationIdContainerIdSealCurrentQueryError = void
+
+
+export function useGetApiOperationOperationIdContainerIdSealCurrent<TData = Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError = void>(
+ operationId: string,
+    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdContainerIdSealCurrent<TData = Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError = void>(
+ operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdContainerIdSealCurrent<TData = Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError = void>(
+ operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiOperationOperationIdContainerIdSealCurrent<TData = Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError = void>(
+ operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdContainerIdSealCurrent>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiOperationOperationIdContainerIdSealCurrentQueryOptions(operationId,id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+

@@ -1,7 +1,7 @@
 {
-  "source": "http://localhost:5766/api/openapi/v1.json",
+  "source": "http://127.0.0.1:5766/api/openapi/v1.json",
   "openapi": "3.1.1",
   "version": "1.0.0",
-  "hash": "sha256:4097ddcc749dcbe07602fb046423a004b9c0aacdccbfb25c4fc36662ff8b7464",
-  "pulledAt": "2026-09-15T19:20:02.731Z"
+  "hash": "sha256:44d9feaa2b67f5eae01ef41004039cd02f0aa86852096913ae5a0d291626fff5",
+  "pulledAt": "2026-09-16T04:18:32.579Z"
 }

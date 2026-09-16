@@ -34,6 +34,7 @@ import type {
   RomaneioImportAnalysisDTO,
   RomaneioImportApply,
   RomaneioImportApplyResultDTO,
+  RomaneioLoteComparisonDTO,
   RomaneioUpdate
 } from '../../model';
 
@@ -218,6 +219,92 @@ export function useGetApiRomaneioSourcesValue<TData = Awaited<ReturnType<typeof 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetApiRomaneioSourcesValueQueryOptions(value,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getApiOperationOperationIdRomaneioComparisonByLote = (
+    operationId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<RomaneioLoteComparisonDTO[]>(
+      {url: `/api/operation/${operationId}/romaneio/comparison-by-lote`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiOperationOperationIdRomaneioComparisonByLoteQueryKey = (operationId: string,) => {
+    return [
+    `/api/operation/${operationId}/romaneio/comparison-by-lote`
+    ] as const;
+    }
+
+
+export const getGetApiOperationOperationIdRomaneioComparisonByLoteQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError = void>(operationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdRomaneioComparisonByLoteQueryKey(operationId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>> = ({ signal }) => getApiOperationOperationIdRomaneioComparisonByLote(operationId, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiOperationOperationIdRomaneioComparisonByLoteQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>>
+export type GetApiOperationOperationIdRomaneioComparisonByLoteQueryError = void
+
+
+export function useGetApiOperationOperationIdRomaneioComparisonByLote<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError = void>(
+ operationId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdRomaneioComparisonByLote<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError = void>(
+ operationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdRomaneioComparisonByLote<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError = void>(
+ operationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiOperationOperationIdRomaneioComparisonByLote<TData = Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError = void>(
+ operationId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdRomaneioComparisonByLote>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiOperationOperationIdRomaneioComparisonByLoteQueryOptions(operationId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

@@ -14,8 +14,9 @@ export interface ProfileCreate {
   /**
      * @minLength 11
      * @maxLength 14
+     * @nullable
      */
-  document: string;
+  document?: string | null;
   /**
      * @minLength 3
      * @maxLength 320

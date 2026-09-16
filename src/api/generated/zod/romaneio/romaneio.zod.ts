@@ -30,6 +30,29 @@ export const GetApiRomaneioSourcesValueResponse = zod.object({
   "name": zod.record(zod.string(), zod.string())
 })
 
+export const GetApiOperationOperationIdRomaneioComparisonByLoteParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+export const getApiOperationOperationIdRomaneioComparisonByLoteResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioComparisonByLoteResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioComparisonByLoteResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioComparisonByLoteResponseStuffedItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioComparisonByLoteResponseStuffedGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioComparisonByLoteResponseStuffedNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const GetApiOperationOperationIdRomaneioComparisonByLoteResponseItem = zod.object({
+  "lote": zod.string().nullish(),
+  "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioComparisonByLoteResponseDeclaredItemsCountRegExpTwo)]).optional(),
+  "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioComparisonByLoteResponseDeclaredGrossWeightRegExpTwo)]).optional(),
+  "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioComparisonByLoteResponseDeclaredNetWeightRegExpTwo)]).optional(),
+  "stuffedItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioComparisonByLoteResponseStuffedItemsCountRegExpTwo)]).optional(),
+  "stuffedGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioComparisonByLoteResponseStuffedGrossWeightRegExpTwo)]).optional(),
+  "stuffedNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioComparisonByLoteResponseStuffedNetWeightRegExpTwo)]).optional()
+})
+export const GetApiOperationOperationIdRomaneioComparisonByLoteResponse = zod.array(GetApiOperationOperationIdRomaneioComparisonByLoteResponseItem)
+
 export const GetApiOperationOperationIdRomaneioParams = zod.object({
   "operationId": zod.uuid()
 })

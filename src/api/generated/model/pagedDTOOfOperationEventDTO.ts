@@ -4,10 +4,10 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoUnitEventDTO } from './cargoUnitEventDTO.ts';
+import type { OperationEventDTO } from './operationEventDTO.ts';
 
-export interface PagedDTOOfCargoUnitEventDTO {
-  items: CargoUnitEventDTO[];
+export interface PagedDTOOfOperationEventDTO {
+  items: OperationEventDTO[];
   /** @pattern ^-?(?:0|[1-9]\d*)$ */
   total: number | string;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */

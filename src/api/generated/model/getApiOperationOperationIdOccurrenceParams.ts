@@ -4,14 +4,8 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoUnitStatus } from './cargoUnitStatus.ts';
 
-export type GetApiOperationOperationIdCargoParams = {
-ContainerOperationId?: string;
-InvoiceId?: string;
-WithoutRomaneio?: boolean;
-Status?: CargoUnitStatus;
-Search?: string;
+export type GetApiOperationOperationIdOccurrenceParams = {
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$
  */

@@ -30,6 +30,8 @@ export interface CargoUnitDTO {
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
      */
   grossWeight?: number | string | null;
+  /** @nullable */
+  lote?: string | null;
   id: string;
   createdAt: string;
   updatedAt: string;

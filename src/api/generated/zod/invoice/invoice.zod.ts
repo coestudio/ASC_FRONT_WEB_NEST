@@ -53,6 +53,30 @@ export const GetApiInvoiceSourcesValueResponse = zod.object({
   "name": zod.record(zod.string(), zod.string())
 })
 
+export const GetApiOperationOperationIdInvoiceComparisonParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+export const getApiOperationOperationIdInvoiceComparisonResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdInvoiceComparisonResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceComparisonResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceComparisonResponseStuffedItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdInvoiceComparisonResponseStuffedGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceComparisonResponseStuffedNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const GetApiOperationOperationIdInvoiceComparisonResponseItem = zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "number": zod.string().optional(),
+  "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdInvoiceComparisonResponseDeclaredItemsCountRegExpTwo)]).optional(),
+  "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseDeclaredGrossWeightRegExpTwo)]).optional(),
+  "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseDeclaredNetWeightRegExpTwo)]).optional(),
+  "stuffedItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdInvoiceComparisonResponseStuffedItemsCountRegExpTwo)]).optional(),
+  "stuffedGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseStuffedGrossWeightRegExpTwo)]).optional(),
+  "stuffedNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseStuffedNetWeightRegExpTwo)]).optional()
+})
+export const GetApiOperationOperationIdInvoiceComparisonResponse = zod.array(GetApiOperationOperationIdInvoiceComparisonResponseItem)
+
 export const GetApiOperationOperationIdInvoiceParams = zod.object({
   "operationId": zod.uuid()
 })
@@ -416,6 +440,13 @@ export const PutApiOperationOperationIdInvoiceIdResponse = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })
+
+export const DeleteApiOperationOperationIdInvoiceIdParams = zod.object({
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
+
+export const DeleteApiOperationOperationIdInvoiceIdResponse = zod.unknown()
 
 export const PostApiOperationOperationIdInvoiceIdConfirmParams = zod.object({
   "operationId": zod.uuid(),

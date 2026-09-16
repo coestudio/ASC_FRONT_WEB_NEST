@@ -11,4 +11,5 @@ export * from "./operationStatusOptions";
 export * from "./operationTypeOptions";
 export * from "./romaneioSourceOptions";
 export * from "./sealNameOptions";
+export * from "./sealStatusOptions";
 export * from "./userTypeOptions";

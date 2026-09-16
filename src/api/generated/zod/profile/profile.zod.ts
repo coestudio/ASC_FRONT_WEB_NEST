@@ -112,7 +112,7 @@ export const PostApiProfileMeBody = zod.object({
   "isAdmin": zod.boolean().nullish(),
   "profile": zod.object({
   "fullName": zod.string().min(postApiProfileMeBodyProfileFullNameMin).max(postApiProfileMeBodyProfileFullNameMax),
-  "document": zod.string().min(postApiProfileMeBodyProfileDocumentMin).max(postApiProfileMeBodyProfileDocumentMax),
+  "document": zod.string().min(postApiProfileMeBodyProfileDocumentMin).max(postApiProfileMeBodyProfileDocumentMax).nullish(),
   "email": zod.string().min(postApiProfileMeBodyProfileEmailMin).max(postApiProfileMeBodyProfileEmailMax),
   "phone": zod.string().min(postApiProfileMeBodyProfilePhoneMin).max(postApiProfileMeBodyProfilePhoneMax).nullish(),
   "birthDate": zod.iso.date().nullish()
@@ -215,7 +215,7 @@ export const postApiProfileInfoBodyPhoneMax = 20;
 
 export const PostApiProfileInfoBody = zod.object({
   "fullName": zod.string().min(postApiProfileInfoBodyFullNameMin).max(postApiProfileInfoBodyFullNameMax),
-  "document": zod.string().min(postApiProfileInfoBodyDocumentMin).max(postApiProfileInfoBodyDocumentMax),
+  "document": zod.string().min(postApiProfileInfoBodyDocumentMin).max(postApiProfileInfoBodyDocumentMax).nullish(),
   "email": zod.string().min(postApiProfileInfoBodyEmailMin).max(postApiProfileInfoBodyEmailMax),
   "phone": zod.string().min(postApiProfileInfoBodyPhoneMin).max(postApiProfileInfoBodyPhoneMax).nullish(),
   "birthDate": zod.iso.date().nullish()

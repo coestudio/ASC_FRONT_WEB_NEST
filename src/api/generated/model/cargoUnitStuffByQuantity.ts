@@ -14,4 +14,6 @@ export interface CargoUnitStuffByQuantity {
      * @pattern ^-?(?:0|[1-9]\d*)$
      */
   quantity?: number | string;
+  /** @maxLength 50 */
+  lote: string;
 }

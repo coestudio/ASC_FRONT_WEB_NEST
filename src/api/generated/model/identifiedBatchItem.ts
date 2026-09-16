@@ -5,8 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface CargoUnitStuffIdentified {
-  containerOperationId: string;
+export interface IdentifiedBatchItem {
   romaneioId: string;
   invoiceId: string;
   /** @maxLength 50 */

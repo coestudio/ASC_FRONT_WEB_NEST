@@ -71,7 +71,7 @@ export const postApiClientClientIdCollaboratorBodyUserNameMax = 150;
 export const PostApiClientClientIdCollaboratorBody = zod.object({
   "profile": zod.object({
   "fullName": zod.string().min(postApiClientClientIdCollaboratorBodyProfileFullNameMin).max(postApiClientClientIdCollaboratorBodyProfileFullNameMax),
-  "document": zod.string().min(postApiClientClientIdCollaboratorBodyProfileDocumentMin).max(postApiClientClientIdCollaboratorBodyProfileDocumentMax),
+  "document": zod.string().min(postApiClientClientIdCollaboratorBodyProfileDocumentMin).max(postApiClientClientIdCollaboratorBodyProfileDocumentMax).nullish(),
   "email": zod.string().min(postApiClientClientIdCollaboratorBodyProfileEmailMin).max(postApiClientClientIdCollaboratorBodyProfileEmailMax),
   "phone": zod.string().min(postApiClientClientIdCollaboratorBodyProfilePhoneMin).max(postApiClientClientIdCollaboratorBodyProfilePhoneMax).nullish(),
   "birthDate": zod.iso.date().nullish()

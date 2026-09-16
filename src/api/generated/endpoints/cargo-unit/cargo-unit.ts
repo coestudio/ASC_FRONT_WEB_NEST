@@ -30,13 +30,14 @@ import type {
   CargoUnitDTO,
   CargoUnitStuffByQuantity,
   CargoUnitStuffIdentified,
+  CargoUnitStuffIdentifiedBatch,
   EnumOptionDTO,
   GetApiOperationOperationIdCargoIdEventsParams,
   GetApiOperationOperationIdCargoIdPhotosParams,
   GetApiOperationOperationIdCargoParams,
   PagedDTOOfCargoPhotoDTO,
   PagedDTOOfCargoUnitDTO,
-  PagedDTOOfCargoUnitEventDTO,
+  PagedDTOOfOperationEventDTO,
   PostApiOperationOperationIdCargoIdPhotosBody
 } from '../../model';
 
@@ -326,6 +327,99 @@ export function useGetApiOperationOperationIdCargo<TData = Awaited<ReturnType<ty
 
 
 
+export const getApiOperationOperationIdCargoId = (
+    operationId: string,
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<CargoUnitDTO>(
+      {url: `/api/operation/${operationId}/cargo/${id}`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiOperationOperationIdCargoIdQueryKey = (operationId: string,
+    id: string,) => {
+    return [
+    `/api/operation/${operationId}/cargo/${id}`
+    ] as const;
+    }
+
+
+export const getGetApiOperationOperationIdCargoIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError = void>(operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdCargoIdQueryKey(operationId,id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>> = ({ signal }) => getApiOperationOperationIdCargoId(operationId,id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined && id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiOperationOperationIdCargoIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>>
+export type GetApiOperationOperationIdCargoIdQueryError = void
+
+
+export function useGetApiOperationOperationIdCargoId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError = void>(
+ operationId: string,
+    id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdCargoId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError = void>(
+ operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdCargoId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError = void>(
+ operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiOperationOperationIdCargoId<TData = Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError = void>(
+ operationId: string,
+    id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdCargoId>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiOperationOperationIdCargoIdQueryOptions(operationId,id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 export const getApiOperationOperationIdCargoIdEvents = (
     operationId: string,
     id: string,
@@ -334,7 +428,7 @@ export const getApiOperationOperationIdCargoIdEvents = (
 ) => {
 
 
-      return apiRequest<PagedDTOOfCargoUnitEventDTO>(
+      return apiRequest<PagedDTOOfOperationEventDTO>(
       {url: `/api/operation/${operationId}/cargo/${id}/events`, method: 'GET',
         params, signal
     },
@@ -786,6 +880,68 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getPostApiOperationOperationIdCargoStuffIdentifiedMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdCargoStuffIdentifiedBatch = (
+    operationId: string,
+    cargoUnitStuffIdentifiedBatch: CargoUnitStuffIdentifiedBatch,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<CargoStuffResultDTO>(
+      {url: `/api/operation/${operationId}/cargo/stuff/identified-batch`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: cargoUnitStuffIdentifiedBatch, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdCargoStuffIdentifiedBatchMutationKey = () => ['postApiOperationOperationIdCargoStuffIdentifiedBatch'] as const;
+
+export const getPostApiOperationOperationIdCargoStuffIdentifiedBatchMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdCargoStuffIdentifiedBatch>>, TError,PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdCargoStuffIdentifiedBatch>>, TError,PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdCargoStuffIdentifiedBatchMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdCargoStuffIdentifiedBatch>>, PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationVariables> = (props) => {
+          const {operationId,data} = props ?? {};
+
+          return  postApiOperationOperationIdCargoStuffIdentifiedBatch(operationId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdCargoStuffIdentifiedBatch>>>
+    export type PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationBody = CargoUnitStuffIdentifiedBatch
+    export type PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationError = void
+    export type PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationVariables = {operationId: string;data: CargoUnitStuffIdentifiedBatch}
+
+    export const usePostApiOperationOperationIdCargoStuffIdentifiedBatch = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdCargoStuffIdentifiedBatch>>, TError,PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdCargoStuffIdentifiedBatch>>,
+        TError,
+        PostApiOperationOperationIdCargoStuffIdentifiedBatchMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdCargoStuffIdentifiedBatchMutationOptions(options), queryClient);
     }
     export const postApiOperationOperationIdCargoStuffQuantity = (
     operationId: string,

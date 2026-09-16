@@ -4,7 +4,6 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { ContainerOperationStatus } from './containerOperationStatus.ts';
 
 export interface ContainerOperationUpdate {
   /**
@@ -12,7 +11,4 @@ export interface ContainerOperationUpdate {
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
      */
   tara?: number | string | null;
-  /** @nullable */
-  sealDate?: string | null;
-  status: ContainerOperationStatus;
 }

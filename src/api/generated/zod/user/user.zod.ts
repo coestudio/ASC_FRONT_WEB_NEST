@@ -243,7 +243,7 @@ export const PostApiUserBody = zod.object({
   "isAdmin": zod.boolean().nullish(),
   "profile": zod.object({
   "fullName": zod.string().min(postApiUserBodyProfileFullNameMin).max(postApiUserBodyProfileFullNameMax),
-  "document": zod.string().min(postApiUserBodyProfileDocumentMin).max(postApiUserBodyProfileDocumentMax),
+  "document": zod.string().min(postApiUserBodyProfileDocumentMin).max(postApiUserBodyProfileDocumentMax).nullish(),
   "email": zod.string().min(postApiUserBodyProfileEmailMin).max(postApiUserBodyProfileEmailMax),
   "phone": zod.string().min(postApiUserBodyProfilePhoneMin).max(postApiUserBodyProfilePhoneMax).nullish(),
   "birthDate": zod.iso.date().nullish()
@@ -405,7 +405,7 @@ export const PutApiUserIdBody = zod.object({
   "isAdmin": zod.boolean().nullish(),
   "profile": zod.object({
   "fullName": zod.string().min(putApiUserIdBodyProfileFullNameMin).max(putApiUserIdBodyProfileFullNameMax),
-  "document": zod.string().min(putApiUserIdBodyProfileDocumentMin).max(putApiUserIdBodyProfileDocumentMax),
+  "document": zod.string().min(putApiUserIdBodyProfileDocumentMin).max(putApiUserIdBodyProfileDocumentMax).nullish(),
   "email": zod.string().min(putApiUserIdBodyProfileEmailMin).max(putApiUserIdBodyProfileEmailMax),
   "phone": zod.string().min(putApiUserIdBodyProfilePhoneMin).max(putApiUserIdBodyProfilePhoneMax).nullish(),
   "birthDate": zod.iso.date().nullish()
