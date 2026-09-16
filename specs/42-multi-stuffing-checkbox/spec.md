@@ -2,17 +2,21 @@
 
 - **ID:** SPEC-42
 - **Nome:** multi-stuffing-checkbox
-- **Status:** DRAFT (revisado 2026-09-16) — **§4 já resolvido pelo Core.**
-  `specs/31-cargo-stuffing-batch-identified` já é `IMPLEMENTED`
-  (2026-09-15, mesmo dia deste rascunho) e respondeu exatamente a
-  pergunta em aberto abaixo: existe endpoint dedicado
-  `POST .../cargo/stuff/identified-batch` (opção 1 do §4, endpoint novo,
-  não N chamadas sequenciais). Ainda não apareceu em
-  `src/api/generated/**` porque `just map` não rodou depois da
-  implementação do Core — nenhuma referência a `identified-batch` no
-  client gerado hoje. Assim que `just map` rodar, RF3/RF4 deixam de
-  depender de decisão de UX de erro parcial (o backend já é atômico:
-  tudo-ou-nada, ver Core SPEC-31 §"Decisões técnicas").
+- **Status:** DRAFT (revisado 2026-09-16, 2x) — **§4 já resolvido pelo
+  Core.** `specs/31-cargo-stuffing-batch-identified` já é `IMPLEMENTED`
+  (2026-09-15) e respondeu a pergunta em aberto original: existe endpoint
+  dedicado `POST .../cargo/stuff/identified-batch` (opção 1 do §4,
+  endpoint novo, não N chamadas sequenciais). **Achado novo (2ª
+  revisão, 2026-09-16):** Core `specs/25-cargo-stuffing-lote-scope`
+  (`IMPLEMENTED`, depois da SPEC-31) acrescentou `Lote` **obrigatório
+  por item** no payload de `identified-batch` — o shape documentado
+  abaixo em §4/§7/RF3 estava desatualizado (sem `Lote`), corrigido
+  agora. Ver também `specs/46-cargo-stuffing-lote-required` (mesma
+  exigência nos modos A/B singulares, que já são `IMPLEMENTED` e
+  quebram sem esse campo). Ainda não apareceu em `src/api/generated/**`
+  porque `just map` não rodou. Assim que `just map` rodar, RF3/RF4
+  deixam de depender de decisão de UX de erro parcial (o backend já é
+  atômico: tudo-ou-nada, ver Core SPEC-31 §"Decisões técnicas").
 - **Autor:** portal-dev-agent (rascunho); revisão de status 2026-09-16
   (cruzamento com Core `specs/31-cargo-stuffing-batch-identified`)
 - **Área:** nova tela/aba a definir, `src/components/operations/tabs/Containers.tsx`
@@ -75,10 +79,14 @@ múltiplos ids numa única chamada.
 **Resposta (Core `specs/31-cargo-stuffing-batch-identified`,
 `IMPLEMENTED`):** opção 1 confirmada — endpoint dedicado
 `POST operation/{operationId}/cargo/stuff/identified-batch`, payload
-`{ ContainerOperationId, Items: [{ RomaneioId, InvoiceId }] }` (um
-`InvoiceId` por item, já que os fardos selecionados podem vir de NFs
-diferentes — decisão de negócio já fechada do lado Core, §3.2 daquela
-spec). Comportamento:
+**atualizado (2026-09-16, pós `specs/25-cargo-stuffing-lote-scope`)**:
+`{ ContainerOperationId, Items: [{ RomaneioId, InvoiceId, Lote }] }` (um
+`InvoiceId` **e agora um `Lote`** por item, já que os fardos selecionados
+podem vir de NFs/Lotes diferentes — decisão de negócio já fechada do
+lado Core, §3.2 daquela spec + §9 da SPEC-25). `Lote` é checado contra
+o `Lote` real da linha de Romaneio escolhida (mesma consistência
+declarativa do Modo A single) — recusa (400,
+`CargoUnitRomaneioMustMatchDeclaredLote`) se não bater. Comportamento:
 
 - **Atômico, tudo-ou-nada.** Se qualquer linha do lote já estiver
   ocupada (por outra chamada concorrente ou já estufada), a leva inteira
@@ -113,9 +121,10 @@ mais por decisão de contrato/UX.
 - **RF2** — Seleção de container de destino via `SelectAsync`.
 - **RF3** — Ação "Estufar selecionados" dispara **uma única chamada**
   (`POST .../cargo/stuff/identified-batch`) com todos os fardos
-  marcados, resolvendo o `InvoiceId` de cada item (mesmo `Invoice` já
-  vinculado a cada linha de Romaneio na listagem, ou seleção explícita se
-  a UI permitir NFs diferentes no mesmo lote).
+  marcados, resolvendo o `InvoiceId` **e o `Lote`** de cada item (ambos
+  já disponíveis na listagem de fardos do romaneio escolhida — não
+  pedir pro operador digitar de novo, mesma recomendação da
+  `specs/46-cargo-stuffing-lote-required` §4 pro Modo A single).
 - **RF4** — Feedback de erro **é sempre tudo-ou-nada** (backend atômico,
   §4): em caso de 400, exibir toast com a mensagem do `MessageCode`
   retornado (ex. `CargoUnitBatchDuplicateRomaneioLine`,
@@ -129,7 +138,7 @@ mais por decisão de contrato/UX.
 - Nova chamada (após `just map`):
   `usePostApiOperationOperationIdCargoStuffIdentifiedBatch` (nome exato a
   confirmar no client gerado) — body
-  `{ ContainerOperationId, Items: [{ RomaneioId, InvoiceId }] }`.
+  `{ ContainerOperationId, Items: [{ RomaneioId, InvoiceId, Lote }] }`.
 
 ## 8. UI
 
