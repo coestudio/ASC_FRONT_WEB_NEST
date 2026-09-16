@@ -2,15 +2,20 @@
 
 - **ID:** SPEC-38
 - **Nome:** container-list-search
-- **Status:** DRAFT
-- **Autor:** portal-dev-agent (rascunho)
+- **Status:** DRAFT (revisado 2026-09-16) — **§3 já resolvido pelo Core.**
+  `specs/26-container-cargo-search` já é `IMPLEMENTED`: `Search` existe
+  em `ContainerOperationViewModel.Query` (filtra por
+  `Container.Identifier`) **e também** em `CargoUnitViewModel.Query`
+  (filtra por Romaneio/Invoice) — esta SPEC-38 só cobria Container, o
+  Core entregou os dois de uma vez, mas a busca de CargoUnit não tem
+  spec de frontend própria ainda (oportunidade de ampliar escopo aqui ou
+  abrir SPEC nova, ver §12). Ainda não apareceu em `src/api/generated/**`
+  porque `just map` não rodou depois da implementação do Core.
+- **Autor:** portal-dev-agent (rascunho); revisão de status 2026-09-16
+  (cruzamento com Core `specs/26-container-cargo-search`)
 - **Área:** `src/components/operations/tabs/Containers.tsx`
-- **Depende de (Core):** spec Core em andamento para adicionar `Search`
-  ao endpoint de container-da-operação (`GET
-  /api/operation/{operationId}/container`) — número da spec Core ainda
-  não conhecido neste momento; referenciar por tema
-  ("busca de container por operação") até o `core-spec-agent` publicar o
-  número definitivo.
+- **Depende de (Core):** ~~spec Core em andamento~~ — **resolvido**:
+  `specs/26-container-cargo-search` (`IMPLEMENTED`). Falta só `just map`.
 - **Contexto do pedido:** item do `TODO.md` ("Operação → aba Containers:
   falta paginação + busca na listagem") — investigação mostrou que
   paginação já existe (ver §2); só falta busca, e ela depende do Core.
@@ -38,9 +43,7 @@ endpoint correspondente.
 
 ## 3. Escopo
 
-Bloqueado até o Core expor o parâmetro `Search` (ou equivalente) no
-endpoint `GET /api/operation/{operationId}/container` e o client gerado
-ser atualizado via `just map`. Quando isso acontecer:
+Contrato já existe, falta só `just map` + implementação:
 
 1. Adicionar campo de busca de texto na listagem de containers (mesmo
    padrão de busca já usado em `Romaneio.tsx`/`admin/access`), estado
@@ -58,11 +61,8 @@ ser atualizado via `just map`. Quando isso acontecer:
 
 ## 5. Requisitos funcionais
 
-- **RF1 (bloqueado)** — Campo de busca textual na listagem de
-  containers, funcional assim que
-  `GetApiOperationOperationIdContainerParams.Search` existir no client
-  gerado.
-- **RF2 (bloqueado)** — Buscar reseta a paginação para a página 1.
+- **RF1** — Campo de busca textual na listagem de containers.
+- **RF2** — Buscar reseta a paginação para a página 1.
 
 ## 6. Camada de dados
 
@@ -94,13 +94,23 @@ Reaproveitar chave de placeholder de busca já existente no namespace
 
 | # | Critério |
 | --- | --- |
-| CA1 (bloqueado) | Buscar por texto filtra a listagem de containers via o novo parâmetro do Core |
-| CA2 (bloqueado) | Buscar reseta a página para 1 |
-| CA3 | `just map` executado e diff revisado antes de implementar RF1/RF2 |
+| CA0 | `just map` executado, `Search` presente no client gerado |
+| CA1 | Buscar por texto filtra a listagem de containers |
+| CA2 | Buscar reseta a página para 1 |
 | CA4 | `bun run check` + `bun run lint` sem regressão |
 
 ## 11. Riscos
 
-- **R1** — Esta SPEC não é implementável até a dependência de Core ser
-  resolvida — não deve ser marcada `APPROVED`/`IN_PROGRESS` para
-  implementação antes disso, mesmo que o lado frontend seja trivial.
+Baixo — aditivo, contrato já fechado e implementado no Core.
+
+## 12. Nota — busca de CargoUnit ficou de fora do escopo original
+
+O Core (`specs/26-container-cargo-search`) implementou `Search` em
+**dois** endpoints: `ContainerOperationViewModel.Query` (coberto por
+esta SPEC-38) e `CargoUnitViewModel.Query` (filtra por
+`Romaneio.ItemIdentifier`/`ItemCode`/`Invoice.Number`) — mas não existe
+nenhuma tela de listagem de `CargoUnit` isolada no NewPortal hoje (fardos
+aparecem embutidos em outras telas, não numa lista própria com busca).
+Registrado aqui pra não ser esquecido: se/quando uma tela de listagem de
+CargoUnit for criada, ela já nasce com `Search` disponível no contrato,
+sem precisar de spec nova no Core.
