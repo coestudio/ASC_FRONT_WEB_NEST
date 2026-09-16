@@ -64,6 +64,14 @@
     "resetPasswordSent": "Nova senha enviada por e-mail.",
     "error": "Não foi possível concluir a ação. Tente novamente."
   },
+  "filters": {
+    "role": "Filtrar por papel",
+    "allRoles": "Todos os papéis",
+    "isAdmin": "Filtrar por admin",
+    "allUsers": "Todos os usuários",
+    "adminOnly": "Somente admin",
+    "nonAdminOnly": "Somente não-admin"
+  },
   "rolesTitle": "Perfis",
   "rolesDescription": "Referência dos perfis de acesso e o que cada um pode ver no sistema.",
   "rolesEmpty": "Conteúdo ainda não cadastrado — descrição dos perfis pendente de confirmação."

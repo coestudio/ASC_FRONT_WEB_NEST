@@ -64,6 +64,14 @@
     "resetPasswordSent": "New password sent by email.",
     "error": "Could not complete the action. Please try again."
   },
+  "filters": {
+    "role": "Filter by role",
+    "allRoles": "All roles",
+    "isAdmin": "Filter by admin",
+    "allUsers": "All users",
+    "adminOnly": "Admin only",
+    "nonAdminOnly": "Non-admin only"
+  },
   "rolesTitle": "Roles",
   "rolesDescription": "Reference of access roles and what each one can see in the system.",
   "rolesEmpty": "Content not registered yet — role descriptions pending confirmation."

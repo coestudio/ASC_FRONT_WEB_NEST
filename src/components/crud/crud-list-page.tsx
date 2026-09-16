@@ -97,6 +97,15 @@ export type CrudListPageProps<
   emptyMessageKey?: TranslationKey;
   /** `true` quando os dados são mock (sem endpoint no Core) — mostra o `MockDataBanner`. */
   isMock?: boolean;
+  /**
+   * Slot opcional pra filtros extras da tela (ex.: papel/admin em
+   * `admin/access`, SPEC-32) — renderizado no toolbar, ao lado da busca.
+   * Cada tela monta seus próprios controles (React-Bootstrap puro, não é
+   * formulário submetido) e decide o estado; o `CrudListPage` só reserva o
+   * espaço. Consumidores que não passam `filters` não têm nenhuma mudança
+   * de layout (slot ausente = nada renderizado).
+   */
+  filters?: ReactNode;
 };
 
 /**
@@ -211,6 +220,7 @@ export function CrudListPage<
   onCreate,
   emptyMessageKey,
   isMock,
+  filters,
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
@@ -239,6 +249,7 @@ export function CrudListPage<
             />
           </div>
         ) : null}
+        {filters}
         <ViewToggle
           value={preferredMode}
           onChange={setViewMode}

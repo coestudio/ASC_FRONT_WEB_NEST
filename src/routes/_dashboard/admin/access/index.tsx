@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Card } from "react-bootstrap";
+import { Badge, Card, Form } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import {
   getGetApiUserQueryKey,
 } from "@/api/generated/endpoints/user/user";
 import { PostApiUserBody } from "@/api/generated/zod/user/user.zod";
-import { UserType, type UserDTO } from "@/api/generated/model";
+import { UserType, type InternalRole, type UserDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
@@ -76,6 +76,10 @@ type PendingAction = {
   kind: "activate" | "deactivate" | "resetPassword" | "delete";
   user: UserDTO;
 };
+
+// Filtro admin/não-admin — 3 estados (SPEC-32 RF2): "all" não manda
+// `IsAdmin` no parâmetro do Core, os outros dois mandam `true`/`false`.
+type IsAdminFilter = "all" | "admin" | "nonAdmin";
 
 /**
  * Ações da linha/card — pílulas circulares coloridas (verde pra editar e
@@ -181,11 +185,16 @@ function AdminAccessPageContent() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  // Filtros de listagem (SPEC-32) — "" = "Todos" (sem parâmetro `Role`).
+  const [roleFilter, setRoleFilter] = useState<InternalRole | "">("");
+  const [isAdminFilter, setIsAdminFilter] = useState<IsAdminFilter>("all");
   const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
   const listQueryOptions = userListQueryOptions({
     Search: search || undefined,
+    Role: roleFilter || undefined,
+    IsAdmin: isAdminFilter === "admin" ? true : isAdminFilter === "nonAdmin" ? false : undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
   });
@@ -429,6 +438,41 @@ function AdminAccessPageContent() {
             setSearch(value);
             setPage(1);
           }}
+          filters={
+            <div className="d-flex gap-2 flex-wrap">
+              <Form.Select
+                size="sm"
+                style={{ width: "auto" }}
+                aria-label={t("access.filters.role")}
+                value={roleFilter}
+                onChange={(e) => {
+                  setRoleFilter(e.target.value as InternalRole | "");
+                  setPage(1);
+                }}
+              >
+                <option value="">{t("access.filters.allRoles")}</option>
+                {roleFieldOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </Form.Select>
+              <Form.Select
+                size="sm"
+                style={{ width: "auto" }}
+                aria-label={t("access.filters.isAdmin")}
+                value={isAdminFilter}
+                onChange={(e) => {
+                  setIsAdminFilter(e.target.value as IsAdminFilter);
+                  setPage(1);
+                }}
+              >
+                <option value="all">{t("access.filters.allUsers")}</option>
+                <option value="admin">{t("access.filters.adminOnly")}</option>
+                <option value="nonAdmin">{t("access.filters.nonAdminOnly")}</option>
+              </Form.Select>
+            </div>
+          }
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}

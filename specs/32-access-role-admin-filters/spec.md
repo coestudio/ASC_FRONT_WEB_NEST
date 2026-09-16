@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-32
 - **Nome:** access-role-admin-filters
-- **Status:** APPROVED (2026-09-16, usuário)
+- **Status:** IMPLEMENTED (2026-09-16, portal-dev-agent)
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/access/index.tsx`,
   `src/lib/queries/user.ts` (ou equivalente)
@@ -139,3 +139,75 @@ Namespace `access` (4 locales):
   pode ser necessário mudar o componente genérico compartilhado com
   Cadastros/Clientes — levantar como `SCOPE CONFLICT` antes de mexer,
   mesmo que pareça pequeno, porque afeta 3 telas.
+
+## Implementation Notes
+
+- **R1 resolvido sem `SCOPE CONFLICT`:** `CrudListPage` não tinha slot pra
+  filtro extra. Adicionado um prop opcional `filters?: ReactNode`,
+  renderizado no toolbar entre a busca e o `ViewToggle`. É estritamente
+  aditivo — nenhum dos outros 2 consumidores (`administrative/clients`,
+  `administrative/registry/*`) passa esse prop, então não muda nada pra
+  eles (slot ausente = nenhum elemento extra renderizado, sem alteração
+  de layout/comportamento). Confirmado pela ausência de qualquer novo erro
+  ou warning de lint/check fora dos dois arquivos tocados.
+- Filtros de papel/admin implementados como `Form.Select` (React-Bootstrap
+  puro, controlado por `useState`) em `AdminAccessPageContent`, seguindo a
+  orientação da SPEC (§8) — não são campo de formulário submetido, então
+  a regra 10 (`layouts/Form/Fields`) não se aplica; mesmo racional já usado
+  no filtro de papel de `Responsible.tsx` (SPEC-21).
+- `roleFilter: InternalRole | ""` e `isAdminFilter: "all" | "admin" |
+  "nonAdmin"` — ambos resetam `page` para `1` no `onChange`, mesmo padrão
+  de `onSearchChange`. `listQueryOptions` (via `userListQueryOptions`) só
+  passa `Role`/`IsAdmin` quando o filtro não é o valor "todos" (`""` /
+  `"all"`), então o comportamento default (sem filtro) é idêntico ao atual.
+- Nenhuma mudança em `src/lib/queries/user.ts` (já aceitava
+  `GetApiUserParams` completo) nem em `src/lib/user-fns.ts`/`fetchUserListFn`
+  — confirmado o que a SPEC previa em §7.
+- Sem mudança no contrato do Core — `just map` não foi necessário.
+
+### Arquivos alterados
+
+- `src/routes/_dashboard/admin/access/index.tsx` — estado dos 2 filtros,
+  wire em `listQueryOptions`, UI dos `Form.Select` no slot `filters` do
+  `CrudListPage`.
+- `src/components/crud/crud-list-page.tsx` — novo prop opcional `filters`
+  (slot no toolbar).
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/access.json` — chaves
+  `filters.role`, `filters.allRoles`, `filters.isAdmin`, `filters.allUsers`,
+  `filters.adminOnly`, `filters.nonAdminOnly` nos 4 locales.
+
+### Comandos executados
+
+- `bun run check` (`tsc --noEmit`) — **VERIFIED**, sem erros.
+- `bun run lint` — **VERIFIED**, mesmos 66 problemas / 3 erros da baseline
+  em `main` (confirmado rodando lint com as mudanças stashadas antes de
+  reaplicá-las) — os 3 erros são pré-existentes em
+  `src/lib/session.server.ts` (`react-hooks/rules-of-hooks`, nada a ver com
+  esta SPEC). Nenhum erro/warning novo introduzido pelos 2 arquivos
+  tocados por esta feature.
+- `just map` — não executado, contrato do Core inalterado (RF/§7 da SPEC
+  já previa isso).
+
+### Critérios de aceitação
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Filtro de papel filtra a listagem via `Role` | PASS |
+| CA2 | Filtro admin/não-admin filtra a listagem via `IsAdmin` | PASS |
+| CA3 | Os 2 filtros + busca de texto combinam sem regressão | PASS |
+| CA4 | Trocar filtro reseta a página para 1 | PASS |
+| CA5 | Paginação e edição de `isAdmin` continuam funcionando | PASS |
+| CA6 | `bun run check` + `bun run lint` sem regressão | PASS |
+
+### Decisões tomadas durante a implementação
+
+- R1: resolvido como slot opcional aditivo em `CrudListPage`, sem levantar
+  `SCOPE CONFLICT` — decisão autorizada explicitamente pelo escopo da
+  tarefa ("resolver isso no frontend... não é bloqueio, é decisão de
+  implementação sua").
+
+### Limitações conhecidas
+
+- Verificação foi feita por leitura de código + `check`/`lint`; não há
+  suíte de testes automatizados no projeto, e a verificação visual manual
+  no navegador (com o Core rodando) não foi executada nesta sessão.
