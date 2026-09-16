@@ -1,6 +1,30 @@
 /* Reset/base — cores vêm do Bootstrap (--bs-body-bg/--bs-body-color),
    que já mudam sozinhas conforme data-bs-theme. */
 
+/* Bug: modal com `<Form>` envolvendo `Modal.Body` + `Modal.Footer` (padrão
+   usado em `crud-record-modal.tsx`, `profile-modal.tsx`, abas de Operação)
+   quebra o scroll interno do `.modal-dialog-scrollable` do Bootstrap. O CSS
+   do Bootstrap espera `.modal-header`/`.modal-body`/`.modal-footer` como
+   filhos DIRETOS de `.modal-content` (flex column): `.modal-body` tem
+   `flex: 1 1 auto` + `overflow-y: auto` pra encolher e virar a área que
+   rola, enquanto header/footer (`flex-shrink: 0`) ficam fixos. Com o
+   `<form>` no meio, `.modal-body`/`.modal-footer` viram netos, não filhos,
+   de `.modal-content` — o `<form>` (bloco comum, sem `flex`/`overflow`
+   próprios) vira o item flex de fato, mas como não encolhe (min-height
+   automático não vira 0 sem `overflow` diferente de `visible`), ele cresce
+   pra caber todo o conteúdo. Resultado: sem scroll nenhum, o
+   `overflow: hidden` de `.modal-content` só corta o final por baixo — em
+   modal com muitos campos, o rodapé (botão Fechar/Salvar) some sem
+   indicação de que dava pra rolar (bug relatado: "Detalhes do cliente" com
+   muitos campos preenchidos).
+   `display: contents` tira o `<form>` da árvore de caixas (mantém o
+   elemento e a semântica de submit no DOM) e devolve header/body/footer
+   como filhos diretos flex de `.modal-content`, restaurando o comportamento
+   padrão do Bootstrap. */
+.modal-dialog-scrollable .modal-content > form {
+  display: contents;
+}
+
 html {
   height: 100%;
 }
