@@ -2,13 +2,12 @@
 
 - **ID:** SPEC-30
 - **Nome:** profile-modal-fixes
-- **Status:** PARTIALLY_IMPLEMENTED (2026-09-16) — RF2 e RF3 confirmados
-  funcionando em tela real pelo usuário. **RF1 (avatar): causa raiz era
-  no Core** (`PATCH /profile/avatar` devolvia dado desatualizado —
+- **Status:** IMPLEMENTED (2026-09-16) — RF1, RF2 e RF3 confirmados
+  funcionando em tela real pelo usuário. RF1 (avatar) tinha causa raiz no
+  Core (`PATCH /profile/avatar` devolvia dado desatualizado —
   `warren/Core/specs/40-profile-avatar-stale-response`, `IMPLEMENTED`),
-  não no cache-bust do front (que já estava certo). Fix do Core aplicado
-  e `just map` rodado sem diff de contrato — falta só confirmação visual
-  em tela real pelo usuário antes de marcar `IMPLEMENTED`. Ver §13.
+  não no cache-bust do front (que já estava certo desde a implementação
+  original). Ver §13.
 - **Status anterior:** WAITING_APPROVAL — decisão de §6.1 fechada com o
   usuário (2026-09-15).
 - **Autor:** portal-dev-agent (rascunho); implementação parcial 2026-09-16
@@ -236,9 +235,9 @@ diff de contrato (mesmo `UserAdminDTO`, só o **dado** da resposta
 mudou, não o shape) — então nenhuma mudança de código adicional no
 NewPortal foi necessária pra fechar RF1.
 
-**Ainda falta:** confirmação visual em tela real pelo usuário (histórico
-desta SPEC já teve um "deveria estar corrigido" que na prática não
-resolveu — não fechar como 100% confirmado sem esse teste manual).
+**Confirmado em tela real pelo usuário (2026-09-16):** avatar atualiza
+visualmente logo após o upload, sem precisar de Salvar nem reload. RF1
+fechado.
 
 Próximos passos antigos, mantidos como registro:
 1. ~~Confirmar no DevTools se a URL ganha `?v=...` e muda entre
