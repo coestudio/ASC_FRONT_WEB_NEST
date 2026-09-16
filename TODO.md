@@ -64,21 +64,19 @@ processo formal: adiciona e risca como quiser.
 
 - [x] ~~Modal de Profile — 3 problemas: (avatar não atualiza,
   Phone/BirthDate travando vazio, botões Salvar/Cancelar em lugares
-  diferentes)~~ → SPEC-30 (`PARTIALLY_IMPLEMENTED` — RF2
-  Phone/BirthDate vazio e RF3 botões lado a lado confirmados
-  funcionando; **RF1 (avatar não atualiza) segue incompleto**, fix de
-  cache-bust não resolveu o que o usuário reportou, retomar nesta SPEC
-  numa próxima sessão de frontend, não abrir SPEC nova)
+  diferentes)~~ → SPEC-30 (`IMPLEMENTED`, 2026-09-16 — RF1 tinha causa
+  raiz no Core, `PATCH /profile/avatar` devolvia dado desatualizado;
+  corrigido em `Core/specs/40-profile-avatar-stale-response`, confirmado
+  em tela real pelo usuário)
 
 - [x] ~~Sidebar (topo): logo do brand não aparece.~~ → SPEC-29
   (`IMPLEMENTED`, reversão da decisão da SPEC-26)
 
-- [ ] Relatórios de verdade (aba Reports hoje é mock, SPEC-07-07): Weight
-  Report, Packing List, Relatório Fotográfico... → SPEC-40, `DEFERRED`
-  a pedido do usuário (2026-09-16) — bloqueada pelas 3 SPECs de
-  relatório do Core (`36`/`37`/`38`, `DRAFT`, prontas pra aprovar) e por
-  decisão de arquitetura em aberto sobre `.pdf` (fora do escopo do Core
-  hoje).
+- [x] ~~Relatórios de verdade (aba Reports hoje é mock, SPEC-07-07): Weight
+  Report, Packing List, Relatório Fotográfico...~~ → SPEC-40
+  (`IMPLEMENTED`, 2026-09-16, Core `36`/`37`/`38` também `IMPLEMENTED`).
+  Sem `.pdf` (fora do escopo do Core, sem LibreOffice hospedado) — só
+  `.xlsx`/`.docx`.
 
 - [x] ~~Aba Nota Fiscal ganha sub-abas: (1) listagem atual, (2) "Comparação
   NF"... (3) "Comparação Lotes"...~~ → SPEC-41 (`IMPLEMENTED`, Core
@@ -103,9 +101,8 @@ processo formal: adiciona e risca como quiser.
   negócio; Core `34-container-split-transfer-gaps` também `DEFERRED`)
 
 - [x] ~~`Profile.ViewModel.Document` obrigatório~~ — Core resolveu
-  (`27-profile-document-optional`, `IMPLEMENTED`). **Lado NewPortal
-  ainda não pego** — falta `just map` refletir o campo opcional e o
-  ajuste trivial em `DetailTab` (mesmo padrão do RF2 da SPEC-30, ver
-  aquela SPEC §"Fora do escopo" item 2 pro plano de quando fizer).
+  (`27-profile-document-optional`, `IMPLEMENTED`). Lado NewPortal
+  → SPEC-47 (`IMPLEMENTED`, 2026-09-16 — `InputDocument.tsx` não
+  hardcoda mais `required`).
 
 ## Feito
