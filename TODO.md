@@ -105,4 +105,23 @@ processo formal: adiciona e risca como quiser.
   → SPEC-47 (`IMPLEMENTED`, 2026-09-16 — `InputDocument.tsx` não
   hardcoda mais `required`).
 
+- [ ] Operação → aba Responsáveis: usuário reportou (2026-09-16) não
+  conseguir ver o próprio usuário no campo de busca pra vincular como
+  Responsável. Causa raiz **não confirmada** — dois candidatos achados
+  em código, sem repro que descarte um dos dois:
+  1. `Controllers/Operation/Responsible/Responsible.Cruid.cs`
+     `GetEligibleUsers` exclui explicitamente `UserName == "SuperAdmin"`
+     — se o usuário testou logado como SuperAdmin (conta "Super login"
+     do `.env`), é comportamento intencional, não bug.
+  2. `SelectAsync` (`layouts/Form/Fields/SelectAsync.tsx`) dispara busca
+     com `query=""` assim que o campo ganha foco, sem exigir digitação
+     — o endpoint devolve os primeiros 20 usuários em ordem alfabética
+     por nome (`Limit: 20`, sem filtro de `Search` quando vazio); se
+     houver mais de 20 usuários internos ativos e o nome do usuário não
+     estiver entre os 20 primeiros, ele não aparece sem digitar pra
+     buscar — pode ser só falta de digitar o nome, não bug.
+  Retomar pedindo pro usuário confirmar qual cenário bateu (estava
+  logado como quem, digitou o nome ou não) antes de decidir se vira
+  SPEC.
+
 ## Feito
