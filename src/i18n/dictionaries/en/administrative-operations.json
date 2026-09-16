@@ -54,7 +54,8 @@
     "email": "Email",
     "vesselEmpty": "No vessel linked",
     "createdAt": "Created at",
-    "updatedAt": "Updated at"
+    "updatedAt": "Updated at",
+    "editButton": "Edit"
   },
   "responsible": {
     "searchPlaceholder": "Search by name or email...",
