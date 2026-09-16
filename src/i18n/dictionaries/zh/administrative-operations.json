@@ -172,7 +172,8 @@
       "toast": {
         "analyzeError": "无法分析表格，请重试。",
         "applyError": "无法应用导入，请重试。",
-        "applySuccess": "导入已应用：新建 {created} 个，更新 {updated} 个，删除 {deleted} 个。"
+        "applySuccess": "导入已应用：新建 {created} 个，更新 {updated} 个，删除 {deleted} 个。",
+        "applyNoop": "没有导入任何内容：所选的包裹未生成任何创建、更新或删除。"
       },
       "fields": {
         "itemCode": "项目代码",

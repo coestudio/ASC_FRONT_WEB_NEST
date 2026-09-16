@@ -1,0 +1,20 @@
+/* Botões de ação de linha (ver/editar/excluir) — mais compactos e
+   quadrados (só ícone) do que o `.btn-sm` padrão do Bootstrap, que reserva
+   padding horizontal pensado pra botão com texto. Reduz a altura efetiva da
+   linha nas listagens CRUD (SPEC-47 item 3: coluna "Ações" desalinhada —
+   gap grande entre linhas comparado ao cabeçalho "AÇÕES"). Escopo só neste
+   componente, consumido pelas 9 telas que usam `CrudRowActions` — não mexe
+   no padding das outras colunas da tabela (`crud-list-page.module.css`). */
+.actions {
+  gap: 0.35rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  line-height: 1;
+}

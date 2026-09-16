@@ -172,7 +172,8 @@
       "toast": {
         "analyzeError": "Não foi possível analisar a planilha. Tente novamente.",
         "applyError": "Não foi possível aplicar o import. Tente novamente.",
-        "applySuccess": "Import aplicado: {created} criados, {updated} atualizados, {deleted} excluídos."
+        "applySuccess": "Import aplicado: {created} criados, {updated} atualizados, {deleted} excluídos.",
+        "applyNoop": "Nada foi importado: nenhum fardo selecionado gerou criação, atualização ou exclusão."
       },
       "fields": {
         "itemCode": "Código do item",

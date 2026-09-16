@@ -472,13 +472,29 @@ function ImportRomaneioModal({
         deleteMissing: Array.from(selectedMissing),
       });
       const result = await applyMutation.mutateAsync({ operationId, data: payload });
-      toast.success(
-        t("administrative-operations.romaneio.import.toast.applySuccess", {
-          created: String(result.created ?? 0),
-          updated: String(result.updated ?? 0),
-          deleted: String(result.deleted ?? 0),
-        }),
-      );
+      const created = Number(result.created ?? 0);
+      const updated = Number(result.updated ?? 0);
+      const deleted = Number(result.deleted ?? 0);
+
+      // BUGFIX (investigação do fluxo de import — ver relatório da branch
+      // fix/sidebar-romaneio-import-acoes): o Core sempre responde 200 aqui,
+      // mesmo quando nada foi de fato criado/atualizado/excluído (ex.: todos
+      // os fardos da planilha já existem sem divergência — "unchanged" — ou
+      // ficaram em grupos não-acionáveis como "foreign"/"duplicated"). Sem
+      // essa checagem, o wizard fechava com um toast verde de "sucesso"
+      // mesmo sem persistir nada, e o usuário não entendia por que o fardo
+      // não aparecia na listagem depois. Avisa em vez de comemorar um no-op.
+      if (created === 0 && updated === 0 && deleted === 0) {
+        toast.warn(t("administrative-operations.romaneio.import.toast.applyNoop"));
+      } else {
+        toast.success(
+          t("administrative-operations.romaneio.import.toast.applySuccess", {
+            created: String(created),
+            updated: String(updated),
+            deleted: String(deleted),
+          }),
+        );
+      }
       onApplied();
       onClose();
     } catch {
