@@ -2,7 +2,9 @@
 
 - **ID:** SPEC-34
 - **Nome:** date-field-picker
-- **Status:** DRAFT
+- **Status:** DRAFT — decisão de §3 adiada de propósito pelo usuário
+  (2026-09-15): "a ser decidido quando a spec for ser implementada". Não
+  bloqueia mais nada além da própria aprovação desta SPEC.
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/layouts/Form/Fields/InputDate.tsx`
 - **Contexto do pedido:** item do `TODO.md` sobre `InputDate.tsx` não ter

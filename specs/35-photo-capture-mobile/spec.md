@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-35
 - **Nome:** photo-capture-mobile
-- **Status:** DRAFT
+- **Status:** WAITING_APPROVAL — decisão de §3 fechada com o usuário
+  (2026-09-15): opção 3 ("nada além do padrão do celular").
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/layouts/Form/Fields/{InputPhotoSingle,InputPhotoMulti}.tsx`
 - **Contexto do pedido:** item do `TODO.md` sobre suporte mobile de
@@ -61,23 +62,11 @@ storage do usuário sem consentimento por clique). O que **é** possível:
    comportamento padrão do SO), pode não haver necessidade de nenhum
    código adicional além de adicionar o atributo `capture`.
 
-**Vantagens/desvantagens:**
-
-- Opção 1 não exige código, mas depende de comportamento de SO/browser
-  fora do controle do projeto — precisa validação manual em pelo menos
-  Android + iOS antes de considerar resolvido.
-- Opção 2 dá controle explícito ao usuário, mas adiciona um clique extra
-  e complexidade de UI (quando mostrar o botão, o que fazer se
-  falhar).
-- Opção 3 é a mais simples, mas só resolve o problema se a opção 1 for
-  confirmada como verdadeira na prática.
-
-**Impacto:** sem essa decisão, não dá para escrever requisitos
-funcionais precisos além de "adicionar `capture`" (que é consenso, ver
-§4). A parte de "garantir salvo no celular" fica bloqueada.
-
-**Aguardando decisão do usuário** sobre qual comportamento é esperado
-antes de fechar o escopo completo desta SPEC.
+**RESOLVIDA (2026-09-15):** opção 3 — **nada além do `capture`**. O
+usuário confirmou que o comportamento padrão do celular (foto tirada
+pela câmera nativa já cai na galeria do aparelho) já é suficiente, sem
+necessidade de botão de download explícito nem validação formal por
+opção 1. Nenhum código adicional além de RF1 (§4).
 
 ## 4. Escopo (parte não ambígua, pode avançar já)
 
@@ -86,8 +75,9 @@ antes de fechar o escopo completo desta SPEC.
    `InputPhotoMulti`, mantendo `accept="image/*"` — em desktop/browsers
    sem suporte a `capture`, o atributo é ignorado silenciosamente (abre o
    seletor de arquivo normal), sem regressão.
-2. A parte de "garantir salvo no celular" (RF a definir) fica bloqueada
-   até a decisão do §3.
+2. "Garantir salvo no celular" não exige nenhum código adicional (§3,
+   opção 3 confirmada) — o comportamento padrão do SO/câmera nativa já
+   cobre o pedido.
 
 ## 5. Fora do escopo
 
@@ -102,8 +92,8 @@ antes de fechar o escopo completo desta SPEC.
 
 - **RF1** — `InputPhotoSingle`/`InputPhotoMulti` usam
   `capture="environment"` no `<input type="file">`.
-- **RF2 (bloqueado por §3)** — comportamento de garantir a foto salva no
-  dispositivo, conforme a opção decidida.
+- **RF2** — nenhuma ação adicional além de RF1 (§3 confirmou que o
+  comportamento padrão do celular já basta).
 
 ## 7. Camada de dados
 
@@ -120,7 +110,7 @@ Não se aplica — mudança de atributo HTML em componente de UI existente.
 | --- | --- |
 | CA1 | Em um browser mobile real (Android Chrome e/ou iOS Safari), tocar em "Escolher foto"/"Adicionar foto" abre a câmera (ou oferece a opção de câmera de forma proeminente), não só a galeria |
 | CA2 | Em desktop, o comportamento não muda (nenhuma regressão) |
-| CA3 (bloqueado) | Critério de "salvo no dispositivo" a definir conforme decisão do §3 |
+| CA3 | Nenhum critério adicional — comportamento padrão do celular já atende (§3) |
 | CA4 | `bun run check` + `bun run lint` sem regressão |
 
 ## 10. Riscos

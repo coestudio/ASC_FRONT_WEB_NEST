@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-36
 - **Nome:** destuffing-screen
-- **Status:** DRAFT
+- **Status:** WAITING_APPROVAL — decisões de §5 fechadas com o usuário
+  (2026-09-15).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Containers.tsx` (referência),
   nova tela/aba a definir
@@ -64,21 +65,16 @@ Containers.
 
 ## 5. `[NEEDS_DECISION]`
 
-1. **Onde a nova tela entra na navegação?** Como uma nova aba do shell de
-   Operação (ao lado de Containers/Romaneio/etc.) ou como uma seção
-   dentro da própria aba Containers (ex. um toggle "ver por container" /
-   "ver todos os fardos estufados")? Impacta `nav`/estrutura de abas do
-   shell de Operação (`SPEC-07-02`) — decisão de UX/IA de informação, não
-   deve ser assumida sem confirmação.
+1. **Onde a nova tela entra na navegação?** RESOLVIDA (2026-09-15):
+   **seção dentro de Containers** (não nova aba do shell de Operação) —
+   toggle/seção "ver todos os fardos estufados" dentro da própria aba
+   Containers.
 2. **O modal `CargoUnitsModal` por container continua existindo em
-   paralelo?** Ou a nova tela o substitui totalmente? Afeta se
-   `Containers.tsx` precisa de alguma mudança além de reaproveitar
-   endpoint/modal de cancelamento.
+   paralelo?** Implícito na decisão acima — sim, continua existindo
+   (a nova seção é um ponto de entrada adicional dentro da mesma aba,
+   não uma substituição).
 
-**Aguardando decisão do usuário** sobre §5.1 e §5.2 antes de detalhar o
-contrato de rota/UI final.
-
-## 6. Requisitos funcionais (pendentes de §5)
+## 6. Requisitos funcionais
 
 - **RF1** — Nova listagem de fardos estufados da operação, filtrável por
   status e (opcionalmente) por container, usando
@@ -105,23 +101,25 @@ contrato de rota/UI final.
 
 ## 9. i18n
 
-Namespace `administrative-operations` (novo sub-namespace, ex.
-`destuffing.*`), 4 locales — chaves exatas a definir conforme a decisão
-de IA de informação do §5.
+Namespace `administrative-operations`, sub-namespace novo `destuffing.*`,
+4 locales — chaves exatas a definir na implementação.
 
-## 10. Arquivos esperados (estimativa, depende de §5)
+## 10. Arquivos esperados
 
-- Novo arquivo de tela/aba (nome exato a definir conforme §5.1)
-- `src/components/operations/tabs/Containers.tsx` (extração de
-  `CancelCargoUnitModal` para módulo compartilhado, se necessário)
+- `src/components/operations/tabs/Containers.tsx` (nova seção/toggle
+  dentro da aba, extração de `CancelCargoUnitModal` para módulo
+  compartilhado se necessário).
 
-## 11. Critérios de aceitação (pendentes de §5)
+## 11. Critérios de aceitação
 
-Bloqueado até a decisão do §5 — critérios detalhados serão adicionados
-quando a IA de informação for confirmada.
+| # | Critério |
+| --- | --- |
+| CA1 | Dentro da aba Containers, existe uma seção/toggle que lista todos os fardos `Stuffed` da operação, independente de container |
+| CA2 | Ação de desestufar disponível diretamente dessa listagem, sem precisar abrir o modal por container |
+| CA3 | Cada linha mostra o container de origem do fardo |
+| CA4 | `CargoUnitsModal` por container continua funcionando sem regressão |
+| CA5 | `bun run check` + `bun run lint` sem regressão |
 
 ## 12. Riscos
 
-- **R1** — Sem a decisão do §5, qualquer implementação corre o risco de
-  desenhar uma navegação que o usuário não queria (nova aba vs. seção
-  dentro de Containers).
+- **R1** — Baixo, decisão de IA de informação já fechada (§5).

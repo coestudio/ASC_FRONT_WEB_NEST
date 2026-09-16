@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-37
 - **Nome:** container-photo-checklist
-- **Status:** DRAFT
+- **Status:** WAITING_APPROVAL — decisões de §3 fechadas com o usuário
+  (2026-09-15).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Containers.tsx`
   (`InputPhotoMulti` de fotos do container)
@@ -22,55 +23,37 @@ e se já foram anexadas.
 
 Hoje o modal de fotos do container usa `InputPhotoMulti` puro — upload
 livre de N imagens, sem categorização nem indicação de quais fotos são
-esperadas (ex.: foto do lacre, foto de dentro do container vazio, foto do
-container cheio, foto da placa/identificação). Não existe, em nenhum
-lugar do código ou do contrato do Core hoje, uma lista de "tipos de foto
-obrigatórios" para container — confirmado que `ContainerOperationDTO` e o
-endpoint de fotos (`usePostApiOperationOperationIdContainerIdPhoto`) não
-têm nenhum campo de categoria/tipo de foto.
+esperadas. **Achado corrigido (2026-09-15):** o Core já tem um enum
+dedicado pra isso — `ContainerPhotoSlot` (`Domain/Operations/Container/
+Photos/*`), com 8 valores: `EmptyExternal`, `EmptyInternal`, `FirstRow`,
+`Fifty`, `Hundred`, `FullExternal`, `Sealed`, `ShipownerSeal`. O contrato
+do Core (a confirmar exposição via `just map` se ainda não exposto)
+já prevê "slot" como conceito de categoria de foto — não é preciso
+inventar nem pedir ao Core um campo novo.
 
-## 3. `[NEEDS_DECISION]`
+## 3. `[NEEDS_DECISION]` — RESOLVIDA (2026-09-15)
 
-Quais fotos são consideradas "necessárias" para um container? Isso é uma
-regra de negócio que não está em nenhum lugar do código nem foi
-especificada pelo usuário — não pode ser inventada. Perguntas em aberto:
-
-1. **A lista é fixa** (ex.: sempre as mesmas N categorias — "lacre",
-   "vazio", "cheio", "placa" — para todo container, de toda operação)?
-2. **Ou é configurável** — por tipo de operação, por cliente, por produto,
-   ou até por container individualmente? Se configurável, quem
-   configura (admin via alguma tela nova) e onde isso fica persistido —
-   isso teria implicação direta de contrato no Core (precisaria de um
-   endpoint/campo para guardar a lista de categorias esperadas), o que
-   tornaria esta SPEC dependente de mudança no Core (Grupo B/C, não
-   Grupo A).
-3. **Se a lista for fixa**, ela é a mesma para toda a aplicação, ou pode
-   variar por operação/tipo de operação (Bale/Bag,
-   `OperationType`/`OperationService` já existentes no domínio de
-   Operação)?
-4. **O checklist bloqueia o salvamento** se alguma foto obrigatória
-   estiver faltando, ou é só um indicador visual (aviso, não bloqueio)?
-
-**Vantagens/desvantagens de cada abordagem:**
-
-- Lista fixa e hardcoded no front: mais simples de implementar, mas
-  qualquer mudança de regra de negócio exige deploy de código —
-  inflexível.
-- Lista configurável via Core: correta a longo prazo, mas exige uma SPEC
-  de Core (endpoint/campo novo) antes de poder ser consumida no front —
-  este item sairia do Grupo A (frontend puro) para o Grupo B/C.
-
-**Impacto:** sem essa decisão, não é possível escrever requisitos
-funcionais nem desenhar a UI do checklist — a estrutura de dados por trás
-dele depende inteiramente da resposta.
-
-**Aguardando decisão do usuário** sobre qual das abordagens acima seguir
-(e, se for "lista fixa", quais são exatamente as categorias de foto
-esperadas) antes de detalhar o restante desta SPEC.
+1. **A lista é fixa** — RESOLVIDA: sim, é a lista fixa dos 8 valores de
+   `ContainerPhotoSlot` (§2), a mesma para todo container/operação.
+2. **Configurável?** — não se aplica, a lista fixa do enum já resolve.
+3. **Varia por tipo de operação?** — não, os 8 slots valem sempre.
+4. **Bloqueia o salvamento?** — RESOLVIDA: **todos os 8 são obrigatórios**
+   — o checklist deve indicar quando algum slot ainda não tem foto
+   anexada.
 
 ## 4. Escopo
 
-Bloqueado até a decisão do §3.
+1. Modal de fotos do container passa a exibir um checklist com os 8
+   `ContainerPhotoSlot`, indicando quais já têm foto anexada e quais
+   faltam.
+2. Upload de foto associa a categoria (`ContainerPhotoSlot`) escolhida —
+   UI a definir na implementação (ex. um `InputPhotoSingle` por slot, ou
+   seleção de slot ao anexar em `InputPhotoMulti`).
+3. Todos os 8 slots são obrigatórios (§3.4) — decisão de implementação
+   se isso vira bloqueio duro de salvar ou só aviso visual forte, dado
+   que o pedido original ("checklist") sugere indicador, mas a
+   obrigatoriedade dos 8 aponta pra validação real antes de considerar o
+   container com fotos completas.
 
 ## 5. Fora do escopo
 
@@ -81,15 +64,20 @@ Bloqueado até a decisão do §3.
 ## 6. Arquivos esperados (estimativa, depende de §3)
 
 - `src/components/operations/tabs/Containers.tsx`
-- Possível novo endpoint/model gerado via `just map`, se a decisão for
-  "lista configurável via Core" (§3.2).
+- `just map` — confirmar que `ContainerPhotoSlot` já está exposto no
+  client gerado; se não estiver, é território Core (expor o enum no
+  contrato) antes de implementar aqui.
 
 ## 7. Critérios de aceitação
 
-Bloqueado até a decisão do §3.
+| # | Critério |
+| --- | --- |
+| CA1 | Checklist exibe os 8 valores de `ContainerPhotoSlot`, indicando os já anexados |
+| CA2 | Upload de foto associa o slot escolhido |
+| CA3 | Ausência de algum dos 8 slots é sinalizada claramente (obrigatórios, §3.4) |
+| CA4 | `bun run check` + `bun run lint` sem regressão |
 
 ## 8. Riscos
 
-- **R1** — Esta SPEC não pode avançar sem a decisão de negócio do §3 —
-  qualquer suposição de "quais fotos são necessárias" seria inventar
-  regra de negócio, proibido pelas regras deste agente.
+- **R1** — Baixo, decisão de negócio já fechada (§3) com base num enum
+  real do Core, não inventado.

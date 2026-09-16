@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-30
 - **Nome:** profile-modal-fixes
-- **Status:** DRAFT
+- **Status:** WAITING_APPROVAL — decisão de §6.1 fechada com o usuário
+  (2026-09-15).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/profile/{profile-modal,detail-tab}.tsx`,
   `src/layouts/Form/Fields/InputAvatar.tsx`
@@ -106,21 +107,13 @@ lado a lado" implica decidir como isso convive com 3 forms distintos (ver
 
 ## 6. `[NEEDS_DECISION]`
 
-1. **Layout de Salvar/Cancelar com 3 forms independentes.** Opções:
-   - **A)** Mover o botão Salvar de cada aba para o `Modal.Footer`,
-     ficando ao lado do Cancelar — o Footer passa a chamar
-     `methods.handleSubmit` da aba ativa (precisa expor o `handleSubmit`
-     de cada aba para o componente pai, ex. via `ref`/callback).
-   - **B)** Manter 3 `<Form>` independentes, mas mover o Cancelar para
-     dentro de cada aba, ao lado do respectivo Salvar (Footer do Modal
-     fica só com um "Fechar" genérico, ou desaparece).
-   - Impacto: A é mais próximo do pedido literal ("um do lado do outro",
-     citando o Footer como referência de posição), mas exige acoplar o
-     `Modal.Footer` ao estado da aba ativa. B é mais simples de
-     implementar, mas muda a semântica do Cancelar (deixa de ser "fechar
-     o modal" pra virar "cancelar mudanças desta aba" + precisa de um
-     "Fechar" separado). **Aguardando decisão do usuário antes da
-     aprovação.**
+1. **Layout de Salvar/Cancelar com 3 forms independentes.** RESOLVIDA
+   (2026-09-15): **"um Salvar por aba, ambos no rodapé"** — opção B
+   adaptada: cada aba mantém seu próprio Salvar (chama o `handleSubmit`
+   daquela aba), mas o botão fica posicionado no `Modal.Footer` junto do
+   Cancelar (não dentro do `<Form>` da aba) — o Footer troca qual Salvar
+   exibe conforme a aba ativa, sem precisar acoplar `Modal.Footer` a um
+   `handleSubmit` único compartilhado entre as 3 abas.
 2. **`Document` obrigatório no Core.** Confirmado como território Core
    (`Profile.ViewModel.cs`, `[Required]`). Não é decisão desta SPEC —
    registrar como pendência separada (ver `TODO.md`, nota "aguardando
