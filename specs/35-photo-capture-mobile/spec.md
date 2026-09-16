@@ -2,8 +2,7 @@
 
 - **ID:** SPEC-35
 - **Nome:** photo-capture-mobile
-- **Status:** WAITING_APPROVAL — decisão de §3 fechada com o usuário
-  (2026-09-15): opção 3 ("nada além do padrão do celular").
+- **Status:** IMPLEMENTED (2026-09-16) — ver §11 (Implementation Notes).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/layouts/Form/Fields/{InputPhotoSingle,InputPhotoMulti}.tsx`
 - **Contexto do pedido:** item do `TODO.md` sobre suporte mobile de
@@ -118,3 +117,24 @@ Não se aplica — mudança de atributo HTML em componente de UI existente.
 - **R1** — Comportamento de `capture` varia entre browsers/versões —
   validar manualmente em pelo menos 2 combinações reais de
   aparelho/browser antes de fechar como `IMPLEMENTED`.
+
+## 11. Implementation Notes (2026-09-16)
+
+`capture="environment"` adicionado ao `<input type="file">` de
+`InputPhotoSingle.tsx` e `InputPhotoMulti.tsx`, mantendo `accept="image/*"`
+— único atributo alterado em cada arquivo, nenhuma mudança de
+`onChange`/`field.value`. Comentário de topo de cada arquivo atualizado
+pra documentar o novo atributo (não-óbvio: por que `capture` e não outra
+coisa). RF2 (§3, opção 3 confirmada) não exigiu nenhum código além disso.
+
+**Arquivos alterados:**
+- `src/layouts/Form/Fields/InputPhotoSingle.tsx`
+- `src/layouts/Form/Fields/InputPhotoMulti.tsx`
+
+**Validação:** `bun run check`/`lint` limpos, sem findings novos nos dois
+arquivos (CA4). **CA1/R1 seguem pendentes de verificação manual** — não
+tenho como testar `capture` num browser mobile real a partir daqui;
+precisa ser confirmado num Android Chrome e/ou iOS Safari de verdade
+antes de considerar R1 encerrado. CA2 (sem regressão em desktop) é
+esperado por natureza do atributo (`capture` é ignorado silenciosamente
+onde não há suporte), mas também vale uma conferida rápida.

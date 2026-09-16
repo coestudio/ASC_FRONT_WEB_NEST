@@ -14,8 +14,12 @@ interface InputPhotoSingleProps<T extends FieldValues> extends InputDTO<T> {
  * Upload de uma única imagem com preview (thumbnail), sem crop — RF6/CA4
  * da SPEC-SHARE-01. Diferente de `InputAvatar` (crop circular 96×96, caso
  * específico de perfil — CA7: crop continua exclusivo dele). `accept` fica
- * fixo em `image/*`, não configurável. `field.value` vira o `File`
- * selecionado (ou `null`); quem envia decide o `multipart/form-data` (RF8).
+ * fixo em `image/*`, não configurável. `capture="environment"` abre a
+ * câmera traseira direto em browsers mobile que suportam o atributo
+ * (Chrome Android, Safari iOS) — ignorado silenciosamente em desktop/sem
+ * suporte, cai no seletor de arquivo normal (SPEC-35). `field.value` vira
+ * o `File` selecionado (ou `null`); quem envia decide o
+ * `multipart/form-data` (RF8).
  */
 function InputPhotoSingle<T extends FieldValues>({
   fieldName,
@@ -90,6 +94,7 @@ function InputPhotoSingle<T extends FieldValues>({
                 ref={inputRef}
                 type="file"
                 accept="image/*"
+                capture="environment"
                 className="d-none"
                 name={name}
                 onChange={(e) => onChange(e.target.files?.[0] ?? null)}
