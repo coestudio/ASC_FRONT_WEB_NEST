@@ -2,7 +2,14 @@
 
 - **ID:** SPEC-40
 - **Nome:** operation-reports-real
-- **Status:** DRAFT
+- **Status:** DEFERRED (2026-09-16, usuário) — adiada pra depois. Motivo:
+  depende de 3 endpoints novos do Core (`specs/36-weight-report`,
+  `specs/37-packing-list-report`, `specs/38-photographic-report`, todos
+  `DRAFT` lá), e o pedido aqui de `.pdf` **e** `.docx` (§1) expõe um
+  `[NEEDS_DECISION]` de arquitetura que o Core ainda não resolveu — `.pdf`
+  está fora do escopo das 3 SPECs do Core hoje (sem LibreOffice
+  hospedado, ver `Core/specs/BACKLOG.md` B18). Retomar só depois que o
+  Core entregar as 3 SPECs e a decisão de `.pdf` for fechada.
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Reports.tsx`
 - **Depende de (Core):** spec Core em andamento para geração de

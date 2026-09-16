@@ -2,10 +2,12 @@
 
 - **ID:** SPEC-45
 - **Nome:** container-split-transfer-investigation
-- **Status:** DRAFT (investigação — não desenha solução). Decisão do
-  usuário (2026-09-15): **última coisa a ser feita** — sistema ainda
-  precisa ser consultado/validado com o negócio (mesma decisão tomada no
-  Core SPEC-34). Não avançar nas perguntas de §3 até o usuário reabrir
+- **Status:** DEFERRED (confirmado novamente 2026-09-16, usuário) —
+  investigação apenas, não desenha solução. Decisão do usuário
+  (2026-09-15, reafirmada 2026-09-16): **última coisa a ser feita** —
+  sistema ainda precisa ser consultado/validado com o negócio (mesma
+  decisão tomada no Core `specs/34-container-split-transfer-gaps`, também
+  `DEFERRED`). Não avançar nas perguntas de §3 até o usuário reabrir
   isto.
 - **Autor:** portal-dev-agent (rascunho)
 - **Área investigada:** `src/components/operations/tabs/Containers.tsx`
