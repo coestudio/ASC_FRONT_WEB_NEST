@@ -323,7 +323,8 @@
         "sealed": "Container sealed successfully.",
         "unsealed": "Seal removed successfully."
       }
-    }
+    },
+    "searchPlaceholder": "Search by container identifier..."
   },
   "documents": {
     "new": "New document",

@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-38
 - **Nome:** container-list-search
-- **Status:** DRAFT (revisado 2026-09-16) — **§3 já resolvido pelo Core.**
+- **Status:** IMPLEMENTED (2026-09-16) — ver §13 (Implementation Notes).
+- **Status anterior:** DRAFT (revisado 2026-09-16) — **§3 já resolvido pelo Core.**
   `specs/26-container-cargo-search` já é `IMPLEMENTED`: `Search` existe
   em `ContainerOperationViewModel.Query` (filtra por
   `Container.Identifier`) **e também** em `CargoUnitViewModel.Query`
@@ -92,12 +93,12 @@ Reaproveitar chave de placeholder de busca já existente no namespace
 
 ## 10. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA0 | `just map` executado, `Search` presente no client gerado |
-| CA1 | Buscar por texto filtra a listagem de containers |
-| CA2 | Buscar reseta a página para 1 |
-| CA4 | `bun run check` + `bun run lint` sem regressão |
+| # | Critério | Status |
+| --- | --- | --- |
+| CA0 | `just map` executado, `Search` presente no client gerado | PASS |
+| CA1 | Buscar por texto filtra a listagem de containers | PASS |
+| CA2 | Buscar reseta a página para 1 | PASS |
+| CA4 | `bun run check` + `bun run lint` sem regressão | PASS |
 
 ## 11. Riscos
 
@@ -114,3 +115,26 @@ aparecem embutidos em outras telas, não numa lista própria com busca).
 Registrado aqui pra não ser esquecido: se/quando uma tela de listagem de
 CargoUnit for criada, ela já nasce com `Search` disponível no contrato,
 sem precisar de spec nova no Core.
+
+## 13. Implementation Notes (2026-09-16)
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Containers.tsx` — `search`/`setSearch`
+  novo (mesmo par `page`/`setSearch` do padrão já usado em `Romaneio.tsx`);
+  `Search: search || undefined` adicionado ao `listQueryOptions`; novo
+  componente local `ContainerSearchInput` (réplica do `ListSearchInput`
+  privado de `components/crud/crud-list-page.tsx` — `Containers.tsx` não
+  usa `CrudListPage`, então não dava pra importar direto; duplicação
+  pequena e aceitável, não virou abstração compartilhada nova porque
+  isso mudaria escopo pra um refactor não pedido aqui). Campo renderizado
+  ao lado do botão "Vincular container".
+- i18n: `administrative-operations.containers.searchPlaceholder` novo
+  nos 4 locales.
+
+**Comandos executados e resultado:**
+- `bun run check` — VERIFIED, limpo.
+- `bun run lint` — VERIFIED, 66/3 (baseline pré-existente,
+  `session.server.ts`, sem regressão).
+
+**Fora do escopo (mantido, ver §12):** busca de `CargoUnit` — sem tela
+própria pra consumir ainda.

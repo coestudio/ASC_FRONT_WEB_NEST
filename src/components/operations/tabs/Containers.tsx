@@ -115,6 +115,45 @@ function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Reso
 }
 
 /**
+ * SPEC-38: busca por texto na listagem de containers — campo isolado (não
+ * faz parte de um `useForm` maior, só filtra a lista), mas ainda assim via
+ * `layouts/Form/Fields/InputText` (regra 10 do AGENTS.md: nenhum input cru
+ * fora da biblioteca de Fields). Mesmo padrão de `ListSearchInput` já usado
+ * em `components/crud/crud-list-page.tsx` (privado lá, replicado aqui
+ * porque `Containers.tsx` não usa `CrudListPage`).
+ */
+function ContainerSearchInput({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const t = useT();
+  const methods = useForm<{ search: string }>({ defaultValues: { search: value } });
+  const search = methods.watch("search");
+
+  useEffect(() => {
+    if (search !== value) onChange(search);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
+
+  useEffect(() => {
+    if (value !== methods.getValues("search")) methods.setValue("search", value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  return (
+    <InputText
+      methods={methods}
+      fieldName="search"
+      placeholder={t("administrative-operations.containers.searchPlaceholder")}
+      config={{ containerClass: "mb-0" }}
+    />
+  );
+}
+
+/**
  * Aba Containers (SPEC-07-05) — vínculo de containers à operação: lista
  * paginada (`operation-container` gerado), criação do vínculo (busca de
  * container existente + tara), edição (só `tara` — `status` é sempre
@@ -140,6 +179,7 @@ export function Containers({ operationId }: { operationId: string }) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [editing, setEditing] = useState<ContainerOperationDTO | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
@@ -148,6 +188,7 @@ export function Containers({ operationId }: { operationId: string }) {
   const [cargoUnitsFor, setCargoUnitsFor] = useState<ContainerOperationDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
+    Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
   });
@@ -240,7 +281,16 @@ export function Containers({ operationId }: { operationId: string }) {
 
   return (
     <div>
-      <div className="d-flex justify-content-end mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+        <div style={{ minWidth: 240 }}>
+          <ContainerSearchInput
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+          />
+        </div>
         <Button variant="primary" onClick={openLinkModal}>
           <i className="bi bi-plus-lg me-1" aria-hidden />
           {t("administrative-operations.containers.new")}

@@ -323,7 +323,8 @@
         "sealed": "Contenedor precintado con éxito.",
         "unsealed": "Precinto quitado con éxito."
       }
-    }
+    },
+    "searchPlaceholder": "Buscar por identificador del contenedor..."
   },
   "documents": {
     "new": "Nuevo documento",

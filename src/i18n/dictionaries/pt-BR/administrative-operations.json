@@ -323,7 +323,8 @@
         "sealed": "Container lacrado com sucesso.",
         "unsealed": "Lacre removido com sucesso."
       }
-    }
+    },
+    "searchPlaceholder": "Buscar por identificador do container..."
   },
   "documents": {
     "new": "Novo documento",

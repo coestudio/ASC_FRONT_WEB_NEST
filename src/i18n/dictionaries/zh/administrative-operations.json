@@ -323,7 +323,8 @@
         "sealed": "集装箱封条成功。",
         "unsealed": "封条移除成功。"
       }
-    }
+    },
+    "searchPlaceholder": "按集装箱识别码搜索..."
   },
   "documents": {
     "new": "新建文件",
