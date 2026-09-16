@@ -71,15 +71,20 @@ lado a lado" implica decidir como isso convive com 3 forms distintos (ver
 1. Investigar e corrigir o avatar não atualizando visualmente após upload
    (RF1).
 2. Investigar e corrigir `Phone`/`BirthDate` não aceitando vazio, se
-   confirmado que é bug do front (RF2). `Document` fica de fora (§4).
+   confirmado que é bug do front (RF2). `Document` fica de fora por ora
+   (§4) — o Core já decidiu torná-lo opcional (SPEC-27 do Core), mas
+   ainda não implementado; quando `just map` refletir isso, `Document`
+   aceitar vazio no `DetailTab` passa a ser trivial (mesmo padrão de RF2),
+   não exige nova SPEC aqui.
 3. Reposicionar Salvar/Cancelar para ficarem lado a lado (RF3, decisão de
    layout em §6).
 
 ## 4. Fora do escopo
 
-- Tornar `Document` opcional — é `[Required]` no Core
-  (`Profile.ViewModel.cs`); mudar isso é `[NEEDS_DECISION]` de território
-  Core, não resolvido aqui (ver §6).
+- Tornar `Document` opcional no frontend — já decidido no Core (SPEC-27,
+  `WAITING_APPROVAL`), mas ainda não implementado lá; esta SPEC não
+  implementa nada de `Document` até `just map` refletir a mudança do
+  Core.
 - Qualquer mudança em `AddressTab`/`PasswordTab` além do reposicionamento
   de botão (RF3) — os bugs 1 e 2 são específicos de avatar e
   `DetailTab`.
@@ -114,11 +119,10 @@ lado a lado" implica decidir como isso convive com 3 forms distintos (ver
    Cancelar (não dentro do `<Form>` da aba) — o Footer troca qual Salvar
    exibe conforme a aba ativa, sem precisar acoplar `Modal.Footer` a um
    `handleSubmit` único compartilhado entre as 3 abas.
-2. **`Document` obrigatório no Core.** Confirmado como território Core
-   (`Profile.ViewModel.cs`, `[Required]`). Não é decisão desta SPEC —
-   registrar como pendência separada (ver `TODO.md`, nota "aguardando
-   Core") e não implementar nada aqui que dependa de `Document` aceitar
-   vazio.
+2. **`Document` obrigatório no Core.** Território Core, já decidido
+   (SPEC-27 do Core: opcional em todos os fluxos), mas ainda não
+   implementado — não implementar nada aqui que dependa de `Document`
+   aceitar vazio até `just map` refletir a mudança.
 
 ## 7. `[NEEDS_DECISION]` menor — reprodução do bug de avatar
 
@@ -163,7 +167,7 @@ Nenhuma chave nova esperada (todas as strings de Profile já existem em
 | CA1 | Após trocar o avatar, a nova imagem aparece no modal e no `UserMenu` sem reload |
 | CA2 | Salvar `DetailTab` com `Phone`/`BirthDate` vazios não gera erro de validação e persiste o vazio |
 | CA3 | Salvar e Cancelar aparecem lado a lado, conforme a opção decidida no §6.1 |
-| CA4 | `Document` continua obrigatório (nenhuma regressão de território Core) |
+| CA4 | `Document` mantém o comportamento atual do Core no momento da implementação (obrigatório até o Core publicar SPEC-27; opcional depois de `just map` refletir) |
 | CA5 | `bun run check` + `bun run lint` sem regressão |
 
 ## 13. Riscos
