@@ -4,6 +4,7 @@ export * from './client/client.zod.ts';
 export * from './collaborator/collaborator.zod.ts';
 export * from './container/container.zod.ts';
 export * from './core/core.zod.ts';
+export * from './debug-errors/debug-errors.zod.ts';
 export * from './document/document.zod.ts';
 export * from './harbor/harbor.zod.ts';
 export * from './invoice/invoice.zod.ts';

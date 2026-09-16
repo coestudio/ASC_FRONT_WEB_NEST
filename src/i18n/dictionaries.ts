@@ -17,6 +17,7 @@ import ptBRAuth from "./dictionaries/pt-BR/auth.json";
 import ptBRClient from "./dictionaries/pt-BR/client.json";
 import ptBRCommon from "./dictionaries/pt-BR/common.json";
 import ptBRCrud from "./dictionaries/pt-BR/crud.json";
+import ptBRDebug from "./dictionaries/pt-BR/debug.json";
 import ptBRFilePreview from "./dictionaries/pt-BR/filePreview.json";
 import ptBRHome from "./dictionaries/pt-BR/home.json";
 import ptBRNavigation from "./dictionaries/pt-BR/navigation.json";
@@ -59,6 +60,9 @@ const ptBR = {
   // Namespace da SPEC-08 (Operacional) — Home + detalhe mock; não duplica
   // `navigation.operacional*`.
   operational: ptBROperational,
+  // Namespace da SPEC-48 (página de debug do catálogo de erros) — rota
+  // isolada em /admin/debug, sem entrada na sidebar.
+  debug: ptBRDebug,
 };
 
 export type Dictionary = typeof ptBR;

@@ -39,6 +39,7 @@ export * from './containerOperationUpdate.ts';
 export * from './containerPhotoDTO.ts';
 export * from './containerPhotoSlot.ts';
 export * from './containerUpdate.ts';
+export * from './debugErrorScenarioDTO.ts';
 export * from './documentDTO.ts';
 export * from './documentType.ts';
 export * from './documentUpdate.ts';

@@ -1,0 +1,23 @@
+{
+  "title": "Debug — Error Catalog",
+  "description": "Each row triggers a Core route that only throws an example error — use it to check the real response shape (ProblemDetails) for each HTTP status.",
+  "colRoute": "Route",
+  "colExpectedStatus": "Expected status",
+  "colDescription": "Description",
+  "colAction": "Action",
+  "colResult": "Result",
+  "trigger": "Trigger",
+  "triggering": "Triggering...",
+  "statusMatch": "Match",
+  "statusMismatch": "Mismatch",
+  "notTriggeredYet": "Not triggered yet",
+  "receivedStatus": "Received status",
+  "problemDetails": {
+    "title": "Title",
+    "detail": "Detail",
+    "status": "Status",
+    "instance": "Instance",
+    "extensions": "Extensions"
+  },
+  "unexpectedSuccess": "The call should not have succeeded — check the scenario on the Core."
+}

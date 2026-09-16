@@ -4,6 +4,7 @@ export * from './client/client.ts';
 export * from './collaborator/collaborator.ts';
 export * from './container/container.ts';
 export * from './core/core.ts';
+export * from './debug-errors/debug-errors.ts';
 export * from './document/document.ts';
 export * from './harbor/harbor.ts';
 export * from './invoice/invoice.ts';

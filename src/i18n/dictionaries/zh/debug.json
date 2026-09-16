@@ -1,0 +1,23 @@
+{
+  "title": "调试 — 错误目录",
+  "description": "每一行都会触发一个只抛出示例错误的 Core 路由 —— 用于核对每种 HTTP 状态码的真实响应格式（ProblemDetails）。",
+  "colRoute": "路由",
+  "colExpectedStatus": "预期状态",
+  "colDescription": "描述",
+  "colAction": "操作",
+  "colResult": "结果",
+  "trigger": "触发",
+  "triggering": "触发中...",
+  "statusMatch": "一致",
+  "statusMismatch": "不一致",
+  "notTriggeredYet": "尚未触发",
+  "receivedStatus": "收到的状态",
+  "problemDetails": {
+    "title": "Title",
+    "detail": "Detail",
+    "status": "Status",
+    "instance": "Instance",
+    "extensions": "Extensions"
+  },
+  "unexpectedSuccess": "该调用本不应该成功 —— 请检查 Core 上的场景。"
+}
