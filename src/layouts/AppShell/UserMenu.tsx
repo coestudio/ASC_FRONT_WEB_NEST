@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Dropdown } from "react-bootstrap";
 
 import { useUser } from "@/hooks";
+import { resolveAvatarUrl } from "@/lib/avatar-url";
 import {
   useT,
   useThemeMode,
@@ -53,7 +54,7 @@ export function UserMenu() {
   const fullName = user?.profile?.fullName ?? user?.userName ?? "";
   const email = user?.profile?.email ?? user?.userName ?? "";
   const firstName = fullName.trim().split(/\s+/)[0] || fullName;
-  const avatarUrl = user?.profile?.avatarFile?.url ?? null;
+  const avatarUrl = resolveAvatarUrl(user?.profile?.avatarFile);
   // Reseta o erro se a URL mudar (troca de foto) — sem isso, um avatar novo
   // depois de um que falhou ficaria preso nas iniciais.
   useEffect(() => setAvatarError(false), [avatarUrl]);

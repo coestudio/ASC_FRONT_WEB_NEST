@@ -1,7 +1,8 @@
-import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { useForm, type FieldValues, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Form, Row, Spinner } from "react-bootstrap";
-import { z } from "zod";
+import { Form, Row } from "react-bootstrap";
+import { z, type ZodType } from "zod";
 
 import { PostApiProfileMeBody } from "@/api/generated/zod/profile/profile.zod";
 import { usePostApiProfileMe } from "@/api/generated/endpoints/profile/profile";
@@ -28,12 +29,55 @@ const detailSchema = z.object({
 });
 type DetailInput = z.infer<typeof detailSchema>;
 
-/** Aba "Detalhes" do ProfileModal — POST /api/profile/me. */
-export function DetailTab({ user }: { user: UserDetailDTO }) {
+/**
+ * Normaliza `""` pra `null` antes do `zodResolver` validar (mesmo padrão já
+ * usado em `crud-record-modal.tsx`/`Containers.tsx`, regra 2 do AGENTS.md —
+ * schema não é editado, só o shape de entrada é remapeado). `document`/
+ * `phone`/`birthDate` são `.nullish()` no schema gerado (aceitam `null`,
+ * não string vazia) — sem isso, apagar o campo trava o submit com erro de
+ * `.min()` (SPEC-30 RF2).
+ */
+function emptyStringsToNull<V>(value: V): V {
+  if (value === "") return null as unknown as V;
+  if (Array.isArray(value)) return value.map((item) => emptyStringsToNull(item)) as unknown as V;
+  if (value !== null && typeof value === "object" && !(value instanceof Date)) {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, val]) => [
+        key,
+        emptyStringsToNull(val),
+      ]),
+    ) as V;
+  }
+  return value;
+}
+
+function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Resolver<T> {
+  const resolver = zodResolver(schema as never) as unknown as Resolver<T>;
+  return (values, context, options) => resolver(emptyStringsToNull(values), context, options);
+}
+
+/**
+ * Aba "Detalhes" do ProfileModal — POST /api/profile/me.
+ *
+ * SPEC-30 §6.1: o botão Salvar não fica mais dentro do `<Form>` — ele mora
+ * no `Modal.Footer` (ao lado do Cancelar), referenciando este form pelo
+ * atributo HTML `form` (recurso nativo: um `<button>` fora do `<form>`
+ * ainda o submete, só precisa do `id` batendo). `onSubmittingChange`
+ * reporta `formState.isSubmitting` pro modal saber quando desabilitar/
+ * mostrar spinner no botão do rodapé, já que o estado do form continua
+ * local a este componente (cada aba mantém seu próprio `useForm`).
+ */
+export function DetailTab({
+  user,
+  onSubmittingChange,
+}: {
+  user: UserDetailDTO;
+  onSubmittingChange?: (isSubmitting: boolean) => void;
+}) {
   const t = useT();
   const queryClient = useQueryClient();
   const methods = useForm<DetailInput>({
-    resolver: zodResolver(detailSchema),
+    resolver: withEmptyStringsAsNull(detailSchema),
     defaultValues: {
       userName: user.userName,
       fullName: user.profile.fullName ?? "",
@@ -44,6 +88,10 @@ export function DetailTab({ user }: { user: UserDetailDTO }) {
     },
   });
   const mutation = usePostApiProfileMe();
+
+  useEffect(() => {
+    onSubmittingChange?.(methods.formState.isSubmitting);
+  }, [methods.formState.isSubmitting, onSubmittingChange]);
 
   const onSubmit = methods.handleSubmit(async (data) => {
     try {
@@ -67,7 +115,7 @@ export function DetailTab({ user }: { user: UserDetailDTO }) {
   });
 
   return (
-    <Form noValidate onSubmit={onSubmit}>
+    <Form id="profile-detail-form" noValidate onSubmit={onSubmit}>
       <Row className="g-3">
         <InputText
           methods={methods}
@@ -107,14 +155,6 @@ export function DetailTab({ user }: { user: UserDetailDTO }) {
           md={6}
         />
       </Row>
-      <div className="d-flex justify-content-end mt-3">
-        <Button type="submit" disabled={methods.formState.isSubmitting}>
-          {methods.formState.isSubmitting ? (
-            <Spinner size="sm" animation="border" className="me-2" />
-          ) : null}
-          {t("shell.profileModal.save")}
-        </Button>
-      </div>
     </Form>
   );
 }

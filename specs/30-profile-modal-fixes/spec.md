@@ -2,11 +2,18 @@
 
 - **ID:** SPEC-30
 - **Nome:** profile-modal-fixes
-- **Status:** WAITING_APPROVAL — decisão de §6.1 fechada com o usuário
-  (2026-09-15).
-- **Autor:** portal-dev-agent (rascunho)
-- **Área:** `src/components/profile/{profile-modal,detail-tab}.tsx`,
-  `src/layouts/Form/Fields/InputAvatar.tsx`
+- **Status:** PARTIALLY_IMPLEMENTED (2026-09-16) — RF2 e RF3 confirmados
+  funcionando em tela real pelo usuário; **RF1 (avatar) incompleta**, ver
+  §13 (Implementation Notes) — o fix de cache-bust foi implementado mas o
+  usuário reportou que o avatar continua sem atualizar visualmente sem
+  reload, sem detalhe adicional ainda sobre o que exatamente falhou.
+  Retomar nesta SPEC (não abrir uma nova) na próxima sessão de frontend.
+- **Status anterior:** WAITING_APPROVAL — decisão de §6.1 fechada com o
+  usuário (2026-09-15).
+- **Autor:** portal-dev-agent (rascunho); implementação parcial 2026-09-16
+- **Área:** `src/components/profile/{profile-modal,detail-tab,address-tab,
+  password-tab}.tsx`, `src/lib/avatar-url.ts` (novo),
+  `src/layouts/AppShell/UserMenu.tsx`
 - **Contexto do pedido:** item único do `TODO.md` já agrupando os 3
   problemas do modal de Profile — mantido como uma SPEC só.
 
@@ -176,3 +183,58 @@ Nenhuma chave nova esperada (todas as strings de Profile já existem em
   realmente idêntica sem nenhum diferencial), um cache-bust client-side
   resolve de qualquer forma (força o browser a rebuscar), então o risco é
   baixo mesmo sem confirmar a causa exata previamente.
+
+## 13. Implementation Notes (2026-09-16)
+
+**RF2 e RF3 — confirmados funcionando em tela real** (`admin/access` →
+Novo usuário reaproveitando o mesmo `InputDate`; ProfileModal aberto via
+`UserMenu` → Perfil), testados manualmente pelo usuário.
+
+**Arquivos alterados:**
+- `src/lib/avatar-url.ts` (novo) — `resolveAvatarUrl(avatarFile)`,
+  adiciona `?v=<updatedAt>` na URL do avatar pra evitar cache de disco do
+  browser servindo a imagem antiga (RF1, hipótese original da SPEC).
+  Usado em `profile-modal.tsx` (`previewUrl` do `InputAvatar`) e
+  `UserMenu.tsx` (`avatarUrl`).
+- `src/components/profile/detail-tab.tsx` — resolver trocado pra
+  `withEmptyStringsAsNull(detailSchema)` (helper local, mesmo padrão de
+  `crud-record-modal.tsx`/`Containers.tsx`, regra 2 do AGENTS.md) — RF2:
+  `Phone`/`BirthDate` agora aceitam ficar vazios no submit (o schema
+  gerado já era `.nullish()`, o bug era `""` chegando no lugar de `null`
+  na validação). `Document` continua de fora (§4, aguarda Core SPEC-27).
+- `src/components/profile/{detail-tab,address-tab,password-tab}.tsx` —
+  botão Salvar interno removido de cada `<Form>`; cada `<Form>` ganhou um
+  `id` (`profile-{detail,address,password}-form`) e um prop
+  `onSubmittingChange` que reporta `formState.isSubmitting` pro modal
+  (RF3, decisão §6.1 — "um Salvar por aba, ambos no rodapé").
+- `src/components/profile/profile-modal.tsx` — `Modal.Footer` ganhou o
+  botão Salvar (`type="submit" form={FORM_ID_BY_TAB[tab]}`, usando o
+  atributo HTML nativo `form` pra submeter um form fora da árvore do
+  botão), com spinner/disabled vindo de `submittingByTab[tab]` (estado
+  por aba, já que os 3 forms continuam montados simultaneamente,
+  alternando só visibilidade via `d-none`).
+
+**RF1 — incompleta, não fechar como resolvida.** O fix de cache-bust
+(`resolveAvatarUrl`) foi implementado e o `bun run check`/`lint` passam,
+mas o usuário testou em tela real e reportou que o avatar **continua**
+sem atualizar visualmente sem reload — sem detalhe adicional ainda sobre
+em que ponto exatamente falha (se o cache-bust não teve efeito, se o
+`previewUrl` não está de fato mudando, se é outro componente lendo o
+avatar de outro lugar, etc.). **Próximos passos pra quem retomar:**
+1. Confirmar no DevTools (aba Network) se a URL do `<img>` realmente
+   ganha o sufixo `?v=...` depois do upload, e se muda entre uploads
+   sucessivos.
+2. Se a URL muda mas a imagem ainda não atualiza, o problema não é cache
+   de disco do browser — investigar se `previewUrl`/`user.profile.
+   avatarFile` de fato chega atualizado no componente (pode ser cache do
+   React Query não invalidando, ou o backend devolvendo dado desatualizado
+   na resposta do `PATCH avatar`).
+3. ~~Verificar se existe algum outro consumidor~~ — já checado
+   (2026-09-16): grep por `avatarFile` em `src/` confirma que
+   `ProfileModal`/`UserMenu` são os únicos 2 lugares que leem
+   `avatarFile.url` fora de `src/api/generated`. Não é essa a causa.
+
+**Comandos executados e resultado:**
+- `bun run check` (`tsc --noEmit`) — PASS.
+- `bun run lint` — 66/3 (mesma baseline pré-existente de
+  `session.server.ts`, sem regressão nos arquivos tocados).
