@@ -2,8 +2,11 @@
 
 - **ID:** SPEC-53
 - **Nome:** romaneio-bulk-select-actions
-- **Status:** DRAFT — depende de `warren/Core/specs/43-romaneio-stuffed-status-bulk-actions`
-  (`DRAFT`). Sem `[NEEDS_DECISION]` (regra de negócio confirmada pelo
+- **Status:** IMPLEMENTED — dependência `warren/Core/specs/43-romaneio-stuffed-status-bulk-actions`
+  resolvida (`IMPLEMENTED`, 2026-09-16: `IsStuffed` computado no `GetAll`),
+  client gerado (`just map`) já com `RomaneioDTO.isStuffed`,
+  `GetApiOperationOperationIdRomaneioParams.IsStuffed`, `delete-batch` e
+  `update-batch`. Sem `[NEEDS_DECISION]` (regra de negócio confirmada pelo
   usuário 2026-09-16: linha estufada não é selecionável).
 - **Autor:** claude (pedido do usuário, 2026-09-16, em 3 mensagens
   seguidas na mesma conversa)
@@ -222,3 +225,92 @@ toastError}`.
   além de Romaneio — as duas extensões (seleção, ordenação) precisam
   ser estritamente aditivas, testar que as outras telas não regridem
   (CA8).
+
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/crud/crud-list-page.tsx` — `CrudColumn.sortKey`,
+    `CrudSelection<T>` (novo tipo exportado), props `selection`/`sort`/
+    `onSortChange` em `CrudListPageProps`/`CrudListPageBody`; coluna de
+    checkbox (header "selecionar tudo" restrito aos selecionáveis da página
+    + checkbox por linha desabilitável) e cabeçalho de coluna clicável
+    (asc → desc → sem ordenação, ícone `bi-sort-up-alt`/`bi-sort-down-alt`/
+    `bi-arrow-down-up`) — aditivo, os outros consumidores de `CrudListPage`
+    não passam essas props e não mudam de comportamento.
+  - `src/components/operations/tabs/Romaneio.tsx` — colunas "Nota Fiscal"
+    (`sortKey="notaFiscal"`) e "Estufado" (badge); filtro `Form.Select`
+    Todos/Estufado/Não estufado (`IsStuffed`); `selection` ligada a
+    `isStuffed` (`isDisabled`); barra de ação em massa (contador + "Editar
+    NF/Lote" + "Excluir selecionados") acima do `CrudListPage` quando há
+    seleção; `CrudRowActions` perdeu `onDelete` (exclusão só em massa agora)
+    e `onEdit` fica `undefined` em linha estufada; removido
+    `pendingDelete`/`confirmDelete`/`useDeleteApiOperationOperationIdRomaneioId`
+    (código morto pós-mudança); novo componente local
+    `RomaneioBulkEditModal` (form `react-hook-form` + `zodResolver` sobre
+    `PostApiOperationOperationIdRomaneioUpdateBatchBody` gerado, campo vazio
+    normalizado pra `undefined` — não `null` — antes de validar, pra não
+    violar o `min(1)` de `lote` e pra "não mexe" no `update-batch`); `Sort`
+    (state local) passado pro `listQueryOptions`.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+    — `romaneio.colNotaFiscal`, `colIsStuffed`, `isStuffedYes`/`isStuffedNo`,
+    `filterIsStuffed.{all,stuffed,notStuffed}`,
+    `bulkActions.{selectedCount,editNfLote,deleteSelected,
+    confirmDeleteTitle,confirmDelete,editTitle,fieldNotaFiscal,fieldLote,
+    toastSuccess,toastDeleteSuccess,toastError}` — mesmas chaves nos 4
+    locales.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/crud.json` — `list.selectAll`/
+    `list.selectRow` (label acessível dos novos checkboxes genéricos).
+  - `src/api/generated/**` — nenhuma mudança nesta sessão (`just map`
+    contra o Core já rodado antes desta tarefa, hash do contrato
+    inalterado; client já tinha `isStuffed`, `IsStuffed`, `delete-batch`,
+    `update-batch` conforme confirmado pelo usuário).
+- **Comandos executados:**
+  - `bun run check` → **VERIFIED** (`tsc --noEmit`, sem erro).
+  - `bun run lint` → **VERIFIED** (66 problems / 3 errors / 63 warnings —
+    idêntico ao baseline conhecido, pré-existente em
+    `src/lib/session.server.ts` (3 `react-hooks/rules-of-hooks`) e
+    `src/lib/ui-prefs.tsx` (`react-refresh/only-export-components`); zero
+    regressão introduzida por esta SPEC).
+  - `just map` não rodado nesta sessão (contrato já mapeado antes desta
+    tarefa, sem mudança).
+- **Critérios de aceitação:**
+
+  | # | Resultado |
+  | --- | --- |
+  | CA1 | PASS — colunas "Nota Fiscal" (`r.notaFiscal ?? "—"`) e "Estufado" (`Badge` verde/cinza) adicionadas. |
+  | CA2 | PASS — `Form.Select` filtra via `IsStuffed` no `listQueryOptions`, reseta pra página 1 na troca. |
+  | CA3 | PASS — `selection.isDisabled = (r) => r.isStuffed === true`; header "selecionar tudo" só considera `selectableItems` (filtrados) da página atual. |
+  | CA4 | PASS — `CrudRowActions` sem `onDelete`; `onEdit` vira `undefined` (ícone some, ver `CrudRowActions` — item condicional já existente) em linha estufada. |
+  | CA5 | PASS — `handleBulkDelete` chama `postApiOperationOperationIdRomaneioDeleteBatch` com os `ids` selecionados, confirmação via `ConfirmationModal`. |
+  | CA6 | PASS — `RomaneioBulkEditModal` só envia `notaFiscal`/`lote` quando preenchidos (`""` → `undefined` antes do `zodResolver`, chave ausente no JSON enviado). |
+  | CA7 | PASS — `nextSort` alterna `key` → `-key` → `undefined`; testado via leitura de código para as duas colunas com `sortKey`. |
+  | CA8 | PASS (por construção) — `selection`/`sort`/`onSortChange`/`sortKey` são todos opcionais; `bun run check`/`lint` não acusou nenhum dos outros ~7 consumidores de `CrudListPage`. Sem verificação visual manual das outras telas (fora do escopo de tempo desta sessão — risco R1 mitigado só por tipagem/aditividade, não por teste manual). |
+  | CA9 | PASS — ver comandos acima. |
+  | CA10 | PASS — 4 locales de `administrative-operations.json` e `crud.json` com as mesmas chaves (pt-BR fonte de verdade). |
+
+- **Decisões tomadas durante a implementação:**
+  - `onToggleAll` do `CrudSelection<T>` ganhou um parâmetro `ids: string[]`
+    (não estava no shape exato do §3.1 da SPEC, que só tinha `checked:
+    boolean`) — necessário pra `CrudListPage` informar ao consumidor quais
+    ids da página atual são selecionáveis (o componente genérico não pode
+    supor como o consumidor guarda a página carregada). Mudança aditiva
+    dentro do mesmo conceito descrito na SPEC, não muda contrato de UX.
+  - `RomaneioBulkEditModal` normaliza `""` → `undefined` (não `null`, que é
+    o padrão do `CrudRecordModal`) porque aqui campo vazio significa "não
+    mexe" (RF4), e `lote` tem `min(1)` no schema gerado — `null`/`""`
+    quebrariam essa validação; `undefined` é aceito pelo `.nullish()` e o
+    `axios`/`JSON.stringify` descarta a chave, batendo com a semântica
+    pedida.
+  - Confirmação visual manual das telas (CA1–CA7) não foi feita nesta
+    sessão (sem navegador disponível no ambiente do agente) — validado por
+    leitura de código, tipos (`tsc`) e paridade com padrões já usados em
+    `admin/access` (filtro `Form.Select`) e `crud-record-modal.tsx`
+    (resolver com normalização pré-validação).
+- **Limitações conhecidas:**
+  - Nenhuma verificação end-to-end/manual no browser rodou nesta sessão
+    (ambiente sem navegador) — recomenda-se checagem visual na rota
+    `/administrative/operations/$id` (aba Romaneio) antes de considerar o
+    risco R1 zerado na prática, não só por tipo.
+  - `src/api/snapshot.json` já tinha diferença pendente de timestamp de uma
+    rodada de `just map` anterior a esta tarefa — mantida como estava,
+    conforme instrução recebida.

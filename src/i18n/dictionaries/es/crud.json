@@ -8,7 +8,9 @@
     "rowActionsToggle": "Acciones de la fila",
     "rowActionsView": "Ver",
     "rowActionsEdit": "Editar",
-    "rowActionsDelete": "Eliminar"
+    "rowActionsDelete": "Eliminar",
+    "selectAll": "Seleccionar todos",
+    "selectRow": "Seleccionar fila"
   },
   "recordModal": {
     "cancel": "Cancelar",

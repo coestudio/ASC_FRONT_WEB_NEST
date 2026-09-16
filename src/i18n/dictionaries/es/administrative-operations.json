@@ -99,10 +99,32 @@
     "emptyState": "Ningún fardo registrado.",
     "colItemIdentifier": "Fardo",
     "colItemCode": "Código",
+    "colNotaFiscal": "Factura",
     "colLote": "Lote",
     "colPeso": "Peso (kg)",
+    "colIsStuffed": "Estufado",
     "colSource": "Origen",
     "colActions": "Acciones",
+    "isStuffedYes": "Estufado",
+    "isStuffedNo": "No estufado",
+    "filterIsStuffed": {
+      "all": "Todos",
+      "stuffed": "Estufado",
+      "notStuffed": "No estufado"
+    },
+    "bulkActions": {
+      "selectedCount": "{count} seleccionados",
+      "editNfLote": "Editar factura/lote",
+      "deleteSelected": "Eliminar seleccionados",
+      "confirmDeleteTitle": "Eliminar seleccionados",
+      "confirmDelete": "¿Eliminar {count} elementos? Esta acción no se puede deshacer.",
+      "editTitle": "Editar factura/lote en masa",
+      "fieldNotaFiscal": "Factura",
+      "fieldLote": "Lote",
+      "toastSuccess": "Cambio aplicado a las filas seleccionadas.",
+      "toastDeleteSuccess": "Elementos seleccionados eliminados con éxito.",
+      "toastError": "No fue posible completar la acción en masa. Inténtelo de nuevo."
+    },
     "export": {
       "button": "Exportar",
       "toast": {

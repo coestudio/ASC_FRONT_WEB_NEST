@@ -99,10 +99,32 @@
     "emptyState": "No bale registered.",
     "colItemIdentifier": "Bale",
     "colItemCode": "Code",
+    "colNotaFiscal": "Invoice",
     "colLote": "Batch",
     "colPeso": "Weight (kg)",
+    "colIsStuffed": "Stuffed",
     "colSource": "Source",
     "colActions": "Actions",
+    "isStuffedYes": "Stuffed",
+    "isStuffedNo": "Not stuffed",
+    "filterIsStuffed": {
+      "all": "All",
+      "stuffed": "Stuffed",
+      "notStuffed": "Not stuffed"
+    },
+    "bulkActions": {
+      "selectedCount": "{count} selected",
+      "editNfLote": "Edit invoice/batch",
+      "deleteSelected": "Delete selected",
+      "confirmDeleteTitle": "Delete selected",
+      "confirmDelete": "Delete {count} items? This action cannot be undone.",
+      "editTitle": "Bulk edit invoice/batch",
+      "fieldNotaFiscal": "Invoice",
+      "fieldLote": "Batch",
+      "toastSuccess": "Change applied to the selected rows.",
+      "toastDeleteSuccess": "Selected items deleted successfully.",
+      "toastError": "Could not complete the bulk action. Please try again."
+    },
     "export": {
       "button": "Export",
       "toast": {

@@ -99,10 +99,32 @@
     "emptyState": "未登记任何包裹。",
     "colItemIdentifier": "包裹",
     "colItemCode": "代码",
+    "colNotaFiscal": "发票",
     "colLote": "批次",
     "colPeso": "重量（千克）",
+    "colIsStuffed": "已装箱",
     "colSource": "来源",
     "colActions": "操作",
+    "isStuffedYes": "已装箱",
+    "isStuffedNo": "未装箱",
+    "filterIsStuffed": {
+      "all": "全部",
+      "stuffed": "已装箱",
+      "notStuffed": "未装箱"
+    },
+    "bulkActions": {
+      "selectedCount": "已选择 {count} 项",
+      "editNfLote": "批量编辑发票/批次",
+      "deleteSelected": "删除所选",
+      "confirmDeleteTitle": "删除所选",
+      "confirmDelete": "删除 {count} 项？此操作无法撤销。",
+      "editTitle": "批量编辑发票/批次",
+      "fieldNotaFiscal": "发票",
+      "fieldLote": "批次",
+      "toastSuccess": "已对所选行应用更改。",
+      "toastDeleteSuccess": "所选项目删除成功。",
+      "toastError": "无法完成批量操作，请重试。"
+    },
     "export": {
       "button": "导出",
       "toast": {

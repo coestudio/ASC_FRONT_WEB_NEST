@@ -8,7 +8,9 @@
     "rowActionsToggle": "行操作",
     "rowActionsView": "查看",
     "rowActionsEdit": "编辑",
-    "rowActionsDelete": "删除"
+    "rowActionsDelete": "删除",
+    "selectAll": "全选",
+    "selectRow": "选择行"
   },
   "recordModal": {
     "cancel": "取消",

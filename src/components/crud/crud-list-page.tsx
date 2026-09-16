@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Table } from "react-bootstrap";
+import { Button, Form, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import type { UseQueryOptions } from "@tanstack/react-query";
 
@@ -60,7 +60,42 @@ export type CrudColumn<T> = {
   /** Alinhamento do cabeçalho e da célula (ex.: `"end"` pra coluna numérica
    * de peso — SPEC-31). Sem valor, mantém o alinhamento padrão (`start`). */
   align?: "start" | "end" | "center";
+  /**
+   * Chave que o Core espera no parâmetro `Sort` (ex. `"notaFiscal"`) — SPEC-53.
+   * Presente, o `<th>` vira clicável (asc → desc → sem ordenação). Ausente,
+   * cabeçalho estático, sem mudança de comportamento (aditivo).
+   */
+  sortKey?: string;
 };
+
+/**
+ * Seleção em massa de linhas (checkbox por linha + "selecionar tudo") — SPEC-53.
+ * Prop opcional do `CrudListPage`; sem ela, nenhuma coluna extra é injetada e
+ * nenhum dos demais consumidores muda de comportamento.
+ */
+export type CrudSelection<T> = {
+  selectedIds: Set<string>;
+  onToggle: (id: string) => void;
+  /**
+   * Marca/desmarca só os itens selecionáveis (não desabilitados) da página
+   * atual — `ids` já vem filtrado pelo `CrudListPage` (via `isDisabled`).
+   */
+  onToggleAll: (ids: string[], checked: boolean) => void;
+  /** Linha não pode ser selecionada — checkbox desabilitado, sem `onClick`. */
+  isDisabled?: (item: T) => boolean;
+};
+
+/**
+ * Alterna a ordenação de uma coluna: sem ordenação → ascendente (`key`) →
+ * descendente (`-key`) → volta a sem ordenação (`undefined`, Core aplica o
+ * `defaultSort` do endpoint). Só uma coluna ordenada por vez — mesmo modelo
+ * de `PageQuery.Sort` do Core (uma string só).
+ */
+function nextSort(current: string | undefined, key: string): string | undefined {
+  if (current === key) return `-${key}`;
+  if (current === `-${key}`) return undefined;
+  return key;
+}
 
 /** Shape mínimo que toda resposta paginada do Core segue (`PagedDTOOfXxxDTO` gerado pelo Orval). */
 export type CrudPagedResult<T> = {
@@ -120,6 +155,12 @@ export type CrudListPageProps<
    * o espaço, sem prop = nenhuma mudança de layout pras demais telas.
    */
   headerActions?: ReactNode;
+  /** Seleção em massa (checkbox por linha + "selecionar tudo") — SPEC-53. */
+  selection?: CrudSelection<T>;
+  /** Valor cru do `Sort` atual (ex. `"-notaFiscal"`) — usado junto com
+   * `CrudColumn.sortKey` pra deixar o cabeçalho clicável (SPEC-53). */
+  sort?: string;
+  onSortChange?: (sort: string | undefined) => void;
 };
 
 /**
@@ -143,6 +184,9 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   emptyMessageKey,
   viewMode,
   spreadsheetVariant,
+  selection,
+  sort,
+  onSortChange,
 }: Pick<
   CrudListPageProps<T, TQueryData, TError>,
   | "queryOptions"
@@ -154,6 +198,9 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   | "onPageChange"
   | "emptyMessageKey"
   | "spreadsheetVariant"
+  | "selection"
+  | "sort"
+  | "onSortChange"
 > & { viewMode: ViewMode }) {
   const t = useT();
   const query = useSsrSafeQuery(queryOptions);
@@ -162,6 +209,15 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   const items = query.data?.items ?? [];
   const total = Number(query.data?.total ?? 0);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  // "Selecionar tudo" só considera os itens selecionáveis (não desabilitados)
+  // da página atual — linha desabilitada (ex.: Romaneio estufado) nunca entra
+  // na seleção, mesmo via header (SPEC-53).
+  const selectableItems = selection ? items.filter((item) => !selection.isDisabled?.(item)) : [];
+  const allSelectableSelected =
+    selection != null &&
+    selectableItems.length > 0 &&
+    selectableItems.every((item) => selection.selectedIds.has(getItemKey(item)));
 
   return (
     <>
@@ -192,23 +248,81 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
           >
             <thead>
               <tr>
-                {columns.map((col) => (
-                  <th key={col.key} className={col.align ? `text-${col.align}` : undefined}>
-                    {t(col.headerKey)}
+                {selection ? (
+                  <th style={{ width: "1%" }}>
+                    <Form.Check
+                      type="checkbox"
+                      checked={allSelectableSelected}
+                      disabled={selectableItems.length === 0}
+                      onChange={(e) =>
+                        selection.onToggleAll(
+                          selectableItems.map((item) => getItemKey(item)),
+                          e.target.checked,
+                        )
+                      }
+                      aria-label={t("crud.list.selectAll")}
+                    />
                   </th>
-                ))}
+                ) : null}
+                {columns.map((col) => {
+                  const active =
+                    col.sortKey != null && (sort === col.sortKey || sort === `-${col.sortKey}`);
+                  const descending = active && sort === `-${col.sortKey}`;
+                  return (
+                    <th
+                      key={col.key}
+                      className={col.align ? `text-${col.align}` : undefined}
+                      role={col.sortKey ? "button" : undefined}
+                      onClick={
+                        col.sortKey
+                          ? () => onSortChange?.(nextSort(sort, col.sortKey as string))
+                          : undefined
+                      }
+                      style={col.sortKey ? { cursor: "pointer", userSelect: "none" } : undefined}
+                    >
+                      {t(col.headerKey)}
+                      {col.sortKey ? (
+                        <i
+                          className={`bi ms-1 ${
+                            active
+                              ? descending
+                                ? "bi-sort-down-alt"
+                                : "bi-sort-up-alt"
+                              : "bi-arrow-down-up text-body-secondary"
+                          }`}
+                          aria-hidden
+                        />
+                      ) : null}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
-                <tr key={getItemKey(item)}>
-                  {columns.map((col) => (
-                    <td key={col.key} className={col.align ? `text-${col.align}` : undefined}>
-                      {col.render(item)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {items.map((item) => {
+                const id = getItemKey(item);
+                const disabledForSelection = selection?.isDisabled?.(item) ?? false;
+                return (
+                  <tr key={id}>
+                    {selection ? (
+                      <td>
+                        <Form.Check
+                          type="checkbox"
+                          checked={selection.selectedIds.has(id)}
+                          disabled={disabledForSelection}
+                          onChange={() => selection.onToggle(id)}
+                          aria-label={t("crud.list.selectRow")}
+                        />
+                      </td>
+                    ) : null}
+                    {columns.map((col) => (
+                      <td key={col.key} className={col.align ? `text-${col.align}` : undefined}>
+                        {col.render(item)}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </div>
@@ -251,6 +365,9 @@ export function CrudListPage<
   filters,
   spreadsheetVariant,
   headerActions,
+  selection,
+  sort,
+  onSortChange,
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
@@ -309,6 +426,9 @@ export function CrudListPage<
           emptyMessageKey={emptyMessageKey}
           viewMode={viewMode}
           spreadsheetVariant={spreadsheetVariant}
+          selection={selection}
+          sort={sort}
+          onSortChange={onSortChange}
         />
       ) : (
         <LoadingState variant="inline" />
