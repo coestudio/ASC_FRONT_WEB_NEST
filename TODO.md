@@ -6,94 +6,92 @@ processo formal: adiciona e risca como quiser.
 
 ## Pendente
 
-- [ ] Paginação enxuta — `list-pagination.tsx` lista página por página
+- [x] ~~Paginação enxuta — `list-pagination.tsx` lista página por página
   (quebra com muitas páginas, ex. 300). Trocar por `<< < (página) > >>`.
-  Foco esperado é busca, não navegação manual de página.
-- [ ] Operação → aba Detalhes: botão pra editar as informações da
-  operação.
-- [ ] Operação → aba Romaneio: botão pra exportar o romaneio.
-- [ ] Operação → aba Romaneio: visual da listagem mais parecido com a
-  planilha Excel de exemplo, sem precisar da coluna de origem.
-- [ ] Operação → aba Containers: falta paginação + busca na listagem.
-  Além disso, o modal de adicionar imagens do container precisa de um
-  "checklist" das imagens necessárias.
+  Foco esperado é busca, não navegação manual de página.~~ → SPEC-28
+- [x] ~~Operação → aba Detalhes: botão pra editar as informações da
+  operação.~~ → SPEC-33
+- [x] ~~Operação → aba Romaneio: botão pra exportar o romaneio.~~ → SPEC-31
+- [x] ~~Operação → aba Romaneio: visual da listagem mais parecido com a
+  planilha Excel de exemplo, sem precisar da coluna de origem.~~ → SPEC-31
+- [x] ~~Operação → aba Containers: falta paginação + busca na listagem.~~
+  Paginação já existia (confirmado); busca depende do Core → SPEC-38.
+  ~~Além disso, o modal de adicionar imagens do container precisa de um
+  "checklist" das imagens necessárias.~~ → SPEC-37 (`[NEEDS_DECISION]`
+  em aberto: quais fotos são "necessárias")
 - [ ] Preview de `.doc`/`.xlsx` — já existe (`DocxPreview`/`SheetPreview`
   em `file-preview-modal.tsx`), revisar/melhorar (checar o que está
-  faltando/errado).
-- [ ] Tela de Acesso (`admin/access`): editar se é admin já existe
-  (switch no form) — confirmar se está funcionando/se é isso que falta.
-  Falta paginação + filtro por role + filtro admin/não-admin na
-  listagem.
+  faltando/errado). **Ainda não virou SPEC** — falta descrever o problema
+  real (qual arquivo, o que aparece errado) antes de dar pra especificar.
+- [x] ~~Tela de Acesso (`admin/access`): editar se é admin já existe
+  (switch no form) — confirmar se está funcionando/se é isso que falta.~~
+  Confirmado que já funciona (isAdmin editável desde SPEC-23).
+  ~~Falta paginação~~ (paginação já existia, confirmado)
+  ~~+ filtro por role + filtro admin/não-admin na listagem.~~ → SPEC-32
 
-- [ ] Sidebar principal: em telas menores, com muitos itens
-  expandidos, o menu quebra em 2 colunas. Não pode ocorrer.
+- [x] ~~Sidebar principal: em telas menores, com muitos itens
+  expandidos, o menu quebra em 2 colunas. Não pode ocorrer.~~ → SPEC-29
 
-- [ ] Esconder o switch de marca/brand (`brand-switcher.tsx`) — não deve
-  aparecer visualmente, nem no Header nem no UserMenu.
+- [x] ~~Esconder o switch de marca/brand (`brand-switcher.tsx`) — não deve
+  aparecer visualmente, nem no Header nem no UserMenu.~~ → SPEC-29
 
-- [ ] Logs/auditoria de operação (Core gera automático: o quê, quando,
+- [x] ~~Logs/auditoria de operação (Core gera automático: o quê, quando,
   quem — ex. import de romaneio, criação de NF, estufagem). Aba Log hoje
   é mock (`Log.tsx`, SPEC-07-09) — vira a fonte real. Remover do menu
   Administrativo (se existir entrada separada), deixar só dentro da
-  página de Operação.
+  página de Operação.~~ → SPEC-39 (entrada órfã confirmada, aguarda spec
+  Core de Logs/Auditoria)
 
-- [ ] Ocorrências (diferente do Log automático) — dentro da Operação,
+- [x] ~~Ocorrências (diferente do Log automático) — dentro da Operação,
   adicionado manualmente (admin ou operador): título, nota, imagens.
-  Nunca foi implementado (SPEC-06 antiga foi cancelada).
+  Nunca foi implementado (SPEC-06 antiga foi cancelada).~~ → SPEC-43
+  (re-proposta do zero, aguarda spec Core)
 
-- [ ] Verificar suporte mobile: tirar foto na hora pelo celular
+- [x] ~~Verificar suporte mobile: tirar foto na hora pelo celular
   (`InputPhotoSingle`/`InputPhotoMulti` hoje só têm `accept="image/*"`,
   sem `capture`) — além de receber a foto no formulário, garantir que
-  fique salva no celular da pessoa também.
+  fique salva no celular da pessoa também.~~ → SPEC-35
+  (`[NEEDS_DECISION]` em aberto: o que "garantir salvo" significa)
 
-- [ ] Campos de data (`InputDate.tsx`) pedem digitar DD/MM/AAAA sem
+- [x] ~~Campos de data (`InputDate.tsx`) pedem digitar DD/MM/AAAA sem
   seletor visual (calendário). Um `react-datepicker` existia antes e foi
   removido por bug (resetava o valor digitado a cada tecla) — revisar se
-  dá pra trazer de volta sem esse problema, ou outra solução de seletor.
+  dá pra trazer de volta sem esse problema, ou outra solução de seletor.~~
+  → SPEC-34 (`[NEEDS_DECISION]` em aberto: reviver lib vs. alternativa)
 
-- [ ] Modal de Profile — 3 problemas:
-  1. Trocar avatar dá toast de sucesso mas a imagem só atualiza depois de
-     recarregar a página (cache/estado não reflete de imediato).
-  2. Documento/Telefone/Data de nascimento não podem ser obrigatórios —
-     precisa aceitar vazio. Atenção: `Phone`/`BirthDate` já são opcionais
-     no Core, bug deve ser só do front; `Document` é `[Required]` de
-     verdade no Core (`Profile.ViewModel.cs`) — mudar isso é território
-     Core, não só front.
-  3. Botão Salvar e botão Cancelar ficam em lugares diferentes (Cancelar
-     no `Modal.Footer`, Salvar dentro de cada aba) — colocar um do lado
-     do outro.
+- [x] ~~Modal de Profile — 3 problemas: (avatar não atualiza,
+  Phone/BirthDate travando vazio, botões Salvar/Cancelar em lugares
+  diferentes)~~ → SPEC-30 (`[NEEDS_DECISION]` em aberto: layout de
+  Salvar/Cancelar com 3 forms independentes)
 
-- [ ] Sidebar (topo): logo do brand não aparece. Nota: isso foi removido
-  de propósito antes (`.sidebarHeader` ficou vazio/`aria-hidden`,
-  decisão da SPEC-26 já implementada) — usuário quer trazer de volta,
-  é reversão de decisão anterior, não bug novo.
+- [x] ~~Sidebar (topo): logo do brand não aparece.~~ → SPEC-29 (reversão
+  da decisão da SPEC-26)
 
-- [ ] Relatórios de verdade (aba Reports hoje é mock, SPEC-07-07): Weight
-  Report, Packing List, Relatório Fotográfico (baseado nos containers +
-  fotos dos containers, emitido em .pdf **e** .docx). Todos em inglês
-  fixo, sem precisar de i18n.
+- [x] ~~Relatórios de verdade (aba Reports hoje é mock, SPEC-07-07): Weight
+  Report, Packing List, Relatório Fotográfico...~~ → SPEC-40 (aguarda
+  spec Core de Relatórios de Operação)
 
-- [ ] Aba Nota Fiscal ganha sub-abas: (1) listagem atual, (2) "Comparação
-  NF" — quadro geral comparando quantidade de fardos/peso líquido/peso
-  bruto declarado da NF vs. o que já foi estufado (precisa de rota
-  dedicada no Core), (3) "Comparação Lotes" — mesma ideia mas orientada
-  por lote em vez de NF.
+- [x] ~~Aba Nota Fiscal ganha sub-abas: (1) listagem atual, (2) "Comparação
+  NF"... (3) "Comparação Lotes"...~~ → SPEC-41 (aguarda spec Core de
+  Comparação NF/Lote)
 
-- [ ] Tela nova: listar todos os fardos (romaneio) com checkbox,
+- [x] ~~Tela nova: listar todos os fardos (romaneio) com checkbox,
   selecionar vários de uma vez e estufar todos juntos num único
-  container (hoje só dá pra estufar um fardo específico por vez — Modo
-  A — ou por quantidade sem escolher qual — Modo B).
+  container...~~ → SPEC-42 (confirmar no Core se aceita lote numa
+  chamada só)
 
-- [ ] Lacre de container: investigar/revisar UI depois que o Core
-  definir lacrar/deslacrar com histórico (ver item equivalente no
-  TODO do Core).
+- [x] ~~Lacre de container: investigar/revisar UI depois que o Core
+  definir lacrar/deslacrar com histórico...~~ → SPEC-44 (investigação,
+  aguarda spec Core)
 
-- [ ] Tela dedicada de "desestufagem" de fardos/sacas. Hoje só existe
-  via Cancelar dentro do modal "ver fardos estufados" (que já libera a
-  linha do romaneio de volta, mas sem tela própria/fluxo claro).
+- [x] ~~Tela dedicada de "desestufagem" de fardos/sacas...~~ → SPEC-36
+  (`[NEEDS_DECISION]` em aberto: onde entra na navegação)
 
-- [ ] Investigar Split/Transferência de Containers (mover fardos de um
-  container pra outro, ou dividir um container em dois) — não existe
-  hoje.
+- [x] ~~Investigar Split/Transferência de Containers...~~ → SPEC-45
+  (investigação, perguntas de negócio em aberto)
+
+- [x] ~~`Profile.ViewModel.Document` obrigatório~~ — 100% território Core
+  (`[Required]` em `Profile.ViewModel.cs`), sem trabalho de frontend.
+  Aguardando o Core decidir/mudar isso (fora do fluxo SDD deste agente).
 
 ## Feito
