@@ -36,6 +36,11 @@ import {
 } from "@/api/generated/static/operationServiceOptions";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import {
+  buildOperationEditFields,
+  operationEditDefaultValues,
+  type OperationEditValues,
+} from "@/components/operations/operation-edit-fields";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { InputText, Select, SelectAsync } from "@/layouts/Form/Fields/Index";
@@ -213,9 +218,10 @@ function OperationsFilters({
 // Create/Update do Core têm shapes diferentes (`opType`/`opService`/
 // `booking`/`instruction` só existem na criação — travados depois, regra do
 // Core) — dois schemas gerados, dois `LayoutField[]`, nunca um Zod escrito à
-// mão (regra 2 do AGENTS.md).
+// mão (regra 2 do AGENTS.md). `OperationEditValues` vem de
+// `operation-edit-fields.ts` (SPEC-33), compartilhado com a aba Detalhes do
+// shell (`Details.tsx`).
 type OperationCreateValues = z.infer<typeof PostApiOperationBody>;
-type OperationEditValues = z.infer<typeof PutApiOperationIdBody>;
 
 function createDefaultValues(): OperationCreateValues {
   return {
@@ -233,18 +239,6 @@ function createDefaultValues(): OperationCreateValues {
     opDate: "",
     startDate: "",
     observation: "",
-  };
-}
-
-function editDefaultValues(record?: OperationDetailDTO): OperationEditValues {
-  return {
-    clientId: record?.clientId ?? "",
-    productId: record?.productId ?? "",
-    vesselId: record?.vesselId ?? "",
-    nameDate: record?.nameDate ?? "",
-    opDate: record?.opDate ?? "",
-    startDate: record?.startDate ?? "",
-    observation: record?.observation ?? "",
   };
 }
 
@@ -459,56 +453,9 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     },
   ];
 
-  const editFields: LayoutField[] = [
-    {
-      type: "SelectAsync",
-      fieldName: "clientId",
-      label: t("administrative-operations.form.client"),
-      col: { md: 6 },
-      config: { fetchOptions: fetchClientOptions, selectedLabel: modal?.record?.client.fullName },
-    },
-    {
-      type: "SelectAsync",
-      fieldName: "productId",
-      label: t("administrative-operations.form.product"),
-      col: { md: 6 },
-      config: { fetchOptions: fetchProductOptions, selectedLabel: modal?.record?.product.name },
-    },
-    {
-      type: "SelectAsync",
-      fieldName: "vesselId",
-      label: t("administrative-operations.form.vessel"),
-      col: { md: 6 },
-      config: {
-        fetchOptions: fetchVesselOptions,
-        selectedLabel: modal?.record?.vessel?.name ?? undefined,
-      },
-    },
-    {
-      type: "InputDate",
-      fieldName: "nameDate",
-      label: t("administrative-operations.form.nameDate"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputDate",
-      fieldName: "opDate",
-      label: t("administrative-operations.form.opDate"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputDate",
-      fieldName: "startDate",
-      label: t("administrative-operations.form.startDate"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputTextArea",
-      fieldName: "observation",
-      label: t("administrative-operations.form.observation"),
-      col: { md: 12 },
-    },
-  ];
+  // Campos de edição — módulo compartilhado com a aba Detalhes do shell
+  // (`Details.tsx`, SPEC-33), nunca duplicados aqui.
+  const editFields: LayoutField[] = buildOperationEditFields({ t, record: modal?.record });
 
   const handleCreateSubmit = async (values: OperationCreateValues) => {
     try {
@@ -691,7 +638,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
           }}
           schema={PutApiOperationIdBody}
           fields={editFields}
-          defaultValues={editDefaultValues(modal.record)}
+          defaultValues={operationEditDefaultValues(modal.record)}
           onSubmit={handleEditSubmit}
           onClose={() => setModal(null)}
           extraContent={modal.record ? <OperationSummary operation={modal.record} /> : undefined}

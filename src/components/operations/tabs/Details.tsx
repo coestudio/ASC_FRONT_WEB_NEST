@@ -1,6 +1,20 @@
-import { Col, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Col, Row } from "react-bootstrap";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
+import {
+  getGetApiOperationIdQueryKey,
+  usePutApiOperationId,
+} from "@/api/generated/endpoints/operation/operation";
+import { PutApiOperationIdBody } from "@/api/generated/zod/operation/operation.zod";
 import type { OperationDetailDTO } from "@/api/generated/model";
+import { CrudRecordModal } from "@/components/crud/crud-record-modal";
+import {
+  buildOperationEditFields,
+  operationEditDefaultValues,
+  type OperationEditValues,
+} from "@/components/operations/operation-edit-fields";
 import type { Locale } from "@/i18n/config";
 import { useLocale, useT } from "@/lib/ui-prefs";
 
@@ -33,13 +47,42 @@ function DetailField({ label, value, md = 4 }: { label: string; value: string; m
  * (RF2 da SPEC-07-03) já está no cabeçalho comum do shell (`OperationHeader`,
  * SPEC-07-02) — visível em qualquer aba, não duplicada aqui; esta aba mostra
  * o restante dos dados cadastrais que o cabeçalho não cobre.
+ *
+ * SPEC-33: botão "Editar" que abre o mesmo `CrudRecordModal<OperationEditValues>`
+ * já usado na listagem (`operations-list.tsx`), reaproveitando
+ * `editFields`/`OperationEditValues`/`usePutApiOperationId` a partir do
+ * módulo compartilhado `operation-edit-fields.ts` — nenhum campo novo,
+ * `booking`/`instruction` fora do escopo (não fazem parte de
+ * `OperationUpdate`, ver spec).
  */
 export function OperationDetailsTab({ operation }: { operation: OperationDetailDTO }) {
   const t = useT();
   const locale = useLocale();
+  const queryClient = useQueryClient();
+  const [editOpen, setEditOpen] = useState(false);
+
+  const updateMutation = usePutApiOperationId();
+
+  const handleEditSubmit = async (values: OperationEditValues) => {
+    try {
+      await updateMutation.mutateAsync({ id: operation.id, data: values });
+      toast.success(t("administrative-operations.toast.updated"));
+      queryClient.invalidateQueries({ queryKey: getGetApiOperationIdQueryKey(operation.id) });
+      setEditOpen(false);
+    } catch {
+      toast.error(t("administrative-operations.toast.error"));
+    }
+  };
 
   return (
     <div className="d-flex flex-column gap-4">
+      <div className="d-flex justify-content-end">
+        <Button variant="outline-primary" size="sm" onClick={() => setEditOpen(true)}>
+          <i className="bi bi-pencil me-1" aria-hidden />
+          {t("administrative-operations.details.editButton")}
+        </Button>
+      </div>
+
       <section>
         <h2 className="h6 text-body-secondary text-uppercase mb-3">
           {t("administrative-operations.details.clientSection")}
@@ -130,6 +173,23 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </h2>
         <p className="mb-0">{operation.observation || "—"}</p>
       </section>
+
+      {editOpen ? (
+        <CrudRecordModal<OperationEditValues>
+          show
+          mode="edit"
+          titleKeys={{
+            create: "administrative-operations.newTitle",
+            edit: "administrative-operations.editTitle",
+            view: "administrative-operations.viewTitle",
+          }}
+          schema={PutApiOperationIdBody}
+          fields={buildOperationEditFields({ t, record: operation })}
+          defaultValues={operationEditDefaultValues(operation)}
+          onSubmit={handleEditSubmit}
+          onClose={() => setEditOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }

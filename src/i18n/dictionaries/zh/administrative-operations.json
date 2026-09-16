@@ -54,7 +54,8 @@
     "email": "邮箱",
     "vesselEmpty": "未关联船舶",
     "createdAt": "创建时间",
-    "updatedAt": "更新时间"
+    "updatedAt": "更新时间",
+    "editButton": "编辑"
   },
   "responsible": {
     "searchPlaceholder": "按姓名或邮箱搜索...",

@@ -54,7 +54,8 @@
     "email": "E-mail",
     "vesselEmpty": "Nenhum navio vinculado",
     "createdAt": "Criado em",
-    "updatedAt": "Atualizado em"
+    "updatedAt": "Atualizado em",
+    "editButton": "Editar"
   },
   "responsible": {
     "searchPlaceholder": "Buscar por nome ou e-mail...",
