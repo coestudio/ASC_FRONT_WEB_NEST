@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-32
 - **Nome:** access-role-admin-filters
-- **Status:** DRAFT
+- **Status:** APPROVED (2026-09-16, usuário)
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/access/index.tsx`,
   `src/lib/queries/user.ts` (ou equivalente)

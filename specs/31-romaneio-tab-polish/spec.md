@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-31
 - **Nome:** romaneio-tab-polish
-- **Status:** DRAFT
+- **Status:** APPROVED (2026-09-16, usuário)
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Romaneio.tsx`
 - **Contexto do pedido:** dois itens do `TODO.md` na mesma aba

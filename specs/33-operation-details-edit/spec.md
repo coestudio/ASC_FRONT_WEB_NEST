@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-33
 - **Nome:** operation-details-edit
-- **Status:** DRAFT
+- **Status:** APPROVED (2026-09-16, usuário)
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Details.tsx`,
   `src/components/operations/operations-list.tsx` (referência de campos)

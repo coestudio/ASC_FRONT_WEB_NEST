@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-28
 - **Nome:** list-pagination-compact
-- **Status:** DRAFT
+- **Status:** APPROVED (2026-09-16, usuário)
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/ui/list-pagination.tsx` (compartilhado, 9
   consumidores)
