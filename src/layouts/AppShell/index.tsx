@@ -8,7 +8,7 @@ import { APP_VERSION } from "@/lib/app-version";
 import { getUserAreas, type AreaId, type PermissionUser } from "@/lib/permissions";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
-import { BrandSwitcher } from "@/components/theme/brand-switcher";
+import { AppBrand } from "@/layouts/AppBrand";
 import { getNavSections, type NavItem, type NavSection } from "./nav";
 import { UserMenu } from "./UserMenu";
 import styles from "./index.module.css";
@@ -156,10 +156,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}
 
       <aside className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ""}`}>
-        {/* Brand escondido da sidebar (SPEC-26) — a faixa continua existindo,
-            vazia, só pra manter o alinhamento de altura com o `.topbar`
-            (ver comentário de `.sidebarHeader` no CSS). */}
-        <div className={styles.sidebarHeader} aria-hidden="true" />
+        {/* SPEC-29: reverte SPEC-26 — logo da marca ativa volta a aparecer
+            aqui, reagindo a `data-brand` via `useBrand()` (AppBrand). */}
+        <div className={styles.sidebarHeader}>
+          <AppBrand as="link" to="/" size="sm" />
+        </div>
 
         <Nav className={`${styles.sidebarNav} flex-column`}>
           {sections.map((section) => (
@@ -196,7 +197,6 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
           <div className={`${styles.topbarTitle} flex-grow-1`}>Portal interno</div>
           <div className="d-flex align-items-center gap-2">
-            <BrandSwitcher />
             <LanguageSwitcher />
             <ThemeToggle labels={themeLabels} />
           </div>

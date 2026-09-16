@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-29
 - **Nome:** sidebar-visual-fixes
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED (2026-09-16) — ver §13 (Implementation Notes).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/layouts/AppShell/index.tsx`, `index.module.css`,
   `src/components/theme/brand-switcher.tsx`, `src/layouts/AppShell/UserMenu.tsx`
@@ -154,3 +154,69 @@ remover das 4; se outro lugar ainda usa a chave, manter).
 - **R1** — Sem reproduzir o bug de colunas antes de implementar, o fix
   pode ser paliativo. Mitigação: descrever exatamente o cenário
   reproduzido nas Implementation Notes.
+
+## 13. Implementation Notes (2026-09-16)
+
+**RF1 — causa raiz confirmada por leitura de código, não só reprodução
+visual (mais forte que a hipótese do §2.1):** o `.nav` do Bootstrap
+(`node_modules/bootstrap/dist/css/bootstrap.min.css` → `.nav{...
+display:flex;flex-wrap:wrap;...}`) aplica `flex-wrap: wrap` por padrão.
+`<Nav className={`${styles.sidebarNav} flex-column`}>` (`index.tsx`)
+combina esse `flex-wrap: wrap` com `flex-direction: column` (utilitário
+`flex-column`) dentro de um container de altura limitada
+(`.sidebarNav { flex: 1; overflow-y: auto }` dentro de `.sidebar { height:
+100dvh }`). Com eixo principal vertical e `wrap` ligado, o flexbox não
+estoura o conteúdo pra baixo com scroll — ele abre uma nova "linha" no
+eixo cruzado (horizontal), visualmente uma segunda coluna. Fix: `.sidebarNav
+{ flex-wrap: nowrap; }` (`index.module.css`). Mecanismo determinístico,
+reproduz sempre que o conteúdo das seções expandidas excede a altura
+disponível — não depende de viewport específico.
+
+**RF2/RF3 — `BrandSwitcher` escondido:** removido de
+`AppShell/index.tsx` (topbar) e de `UserMenu.tsx` (seção "brand" de
+`SECTIONS`, bloco de render do submenu, imports `useBrand`/`useSetBrand`/
+`BRANDS` não usados mais nesse arquivo). Isso deixou `src/components/
+theme/brand-switcher.tsx` com zero consumidores — a primeira passada
+apagou o arquivo por ser dead code, mas o usuário pediu explicitamente
+pra **manter o componente/CSS existindo, só sem renderizar em lugar
+nenhum** (reativável depois sem recriar do zero) — arquivo restaurado
+(`git checkout`) e o CSS que só ele usa (`.swatch`, `.brandSwitcherToggle`,
+`:global(.brand-switcher-toggle)`) devolvido a `index.module.css`. O
+mecanismo de brand (`useBrand`/`useSetBrand`, `data-brand`, tokens por
+marca) segue intacto — usado por `AppBrand` (RF4) e `ui-prefs.tsx`, fora
+do escopo desta SPEC (§4).
+
+**RF4 — logo de volta em `.sidebarHeader`:** troca do `<div aria-hidden>`
+vazio por `<AppBrand as="link" to="/" size="sm" />` (`index.tsx`), tamanho
+`sm` (logo 40px) coube nos 80px de altura da faixa sem ajuste em
+`AppBrand`. `.sidebarHeader` ganhou `display: flex; align-items: center;
+padding: 0 1.25rem` (`index.module.css`) pra centralizar o componente.
+Como `.app-brand__title` usa `var(--bs-body-color)` (não ciente do fundo
+da sidebar), adicionada uma regra local forçando `color: var(--sidebar-fg)`
+só dentro de `.sidebarHeader` — mesmo padrão já usado em `.userFirstName`/
+`.userEmail` no mesmo arquivo. `AppBrand` já reage a `data-brand` via
+`useBrand()`, então a logo troca em runtime mesmo com a UI de troca
+escondida (RF2/RF3) — testável via devtools (CA4).
+
+**i18n:** `shell.brand` ("Marca"/"Brand"/"Marca"/"品牌") removida dos 4
+dicionários (`common.json`) — confirmado órfã (nenhum outro `t("shell.
+brand")` no projeto).
+
+**Arquivos alterados:**
+- `src/layouts/AppShell/index.tsx`
+- `src/layouts/AppShell/index.module.css`
+- `src/layouts/AppShell/UserMenu.tsx`
+- `src/components/theme/brand-switcher.tsx` — sem mudança de conteúdo
+  (restaurado após remoção intermediária; mantido a pedido do usuário,
+  só sem consumidor em `AppShell`/`UserMenu`)
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/common.json`
+
+**Validação:** `bun run check` (tsc --noEmit) limpo. `bun run lint` sem
+nenhum finding nos arquivos tocados (o comando reporta 3 erros/63
+warnings pré-existentes em arquivos não relacionados —
+`session.server.ts`, `layouts/Form/Fields/**` — confirmados fora do
+escopo desta SPEC). CA1 (reprodução visual em 3 viewports) e CA4 (troca
+de brand via devtools) ainda pendentes de verificação manual no browser
+pelo usuário — dev server rodando (`bun run dev`, `http://localhost:8080`)
+junto com o Core local (`dotnet watch run`, `http://127.0.0.1:5766`) para
+esse teste.

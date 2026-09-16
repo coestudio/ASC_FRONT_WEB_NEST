@@ -25,13 +25,25 @@
   z-index: 10;
   border-radius: 0 1.5rem 1.5rem 0;
 }
-/* height = 80px, matched by .topbar — faixa vazia (SPEC-26: brand da
-   sidebar escondido), mantida só pra alinhar a altura com o topbar. */
+/* height = 80px, matched by .topbar. SPEC-29: reverte SPEC-26 (que
+   escondia a logo aqui) — volta a mostrar a marca ativa. */
 .sidebarHeader {
   height: 80px;
   box-sizing: border-box;
   border-bottom: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
 }
+/* Título/subtítulo do AppBrand usam tokens que não são cientes do fundo da
+   sidebar (--bs-body-color) — força a cor de texto da sidebar aqui pra
+   garantir contraste nas 6 combinações brand×modo (SPEC-29). */
+.sidebarHeader :global(.app-brand__title) {
+  color: var(--sidebar-fg);
+}
+/* SPEC-29: BrandSwitcher não é mais renderizado em lugar nenhum (RF2/RF3),
+   mas o componente/CSS ficam mantidos a pedido do usuário (não é dead
+   code intencional — reativável depois sem recriar). */
 .sidebar :global(.brand-switcher-toggle) {
   color: var(--sidebar-fg);
 }
@@ -50,6 +62,14 @@
   flex: 1;
   overflow-y: auto;
   padding: 0.6rem 0.5rem;
+  /* SPEC-29 RF1: `.nav` do Bootstrap aplica `flex-wrap: wrap` por padrão;
+     combinado com `flex-column` (utilitário no elemento) e altura
+     limitada do container, isso faz o conteúdo que não cabe verticalmente
+     "quebrar" pra uma segunda coluna horizontal em vez de rolar — em vez
+     de crescer pra baixo com scroll, o flexbox reserva uma nova linha no
+     eixo cruzado (horizontal, já que o eixo principal é vertical). Travar
+     `nowrap` aqui restaura o scroll vertical único esperado. */
+  flex-wrap: nowrap;
 }
 
 .navLinkCount {

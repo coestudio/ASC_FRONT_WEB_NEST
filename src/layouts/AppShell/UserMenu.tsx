@@ -3,17 +3,8 @@ import { Dropdown } from "react-bootstrap";
 
 import { useUser } from "@/hooks";
 import { resolveAvatarUrl } from "@/lib/avatar-url";
-import {
-  useT,
-  useThemeMode,
-  useSetThemeMode,
-  useBrand,
-  useSetBrand,
-  useLocale,
-  useSetLocale,
-} from "@/lib/ui-prefs";
+import { useT, useThemeMode, useSetThemeMode, useLocale, useSetLocale } from "@/lib/ui-prefs";
 import type { ThemeMode } from "@/styles/globals/color-modes";
-import { BRANDS } from "@/components/theme/brand-switcher";
 import { locales, LOCALE_LABELS } from "@/i18n/config";
 import { useViewMode } from "@/lib/view-mode";
 import { ProfileModal } from "@/components/profile/profile-modal";
@@ -38,7 +29,7 @@ const THEME_OPTIONS: { value: ThemeMode; icon: string }[] = [
  * UserMenu.tsx — cada seção expande inline dentro do dropdown, sem flyout
  * lateral (evita clipping na borda da viewport).
  */
-type SectionKey = "theme" | "brand" | "language" | "view";
+type SectionKey = "theme" | "language" | "view";
 
 export function UserMenu() {
   const { user } = useUser();
@@ -61,8 +52,6 @@ export function UserMenu() {
 
   const themeMode = useThemeMode();
   const setThemeMode = useSetThemeMode();
-  const brand = useBrand();
-  const setBrand = useSetBrand();
   const locale = useLocale();
   const setLocale = useSetLocale();
   const [viewMode, setViewMode] = useViewMode();
@@ -75,7 +64,6 @@ export function UserMenu() {
 
   const SECTIONS: { key: SectionKey; labelKey: Parameters<typeof t>[0]; icon: string }[] = [
     { key: "theme", labelKey: "shell.theme", icon: "bi-palette" },
-    { key: "brand", labelKey: "shell.brand", icon: "bi-flower2" },
     { key: "language", labelKey: "shell.language", icon: "bi-translate" },
     { key: "view", labelKey: "shell.viewMode", icon: "bi-layout-text-window" },
   ];
@@ -173,22 +161,6 @@ export function UserMenu() {
                                   {o.value === themeMode && (
                                     <i className="bi bi-check2" aria-hidden />
                                   )}
-                                </button>
-                              ))}
-                            {sec.key === "brand" &&
-                              BRANDS.map((b) => (
-                                <button
-                                  key={b.id}
-                                  type="button"
-                                  className={`dropdown-item d-flex align-items-center gap-2 ${b.id === brand ? "active" : ""}`}
-                                  onClick={() => setBrand(b.id)}
-                                >
-                                  <span
-                                    className={styles.swatch}
-                                    style={{ backgroundColor: b.swatch }}
-                                  />
-                                  <span className="flex-grow-1 text-start">{b.label}</span>
-                                  {b.id === brand && <i className="bi bi-check2" aria-hidden />}
                                 </button>
                               ))}
                             {sec.key === "language" &&
