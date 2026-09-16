@@ -592,7 +592,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
                 <th>{t("administrative-operations.colService")}</th>
                 <th>{t("administrative-operations.colStatus")}</th>
                 <th>{t("administrative-operations.colOpDate")}</th>
-                <th>{t("administrative-operations.colActions")}</th>
+                <th className="text-end">{t("administrative-operations.colActions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -672,7 +672,7 @@ function OperationRow({
       <td>{resolveOperationServiceLabel(operation.opService, locale)}</td>
       <td>{renderStatus(operation)}</td>
       <td className="text-body-secondary">{formatDate(operation.opDate, locale)}</td>
-      <td>{renderActions(operation)}</td>
+      <td className="text-end">{renderActions(operation)}</td>
     </tr>
   );
 }

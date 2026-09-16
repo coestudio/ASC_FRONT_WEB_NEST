@@ -188,6 +188,30 @@ a {
   --bs-btn-active-color: var(--on-brand, #fff);
 }
 
+/* SPEC-56 — `.soft-card`/`.btn-soft` eram usadas em 3 lugares do código
+   (view-toggle.tsx, Log.tsx, administrative/operations/$id) mas nunca
+   tinham sido definidas em nenhum CSS do projeto: renderizavam sem borda,
+   fundo ou sombra. Definidas aqui com os tokens de tema já existentes. */
+.soft-card {
+  background: var(--surface);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-soft {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-bg: var(--surface);
+  --bs-btn-border-color: var(--bs-border-color);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--bs-secondary-bg);
+  --bs-btn-hover-border-color: var(--bs-border-color);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-bg: var(--bs-secondary-bg);
+  --bs-btn-active-border-color: var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+}
+
 /* Item de dropdown (ex.: opções do submenu de preferências) — Bootstrap
    não arredonda por padrão; item ativo usa azul (--bs-dropdown-link-active-bg)
    por padrão, troca pra brand + pill arredondado pra combinar com o resto

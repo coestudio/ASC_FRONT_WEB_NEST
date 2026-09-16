@@ -92,6 +92,7 @@ function ProductPage() {
     {
       key: "actions",
       headerKey: "administrative-registry.product.colActions",
+      align: "end",
       render: (p) => (
         <CrudRowActions
           onView={() => setModal({ mode: "view", record: p })}

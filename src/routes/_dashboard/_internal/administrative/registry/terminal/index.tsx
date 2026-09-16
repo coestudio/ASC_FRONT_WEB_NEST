@@ -152,6 +152,7 @@ function TerminalPageBody() {
     {
       key: "actions",
       headerKey: "administrative-registry.terminal.colActions",
+      align: "end",
       render: (r) => (
         <CrudRowActions
           onView={() => setModal({ mode: "view", record: r })}

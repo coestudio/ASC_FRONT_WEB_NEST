@@ -344,6 +344,7 @@ function ClientsPageBody() {
     {
       key: "actions",
       headerKey: "administrative-clients.colActions",
+      align: "end",
       render: (c) => {
         const isLoadingDetail = detailRequest?.id === c.id;
         return (

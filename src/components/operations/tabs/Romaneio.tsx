@@ -226,6 +226,7 @@ export function Romaneio({ operationId }: { operationId: string }) {
     {
       key: "actions",
       headerKey: "administrative-operations.romaneio.colActions",
+      align: "end",
       render: (r) => (
         <CrudRowActions
           onView={() => setModal({ mode: "view", record: r })}
@@ -291,24 +292,25 @@ export function Romaneio({ operationId }: { operationId: string }) {
 
   return (
     <>
-      <div className="d-flex justify-content-end gap-2 mb-2">
-        <Button variant="outline-primary" size="sm" onClick={handleExport} disabled={exporting}>
-          {exporting ? (
-            <Spinner size="sm" animation="border" className="me-1" />
-          ) : (
-            <i className="bi bi-download me-1" aria-hidden />
-          )}
-          {t("administrative-operations.romaneio.export.button")}
-        </Button>
-        <Button variant="outline-primary" size="sm" onClick={() => setImportOpen(true)}>
-          <i className="bi bi-file-earmark-spreadsheet me-1" aria-hidden />
-          {t("administrative-operations.romaneio.import.button")}
-        </Button>
-      </div>
-
       <CrudListPage
         titleKey="administrative-operations.romaneio.title"
         descriptionKey="administrative-operations.romaneio.description"
+        headerActions={
+          <>
+            <Button variant="outline-primary" size="sm" onClick={handleExport} disabled={exporting}>
+              {exporting ? (
+                <Spinner size="sm" animation="border" className="me-1" />
+              ) : (
+                <i className="bi bi-download me-1" aria-hidden />
+              )}
+              {t("administrative-operations.romaneio.export.button")}
+            </Button>
+            <Button variant="outline-primary" size="sm" onClick={() => setImportOpen(true)}>
+              <i className="bi bi-file-earmark-spreadsheet me-1" aria-hidden />
+              {t("administrative-operations.romaneio.import.button")}
+            </Button>
+          </>
+        }
         queryOptions={listQueryOptions}
         columns={columns}
         spreadsheetVariant

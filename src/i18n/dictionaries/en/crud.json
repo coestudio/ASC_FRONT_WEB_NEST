@@ -4,7 +4,11 @@
     "searchPlaceholder": "Search...",
     "viewMode": "View mode",
     "error": "Could not load the data.",
-    "empty": "No records found."
+    "empty": "No records found.",
+    "rowActionsToggle": "Row actions",
+    "rowActionsView": "View",
+    "rowActionsEdit": "Edit",
+    "rowActionsDelete": "Delete"
   },
   "recordModal": {
     "cancel": "Cancel",

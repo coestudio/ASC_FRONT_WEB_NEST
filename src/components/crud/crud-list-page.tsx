@@ -113,6 +113,13 @@ export type CrudListPageProps<
    * SPEC-31). Opt-in, `false` mantém o visual padrão (hairline, sem grade
    * vertical) usado pelas demais listagens CRUD. */
   spreadsheetVariant?: boolean;
+  /**
+   * Slot opcional de ações no cabeçalho, ao lado do título (ex.: botões
+   * "Exportar"/"Importar" da aba Romaneio — SPEC-55). Cada tela monta seus
+   * próprios controles (React-Bootstrap puro); o `CrudListPage` só reserva
+   * o espaço, sem prop = nenhuma mudança de layout pras demais telas.
+   */
+  headerActions?: ReactNode;
 };
 
 /**
@@ -243,6 +250,7 @@ export function CrudListPage<
   isMock,
   filters,
   spreadsheetVariant,
+  headerActions,
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
@@ -250,11 +258,14 @@ export function CrudListPage<
 
   return (
     <div>
-      <div className="mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-2 flex-wrap mb-3">
         <div>
           <h1 className="h4 mb-0">{t(titleKey)}</h1>
           {descriptionKey ? <p className="text-body-secondary mb-0">{t(descriptionKey)}</p> : null}
         </div>
+        {headerActions ? (
+          <div className="d-flex gap-2 flex-wrap flex-shrink-0">{headerActions}</div>
+        ) : null}
       </div>
 
       {isMock ? <MockDataBanner className="mb-3" /> : null}

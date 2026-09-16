@@ -4,7 +4,11 @@
     "searchPlaceholder": "Buscar...",
     "viewMode": "Modo de visualización",
     "error": "No se pudieron cargar los datos.",
-    "empty": "No se encontraron registros."
+    "empty": "No se encontraron registros.",
+    "rowActionsToggle": "Acciones de la fila",
+    "rowActionsView": "Ver",
+    "rowActionsEdit": "Editar",
+    "rowActionsDelete": "Eliminar"
   },
   "recordModal": {
     "cancel": "Cancelar",

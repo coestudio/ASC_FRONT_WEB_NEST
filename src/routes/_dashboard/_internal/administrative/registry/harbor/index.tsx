@@ -152,6 +152,7 @@ function HarborPage() {
     {
       key: "actions",
       headerKey: "administrative-registry.harbor.colActions",
+      align: "end",
       render: (h) => (
         <CrudRowActions
           onView={() => setModal({ mode: "view", record: h })}

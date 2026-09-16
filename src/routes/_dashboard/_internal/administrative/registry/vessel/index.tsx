@@ -92,6 +92,7 @@ function VesselPage() {
     {
       key: "actions",
       headerKey: "administrative-registry.vessel.colActions",
+      align: "end",
       render: (v) => (
         <CrudRowActions
           onView={() => setModal({ mode: "view", record: v })}

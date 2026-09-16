@@ -1,29 +1,28 @@
-import { Spinner } from "react-bootstrap";
+import { Dropdown, Spinner } from "react-bootstrap";
+import { useT } from "@/lib/ui-prefs";
 import styles from "./crud-row-actions.module.css";
 
 export type CrudRowActionsProps = {
   onView?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
-  /** Troca o ícone de "ver" por spinner e desabilita o botão (busca de detalhe sob demanda). */
+  /** Troca o ícone de "ver" por spinner e desabilita o item (busca de detalhe sob demanda). */
   viewLoading?: boolean;
-  /** Troca o ícone de "editar" por spinner e desabilita o botão. */
+  /** Troca o ícone de "editar" por spinner e desabilita o item. */
   editLoading?: boolean;
-  /** Desabilita os 3 botões (ex.: enquanto outra ação da linha está em curso). */
+  /** Desabilita o toggle inteiro (ex.: enquanto outra ação da linha está em curso). */
   disabled?: boolean;
 };
 
 /**
- * Trio padrão de ações de linha/card (`ver`/`editar`/`excluir`) — SPEC-18.
- * Cada botão só aparece se o callback correspondente for passado (mesmo
- * padrão condicional que as telas já usavam antes, ex.: `collaborators` sem
- * `onEdit` porque o Core não expõe update de Collaborator). Estilo fixo
- * (`btn-outline-primary/success/danger` + `bi-eye/pencil/trash`), o mesmo já
- * usado nas 9 telas migradas — não serve pro padrão de pílula/5-ações de
- * `admin/access` (fora de escopo, ver SPEC-18 §4). Botões quadrados e
- * compactos (`crud-row-actions.module.css`, SPEC-47 item 3) — reduz a altura
- * efetiva da linha, que ficava com gap grande em relação ao cabeçalho
- * "AÇÕES" nas listagens densas (ex.: Romaneio, `spreadsheetVariant`).
+ * Menu de ações de linha/card (`ver`/`editar`/`excluir`) — SPEC-18,
+ * reescrito de trio de botões pra dropdown compacto na SPEC-55 (decisão do
+ * usuário: menos espaço horizontal ocupado por linha da tabela). Cada item
+ * só aparece se o callback correspondente for passado (mesmo padrão
+ * condicional de antes, ex.: `collaborators` sem `onEdit` porque o Core não
+ * expõe update de Collaborator). Assinatura pública (`CrudRowActionsProps`)
+ * inalterada — nenhum dos 9 consumidores precisa mudar como chama o
+ * componente.
  */
 export function CrudRowActions({
   onView,
@@ -33,46 +32,44 @@ export function CrudRowActions({
   editLoading,
   disabled,
 }: CrudRowActionsProps) {
+  const t = useT();
+  const busy = disabled || viewLoading || editLoading;
+
   return (
-    <div className={`d-flex ${styles.actions}`}>
-      {onView ? (
-        <button
-          type="button"
-          className={`btn btn-sm btn-outline-primary ${styles.button}`}
-          disabled={disabled || viewLoading}
-          onClick={onView}
-        >
-          {viewLoading ? (
-            <Spinner size="sm" animation="border" />
-          ) : (
-            <i className="bi bi-eye" aria-hidden />
-          )}
-        </button>
-      ) : null}
-      {onEdit ? (
-        <button
-          type="button"
-          className={`btn btn-sm btn-outline-success ${styles.button}`}
-          disabled={disabled || editLoading}
-          onClick={onEdit}
-        >
-          {editLoading ? (
-            <Spinner size="sm" animation="border" />
-          ) : (
-            <i className="bi bi-pencil" aria-hidden />
-          )}
-        </button>
-      ) : null}
-      {onDelete ? (
-        <button
-          type="button"
-          className={`btn btn-sm btn-outline-danger ${styles.button}`}
-          disabled={disabled}
-          onClick={onDelete}
-        >
-          <i className="bi bi-trash" aria-hidden />
-        </button>
-      ) : null}
-    </div>
+    <Dropdown align="end">
+      <Dropdown.Toggle
+        as="button"
+        type="button"
+        className={`btn btn-sm btn-outline-secondary ${styles.toggle}`}
+        disabled={busy}
+        aria-label={t("crud.list.rowActionsToggle")}
+      >
+        {viewLoading || editLoading ? (
+          <Spinner size="sm" animation="border" />
+        ) : (
+          <i className="bi bi-three-dots-vertical" aria-hidden />
+        )}
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+        {onView ? (
+          <Dropdown.Item onClick={onView} disabled={disabled || viewLoading}>
+            <i className="bi bi-eye me-2" aria-hidden />
+            {t("crud.list.rowActionsView")}
+          </Dropdown.Item>
+        ) : null}
+        {onEdit ? (
+          <Dropdown.Item onClick={onEdit} disabled={disabled || editLoading}>
+            <i className="bi bi-pencil me-2" aria-hidden />
+            {t("crud.list.rowActionsEdit")}
+          </Dropdown.Item>
+        ) : null}
+        {onDelete ? (
+          <Dropdown.Item onClick={onDelete} disabled={disabled} className="text-danger">
+            <i className="bi bi-trash me-2" aria-hidden />
+            {t("crud.list.rowActionsDelete")}
+          </Dropdown.Item>
+        ) : null}
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }

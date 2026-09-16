@@ -4,7 +4,11 @@
     "searchPlaceholder": "搜索...",
     "viewMode": "视图模式",
     "error": "无法加载数据。",
-    "empty": "未找到记录。"
+    "empty": "未找到记录。",
+    "rowActionsToggle": "行操作",
+    "rowActionsView": "查看",
+    "rowActionsEdit": "编辑",
+    "rowActionsDelete": "删除"
   },
   "recordModal": {
     "cancel": "取消",

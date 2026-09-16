@@ -224,6 +224,7 @@ function CollaboratorsPageBody() {
     {
       key: "actions",
       headerKey: "client.collaborators.colActions",
+      align: "end",
       // Sem botão de editar — o Core não expõe PUT/PATCH para Collaborator
       // (R3 da SPEC-09). Só ver e excluir.
       render: (c) => (

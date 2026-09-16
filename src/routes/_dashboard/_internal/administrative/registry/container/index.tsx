@@ -118,6 +118,7 @@ function ContainerPage() {
     {
       key: "actions",
       headerKey: "administrative-registry.container.colActions",
+      align: "end",
       render: (c) => (
         <CrudRowActions
           onView={() => setModal({ mode: "view", record: c })}
