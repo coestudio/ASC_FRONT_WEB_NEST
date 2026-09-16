@@ -36,6 +36,7 @@ import {
   getGetApiOperationOperationIdCargoQueryOptions,
   usePostApiOperationOperationIdCargoIdCancel,
   usePostApiOperationOperationIdCargoStuffIdentified,
+  usePostApiOperationOperationIdCargoStuffIdentifiedBatch,
   usePostApiOperationOperationIdCargoStuffQuantity,
 } from "@/api/generated/endpoints/cargo-unit/cargo-unit";
 import {
@@ -185,6 +186,7 @@ export function Containers({ operationId }: { operationId: string }) {
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
   const [stuffIdentifiedFor, setStuffIdentifiedFor] = useState<ContainerOperationDTO | null>(null);
   const [stuffQuantityFor, setStuffQuantityFor] = useState<ContainerOperationDTO | null>(null);
+  const [stuffBatchFor, setStuffBatchFor] = useState<ContainerOperationDTO | null>(null);
   const [cargoUnitsFor, setCargoUnitsFor] = useState<ContainerOperationDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
@@ -358,6 +360,14 @@ export function Containers({ operationId }: { operationId: string }) {
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-secondary"
+                        title={t("administrative-operations.containers.stuffing.actionBatch")}
+                        onClick={() => setStuffBatchFor(item)}
+                      >
+                        <i className="bi bi-collection" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-secondary"
                         title={t("administrative-operations.containers.stuffing.actionViewCargo")}
                         onClick={() => setCargoUnitsFor(item)}
                       >
@@ -500,6 +510,15 @@ export function Containers({ operationId }: { operationId: string }) {
           operationId={operationId}
           containerLink={stuffQuantityFor}
           onClose={() => setStuffQuantityFor(null)}
+          onStuffed={invalidateCargo}
+        />
+      ) : null}
+
+      {stuffBatchFor ? (
+        <StuffBatchModal
+          operationId={operationId}
+          containerLink={stuffBatchFor}
+          onClose={() => setStuffBatchFor(null)}
           onStuffed={invalidateCargo}
         />
       ) : null}
@@ -1126,6 +1145,186 @@ function StuffQuantityModal({
           </Modal.Footer>
         </Form>
       )}
+    </Modal>
+  );
+}
+
+/**
+ * Estufagem em lote por checkbox (SPEC-42, `stuff/identified-batch`) — o
+ * operador escolhe uma única Invoice (o Core valida cada linha contra o
+ * `Number` dela, `EnsureRomaneioMatchesInvoice`) e marca N linhas de
+ * romaneio numa lista com checkbox (mesmo padrão visual de
+ * `ImportRomaneioModal` em `Romaneio.tsx`). `Lote` de cada item é derivado
+ * automaticamente da própria linha (mesmo `romaneioLoteByIdRef` de
+ * `StuffIdentifiedModal`/SPEC-46) — não pedimos pro operador digitar de
+ * novo algo que a tela já sabe. Chamada é atômica (tudo ou nada, sem UX de
+ * sucesso parcial) — erro cai no mesmo catch genérico de toast já usado no
+ * resto do arquivo.
+ */
+function StuffBatchModal({
+  operationId,
+  containerLink,
+  onClose,
+  onStuffed,
+}: {
+  operationId: string;
+  containerLink: ContainerOperationDTO;
+  onClose: () => void;
+  onStuffed: () => void;
+}) {
+  const t = useT();
+  const mutation = usePostApiOperationOperationIdCargoStuffIdentifiedBatch();
+
+  const invoiceForm = useForm<{ invoiceId: string }>({ defaultValues: { invoiceId: "" } });
+  const invoiceId = invoiceForm.watch("invoiceId");
+
+  const [romaneioOptions, setRomaneioOptions] = useState<
+    { id: string; lote: string; notaFiscal: string | null; itemIdentifier: string }[]
+  >([]);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [loadingRomaneios, setLoadingRomaneios] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Não existe filtro `InvoiceId` no endpoint de Romaneio (só `Search`,
+  // livre) — usamos o `Number` da Invoice escolhida (guardado aqui a cada
+  // resposta do `SelectAsync`, mesma técnica do `romaneioLoteByIdRef`) como
+  // termo de busca, já que o Core casa `Search` contra `NotaFiscal` (entre
+  // outros campos) em `RomaneioController.GetAll`.
+  const invoiceNumberByIdRef = useRef<Record<string, string>>({});
+
+  const fetchInvoiceOptions = (search: string) =>
+    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) => {
+      res.items.forEach((invoice) => {
+        invoiceNumberByIdRef.current[invoice.id] = invoice.number ?? "";
+      });
+      return res.items.map((invoice) => ({
+        value: invoice.id,
+        label: invoice.number ?? invoice.id,
+      }));
+    });
+
+  useEffect(() => {
+    setSelected(new Set());
+    if (!invoiceId) {
+      setRomaneioOptions([]);
+      return;
+    }
+    const invoiceNumber = invoiceNumberByIdRef.current[invoiceId] ?? "";
+    setLoadingRomaneios(true);
+    getApiOperationOperationIdRomaneio(operationId, { Search: invoiceNumber, Limit: 100 })
+      .then((res) => {
+        setRomaneioOptions(
+          res.items.map((romaneio) => ({
+            id: romaneio.id,
+            lote: romaneio.lote ?? "",
+            notaFiscal: romaneio.notaFiscal ?? null,
+            itemIdentifier: romaneio.itemIdentifier,
+          })),
+        );
+      })
+      .finally(() => setLoadingRomaneios(false));
+  }, [invoiceId, operationId]);
+
+  const toggleSelected = (id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!invoiceId || selected.size === 0) return;
+    setSubmitting(true);
+    try {
+      const result = await mutation.mutateAsync({
+        operationId,
+        data: {
+          containerOperationId: containerLink.id,
+          items: romaneioOptions
+            .filter((romaneio) => selected.has(romaneio.id))
+            .map((romaneio) => ({
+              romaneioId: romaneio.id,
+              invoiceId,
+              lote: romaneio.lote,
+            })),
+        },
+      });
+      toast.success(t("administrative-operations.containers.stuffing.toast.batchSuccess"));
+      (result.warnings ?? []).forEach((warning) => toast.warning(warning));
+      onStuffed();
+      onClose();
+    } catch {
+      toast.error(t("administrative-operations.containers.toast.error"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal show onHide={onClose} centered size="lg">
+      <Modal.Header>
+        <Modal.Title className="h5 mb-0">
+          {t("administrative-operations.containers.stuffing.batchTitle", {
+            identifier: containerLink.container.identifier,
+          })}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <SelectAsync<{ invoiceId: string }>
+          methods={invoiceForm}
+          fieldName="invoiceId"
+          label={t("administrative-operations.containers.stuffing.form.invoice")}
+          fetchOptions={fetchInvoiceOptions}
+        />
+
+        {loadingRomaneios ? (
+          <LoadingState variant="inline" />
+        ) : invoiceId && romaneioOptions.length === 0 ? (
+          <div className="alert alert-secondary">
+            {t("administrative-operations.containers.stuffing.batchEmpty")}
+          </div>
+        ) : romaneioOptions.length > 0 ? (
+          <>
+            <div className="text-body-secondary small mb-2">
+              {t("administrative-operations.containers.stuffing.batchSelected", {
+                count: selected.size,
+              })}
+            </div>
+            <div className="list-group" style={{ maxHeight: 320, overflowY: "auto" }}>
+              {romaneioOptions.map((romaneio) => (
+                <label
+                  key={romaneio.id}
+                  className="list-group-item d-flex align-items-center gap-2"
+                >
+                  <Form.Check
+                    type="checkbox"
+                    checked={selected.has(romaneio.id)}
+                    onChange={() => toggleSelected(romaneio.id)}
+                  />
+                  <span>
+                    {romaneio.lote} · NF {romaneio.notaFiscal ?? "—"} · {romaneio.itemIdentifier}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </>
+        ) : null}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="outline-primary" onClick={onClose}>
+          {t("crud.recordModal.cancel")}
+        </Button>
+        <Button
+          variant="primary"
+          disabled={submitting || selected.size === 0}
+          onClick={handleSubmit}
+        >
+          {submitting ? <Spinner size="sm" animation="border" className="me-2" /> : null}
+          {t("administrative-operations.containers.stuffing.submit")}
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 }

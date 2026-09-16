@@ -276,9 +276,13 @@
     "stuffing": {
       "actionIdentified": "装箱指定包件",
       "actionQuantity": "按数量装箱",
+      "actionBatch": "批量装箱",
       "actionViewCargo": "查看已装箱包件",
       "identifiedTitle": "装箱指定包件 — {identifier}",
       "quantityTitle": "按数量装箱 — {identifier}",
+      "batchTitle": "批量装箱 — {identifier}",
+      "batchEmpty": "未找到此发票对应的包件。",
+      "batchSelected": "已选择 {count} 个包件。",
       "submit": "装箱",
       "form": {
         "invoice": "发票",
@@ -302,6 +306,7 @@
       "toast": {
         "identifiedSuccess": "包件装箱成功。",
         "quantitySuccess": "装箱完成成功。",
+        "batchSuccess": "包件批量装箱成功。",
         "canceled": "包件已取消。"
       }
     },

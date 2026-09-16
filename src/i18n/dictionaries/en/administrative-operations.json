@@ -276,9 +276,13 @@
     "stuffing": {
       "actionIdentified": "Stuff specific bale",
       "actionQuantity": "Stuff by quantity",
+      "actionBatch": "Batch stuffing",
       "actionViewCargo": "View stuffed cargo",
       "identifiedTitle": "Stuff specific bale — {identifier}",
       "quantityTitle": "Stuff by quantity — {identifier}",
+      "batchTitle": "Batch stuffing — {identifier}",
+      "batchEmpty": "No bale found for this invoice.",
+      "batchSelected": "{count} bale(s) selected.",
       "submit": "Stuff",
       "form": {
         "invoice": "Invoice",
@@ -302,6 +306,7 @@
       "toast": {
         "identifiedSuccess": "Bale stuffed successfully.",
         "quantitySuccess": "Stuffing completed successfully.",
+        "batchSuccess": "Bales stuffed successfully.",
         "canceled": "Cargo unit canceled successfully."
       }
     },

@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-42
 - **Nome:** multi-stuffing-checkbox
-- **Status:** DRAFT (revisado 2026-09-16, 2x) — **§4 já resolvido pelo
+- **Status:** IMPLEMENTED (2026-09-16) — ver §13 (Implementation Notes).
+- **Status anterior:** DRAFT (revisado 2026-09-16, 2x) — **§4 já resolvido pelo
   Core.** `specs/31-cargo-stuffing-batch-identified` já é `IMPLEMENTED`
   (2026-09-15) e respondeu a pergunta em aberto original: existe endpoint
   dedicado `POST .../cargo/stuff/identified-batch` (opção 1 do §4,
@@ -159,13 +160,13 @@ Namespace `administrative-operations` (novo sub-namespace, ex.
 
 ## 11. Critérios de aceitação
 
-| # | Critério |
-| --- | --- |
-| CA0 | `just map` executado, `identified-batch` presente no client gerado |
-| CA1 | Tela lista fardos do romaneio com checkbox de seleção múltipla |
-| CA2 | Selecionar container de destino via `SelectAsync` |
+| #   | Critério                                                                                                                              |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| CA0 | `just map` executado, `identified-batch` presente no client gerado                                                                    |
+| CA1 | Tela lista fardos do romaneio com checkbox de seleção múltipla                                                                        |
+| CA2 | Selecionar container de destino via `SelectAsync`                                                                                     |
 | CA3 | Ação de estufar dispara 1 única chamada em lote; erro (400) exibe toast com a mensagem do `MessageCode` retornado, sem estado parcial |
-| CA4 | `bun run check` + `bun run lint` sem regressão |
+| CA4 | `bun run check` + `bun run lint` sem regressão                                                                                        |
 
 ## 12. Riscos
 
@@ -178,3 +179,93 @@ Namespace `administrative-operations` (novo sub-namespace, ex.
   (`usePostApiOperationOperationIdCargoStuffIdentifiedBatch`) é uma
   suposição baseada na convenção Orval do projeto, não confirmado contra
   o client real ainda.
+
+## 13. Implementation Notes (2026-09-16)
+
+**Confirmado antes de implementar:** `just map` já tinha sido rodado numa
+rodada anterior (SPEC-46) contra o Core local — `identified-batch` já
+presente em `src/api/generated/**`, hook
+`usePostApiOperationOperationIdCargoStuffIdentifiedBatch` (nome
+confirmado, batia com a suposição do §12/R2), body
+`CargoUnitStuffIdentifiedBatch { containerOperationId, items:
+IdentifiedBatchItem[] }` com `IdentifiedBatchItem { romaneioId, invoiceId,
+lote }` — shape idêntico ao documentado em §4/§7.
+
+**Desvio de design em relação ao §3/§8 original (nova tela própria):**
+implementado como um **4º modal** dentro de `Containers.tsx`
+(`StuffBatchModal`), acionado por um novo botão de ação por linha de
+container (`bi-collection`, ao lado dos 3 botões de estufagem/visualização
+já existentes), em vez de uma tela nova e independente. Razão: o container
+de destino (RF2) já é o próprio contexto da linha clicada — abrir uma tela
+separada exigiria pedir pro operador escolher de novo um container que ele
+já está olhando na listagem, replicando a mesma "digitação redundante"
+que a SPEC-46 identificou como má UX no Modo A. Mesmo padrão arquitetural
+dos outros 2 modos de estufagem (`StuffIdentifiedModal`/
+`StuffQuantityModal`), que também são modais por linha, não telas.
+
+**Fluxo implementado (dentro do modal):**
+1. Selecionar uma Invoice via `SelectAsync` (mesmo padrão dos outros
+   modos) — o Core valida cada linha do lote contra o `Number` dessa
+   Invoice (`EnsureRomaneioMatchesInvoice`), então uma única Invoice por
+   lote é suficiente e consistente com o contrato.
+2. Ao escolher a Invoice, busca as linhas de Romaneio candidatas — **não
+   existe filtro `InvoiceId` no endpoint de Romaneio** (só `Search`, livre;
+   confirmado em `GetApiOperationOperationIdRomaneioParams` e em
+   `RomaneioController.GetAll`, que casa `Search` contra
+   `ItemIdentifier`/`ItemCode`/`NotaFiscal`/`Lote`). Solução: guarda o
+   `Number` da Invoice escolhida (`invoiceNumberByIdRef`, populado a cada
+   resposta do `SelectAsync`, mesma técnica do `romaneioLoteByIdRef` já
+   usado no Modo A) e usa esse valor como `Search` — o Core casa contra
+   `NotaFiscal`. Debt conhecido: é um `Contains`, não um filtro exato por
+   `InvoiceId` — na prática funciona porque `NotaFiscal` normalmente é
+   único/específico o bastante, mas teoricamente uma NF cujo texto seja
+   substring de outra poderia trazer linhas a mais na lista (o operador
+   ainda escolhe manualmente via checkbox, então não polui o payload
+   final, só a lista de opções exibida).
+3. Lista as linhas retornadas com checkbox (`Form.Check` + `Set<string>`
+   de ids selecionados, mesmo padrão de `ImportRomaneioModal` em
+   `Romaneio.tsx`), contador de selecionados, sem "selecionar todos"
+   (não pedido, e a lista já é filtrada por Invoice).
+4. `Lote` de cada item é derivado automaticamente do próprio dado já
+   carregado (`romaneio.lote`) — nenhum campo de formulário para digitar
+   lote, seguindo a mesma recomendação da SPEC-46 §4 (opção 1).
+5. Submit dispara uma única chamada
+   `usePostApiOperationOperationIdCargoStuffIdentifiedBatch` com
+   `{ containerOperationId, items: [...] }`; sucesso invalida a lista de
+   `CargoUnit` (mesmo `invalidateCargo` já usado pelos outros 2 modos);
+   erro cai no mesmo catch genérico de toast (`administrative-
+   operations.containers.toast.error`) já usado no resto do arquivo —
+   mesma decisão de RF4 (não há parsing de `MessageCode` específico,
+   consistente com o precedente aceito na SPEC-46).
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Containers.tsx` — novo estado
+  `stuffBatchFor`, novo botão de ação (`bi-collection`), novo componente
+  `StuffBatchModal` (usa `usePostApiOperationOperationIdCargoStuffIdentifiedBatch`,
+  `getApiOperationOperationIdInvoice`, `getApiOperationOperationIdRomaneio`).
+- i18n: `administrative-operations.containers.stuffing.actionBatch`,
+  `batchTitle`, `batchEmpty`, `batchSelected`, `toast.batchSuccess` —
+  4 locales.
+
+**Comandos executados e resultado:**
+- `bun run check` (`tsc --noEmit`) — PASS.
+- `bun run lint` — 66/3 (mesma baseline pré-existente de
+  `session.server.ts`, sem regressão em `Containers.tsx`).
+
+**Critérios de aceitação:**
+
+| # | Critério | Status |
+|---|----------|--------|
+| CA0 | `just map` executado, `identified-batch` presente no client gerado | PASS |
+| CA1 | Ação lista fardos do romaneio (filtrados por Invoice) com checkbox de seleção múltipla | PASS |
+| CA2 | Container de destino já é o da linha clicada — sem `SelectAsync` de container dentro do modal (ver desvio de design acima) | PASS (com desvio documentado) |
+| CA3 | Ação de estufar dispara 1 única chamada em lote; erro (400) exibe toast genérico, sem estado parcial | PASS |
+| CA4 | `bun run check` + `bun run lint` sem regressão | PASS |
+
+**Limitações conhecidas / débito:**
+- Filtro de Romaneio por Invoice via `Search`/`NotaFiscal` (Contains), não
+  um filtro exato por `InvoiceId` — ver ponto 2 do fluxo acima.
+- Erro específico (`CargoUnitBatchDuplicateRomaneioLine`,
+  `CargoUnitRomaneioLineAlreadyLinked`, etc.) não é distinguido por
+  `MessageCode` — cai no toast genérico, mesmo padrão já aceito em toda a
+  aba Containers (SPEC-46).

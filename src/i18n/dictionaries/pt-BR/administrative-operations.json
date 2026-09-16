@@ -276,9 +276,13 @@
     "stuffing": {
       "actionIdentified": "Estufar fardo específico",
       "actionQuantity": "Estufar por quantidade",
+      "actionBatch": "Estufar em lote",
       "actionViewCargo": "Ver fardos estufados",
       "identifiedTitle": "Estufar fardo específico — {identifier}",
       "quantityTitle": "Estufar por quantidade — {identifier}",
+      "batchTitle": "Estufar em lote — {identifier}",
+      "batchEmpty": "Nenhum fardo encontrado para esta nota fiscal.",
+      "batchSelected": "{count} fardo(s) selecionado(s).",
       "submit": "Estufar",
       "form": {
         "invoice": "Nota fiscal",
@@ -302,6 +306,7 @@
       "toast": {
         "identifiedSuccess": "Fardo estufado com sucesso.",
         "quantitySuccess": "Estufagem concluída com sucesso.",
+        "batchSuccess": "Fardos estufados com sucesso.",
         "canceled": "Fardo cancelado com sucesso."
       }
     },

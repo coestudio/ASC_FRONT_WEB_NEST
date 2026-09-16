@@ -276,9 +276,13 @@
     "stuffing": {
       "actionIdentified": "Estibar fardo específico",
       "actionQuantity": "Estibar por cantidad",
+      "actionBatch": "Estibar en lote",
       "actionViewCargo": "Ver fardos estibados",
       "identifiedTitle": "Estibar fardo específico — {identifier}",
       "quantityTitle": "Estibar por cantidad — {identifier}",
+      "batchTitle": "Estibar en lote — {identifier}",
+      "batchEmpty": "No se encontró ningún fardo para esta factura.",
+      "batchSelected": "{count} fardo(s) seleccionado(s).",
       "submit": "Estibar",
       "form": {
         "invoice": "Factura",
@@ -302,6 +306,7 @@
       "toast": {
         "identifiedSuccess": "Fardo estibado con éxito.",
         "quantitySuccess": "Estiba completada con éxito.",
+        "batchSuccess": "Fardos estibados con éxito.",
         "canceled": "Fardo cancelado con éxito."
       }
     },
