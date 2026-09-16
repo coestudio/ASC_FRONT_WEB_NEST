@@ -63,9 +63,8 @@
     "unlink": "取消关联",
     "emptyState": "未找到负责人。",
     "filter": {
-      "all": "全部关联状态",
-      "linked": "已关联",
-      "unlinked": "未关联"
+      "byRole": "按角色筛选",
+      "clear": "清除筛选"
     },
     "roles": {
       "Internal": "内部",

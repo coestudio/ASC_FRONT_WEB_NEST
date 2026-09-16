@@ -56,6 +56,7 @@ export * from './getApiOperationOperationIdContainerParams.ts';
 export * from './getApiOperationOperationIdDocumentParams.ts';
 export * from './getApiOperationOperationIdInvoiceParams.ts';
 export * from './getApiOperationOperationIdOccurrenceParams.ts';
+export * from './getApiOperationOperationIdResponsibleEligibleUsersParams.ts';
 export * from './getApiOperationOperationIdRomaneioExportParams.ts';
 export * from './getApiOperationOperationIdRomaneioParams.ts';
 export * from './getApiOperationParams.ts';

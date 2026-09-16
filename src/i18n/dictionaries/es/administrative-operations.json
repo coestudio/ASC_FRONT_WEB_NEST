@@ -63,9 +63,8 @@
     "unlink": "Desvincular",
     "emptyState": "No se encontró ningún responsable.",
     "filter": {
-      "all": "Todos los vínculos",
-      "linked": "Vinculados",
-      "unlinked": "No vinculados"
+      "byRole": "Filtrar por rol",
+      "clear": "Limpiar filtro"
     },
     "roles": {
       "Internal": "Interno",

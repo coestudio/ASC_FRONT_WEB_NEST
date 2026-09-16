@@ -63,9 +63,8 @@
     "unlink": "Unlink",
     "emptyState": "No responsible party found.",
     "filter": {
-      "all": "All links",
-      "linked": "Linked",
-      "unlinked": "Not linked"
+      "byRole": "Filter by role",
+      "clear": "Clear filter"
     },
     "roles": {
       "Internal": "Internal",

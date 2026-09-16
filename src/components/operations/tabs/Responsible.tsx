@@ -8,15 +8,15 @@ import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
-import { getApiUser } from "@/api/generated/endpoints/user/user";
 import {
+  getApiOperationOperationIdResponsibleEligibleUsers,
   getGetApiOperationOperationIdResponsibleQueryKey,
   getGetApiOperationOperationIdResponsibleQueryOptions,
   useDeleteApiOperationOperationIdResponsibleId,
   usePostApiOperationOperationIdResponsible,
 } from "@/api/generated/endpoints/responsible/responsible";
 import { PostApiOperationOperationIdResponsibleBody } from "@/api/generated/zod/responsible/responsible.zod";
-import type { ResponsibleDTO } from "@/api/generated/model";
+import type { InternalRole, ResponsibleDTO, UserType } from "@/api/generated/model";
 import { InputText, SelectAsync } from "@/layouts/Form/Fields/Index";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { usePagination } from "@/hooks/usePagination";
@@ -27,7 +27,17 @@ import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-type LinkedFilter = "all" | "linked" | "unlinked";
+// SPEC-21 RF2: união de UserType e InternalRole — cada opção do filtro é uma
+// chave que aparece ou em `user.type` ou em `user.roles`.
+type RoleFilterKey = UserType | InternalRole;
+
+const ROLE_FILTER_OPTIONS: RoleFilterKey[] = [
+  "Internal",
+  "External",
+  "Agent",
+  "Supervisor",
+  "Laboratory",
+];
 
 type LinkFormValues = z.infer<typeof PostApiOperationOperationIdResponsibleBody>;
 
@@ -41,19 +51,22 @@ function initials(name: string): string {
 }
 
 /**
- * Aba **Responsáveis** (SPEC-16) — troca o mock da SPEC-07-08 (D1) pelo
- * módulo `Responsible` real do Core: lista quem já está vinculado
- * (`useGetApiOperationOperationIdResponsible`), vincula um novo usuário via
- * busca (`SelectAsync` + `getApiUser`, mesmo padrão de
- * `fetchContainerOptions`) e desvincula pelo `id` do vínculo (não o
- * `userId`). Papel exibido é o real do Core (`user.type`/`user.roles`), sem
- * inventar rótulo.
+ * Aba **Responsáveis** (SPEC-16, com ajustes da SPEC-21) — módulo
+ * `Responsible` real do Core: lista quem já está vinculado
+ * (`useGetApiOperationOperationIdResponsible`, sempre vínculos — sem filtro
+ * de status, ver SPEC-21 RF1), filtra client-side por papel (RF2), vincula
+ * um novo usuário via busca (`SelectAsync` +
+ * `getApiOperationOperationIdResponsibleEligibleUsers`, SPEC-21 Fase 2 —
+ * já exclui quem está vinculado e filtra só staff interno ativo,
+ * SPEC-39 do Core) e desvincula pelo `id` do vínculo (não o `userId`).
+ * Papel exibido é o real do Core (`user.type`/`user.roles`), sem inventar
+ * rótulo.
  */
 export function OperationResponsibleTab({ operationId }: { operationId: string }) {
   const t = useT();
   const queryClient = useQueryClient();
 
-  const [linkedFilter, setLinkedFilter] = useState<LinkedFilter>("all");
+  const [roleFilter, setRoleFilter] = useState<Set<RoleFilterKey>>(() => new Set());
   const [linkModalOpen, setLinkModalOpen] = useState(false);
 
   const searchMethods = useForm<{ search: string }>({ defaultValues: { search: "" } });
@@ -69,8 +82,14 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
   const linkMutation = usePostApiOperationOperationIdResponsible();
   const unlinkMutation = useDeleteApiOperationOperationIdResponsibleId();
 
+  // SPEC-21 Fase 2 / SPEC-39 (Core): rota dedicada já devolve só staff
+  // interno ativo e ainda não vinculado a esta operação — sem filtro
+  // adicional necessário aqui (RF3/RF4 resolvidos no próprio endpoint).
   const fetchUserOptions = (userSearch: string) =>
-    getApiUser({ Search: userSearch, Limit: 20 }).then((res) =>
+    getApiOperationOperationIdResponsibleEligibleUsers(operationId, {
+      Search: userSearch,
+      Limit: 20,
+    }).then((res) =>
       res.items.map((user) => ({
         value: user.id,
         label: user.profile.fullName || user.profile.email,
@@ -120,11 +139,13 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
     const items = query.data ?? [];
     const queryText = search.trim().toLowerCase();
     return items.filter((item) => {
-      // RF do CA2: o endpoint só devolve vínculos já criados, então todo item
-      // desta lista está sempre "linked" — o filtro "não vinculados" continua
-      // existindo na UI (RF da SPEC-16), mas nunca tem resultado com o dado
-      // real (não há mais candidato solto pra exibir aqui).
-      if (linkedFilter === "unlinked") return false;
+      // SPEC-21 RF2: sem seleção = sem filtro (mostra todos). Com seleção,
+      // OR entre as roles marcadas — cruza user.type e user.roles.
+      if (roleFilter.size > 0) {
+        const matchesType = roleFilter.has(item.user.type);
+        const matchesRole = item.user.roles.some((role) => roleFilter.has(role));
+        if (!matchesType && !matchesRole) return false;
+      }
       if (!queryText) return true;
       const name = item.user.profile.fullName ?? item.user.userName;
       return (
@@ -132,20 +153,23 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
         item.user.profile.email.toLowerCase().includes(queryText)
       );
     });
-  }, [search, linkedFilter, query.data]);
+  }, [search, roleFilter, query.data]);
 
   const { page, setPage, totalPages, pageItems } = usePagination(list, PAGE_SIZE);
 
-  const linkedFilterOptions: { key: LinkedFilter; labelKey: TranslationKey }[] = [
-    { key: "all", labelKey: "administrative-operations.responsible.filter.all" },
-    { key: "linked", labelKey: "administrative-operations.responsible.filter.linked" },
-    { key: "unlinked", labelKey: "administrative-operations.responsible.filter.unlinked" },
-  ];
+  const toggleRoleFilter = (key: RoleFilterKey) => {
+    setRoleFilter((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   return (
     <div>
       <Row className="g-2 mb-3">
-        <Col md={5}>
+        <Col md={4}>
           <InputText
             methods={searchMethods}
             fieldName="search"
@@ -153,25 +177,36 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             config={{ containerClass: "mb-0" }}
           />
         </Col>
-        <Col md={4} className="d-flex align-items-center gap-2">
+        <Col md={5} className="d-flex align-items-center gap-2 flex-wrap">
           <div
-            className="btn-group"
+            className="btn-group flex-wrap"
             role="group"
-            aria-label={t("administrative-operations.responsible.filter.all")}
+            aria-label={t("administrative-operations.responsible.filter.byRole")}
           >
-            {linkedFilterOptions.map((item) => (
+            {ROLE_FILTER_OPTIONS.map((key) => (
               <Button
-                key={item.key}
+                key={key}
                 type="button"
                 size="sm"
-                variant={linkedFilter === item.key ? "primary" : "outline-primary"}
-                onClick={() => setLinkedFilter(item.key)}
-                aria-pressed={linkedFilter === item.key}
+                variant={roleFilter.has(key) ? "primary" : "outline-primary"}
+                onClick={() => toggleRoleFilter(key)}
+                aria-pressed={roleFilter.has(key)}
               >
-                {t(item.labelKey)}
+                {t(`administrative-operations.responsible.roles.${key}` as TranslationKey)}
               </Button>
             ))}
           </div>
+          {roleFilter.size > 0 ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="link"
+              className="p-0"
+              onClick={() => setRoleFilter(new Set())}
+            >
+              {t("administrative-operations.responsible.filter.clear")}
+            </Button>
+          ) : null}
         </Col>
         <Col md={3} className="d-flex justify-content-end align-items-center">
           <Button

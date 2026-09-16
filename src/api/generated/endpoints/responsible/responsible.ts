@@ -24,6 +24,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  GetApiOperationOperationIdResponsibleEligibleUsersParams,
+  PagedDTOOfUserDTO,
   ResponsibleDTO,
   ResponsibleLink
 } from '../../model';
@@ -196,7 +198,101 @@ const {mutation: mutationOptions} = options ?
       > => {
       return useMutation(getPostApiOperationOperationIdResponsibleMutationOptions(options), queryClient);
     }
-    export const getApiOperationOperationIdResponsibleId = (
+    export const getApiOperationOperationIdResponsibleEligibleUsers = (
+    operationId: string,
+    params?: GetApiOperationOperationIdResponsibleEligibleUsersParams,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<PagedDTOOfUserDTO>(
+      {url: `/api/operation/${operationId}/responsible/eligible-users`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiOperationOperationIdResponsibleEligibleUsersQueryKey = (operationId: string,
+    params?: GetApiOperationOperationIdResponsibleEligibleUsersParams,) => {
+    return [
+    `/api/operation/${operationId}/responsible/eligible-users`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetApiOperationOperationIdResponsibleEligibleUsersQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError = void>(operationId: string,
+    params?: GetApiOperationOperationIdResponsibleEligibleUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationOperationIdResponsibleEligibleUsersQueryKey(operationId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>> = ({ signal }) => getApiOperationOperationIdResponsibleEligibleUsers(operationId,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: operationId !== null && operationId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiOperationOperationIdResponsibleEligibleUsersQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>>
+export type GetApiOperationOperationIdResponsibleEligibleUsersQueryError = void
+
+
+export function useGetApiOperationOperationIdResponsibleEligibleUsers<TData = Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError = void>(
+ operationId: string,
+    params: undefined |  GetApiOperationOperationIdResponsibleEligibleUsersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdResponsibleEligibleUsers<TData = Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError = void>(
+ operationId: string,
+    params?: GetApiOperationOperationIdResponsibleEligibleUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationOperationIdResponsibleEligibleUsers<TData = Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError = void>(
+ operationId: string,
+    params?: GetApiOperationOperationIdResponsibleEligibleUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiOperationOperationIdResponsibleEligibleUsers<TData = Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError = void>(
+ operationId: string,
+    params?: GetApiOperationOperationIdResponsibleEligibleUsersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationOperationIdResponsibleEligibleUsers>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiOperationOperationIdResponsibleEligibleUsersQueryOptions(operationId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const getApiOperationOperationIdResponsibleId = (
     operationId: string,
     id: string,
  signal?: AbortSignal
