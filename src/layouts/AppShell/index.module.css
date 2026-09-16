@@ -109,6 +109,15 @@
   font-weight: 600;
   box-shadow: inset 2px 0 0 var(--brand-primary);
 }
+/* Sem isso, clicar num item com o mouse deixa o anel de foco padrão do
+   browser "grudado" no link até algo tirar o foco — como o anel usa
+   `currentColor` (verde aqui), parecia um segundo item "ativo" ao lado do
+   item de rota real (`.active` acima). `:focus-visible` só acende em
+   navegação por teclado, que é quando o anel importa de verdade pra
+   acessibilidade. */
+.navSub a:focus:not(:focus-visible) {
+  outline: none;
+}
 
 .sidebarFooter {
   padding: 0.75rem 1.25rem;
