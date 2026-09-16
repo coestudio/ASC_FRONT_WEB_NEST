@@ -25,7 +25,9 @@ export function Modal({
   scrollable = true,
   ...props
 }: ModalProps) {
-  return <BootstrapModal backdrop={backdrop} keyboard={keyboard} scrollable={scrollable} {...props} />;
+  return (
+    <BootstrapModal backdrop={backdrop} keyboard={keyboard} scrollable={scrollable} {...props} />
+  );
 }
 
 Modal.Header = BootstrapModal.Header;
