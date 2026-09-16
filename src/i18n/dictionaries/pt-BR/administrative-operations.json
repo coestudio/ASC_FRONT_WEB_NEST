@@ -211,16 +211,24 @@
     "tabPlaceholder": "O conteúdo desta aba ainda não foi implementado nesta etapa."
   },
   "reports": {
-    "description": "Lista de relatórios já emitidos para esta operação.",
-    "colType": "Tipo",
-    "colGeneratedAt": "Gerado em",
-    "colFormat": "Formato",
-    "colStatus": "Status",
-    "colActions": "Ações",
-    "statusReady": "Disponível",
-    "statusPending": "Pendente",
-    "download": "Baixar",
-    "emptyState": "Nenhum relatório disponível."
+    "description": "Gere e baixe os relatórios desta operação. Cada relatório é gerado na hora, a partir dos dados já cadastrados — não há histórico.",
+    "generate": "Gerar e baixar",
+    "weight": {
+      "name": "Weight Report",
+      "description": "Peso agregado e detalhado por container e lote (.xlsx)."
+    },
+    "packingList": {
+      "name": "Packing List",
+      "description": "Lista de fardos por container (.xlsx)."
+    },
+    "photographic": {
+      "name": "Relatório Fotográfico",
+      "description": "Fotos dos containers desta operação (.docx)."
+    },
+    "toast": {
+      "success": "{name} gerado com sucesso.",
+      "error": "Não foi possível gerar {name}. Tente novamente."
+    }
   },
   "log": {
     "description": "Histórico de eventos registrados nesta operação.",

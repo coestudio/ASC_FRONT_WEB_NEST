@@ -211,16 +211,24 @@
     "tabPlaceholder": "This tab's content has not been implemented yet."
   },
   "reports": {
-    "description": "List of reports already issued for this operation.",
-    "colType": "Type",
-    "colGeneratedAt": "Generated at",
-    "colFormat": "Format",
-    "colStatus": "Status",
-    "colActions": "Actions",
-    "statusReady": "Available",
-    "statusPending": "Pending",
-    "download": "Download",
-    "emptyState": "No reports available."
+    "description": "Generate and download this operation's reports. Each report is generated on demand from existing data — there is no history.",
+    "generate": "Generate and download",
+    "weight": {
+      "name": "Weight Report",
+      "description": "Aggregated and detailed weight by container and lot (.xlsx)."
+    },
+    "packingList": {
+      "name": "Packing List",
+      "description": "List of bales per container (.xlsx)."
+    },
+    "photographic": {
+      "name": "Photographic Report",
+      "description": "Photos of this operation's containers (.docx)."
+    },
+    "toast": {
+      "success": "{name} generated successfully.",
+      "error": "Could not generate {name}. Please try again."
+    }
   },
   "log": {
     "description": "History of events recorded for this operation.",
