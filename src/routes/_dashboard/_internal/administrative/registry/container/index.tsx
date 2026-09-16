@@ -37,6 +37,7 @@ function toFormValues(record?: ContainerDTO): ContainerFormValues {
   return {
     identifier: record?.identifier ?? "",
     tara: record?.tara != null ? String(record.tara) : "",
+    maxWeight: record?.maxWeight != null ? String(record.maxWeight) : "",
   };
 }
 
@@ -85,6 +86,12 @@ function ContainerPage() {
       label: t("administrative-registry.container.form.tara"),
       col: { md: 4 },
     },
+    {
+      type: "InputText",
+      fieldName: "maxWeight",
+      label: t("administrative-registry.container.form.maxWeight"),
+      col: { md: 4 },
+    },
   ];
 
   const columns: CrudColumn<ContainerDTO>[] = [
@@ -97,6 +104,11 @@ function ContainerPage() {
       key: "tara",
       headerKey: "administrative-registry.container.colTara",
       render: (c) => (c.tara != null ? String(c.tara) : "—"),
+    },
+    {
+      key: "maxWeight",
+      headerKey: "administrative-registry.container.colMaxWeight",
+      render: (c) => (c.maxWeight != null ? String(c.maxWeight) : "—"),
     },
     {
       key: "createdAt",

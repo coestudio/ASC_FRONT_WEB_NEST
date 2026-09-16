@@ -356,3 +356,43 @@ export const PatchApiOperationIdStatusResponse = zod.object({
   "updatedAt": zod.iso.datetime({"offset":true})
 })
 
+export const GetApiOperationIdLogParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const getApiOperationIdLogQueryOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationIdLogQueryLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const GetApiOperationIdLogQueryParams = zod.object({
+  "EntityType": zod.enum(['Romaneio', 'Invoice', 'CargoUnit', 'Container', 'Document']).optional(),
+  "EntityId": zod.uuid().optional(),
+  "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationIdLogQueryOffsetRegExpTwo)]).optional(),
+  "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationIdLogQueryLimitRegExpTwo)]).optional(),
+  "Sort": zod.string().optional()
+})
+
+export const getApiOperationIdLogResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationIdLogResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationIdLogResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const GetApiOperationIdLogResponse = zod.object({
+  "items": zod.array(zod.object({
+  "operationId": zod.uuid().optional(),
+  "entityType": zod.enum(['Romaneio', 'Invoice', 'CargoUnit', 'Container', 'Document']).optional(),
+  "entityId": zod.uuid().optional(),
+  "action": zod.enum(['RomaneioImported', 'InvoiceCreated', 'InvoiceUpdated', 'InvoiceConfirmed', 'InvoiceCanceled', 'InvoiceAutoCreated', 'CargoUnitStuffed', 'CargoUnitCanceled', 'ContainerLinked', 'ContainerStatusChanged', 'ContainerSealAdded', 'DocumentCreated']).optional(),
+  "note": zod.string().optional(),
+  "createdBy": zod.uuid().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationIdLogResponseTotalRegExpTwo)]),
+  "offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationIdLogResponseOffsetRegExpTwo)]),
+  "limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationIdLogResponseLimitRegExpTwo)]),
+  "hasNext": zod.boolean().optional(),
+  "hasPrevious": zod.boolean().optional()
+})
+

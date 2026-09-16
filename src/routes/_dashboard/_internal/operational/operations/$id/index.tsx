@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge, Button, Modal, Nav, Table } from "react-bootstrap";
+import { Badge, Button, Nav, Table } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { PageLayout } from "@/layouts/PageLayout";
@@ -290,7 +291,7 @@ function ContainerDetailModal({
 
   return (
     <Modal show onHide={onClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h5 mb-0">
           {t("operational.detail.containers.detailTitle")} — {container.identifier}
         </Modal.Title>

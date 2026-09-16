@@ -17,8 +17,6 @@ export interface ContainerOperationDTO {
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
      */
   tara?: number | string | null;
-  /** @nullable */
-  sealDate?: string | null;
   status: ContainerOperationStatus;
   container: ContainerDTO;
   /** @pattern ^-?(?:0|[1-9]\d*)$ */

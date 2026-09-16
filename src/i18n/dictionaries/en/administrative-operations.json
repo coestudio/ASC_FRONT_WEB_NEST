@@ -63,9 +63,8 @@
     "unlink": "Unlink",
     "emptyState": "No responsible party found.",
     "filter": {
-      "all": "All links",
-      "linked": "Linked",
-      "unlinked": "Not linked"
+      "byRole": "Filter by role",
+      "clear": "Clear filter"
     },
     "roles": {
       "Internal": "Internal",
@@ -189,9 +188,11 @@
       "romaneio": "Packing list",
       "containers": "Containers",
       "documents": "Documents",
+      "invoice": "Invoice",
       "reports": "Reports",
       "responsible": "Responsible parties",
-      "log": "Log"
+      "log": "Log",
+      "occurrences": "Occurrences"
     },
     "statusLabel": "Operation status",
     "statusUpdated": "Operation status updated successfully.",
@@ -216,7 +217,29 @@
   "log": {
     "description": "History of events recorded for this operation.",
     "byUser": "by {user}",
-    "emptyState": "No events recorded."
+    "emptyState": "No events recorded.",
+    "loadError": "Could not load the operation log.",
+    "actions": {
+      "RomaneioImported": "Packing list imported",
+      "InvoiceCreated": "Invoice created",
+      "InvoiceUpdated": "Invoice updated",
+      "InvoiceConfirmed": "Invoice confirmed",
+      "InvoiceCanceled": "Invoice canceled",
+      "InvoiceAutoCreated": "Invoice auto-created",
+      "CargoUnitStuffed": "Cargo unit stuffed",
+      "CargoUnitCanceled": "Cargo unit canceled",
+      "ContainerLinked": "Container linked",
+      "ContainerStatusChanged": "Container status changed",
+      "ContainerSealAdded": "Container seal recorded",
+      "DocumentCreated": "Document created"
+    },
+    "entityTypes": {
+      "Romaneio": "Packing list",
+      "Invoice": "Invoice",
+      "CargoUnit": "Cargo unit",
+      "Container": "Container",
+      "Document": "Document"
+    }
   },
   "containers": {
     "new": "Link container",
@@ -231,13 +254,24 @@
     "form": {
       "container": "Container",
       "tara": "Tare",
-      "status": "Link status",
-      "sealDate": "Seal date"
+      "status": "Status"
     },
     "photosTitle": "Container photos",
-    "photosAdd": "Photos",
-    "photosUpload": "Upload photos",
+    "photosAddToSlot": "Add photo",
     "photosRemove": "Remove photo",
+    "photosOther": "Other photos",
+    "photosChecklistComplete": "Checklist complete",
+    "photosChecklistMissing": "{count} photos missing",
+    "photoSlots": {
+      "EmptyExternal": "Empty — External",
+      "EmptyInternal": "Empty — Internal",
+      "FirstRow": "First row",
+      "Fifty": "50%",
+      "Hundred": "100%",
+      "FullExternal": "Full — External",
+      "Sealed": "Sealed",
+      "ShipownerSeal": "Shipowner seal"
+    },
     "confirm": {
       "deleteTitle": "Unlink container",
       "deleteMessage": "Unlink container {identifier} from this operation?"
@@ -246,10 +280,73 @@
       "linked": "Container linked successfully.",
       "updated": "Link updated successfully.",
       "unlinked": "Container unlinked successfully.",
-      "photoUploaded": "Photos uploaded successfully.",
+      "photoUploaded": "Photo uploaded successfully.",
       "photoDeleted": "Photo removed successfully.",
       "error": "Could not complete the action. Please try again."
-    }
+    },
+    "stuffing": {
+      "actionIdentified": "Stuff specific bale",
+      "actionQuantity": "Stuff by quantity",
+      "actionBatch": "Batch stuffing",
+      "actionViewCargo": "View stuffed cargo",
+      "identifiedTitle": "Stuff specific bale — {identifier}",
+      "quantityTitle": "Stuff by quantity — {identifier}",
+      "batchTitle": "Batch stuffing — {identifier}",
+      "batchEmpty": "No bale found for this invoice.",
+      "batchSelected": "{count} bale(s) selected.",
+      "submit": "Stuff",
+      "form": {
+        "invoice": "Invoice",
+        "romaneio": "Bale (romaneio)",
+        "quantity": "Quantity",
+        "lote": "Batch"
+      },
+      "resultIdentifiedTitle": "{count} bale(s) stuffed: identifiers below.",
+      "resultManualTitle": "{count} anonymous unit(s) stuffed (average gross weight: {weight} kg).",
+      "cargoUnitsTitle": "Stuffed cargo — {identifier}",
+      "cargoUnitsEmpty": "No cargo unit stuffed in this container yet.",
+      "colStatus": "Status",
+      "colIdentified": "Identified",
+      "colGrossWeight": "Gross weight (kg)",
+      "colActions": "Actions",
+      "yes": "Yes",
+      "no": "No",
+      "cancelTitle": "Cancel cargo unit",
+      "cancelReason": "Cancellation reason",
+      "cancelConfirm": "Confirm cancellation",
+      "toast": {
+        "identifiedSuccess": "Bale stuffed successfully.",
+        "quantitySuccess": "Stuffing completed successfully.",
+        "batchSuccess": "Bales stuffed successfully.",
+        "canceled": "Cargo unit canceled successfully."
+      }
+    },
+    "destuffing": {
+      "toggle": "View all stuffed cargo units",
+      "title": "Stuffed cargo units of the operation",
+      "empty": "No stuffed cargo units in this operation.",
+      "colContainer": "Origin container"
+    },
+    "seal": {
+      "title": "Seal",
+      "activeBadge": "Sealed",
+      "none": "No active seal.",
+      "sealButton": "Seal",
+      "unsealButton": "Unseal",
+      "confirmUnsealTitle": "Unseal container",
+      "confirmUnsealMessage": "Remove the active seal from this container?",
+      "form": {
+        "user": "Responsible for the seal",
+        "name": "Seal type",
+        "label": "Seal identification",
+        "description": "Description"
+      },
+      "toast": {
+        "sealed": "Container sealed successfully.",
+        "unsealed": "Seal removed successfully."
+      }
+    },
+    "searchPlaceholder": "Search by container identifier..."
   },
   "documents": {
     "new": "New document",
@@ -274,6 +371,99 @@
     "toast": {
       "created": "Document created successfully.",
       "updated": "Document updated successfully.",
+      "error": "Could not complete the action. Please try again."
+    }
+  },
+  "invoice": {
+    "new": "New invoice",
+    "newTitle": "New invoice",
+    "loadError": "Could not load the operation's invoices.",
+    "empty": "No invoice registered for this operation.",
+    "colNumber": "Number",
+    "colSource": "Source",
+    "colStatus": "Status",
+    "colDates": "Dates",
+    "colValues": "Values",
+    "colDocuments": "Documents",
+    "colActions": "Actions",
+    "entryDate": "Entry",
+    "exitDate": "Exit",
+    "totalInvoiceValue": "Total invoice value",
+    "totalProductsValue": "Total products value",
+    "documentFallbackName": "Attached file",
+    "form": {
+      "number": "Number",
+      "entryDate": "Entry date",
+      "exitDate": "Exit date",
+      "exitTime": "Exit time",
+      "declaredItemsCount": "Quantity",
+      "declaredGrossWeight": "Total gross weight (kg)",
+      "declaredNetWeight": "Total net weight (kg)",
+      "totalInvoiceValue": "Total invoice value",
+      "totalProductsValue": "Total products value",
+      "observation": "Notes",
+      "files": "Files",
+      "filesRequiredHint": "Select at least 1 file to create the invoice.",
+      "declaredFieldsRequiredHint": "Enter quantity, gross weight and net weight to create the invoice."
+    },
+    "confirm": {
+      "action": "Confirm",
+      "title": "Confirm invoice",
+      "noteLabel": "Note (optional)"
+    },
+    "cancel": {
+      "action": "Cancel",
+      "title": "Cancel invoice",
+      "noteLabel": "Cancellation reason (optional)"
+    },
+    "toast": {
+      "created": "Invoice created successfully.",
+      "confirmed": "Invoice confirmed successfully.",
+      "canceled": "Invoice canceled successfully.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "subtabs": {
+      "listing": "Listing",
+      "comparisonInvoice": "Invoice comparison",
+      "comparisonLot": "Lot comparison"
+    },
+    "comparison": {
+      "colNumber": "Invoice",
+      "colLote": "Lot",
+      "noLote": "No lot",
+      "colDeclaredItemsCount": "Declared bales",
+      "colDeclaredGrossWeight": "Declared gross weight (kg)",
+      "colDeclaredNetWeight": "Declared net weight (kg)",
+      "colStuffedItemsCount": "Stuffed bales",
+      "colStuffedGrossWeight": "Stuffed gross weight (kg)",
+      "colStuffedNetWeight": "Stuffed net weight (kg)",
+      "loadErrorInvoice": "Could not load the invoice comparison.",
+      "loadErrorLot": "Could not load the lot comparison.",
+      "emptyInvoice": "No invoice to compare.",
+      "emptyLot": "No lot to compare."
+    }
+  },
+  "occurrences": {
+    "description": "Occurrences manually recorded for this operation.",
+    "new": "New occurrence",
+    "newTitle": "New occurrence",
+    "editTitle": "Edit occurrence",
+    "loadError": "Could not load the operation's occurrences.",
+    "empty": "No occurrences recorded for this operation.",
+    "colTitle": "Title",
+    "colNote": "Note",
+    "colPhotos": "Photos",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "form": {
+      "title": "Title",
+      "note": "Note",
+      "photos": "Photos"
+    },
+    "photosEditNote": "Photos can only be added when the occurrence is created.",
+    "toast": {
+      "created": "Occurrence recorded successfully.",
+      "updated": "Occurrence updated successfully.",
       "error": "Could not complete the action. Please try again."
     }
   }

@@ -159,18 +159,27 @@ function extractBackendMessage(err: unknown): string | undefined {
 let isRedirectingToLogin = false;
 
 /**
- * Joga o usuário pro login — usado tanto pra sessão expirada (401 do Core)
- * quanto, a pedido explícito, pra falha de servidor (erro de rede sem
- * resposta — servidor fora do ar — ou 5xx): nesses casos não dá pra saber se
- * é a sessão que caiu ou o Core que caiu, mas a decisão tomada foi tratar os
- * dois como "não dá pra continuar autenticado agora, volta pro login".
+ * Joga o usuário pro login — só pra sessão de fato inválida (401 do Core).
+ * 5xx/erro de rede não passam mais por aqui (decisão revista 2026-09-15:
+ * um bug de servidor não tem nada a ver com a sessão estar válida ou não —
+ * antes deslogava o usuário escondendo o erro real, ver mutator.ts response
+ * interceptor).
+ *
+ * O toast é mostrado aqui só como reforço pra quem já está vendo a tela no
+ * instante do erro — não é a fonte confiável do aviso. `window.location.href`
+ * troca de página no mesmo instante, e o react-toastify quase nunca chega a
+ * animar/renderizar antes da navegação cortar a árvore (usuário nunca vê o
+ * toast de verdade, só o redirect "seco" pro login). Por isso o motivo
+ * também vai como `?reason=session_expired` na própria URL do login —
+ * `auth/login/index.tsx` lê esse param e mostra o toast de novo, já na tela
+ * nova, garantido.
  */
-function redirectToLogin(message = "Sessão expirada. Faça login novamente.") {
+function redirectToLogin() {
   if (isRedirectingToLogin) return;
   isRedirectingToLogin = true;
-  toast.error(message);
+  toast.error("Sessão expirada. Faça login novamente.");
   if (typeof window !== "undefined") {
-    window.location.href = "/auth/login";
+    window.location.href = "/auth/login?reason=session_expired";
   }
 }
 
@@ -195,22 +204,41 @@ axiosInstance.interceptors.response.use(
       const status = error.response?.status;
 
       if (status === 401) {
+        // Diagnóstico (SPEC-27, Fase 1) — qualquer 401 aqui já dispara logout
+        // global (redirectToLogin abaixo); este log só ajuda a confirmar, na
+        // próxima reprodução, qual chamada/endpoint disparou o 401 e o que o
+        // Core respondeu (status + corpo), sem mudar o comportamento em si.
+        console.error("[mutator] 401 recebido — deslogando sessão.", {
+          method: error.config?.method,
+          corePath: error.config?.headers?.["x-core-path"],
+          responseBody: error.response?.data,
+        });
         redirectToLogin();
         return Promise.reject(error);
       }
 
-      // Erro 5xx (Core fora do ar/instável) — decisão explícita do usuário:
-      // trata como "não dá pra continuar", volta pro login (não só mostra
-      // toast). Difere de 4xx, que é erro de requisição/negócio normal.
+      // 5xx é erro de servidor (bug, exceção não tratada, instabilidade) —
+      // não tem nada a ver com a sessão do usuário estar válida ou não.
+      // Decisão revista (2026-09-15, depois de um 500 de bug real deslogar
+      // o usuário sem mostrar o erro de verdade): mostra o erro na tela,
+      // sem deslogar — só 401 (§ acima) é sessão de fato inválida. Loga no
+      // console (mesmo padrão do diagnóstico de 401 acima) pra dar pra
+      // conferir method/path/corpo da resposta depois, sem precisar abrir
+      // a aba Network no momento exato do erro.
       if (status && status >= 500) {
-        redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
-        return Promise.reject(error);
+        console.error(`[mutator] ${status} recebido.`, {
+          method: error.config?.method,
+          corePath: error.config?.headers?.["x-core-path"],
+          responseBody: error.response?.data,
+        });
       }
 
       const backendMessage = extractBackendMessage(error);
 
       let message: string;
-      if (backendMessage) {
+      if (status && status >= 500) {
+        message = backendMessage ?? "Erro interno do servidor. Tente novamente.";
+      } else if (backendMessage) {
         message = backendMessage;
       } else if (status === 400) {
         message = "Requisição inválida. Verifique os dados informados.";
@@ -223,18 +251,19 @@ axiosInstance.interceptors.response.use(
       } else if (status === 422) {
         message = backendMessage ?? "Dados inválidos.";
       } else {
-        // Nunca é >= 500 aqui (tratado acima, com redirect) — sobra 4xx sem
-        // handler específico e o caso sem `status` (erro sem resposta que
-        // ainda assim é um AxiosError, ex. timeout de config do axios).
+        // Sem `status` — erro sem resposta que ainda assim é um AxiosError
+        // (ex. timeout de config do axios).
         message = error.message ?? "Erro desconhecido.";
       }
 
-      toast.warning(message);
+      if (status && status >= 500) toast.error(message);
+      else toast.warning(message);
     } else {
       // Erro sem `response` e que nem é um `AxiosError` — falha de rede pura
       // do `fetch` dentro do adapter (`coreProxyAdapter`), ex. servidor fora
-      // do ar. Mesma decisão do 5xx acima: volta pro login.
-      redirectToLogin("Não foi possível conectar ao servidor. Faça login novamente.");
+      // do ar. Mesma decisão do 5xx acima: mostra o erro, não desloga —
+      // servidor fora do ar não é sessão inválida.
+      toast.error("Não foi possível conectar ao servidor. Tente novamente.");
     }
 
     return Promise.reject(error);

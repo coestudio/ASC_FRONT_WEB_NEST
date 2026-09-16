@@ -16,7 +16,6 @@ export type PostApiOperationOperationIdDocumentBody = {
   Type?: DocumentType;
   Observation?: string;
   InvoiceId?: string;
-  InvoiceItemId?: string;
   CargoUnitId?: string;
   RomaneioId?: string;
 };

@@ -2,7 +2,9 @@
 
 - **ID:** SPEC-21
 - **Nome:** operations-responsible-role-filter
-- **Status:** APPROVED (Fase 1) / Fase 2 `BLOCKED` — ver §13
+- **Status:** IMPLEMENTED (2026-09-16) — Fase 1 e Fase 2, ver §14
+  (Implementation Notes). Fase 2 destravada pela SPEC-39 do Core
+  (`GET .../responsible/eligible-users`, `IMPLEMENTED`).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Responsible.tsx` (edição —
   SPEC-16, `IMPLEMENTED`), `src/i18n/dictionaries/**` (namespace
@@ -313,3 +315,88 @@ AlexStwart/ASC/AGENTS.md`), citando esta SPEC.
 Ao implementar a Fase 1: RF4/CA7 e o comentário de "opção 3 recusada" (§6)
 permanecem como documentação — nenhum código relacionado a excluir
 já-vinculados deve ser escrito nesta rodada.
+
+## 14. Implementation Notes (2026-09-16)
+
+Fase 1 e Fase 2 implementadas juntas, na mesma rodada, porque a SPEC-39
+do Core (`GET /operation/{operationId}/responsible/eligible-users`) foi
+aprovada e implementada primeiro — destravando o `[NEEDS_DECISION]` do
+§6 antes de eu tocar em `Responsible.tsx`.
+
+**RF1** — `LinkedFilter`, `linkedFilter`, `linkedFilterOptions` e o
+comentário de "unlinked sempre vazio" removidos por completo de
+`Responsible.tsx`.
+
+**RF2** — Novo `roleFilter: Set<RoleFilterKey>` (`RoleFilterKey = UserType
+| InternalRole`), `ROLE_FILTER_OPTIONS` fixo com as 5 opções
+(`Internal`/`External`/`Agent`/`Supervisor`/`Laboratory`), reaproveitando
+as chaves `roles.*` já existentes (nenhum rótulo novo). `btn-group` de 5
+toggles (decisão §12 seguida sem objeção do usuário durante a
+implementação — não sinalizou preferência por `Dropdown`), `OR` entre
+selecionados, vazio = sem filtro. Adicionei um botão "Limpar filtro"
+(`filter.clear`) que só aparece com alguma seleção ativa — não estava no
+RF2 literal, mas é a forma óbvia de zerar um multi-select sem re-clicar
+em cada toggle, dentro do espírito de "UX proposta, sem objeção" do §8.
+
+**RF3/RF4 (Fase 2)** — `fetchUserOptions` trocou de `getApiUser` pra
+`getApiOperationOperationIdResponsibleEligibleUsers(operationId, {
+Search, Limit: 20 })` (client gerado via `just map` contra o Core local
+com a SPEC-39). Como o endpoint novo já fixa `Type = Internal`, `IsActive
+= true` e exclui quem já tem vínculo (tudo server-side, SPEC-39 §3), RF3
+("`IsActive: true`") e RF4 ("não devolver já vinculado") saem resolvidos
+de graça, sem parâmetro extra no front — mais simples do que o RF3
+literal previa (que assumia continuar em `getApiUser` só com `IsActive`
+adicionado).
+
+**RF5** — Busca de texto inalterada, continua combinando com o filtro de
+papel (mesmo `useMemo`, ordem dos filtros ajustada: papel primeiro, texto
+depois — mesmo resultado, `AND` entre os dois).
+
+**i18n** — `filter.all`/`filter.linked`/`filter.unlinked` removidas dos 4
+locales; `filter.byRole` e `filter.clear` adicionadas nos 4
+(`pt-BR`/`en`/`es`/`zh`), mesmo texto/estrutura em todos.
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Responsible.tsx`
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+- `src/api/generated/**` (via `just map` contra o Core local, SPEC-39)
+
+**Validação:** `just map` (`orval` + `staticSnapshots` + `tsc --noEmit`)
+limpo, diff do client gerado restrito ao endpoint novo (sem drift
+inesperado de outras SPECs do Core). `bun run check` e `bun run lint`
+sem nenhum finding em `Responsible.tsx` nem nos dicionários tocados.
+CA1-CA6 verificáveis em código; CA7 (Fase 2) passa a ser válido agora que
+a SPEC-39 saiu do papel.
+
+**Correção pós-implementação (2026-09-16, mesmo dia, pedido do
+usuário):** RF2 original incluía `user.type` (`Internal`/`External`) nas
+opções do filtro (§9 "união de `user.type` e `user.roles`"). O usuário
+apontou que isso não faz sentido — Responsável de Operação só pode ser
+staff interno (a própria Fase 2/SPEC-39 já garante isso na busca de
+vincular), então a distinção `Internal`/`External` nunca varia na
+prática e não serve como filtro. `ROLE_FILTER_OPTIONS` reduzido pra só
+`InternalRole` (`Agent`/`Supervisor`/`Laboratory`, os 3 papéis reais —
+"Operador" citado pelo usuário corresponde ao badge `Supervisor`, rótulo
+de tradução inalterado, `roles.Supervisor` continua "Supervisor(a)" em
+pt-BR; nenhuma renomeação de rótulo foi pedida, só redução do escopo do
+filtro), `RoleFilterKey` agora é só `InternalRole` (não mais união com
+`UserType`), lógica do `useMemo` simplificada pra só `matchesRole`. O
+badge de `user.type` no card de cada linha (RF já existente da SPEC-16)
+**não muda** — só o filtro. `bun run check`/`lint` revalidados, sem
+findings novos.
+
+**Segunda correção pós-implementação (2026-09-16, mesmo dia, pedido do
+usuário):** opções do filtro trocadas de lista hardcoded
+(`ROLE_FILTER_OPTIONS: RoleFilterKey[]`) pro snapshot estático gerado do
+enum real do Core — `internalRoleOptions`/`resolveInternalRoleLabel`
+(`src/api/generated/static/internalRoleOptions.ts`, `x-snapshot` de
+`GET /api/user/roles`, `just map`), mesmo padrão já usado em
+`src/data/admin-roles.ts` e `admin/access/index.tsx` (bind por
+`opt.key`, label via `resolveInternalRoleLabel(key, locale)` com
+`useLocale()`). Motivo: evita 2 fontes de verdade divergentes pro mesmo
+enum (lista hardcoded no componente vs. dicionário `roles.*` vs. o
+enum real do Core) — se o Core ganhar um `InternalRole` novo, o filtro
+agora aparece sozinho depois de um `just map`, sem editar
+`Responsible.tsx`. Os badges de papel no card de cada linha (SPEC-16)
+continuam via `t("...roles.*")` do dicionário local — não fazem parte
+deste pedido, ficaram fora do escopo desta correção.

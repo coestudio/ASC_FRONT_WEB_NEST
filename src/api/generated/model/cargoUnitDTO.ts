@@ -4,20 +4,17 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { CargoIdentificationStatus } from './cargoIdentificationStatus.ts';
 import type { CargoUnitStatus } from './cargoUnitStatus.ts';
 
 export interface CargoUnitDTO {
   operationId?: string;
-  /** @nullable */
-  containerOperationId?: string | null;
+  containerOperationId?: string;
   /** @nullable */
   romaneioId?: string | null;
-  /** @nullable */
-  invoiceItemId?: string | null;
-  itemIdentifier?: string;
-  itemCode?: string;
+  invoiceId?: string;
   observation?: string;
+  status?: CargoUnitStatus;
+  identified?: boolean;
   /**
      * @nullable
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
@@ -33,8 +30,8 @@ export interface CargoUnitDTO {
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
      */
   grossWeight?: number | string | null;
-  status?: CargoUnitStatus;
-  identificationStatus?: CargoIdentificationStatus;
+  /** @nullable */
+  lote?: string | null;
   id: string;
   createdAt: string;
   updatedAt: string;

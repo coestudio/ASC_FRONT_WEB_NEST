@@ -6,6 +6,7 @@
  */
 import type { FileDTO } from './fileDTO.ts';
 import type { SealName } from './sealName.ts';
+import type { SealStatus } from './sealStatus.ts';
 
 export interface SealDTO {
   label?: string;
@@ -13,6 +14,11 @@ export interface SealDTO {
   description?: string;
   userId: string;
   photo?: null | FileDTO;
+  status: SealStatus;
+  /** @nullable */
+  removedBy?: string | null;
+  /** @nullable */
+  removedOn?: string | null;
   id: string;
   createdAt: string;
   updatedAt: string;

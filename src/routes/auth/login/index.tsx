@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -11,11 +11,21 @@ import { profileMeQueryOptions } from "@/lib/queries/profile";
 import { loginSchema, type LoginInput } from "@/lib/validation/login";
 import { InputText, InputPassword } from "@/layouts/Form/Fields/Index";
 
-type LoginSearch = { redirect?: string };
+// Único motivo de redirect automático pro login hoje: 401 (sessão de fato
+// inválida). 5xx/erro de rede não desloga mais — mostra toast na hora,
+// sem sair da tela (decisão revista 2026-09-15, ver mutator.ts).
+type LogoutReason = "session_expired";
+
+type LoginSearch = { redirect?: string; reason?: LogoutReason };
+
+const LOGOUT_REASON_MESSAGES: Record<LogoutReason, string> = {
+  session_expired: "Sua sessão expirou. Faça login novamente.",
+};
 
 export const Route = createFileRoute("/auth/login/")({
   validateSearch: (search: Record<string, unknown>): LoginSearch => ({
     redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+    reason: search.reason === "session_expired" ? search.reason : undefined,
   }),
   head: () => ({ meta: [{ title: "Entrar — ASC" }] }),
   component: LoginPage,
@@ -32,7 +42,17 @@ function LoginPage() {
   const navigate = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { redirect } = Route.useSearch();
+  const { redirect, reason } = Route.useSearch();
+
+  // Mostra o motivo do redirect (sessão expirada/erro de servidor, ver
+  // mutator.ts:redirectToLogin) já na tela de login — o toast disparado lá
+  // quase nunca chega a aparecer de verdade, porque `window.location.href`
+  // troca de página no mesmo instante, antes do react-toastify renderizar.
+  // Aqui o toast é garantido: a tela já carregou, sem corrida com navegação.
+  useEffect(() => {
+    if (reason) toast.error(LOGOUT_REASON_MESSAGES[reason]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const methods = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),

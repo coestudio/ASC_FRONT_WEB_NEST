@@ -63,9 +63,8 @@
     "unlink": "Desvincular",
     "emptyState": "Nenhum responsável encontrado.",
     "filter": {
-      "all": "Todos os vínculos",
-      "linked": "Vinculados",
-      "unlinked": "Não vinculados"
+      "byRole": "Filtrar por papel",
+      "clear": "Limpar filtro"
     },
     "roles": {
       "Internal": "Interno",
@@ -189,9 +188,11 @@
       "romaneio": "Romaneio",
       "containers": "Containers",
       "documents": "Documentos",
+      "invoice": "Nota Fiscal",
       "reports": "Relatórios",
       "responsible": "Responsáveis",
-      "log": "Log"
+      "log": "Log",
+      "occurrences": "Ocorrências"
     },
     "statusLabel": "Status da operação",
     "statusUpdated": "Status da operação atualizado com sucesso.",
@@ -216,7 +217,29 @@
   "log": {
     "description": "Histórico de eventos registrados nesta operação.",
     "byUser": "por {user}",
-    "emptyState": "Nenhum evento registrado."
+    "emptyState": "Nenhum evento registrado.",
+    "loadError": "Não foi possível carregar o log da operação.",
+    "actions": {
+      "RomaneioImported": "Romaneio importado",
+      "InvoiceCreated": "Nota fiscal criada",
+      "InvoiceUpdated": "Nota fiscal atualizada",
+      "InvoiceConfirmed": "Nota fiscal confirmada",
+      "InvoiceCanceled": "Nota fiscal cancelada",
+      "InvoiceAutoCreated": "Nota fiscal criada automaticamente",
+      "CargoUnitStuffed": "Fardo estufado",
+      "CargoUnitCanceled": "Fardo cancelado",
+      "ContainerLinked": "Container vinculado",
+      "ContainerStatusChanged": "Status do container alterado",
+      "ContainerSealAdded": "Lacre do container registrado",
+      "DocumentCreated": "Documento criado"
+    },
+    "entityTypes": {
+      "Romaneio": "Romaneio",
+      "Invoice": "Nota fiscal",
+      "CargoUnit": "Fardo",
+      "Container": "Container",
+      "Document": "Documento"
+    }
   },
   "containers": {
     "new": "Vincular container",
@@ -231,13 +254,24 @@
     "form": {
       "container": "Container",
       "tara": "Tara",
-      "status": "Status do vínculo",
-      "sealDate": "Data do lacre"
+      "status": "Status"
     },
     "photosTitle": "Fotos do container",
-    "photosAdd": "Fotos",
-    "photosUpload": "Enviar fotos",
+    "photosAddToSlot": "Adicionar foto",
     "photosRemove": "Remover foto",
+    "photosOther": "Outras fotos",
+    "photosChecklistComplete": "Checklist completo",
+    "photosChecklistMissing": "Faltam {count} fotos",
+    "photoSlots": {
+      "EmptyExternal": "Vazio — Externo",
+      "EmptyInternal": "Vazio — Interno",
+      "FirstRow": "Primeira fileira",
+      "Fifty": "50%",
+      "Hundred": "100%",
+      "FullExternal": "Cheio — Externo",
+      "Sealed": "Lacrado",
+      "ShipownerSeal": "Lacre do armador"
+    },
     "confirm": {
       "deleteTitle": "Desvincular container",
       "deleteMessage": "Desvincular o container {identifier} desta operação?"
@@ -246,10 +280,73 @@
       "linked": "Container vinculado com sucesso.",
       "updated": "Vínculo atualizado com sucesso.",
       "unlinked": "Container desvinculado com sucesso.",
-      "photoUploaded": "Fotos enviadas com sucesso.",
+      "photoUploaded": "Foto enviada com sucesso.",
       "photoDeleted": "Foto removida com sucesso.",
       "error": "Não foi possível concluir a ação. Tente novamente."
-    }
+    },
+    "stuffing": {
+      "actionIdentified": "Estufar fardo específico",
+      "actionQuantity": "Estufar por quantidade",
+      "actionBatch": "Estufar em lote",
+      "actionViewCargo": "Ver fardos estufados",
+      "identifiedTitle": "Estufar fardo específico — {identifier}",
+      "quantityTitle": "Estufar por quantidade — {identifier}",
+      "batchTitle": "Estufar em lote — {identifier}",
+      "batchEmpty": "Nenhum fardo encontrado para esta nota fiscal.",
+      "batchSelected": "{count} fardo(s) selecionado(s).",
+      "submit": "Estufar",
+      "form": {
+        "invoice": "Nota fiscal",
+        "romaneio": "Fardo do romaneio",
+        "quantity": "Quantidade",
+        "lote": "Lote"
+      },
+      "resultIdentifiedTitle": "{count} fardo(s) estufado(s): identificadores abaixo.",
+      "resultManualTitle": "{count} unidade(s) anônima(s) estufada(s) (peso bruto médio: {weight} kg).",
+      "cargoUnitsTitle": "Fardos estufados — {identifier}",
+      "cargoUnitsEmpty": "Nenhuma unidade estufada neste container.",
+      "colStatus": "Status",
+      "colIdentified": "Identificado",
+      "colGrossWeight": "Peso bruto (kg)",
+      "colActions": "Ações",
+      "yes": "Sim",
+      "no": "Não",
+      "cancelTitle": "Cancelar fardo",
+      "cancelReason": "Motivo do cancelamento",
+      "cancelConfirm": "Confirmar cancelamento",
+      "toast": {
+        "identifiedSuccess": "Fardo estufado com sucesso.",
+        "quantitySuccess": "Estufagem concluída com sucesso.",
+        "batchSuccess": "Fardos estufados com sucesso.",
+        "canceled": "Fardo cancelado com sucesso."
+      }
+    },
+    "destuffing": {
+      "toggle": "Ver todos os fardos estufados",
+      "title": "Fardos estufados da operação",
+      "empty": "Nenhum fardo estufado nesta operação.",
+      "colContainer": "Container de origem"
+    },
+    "seal": {
+      "title": "Lacre",
+      "activeBadge": "Lacrado",
+      "none": "Nenhum lacre ativo.",
+      "sealButton": "Lacrar",
+      "unsealButton": "Deslacrar",
+      "confirmUnsealTitle": "Deslacrar container",
+      "confirmUnsealMessage": "Remover o lacre ativo deste container?",
+      "form": {
+        "user": "Responsável pelo lacre",
+        "name": "Tipo de lacre",
+        "label": "Identificação do lacre",
+        "description": "Descrição"
+      },
+      "toast": {
+        "sealed": "Container lacrado com sucesso.",
+        "unsealed": "Lacre removido com sucesso."
+      }
+    },
+    "searchPlaceholder": "Buscar por identificador do container..."
   },
   "documents": {
     "new": "Novo documento",
@@ -274,6 +371,99 @@
     "toast": {
       "created": "Documento criado com sucesso.",
       "updated": "Documento atualizado com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    }
+  },
+  "invoice": {
+    "new": "Nova nota fiscal",
+    "newTitle": "Nova nota fiscal",
+    "loadError": "Não foi possível carregar as notas fiscais da operação.",
+    "empty": "Nenhuma nota fiscal cadastrada para esta operação.",
+    "colNumber": "Número",
+    "colSource": "Origem",
+    "colStatus": "Status",
+    "colDates": "Datas",
+    "colValues": "Valores",
+    "colDocuments": "Documentos",
+    "colActions": "Ações",
+    "entryDate": "Entrada",
+    "exitDate": "Saída",
+    "totalInvoiceValue": "Valor total da NF",
+    "totalProductsValue": "Valor dos produtos",
+    "documentFallbackName": "Arquivo anexado",
+    "form": {
+      "number": "Número",
+      "entryDate": "Data de entrada",
+      "exitDate": "Data de saída",
+      "exitTime": "Hora de saída",
+      "declaredItemsCount": "Quantidade",
+      "declaredGrossWeight": "Peso bruto total (kg)",
+      "declaredNetWeight": "Peso líquido total (kg)",
+      "totalInvoiceValue": "Valor total da NF",
+      "totalProductsValue": "Valor dos produtos",
+      "observation": "Observação",
+      "files": "Arquivos",
+      "filesRequiredHint": "Selecione ao menos 1 arquivo para criar a nota fiscal.",
+      "declaredFieldsRequiredHint": "Informe quantidade, peso bruto e peso líquido para criar a nota fiscal."
+    },
+    "confirm": {
+      "action": "Confirmar",
+      "title": "Confirmar nota fiscal",
+      "noteLabel": "Observação (opcional)"
+    },
+    "cancel": {
+      "action": "Cancelar",
+      "title": "Cancelar nota fiscal",
+      "noteLabel": "Motivo do cancelamento (opcional)"
+    },
+    "toast": {
+      "created": "Nota fiscal criada com sucesso.",
+      "confirmed": "Nota fiscal confirmada com sucesso.",
+      "canceled": "Nota fiscal cancelada com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "subtabs": {
+      "listing": "Listagem",
+      "comparisonInvoice": "Comparação NF",
+      "comparisonLot": "Comparação Lotes"
+    },
+    "comparison": {
+      "colNumber": "Nota fiscal",
+      "colLote": "Lote",
+      "noLote": "Sem lote",
+      "colDeclaredItemsCount": "Fardos declarados",
+      "colDeclaredGrossWeight": "Peso bruto declarado (kg)",
+      "colDeclaredNetWeight": "Peso líquido declarado (kg)",
+      "colStuffedItemsCount": "Fardos estufados",
+      "colStuffedGrossWeight": "Peso bruto estufado (kg)",
+      "colStuffedNetWeight": "Peso líquido estufado (kg)",
+      "loadErrorInvoice": "Não foi possível carregar a comparação por nota fiscal.",
+      "loadErrorLot": "Não foi possível carregar a comparação por lote.",
+      "emptyInvoice": "Nenhuma nota fiscal para comparar.",
+      "emptyLot": "Nenhum lote para comparar."
+    }
+  },
+  "occurrences": {
+    "description": "Ocorrências registradas manualmente nesta operação.",
+    "new": "Nova ocorrência",
+    "newTitle": "Nova ocorrência",
+    "editTitle": "Editar ocorrência",
+    "loadError": "Não foi possível carregar as ocorrências da operação.",
+    "empty": "Nenhuma ocorrência registrada para esta operação.",
+    "colTitle": "Título",
+    "colNote": "Nota",
+    "colPhotos": "Fotos",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "form": {
+      "title": "Título",
+      "note": "Nota",
+      "photos": "Fotos"
+    },
+    "photosEditNote": "Fotos só podem ser adicionadas na criação da ocorrência.",
+    "toast": {
+      "created": "Ocorrência registrada com sucesso.",
+      "updated": "Ocorrência atualizada com sucesso.",
       "error": "Não foi possível concluir a ação. Tente novamente."
     }
   }

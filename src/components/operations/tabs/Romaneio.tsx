@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, Form, Modal, Row, Spinner } from "react-bootstrap";
+import { Button, Card, Form, Row, Spinner } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -446,7 +447,7 @@ function ImportRomaneioModal({
 
   return (
     <Modal show onHide={onClose} centered size="xl" scrollable>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h5 mb-0">
           {t("administrative-operations.romaneio.import.title")} —{" "}
           {step === "upload"

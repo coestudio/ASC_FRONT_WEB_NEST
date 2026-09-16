@@ -21,7 +21,6 @@
     "underConstruction": "Under construction",
     "underConstructionDescription": "This screen is still being built.",
     "areaWelcome": "Welcome to the {area} area.",
-    "brand": "Brand",
     "profileModal": {
       "title": "My profile",
       "avatar": "Avatar",
@@ -36,6 +35,7 @@
       "phone": "Phone",
       "birthDate": "Birth date",
       "postalCode": "ZIP code",
+      "country": "Country",
       "state": "State",
       "city": "City",
       "neighborhood": "Neighborhood",
@@ -55,7 +55,8 @@
       "avatarHint": "Hover the photo to change it. JPG or PNG up to 2 MB.",
       "avatarTooLarge": "File too large. Maximum 2 MB.",
       "uploadingAvatar": "Uploading...",
-      "selectState": "Select the state"
+      "selectState": "Select the state",
+      "selectCountry": "Select the country"
     }
   },
   "devTools": {

@@ -1,5 +1,6 @@
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 
 export type ConfirmationResult = "yes" | "no" | "close";
 
@@ -21,7 +22,7 @@ const WindowsConfirmation: React.FC<WindowsConfirmationProps> = ({
   const handleNo = () => onResult("no");
 
   return (
-    <Modal show={show} size={size || "sm"} onHide={handleClose} centered keyboard>
+    <Modal show={show} size={size || "sm"} onHide={handleClose} centered>
       <Modal.Body className="d-flex flex-column justify-content-center align-items-center text-center p-4">
         <p
           className="mb-4"

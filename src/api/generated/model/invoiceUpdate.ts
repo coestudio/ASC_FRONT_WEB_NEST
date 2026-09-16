@@ -8,6 +8,12 @@
 export interface InvoiceUpdate {
   /** @nullable */
   issuedOn?: string | null;
+  /** @nullable */
+  entryDate?: string | null;
+  /** @nullable */
+  exitDate?: string | null;
+  /** @nullable */
+  exitTime?: string | null;
   /**
      * @minimum 0
      * @maximum 2147483647
@@ -27,6 +33,18 @@ export interface InvoiceUpdate {
      * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
      */
   declaredNetWeight?: number | string | null;
+  /**
+     * @minimum 0
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
+  totalInvoiceValue?: number | string | null;
+  /**
+     * @minimum 0
+     * @nullable
+     * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+     */
+  totalProductsValue?: number | string | null;
   /**
      * @maxLength 18
      * @nullable

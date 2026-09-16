@@ -19,6 +19,7 @@ export const GetApiContainerQueryParams = zod.object({
 })
 
 export const getApiContainerResponseItemsItemTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiContainerResponseItemsItemMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiContainerResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiContainerResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiContainerResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
@@ -28,6 +29,7 @@ export const GetApiContainerResponse = zod.object({
   "items": zod.array(zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiContainerResponseItemsItemTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', getApiContainerResponseItemsItemMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -43,19 +45,23 @@ export const postApiContainerBodyIdentifierMin = 3;
 export const postApiContainerBodyIdentifierMax = 150;
 
 export const postApiContainerBodyTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiContainerBodyMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PostApiContainerBody = zod.object({
   "identifier": zod.string().min(postApiContainerBodyIdentifierMin).max(postApiContainerBodyIdentifierMax),
-  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiContainerBodyTaraRegExpTwo)]).nullish()
+  "tara": zod.union([zod.number(),zod.stringFormat('double', postApiContainerBodyTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiContainerBodyMaxWeightRegExpTwo)]).nullish()
 })
 
 export const postApiContainerResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiContainerResponseMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PostApiContainerResponse = zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiContainerResponseTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiContainerResponseMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -66,11 +72,13 @@ export const GetApiContainerIdParams = zod.object({
 })
 
 export const getApiContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiContainerIdResponseMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const GetApiContainerIdResponse = zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiContainerIdResponseTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', getApiContainerIdResponseMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -84,19 +92,23 @@ export const putApiContainerIdBodyIdentifierMin = 3;
 export const putApiContainerIdBodyIdentifierMax = 150;
 
 export const putApiContainerIdBodyTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiContainerIdBodyMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PutApiContainerIdBody = zod.object({
   "identifier": zod.string().min(putApiContainerIdBodyIdentifierMin).max(putApiContainerIdBodyIdentifierMax),
-  "tara": zod.union([zod.number(),zod.stringFormat('double', putApiContainerIdBodyTaraRegExpTwo)]).nullish()
+  "tara": zod.union([zod.number(),zod.stringFormat('double', putApiContainerIdBodyTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', putApiContainerIdBodyMaxWeightRegExpTwo)]).nullish()
 })
 
 export const putApiContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiContainerIdResponseMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PutApiContainerIdResponse = zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', putApiContainerIdResponseTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', putApiContainerIdResponseMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})

@@ -25,12 +25,14 @@ import type {
 
 import type {
   EnumOptionDTO,
+  GetApiOperationIdLogParams,
   GetApiOperationParams,
   OperationCreate,
   OperationDetailDTO,
   OperationStatusPatch,
   OperationUpdate,
-  PagedDTOOfOperationDTO
+  PagedDTOOfOperationDTO,
+  PagedDTOOfOperationEventDTO
 } from '../../model';
 
 import { apiRequest } from '../../../mutator.ts';
@@ -986,3 +988,97 @@ const {mutation: mutationOptions} = options ?
       > => {
       return useMutation(getPatchApiOperationIdStatusMutationOptions(options), queryClient);
     }
+    export const getApiOperationIdLog = (
+    id: string,
+    params?: GetApiOperationIdLogParams,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<PagedDTOOfOperationEventDTO>(
+      {url: `/api/operation/${id}/log`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiOperationIdLogQueryKey = (id: string,
+    params?: GetApiOperationIdLogParams,) => {
+    return [
+    `/api/operation/${id}/log`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetApiOperationIdLogQueryOptions = <TData = Awaited<ReturnType<typeof getApiOperationIdLog>>, TError = void>(id: string,
+    params?: GetApiOperationIdLogParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationIdLog>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiOperationIdLogQueryKey(id,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOperationIdLog>>> = ({ signal }) => getApiOperationIdLog(id,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiOperationIdLog>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiOperationIdLogQueryResult = NonNullable<Awaited<ReturnType<typeof getApiOperationIdLog>>>
+export type GetApiOperationIdLogQueryError = void
+
+
+export function useGetApiOperationIdLog<TData = Awaited<ReturnType<typeof getApiOperationIdLog>>, TError = void>(
+ id: string,
+    params: undefined |  GetApiOperationIdLogParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationIdLog>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationIdLog>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationIdLog>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationIdLog<TData = Awaited<ReturnType<typeof getApiOperationIdLog>>, TError = void>(
+ id: string,
+    params?: GetApiOperationIdLogParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationIdLog>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiOperationIdLog>>,
+          TError,
+          Awaited<ReturnType<typeof getApiOperationIdLog>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiOperationIdLog<TData = Awaited<ReturnType<typeof getApiOperationIdLog>>, TError = void>(
+ id: string,
+    params?: GetApiOperationIdLogParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationIdLog>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiOperationIdLog<TData = Awaited<ReturnType<typeof getApiOperationIdLog>>, TError = void>(
+ id: string,
+    params?: GetApiOperationIdLogParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiOperationIdLog>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiOperationIdLogQueryOptions(id,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+

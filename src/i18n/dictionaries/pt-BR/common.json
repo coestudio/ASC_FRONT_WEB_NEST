@@ -21,7 +21,6 @@
     "underConstruction": "Em construção",
     "underConstructionDescription": "Esta tela ainda está em desenvolvimento.",
     "areaWelcome": "Bem-vindo(a) à área {area}.",
-    "brand": "Marca",
     "profileModal": {
       "title": "Meu perfil",
       "avatar": "Avatar",
@@ -36,6 +35,7 @@
       "phone": "Telefone",
       "birthDate": "Data de nascimento",
       "postalCode": "CEP",
+      "country": "País",
       "state": "Estado",
       "city": "Cidade",
       "neighborhood": "Bairro",
@@ -55,7 +55,8 @@
       "avatarHint": "Passe o mouse sobre a foto para alterar. JPG ou PNG até 2 MB.",
       "avatarTooLarge": "Arquivo muito grande. Máximo 2 MB.",
       "uploadingAvatar": "Enviando...",
-      "selectState": "Selecione o estado"
+      "selectState": "Selecione o estado",
+      "selectCountry": "Selecione o país"
     }
   },
   "devTools": {

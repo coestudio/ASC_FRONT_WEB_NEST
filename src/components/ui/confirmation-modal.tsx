@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 
 export type ConfirmationModalProps = {
   show: boolean;
@@ -41,7 +42,7 @@ export function ConfirmationModal({
 
   return (
     <Modal show={show} onHide={onCancel} centered size="sm">
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h6 mb-0">{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="text-center py-4">

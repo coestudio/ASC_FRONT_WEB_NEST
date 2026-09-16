@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Modal, Nav, Spinner } from "react-bootstrap";
+import { Button, Nav, Spinner } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 import { usePatchApiProfileAvatar } from "@/api/generated/endpoints/profile/profile";
 import { profileMeQueryOptions } from "@/lib/queries/profile";
+import { resolveAvatarUrl } from "@/lib/avatar-url";
 import { useUser } from "@/hooks";
 import { useT } from "@/lib/ui-prefs";
 import { InputAvatar } from "@/layouts/Form/Fields/Index";
@@ -17,6 +19,15 @@ type AvatarForm = { avatarFile: File | null };
 type TabKey = "detail" | "address" | "password";
 
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
+
+/** `id` do `<Form>` de cada aba (SPEC-30 §6.1) — o botão Salvar do rodapé
+ * usa o atributo HTML `form` pra submeter o form da aba ativa mesmo estando
+ * fora dele. */
+const FORM_ID_BY_TAB: Record<TabKey, string> = {
+  detail: "profile-detail-form",
+  address: "profile-address-form",
+  password: "profile-password-form",
+};
 
 /**
  * Modal de perfil — 3 abas (Detalhes, Endereço, Senha) + avatar, via
@@ -31,6 +42,20 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
   const [tab, setTab] = useState<TabKey>("detail");
   const avatarForm = useForm<AvatarForm>({ defaultValues: { avatarFile: null } });
   const avatarMutation = usePatchApiProfileAvatar();
+
+  // Um `isSubmitting` por aba (SPEC-30 §6.1) — os 3 forms continuam
+  // montados ao mesmo tempo (`d-none` alterna só a visibilidade), então
+  // cada aba reporta o próprio estado independentemente; o rodapé só lê o
+  // da aba ativa.
+  const [submittingByTab, setSubmittingByTab] = useState<Record<TabKey, boolean>>({
+    detail: false,
+    address: false,
+    password: false,
+  });
+  const setTabSubmitting = (key: TabKey) => (isSubmitting: boolean) =>
+    setSubmittingByTab((prev) =>
+      prev[key] === isSubmitting ? prev : { ...prev, [key]: isSubmitting },
+    );
 
   if (!user) return null;
 
@@ -58,7 +83,7 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
 
   return (
     <Modal show={show} onHide={onClose} centered size="lg" scrollable>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h6 fw-semibold d-flex align-items-center gap-2">
           <i className="bi bi-person" />
           {t("shell.profileModal.title")}
@@ -69,7 +94,7 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
           <InputAvatar
             methods={avatarForm}
             fieldName="avatarFile"
-            previewUrl={user.profile?.avatarFile?.url ?? null}
+            previewUrl={resolveAvatarUrl(user.profile?.avatarFile)}
             initials={initials}
             config={{ label: t("shell.profileModal.avatar") }}
             changeLabel={t("shell.profileModal.changeAvatar")}
@@ -122,18 +147,22 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
         </Nav>
 
         <div className={tab === "detail" ? "" : "d-none"}>
-          <DetailTab user={user} />
+          <DetailTab user={user} onSubmittingChange={setTabSubmitting("detail")} />
         </div>
         <div className={tab === "address" ? "" : "d-none"}>
-          <AddressTab address={user.address} />
+          <AddressTab address={user.address} onSubmittingChange={setTabSubmitting("address")} />
         </div>
         <div className={tab === "password" ? "" : "d-none"}>
-          <PasswordTab />
+          <PasswordTab onSubmittingChange={setTabSubmitting("password")} />
         </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={onClose}>
           {t("shell.profileModal.cancel")}
+        </Button>
+        <Button type="submit" form={FORM_ID_BY_TAB[tab]} disabled={submittingByTab[tab]}>
+          {submittingByTab[tab] ? <Spinner size="sm" animation="border" className="me-2" /> : null}
+          {t("shell.profileModal.save")}
         </Button>
       </Modal.Footer>
     </Modal>

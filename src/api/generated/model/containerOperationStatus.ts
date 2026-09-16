@@ -11,6 +11,5 @@ export type ContainerOperationStatus = typeof ContainerOperationStatus[keyof typ
 export const ContainerOperationStatus = {
   Empty: 'Empty',
   Stuffing: 'Stuffing',
-  Stuffed: 'Stuffed',
-  Shipped: 'Shipped',
+  Sealed: 'Sealed',
 } as const;

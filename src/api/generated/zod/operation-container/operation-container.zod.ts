@@ -53,6 +53,29 @@ export const GetApiContainerSealsValueResponse = zod.object({
   "name": zod.record(zod.string(), zod.string())
 })
 
+export const getApiContainerSealStatusesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const GetApiContainerSealStatusesResponseItem = zod.object({
+  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiContainerSealStatusesResponseValueRegExpTwo)]),
+  "key": zod.string(),
+  "name": zod.record(zod.string(), zod.string())
+})
+export const GetApiContainerSealStatusesResponse = zod.array(GetApiContainerSealStatusesResponseItem)
+
+export const GetApiContainerSealStatusesValueParams = zod.object({
+  "value": zod.int()
+})
+
+export const getApiContainerSealStatusesValueResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const GetApiContainerSealStatusesValueResponse = zod.object({
+  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiContainerSealStatusesValueResponseValueRegExpTwo)]),
+  "key": zod.string(),
+  "name": zod.record(zod.string(), zod.string())
+})
+
 export const GetApiOperationOperationIdContainerParams = zod.object({
   "operationId": zod.uuid()
 })
@@ -62,6 +85,7 @@ export const getApiOperationOperationIdContainerQueryLimitRegExpTwo = new RegExp
 
 
 export const GetApiOperationOperationIdContainerQueryParams = zod.object({
+  "Search": zod.string().optional(),
   "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerQueryOffsetRegExpTwo)]).optional(),
   "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdContainerQueryLimitRegExpTwo)]).optional(),
   "Sort": zod.string().optional()
@@ -69,6 +93,7 @@ export const GetApiOperationOperationIdContainerQueryParams = zod.object({
 
 export const getApiOperationOperationIdContainerResponseItemsItemTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerResponseItemsItemContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerResponseItemsItemRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdContainerResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdContainerResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
@@ -80,11 +105,11 @@ export const GetApiOperationOperationIdContainerResponse = zod.object({
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerResponseItemsItemTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerResponseItemsItemContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerResponseItemsItemContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -104,6 +129,9 @@ export const GetApiOperationOperationIdContainerResponse = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -151,6 +179,7 @@ export const PostApiOperationOperationIdContainerBody = zod.object({
 
 export const postApiOperationOperationIdContainerResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -158,11 +187,11 @@ export const PostApiOperationOperationIdContainerResponse = zod.object({
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerResponseTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -182,6 +211,9 @@ export const PostApiOperationOperationIdContainerResponse = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -216,6 +248,7 @@ export const GetApiOperationOperationIdContainerIdParams = zod.object({
 
 export const getApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -223,11 +256,11 @@ export const GetApiOperationOperationIdContainerIdResponse = zod.object({
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerIdResponseTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -247,6 +280,9 @@ export const GetApiOperationOperationIdContainerIdResponse = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -283,13 +319,12 @@ export const putApiOperationOperationIdContainerIdBodyTaraRegExpTwo = new RegExp
 
 
 export const PutApiOperationOperationIdContainerIdBody = zod.object({
-  "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdBodyTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped'])
+  "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdBodyTaraRegExpTwo)]).nullish()
 })
 
 export const putApiOperationOperationIdContainerIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const putApiOperationOperationIdContainerIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -297,11 +332,11 @@ export const PutApiOperationOperationIdContainerIdResponse = zod.object({
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdResponseTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdContainerIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -321,6 +356,9 @@ export const PutApiOperationOperationIdContainerIdResponse = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -367,6 +405,7 @@ export const PostApiOperationOperationIdContainerIdPhotoBody = zod.object({
 
 export const postApiOperationOperationIdContainerIdPhotoResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdPhotoResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdPhotoResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -374,11 +413,11 @@ export const PostApiOperationOperationIdContainerIdPhotoResponse = zod.object({
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdPhotoResponseTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdPhotoResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdPhotoResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -398,6 +437,9 @@ export const PostApiOperationOperationIdContainerIdPhotoResponse = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -433,6 +475,7 @@ export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdParams = zod.ob
 
 export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -440,11 +483,11 @@ export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdResponse = zod.
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdPhotoPhotoIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -464,6 +507,9 @@ export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdResponse = zod.
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -511,6 +557,7 @@ export const PostApiOperationOperationIdContainerIdSealBody = zod.object({
 
 export const postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdContainerIdSealResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdContainerIdSealResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -518,11 +565,11 @@ export const PostApiOperationOperationIdContainerIdSealResponse = zod.object({
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdSealResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdContainerIdSealResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -542,6 +589,9 @@ export const PostApiOperationOperationIdContainerIdSealResponse = zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -577,6 +627,7 @@ export const DeleteApiOperationOperationIdContainerIdSealSealIdParams = zod.obje
 
 export const deleteApiOperationOperationIdContainerIdSealSealIdResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerMaxWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const deleteApiOperationOperationIdContainerIdSealSealIdResponseRomaneioCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
@@ -584,11 +635,11 @@ export const DeleteApiOperationOperationIdContainerIdSealSealIdResponse = zod.ob
   "operationId": zod.uuid(),
   "containerId": zod.uuid(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdSealSealIdResponseTaraRegExpTwo)]).nullish(),
-  "sealDate": zod.iso.date().nullish(),
-  "status": zod.enum(['Empty', 'Stuffing', 'Stuffed', 'Shipped']),
+  "status": zod.enum(['Empty', 'Stuffing', 'Sealed']),
   "container": zod.object({
   "identifier": zod.string(),
   "tara": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerTaraRegExpTwo)]).nullish(),
+  "maxWeight": zod.union([zod.number(),zod.stringFormat('double', deleteApiOperationOperationIdContainerIdSealSealIdResponseContainerMaxWeightRegExpTwo)]).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -608,6 +659,9 @@ export const DeleteApiOperationOperationIdContainerIdSealSealIdResponse = zod.ob
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -630,6 +684,33 @@ export const DeleteApiOperationOperationIdContainerIdSealSealIdResponse = zod.ob
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+
+export const GetApiOperationOperationIdContainerIdSealCurrentParams = zod.object({
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
+
+export const GetApiOperationOperationIdContainerIdSealCurrentResponse = zod.object({
+  "label": zod.string().optional(),
+  "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
+  "description": zod.string().optional(),
+  "userId": zod.uuid(),
+  "photo": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "status": zod.enum(['Active', 'Removed']),
+  "removedBy": zod.uuid().nullish(),
+  "removedOn": zod.iso.datetime({"offset":true}).nullish(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})

@@ -30,28 +30,52 @@ export const GetApiInvoiceStatusesValueResponse = zod.object({
   "name": zod.record(zod.string(), zod.string())
 })
 
-export const getApiInvoiceItemStatusesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiInvoiceSourcesResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
-export const GetApiInvoiceItemStatusesResponseItem = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiInvoiceItemStatusesResponseValueRegExpTwo)]),
+export const GetApiInvoiceSourcesResponseItem = zod.object({
+  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiInvoiceSourcesResponseValueRegExpTwo)]),
   "key": zod.string(),
   "name": zod.record(zod.string(), zod.string())
 })
-export const GetApiInvoiceItemStatusesResponse = zod.array(GetApiInvoiceItemStatusesResponseItem)
+export const GetApiInvoiceSourcesResponse = zod.array(GetApiInvoiceSourcesResponseItem)
 
-export const GetApiInvoiceItemStatusesValueParams = zod.object({
+export const GetApiInvoiceSourcesValueParams = zod.object({
   "value": zod.int()
 })
 
-export const getApiInvoiceItemStatusesValueResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiInvoiceSourcesValueResponseValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
-export const GetApiInvoiceItemStatusesValueResponse = zod.object({
-  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiInvoiceItemStatusesValueResponseValueRegExpTwo)]),
+export const GetApiInvoiceSourcesValueResponse = zod.object({
+  "value": zod.union([zod.int(),zod.stringFormat('int32', getApiInvoiceSourcesValueResponseValueRegExpTwo)]),
   "key": zod.string(),
   "name": zod.record(zod.string(), zod.string())
 })
+
+export const GetApiOperationOperationIdInvoiceComparisonParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+export const getApiOperationOperationIdInvoiceComparisonResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdInvoiceComparisonResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceComparisonResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceComparisonResponseStuffedItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdInvoiceComparisonResponseStuffedGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceComparisonResponseStuffedNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const GetApiOperationOperationIdInvoiceComparisonResponseItem = zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "number": zod.string().optional(),
+  "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdInvoiceComparisonResponseDeclaredItemsCountRegExpTwo)]).optional(),
+  "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseDeclaredGrossWeightRegExpTwo)]).optional(),
+  "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseDeclaredNetWeightRegExpTwo)]).optional(),
+  "stuffedItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdInvoiceComparisonResponseStuffedItemsCountRegExpTwo)]).optional(),
+  "stuffedGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseStuffedGrossWeightRegExpTwo)]).optional(),
+  "stuffedNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceComparisonResponseStuffedNetWeightRegExpTwo)]).optional()
+})
+export const GetApiOperationOperationIdInvoiceComparisonResponse = zod.array(GetApiOperationOperationIdInvoiceComparisonResponseItem)
 
 export const GetApiOperationOperationIdInvoiceParams = zod.object({
   "operationId": zod.uuid()
@@ -72,6 +96,8 @@ export const GetApiOperationOperationIdInvoiceQueryParams = zod.object({
 export const getApiOperationOperationIdInvoiceResponseItemsItemDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdInvoiceResponseItemsItemDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdInvoiceResponseItemsItemDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceResponseItemsItemTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceResponseItemsItemTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdInvoiceResponseTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdInvoiceResponseOffsetRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdInvoiceResponseLimitRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
@@ -82,19 +108,40 @@ export const GetApiOperationOperationIdInvoiceResponse = zod.object({
   "operationId": zod.uuid().optional(),
   "number": zod.string().optional(),
   "issuedOn": zod.iso.date().nullish(),
+  "entryDate": zod.iso.date().nullish(),
+  "exitDate": zod.iso.date().nullish(),
+  "exitTime": zod.iso.time({}).nullish(),
   "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdInvoiceResponseItemsItemDeclaredItemsCountRegExpTwo)]).nullish(),
   "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceResponseItemsItemDeclaredGrossWeightRegExpTwo)]).nullish(),
   "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceResponseItemsItemDeclaredNetWeightRegExpTwo)]).nullish(),
+  "totalInvoiceValue": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceResponseItemsItemTotalInvoiceValueRegExpTwo)]).nullish(),
+  "totalProductsValue": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceResponseItemsItemTotalProductsValueRegExpTwo)]).nullish(),
   "issuerCnpj": zod.string().optional(),
   "issuerUf": zod.string().optional(),
   "accessKey": zod.string().optional(),
   "observation": zod.string().optional(),
   "status": zod.enum(['Pending', 'Confirmed', 'Canceled']).optional(),
+  "source": zod.enum(['RomaneioImport', 'Manual']).optional(),
   "statusNote": zod.string().optional(),
   "confirmedBy": zod.uuid().nullish(),
   "confirmedOn": zod.iso.datetime({"offset":true}).nullish(),
   "canceledBy": zod.uuid().nullish(),
   "canceledOn": zod.iso.datetime({"offset":true}).nullish(),
+  "documents": zod.array(zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -132,6 +179,18 @@ export const postApiOperationOperationIdInvoiceBodyDeclaredNetWeightRegExpTwo = 
 
 export const postApiOperationOperationIdInvoiceBodyDeclaredNetWeightMinTwo = 0;
 
+export const postApiOperationOperationIdInvoiceBodyTotalInvoiceValueMinOne = 0;
+
+export const postApiOperationOperationIdInvoiceBodyTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+export const postApiOperationOperationIdInvoiceBodyTotalInvoiceValueMinTwo = 0;
+
+export const postApiOperationOperationIdInvoiceBodyTotalProductsValueMinOne = 0;
+
+export const postApiOperationOperationIdInvoiceBodyTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+export const postApiOperationOperationIdInvoiceBodyTotalProductsValueMinTwo = 0;
+
 export const postApiOperationOperationIdInvoiceBodyIssuerCnpjMax = 18;
 
 export const postApiOperationOperationIdInvoiceBodyIssuerUfMin = 2;
@@ -145,39 +204,68 @@ export const postApiOperationOperationIdInvoiceBodyObservationMax = 500;
 
 
 export const PostApiOperationOperationIdInvoiceBody = zod.object({
-  "number": zod.string().max(postApiOperationOperationIdInvoiceBodyNumberMax),
-  "issuedOn": zod.iso.date().nullish(),
-  "declaredItemsCount": zod.union([zod.int().min(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMinOne).max(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMaxOne),zod.stringFormat('int32', postApiOperationOperationIdInvoiceBodyDeclaredItemsCountRegExpTwo).min(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMinTwo).max(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMaxTwo)]).nullish(),
-  "declaredGrossWeight": zod.union([zod.number().min(postApiOperationOperationIdInvoiceBodyDeclaredGrossWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdInvoiceBodyDeclaredGrossWeightRegExpTwo).min(postApiOperationOperationIdInvoiceBodyDeclaredGrossWeightMinTwo)]).nullish(),
-  "declaredNetWeight": zod.union([zod.number().min(postApiOperationOperationIdInvoiceBodyDeclaredNetWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdInvoiceBodyDeclaredNetWeightRegExpTwo).min(postApiOperationOperationIdInvoiceBodyDeclaredNetWeightMinTwo)]).nullish(),
-  "issuerCnpj": zod.string().max(postApiOperationOperationIdInvoiceBodyIssuerCnpjMax).nullish(),
-  "issuerUf": zod.string().min(postApiOperationOperationIdInvoiceBodyIssuerUfMin).max(postApiOperationOperationIdInvoiceBodyIssuerUfMax).nullish(),
-  "accessKey": zod.string().min(postApiOperationOperationIdInvoiceBodyAccessKeyMin).max(postApiOperationOperationIdInvoiceBodyAccessKeyMax).nullish(),
-  "observation": zod.string().max(postApiOperationOperationIdInvoiceBodyObservationMax).nullish()
+  "Files": zod.array(zod.instanceof(Blob)).optional(),
+  "Number": zod.string().max(postApiOperationOperationIdInvoiceBodyNumberMax).optional(),
+  "IssuedOn": zod.iso.date().optional(),
+  "EntryDate": zod.iso.date().optional(),
+  "ExitDate": zod.iso.date().optional(),
+  "ExitTime": zod.iso.time({}).optional(),
+  "DeclaredItemsCount": zod.union([zod.int().min(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMinOne).max(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMaxOne),zod.stringFormat('int32', postApiOperationOperationIdInvoiceBodyDeclaredItemsCountRegExpTwo).min(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMinTwo).max(postApiOperationOperationIdInvoiceBodyDeclaredItemsCountMaxTwo)]).optional(),
+  "DeclaredGrossWeight": zod.union([zod.number().min(postApiOperationOperationIdInvoiceBodyDeclaredGrossWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdInvoiceBodyDeclaredGrossWeightRegExpTwo).min(postApiOperationOperationIdInvoiceBodyDeclaredGrossWeightMinTwo)]).optional(),
+  "DeclaredNetWeight": zod.union([zod.number().min(postApiOperationOperationIdInvoiceBodyDeclaredNetWeightMinOne),zod.stringFormat('double', postApiOperationOperationIdInvoiceBodyDeclaredNetWeightRegExpTwo).min(postApiOperationOperationIdInvoiceBodyDeclaredNetWeightMinTwo)]).optional(),
+  "TotalInvoiceValue": zod.union([zod.number().min(postApiOperationOperationIdInvoiceBodyTotalInvoiceValueMinOne),zod.stringFormat('double', postApiOperationOperationIdInvoiceBodyTotalInvoiceValueRegExpTwo).min(postApiOperationOperationIdInvoiceBodyTotalInvoiceValueMinTwo)]).optional(),
+  "TotalProductsValue": zod.union([zod.number().min(postApiOperationOperationIdInvoiceBodyTotalProductsValueMinOne),zod.stringFormat('double', postApiOperationOperationIdInvoiceBodyTotalProductsValueRegExpTwo).min(postApiOperationOperationIdInvoiceBodyTotalProductsValueMinTwo)]).optional(),
+  "IssuerCnpj": zod.string().max(postApiOperationOperationIdInvoiceBodyIssuerCnpjMax).optional(),
+  "IssuerUf": zod.string().min(postApiOperationOperationIdInvoiceBodyIssuerUfMin).max(postApiOperationOperationIdInvoiceBodyIssuerUfMax).optional(),
+  "AccessKey": zod.string().min(postApiOperationOperationIdInvoiceBodyAccessKeyMin).max(postApiOperationOperationIdInvoiceBodyAccessKeyMax).optional(),
+  "Observation": zod.string().max(postApiOperationOperationIdInvoiceBodyObservationMax).optional()
 })
 
 export const postApiOperationOperationIdInvoiceResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const postApiOperationOperationIdInvoiceResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdInvoiceResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdInvoiceResponseTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdInvoiceResponseTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PostApiOperationOperationIdInvoiceResponse = zod.object({
   "operationId": zod.uuid().optional(),
   "number": zod.string().optional(),
   "issuedOn": zod.iso.date().nullish(),
+  "entryDate": zod.iso.date().nullish(),
+  "exitDate": zod.iso.date().nullish(),
+  "exitTime": zod.iso.time({}).nullish(),
   "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdInvoiceResponseDeclaredItemsCountRegExpTwo)]).nullish(),
   "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceResponseDeclaredGrossWeightRegExpTwo)]).nullish(),
   "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceResponseDeclaredNetWeightRegExpTwo)]).nullish(),
+  "totalInvoiceValue": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceResponseTotalInvoiceValueRegExpTwo)]).nullish(),
+  "totalProductsValue": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceResponseTotalProductsValueRegExpTwo)]).nullish(),
   "issuerCnpj": zod.string().optional(),
   "issuerUf": zod.string().optional(),
   "accessKey": zod.string().optional(),
   "observation": zod.string().optional(),
   "status": zod.enum(['Pending', 'Confirmed', 'Canceled']).optional(),
+  "source": zod.enum(['RomaneioImport', 'Manual']).optional(),
   "statusNote": zod.string().optional(),
   "confirmedBy": zod.uuid().nullish(),
   "confirmedOn": zod.iso.datetime({"offset":true}).nullish(),
   "canceledBy": zod.uuid().nullish(),
   "canceledOn": zod.iso.datetime({"offset":true}).nullish(),
+  "documents": zod.array(zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -191,25 +279,48 @@ export const GetApiOperationOperationIdInvoiceIdParams = zod.object({
 export const getApiOperationOperationIdInvoiceIdResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdInvoiceIdResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdInvoiceIdResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceIdResponseTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdInvoiceIdResponseTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const GetApiOperationOperationIdInvoiceIdResponse = zod.object({
   "operationId": zod.uuid().optional(),
   "number": zod.string().optional(),
   "issuedOn": zod.iso.date().nullish(),
+  "entryDate": zod.iso.date().nullish(),
+  "exitDate": zod.iso.date().nullish(),
+  "exitTime": zod.iso.time({}).nullish(),
   "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdInvoiceIdResponseDeclaredItemsCountRegExpTwo)]).nullish(),
   "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceIdResponseDeclaredGrossWeightRegExpTwo)]).nullish(),
   "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceIdResponseDeclaredNetWeightRegExpTwo)]).nullish(),
+  "totalInvoiceValue": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceIdResponseTotalInvoiceValueRegExpTwo)]).nullish(),
+  "totalProductsValue": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdInvoiceIdResponseTotalProductsValueRegExpTwo)]).nullish(),
   "issuerCnpj": zod.string().optional(),
   "issuerUf": zod.string().optional(),
   "accessKey": zod.string().optional(),
   "observation": zod.string().optional(),
   "status": zod.enum(['Pending', 'Confirmed', 'Canceled']).optional(),
+  "source": zod.enum(['RomaneioImport', 'Manual']).optional(),
   "statusNote": zod.string().optional(),
   "confirmedBy": zod.uuid().nullish(),
   "confirmedOn": zod.iso.datetime({"offset":true}).nullish(),
   "canceledBy": zod.uuid().nullish(),
   "canceledOn": zod.iso.datetime({"offset":true}).nullish(),
+  "documents": zod.array(zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -240,6 +351,18 @@ export const putApiOperationOperationIdInvoiceIdBodyDeclaredNetWeightRegExpTwo =
 
 export const putApiOperationOperationIdInvoiceIdBodyDeclaredNetWeightMinTwo = 0;
 
+export const putApiOperationOperationIdInvoiceIdBodyTotalInvoiceValueMinOne = 0;
+
+export const putApiOperationOperationIdInvoiceIdBodyTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+export const putApiOperationOperationIdInvoiceIdBodyTotalInvoiceValueMinTwo = 0;
+
+export const putApiOperationOperationIdInvoiceIdBodyTotalProductsValueMinOne = 0;
+
+export const putApiOperationOperationIdInvoiceIdBodyTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+export const putApiOperationOperationIdInvoiceIdBodyTotalProductsValueMinTwo = 0;
+
 export const putApiOperationOperationIdInvoiceIdBodyIssuerCnpjMax = 18;
 
 export const putApiOperationOperationIdInvoiceIdBodyIssuerUfMin = 2;
@@ -254,9 +377,14 @@ export const putApiOperationOperationIdInvoiceIdBodyObservationMax = 500;
 
 export const PutApiOperationOperationIdInvoiceIdBody = zod.object({
   "issuedOn": zod.iso.date().nullish(),
+  "entryDate": zod.iso.date().nullish(),
+  "exitDate": zod.iso.date().nullish(),
+  "exitTime": zod.iso.time({}).nullish(),
   "declaredItemsCount": zod.union([zod.int().min(putApiOperationOperationIdInvoiceIdBodyDeclaredItemsCountMinOne).max(putApiOperationOperationIdInvoiceIdBodyDeclaredItemsCountMaxOne),zod.stringFormat('int32', putApiOperationOperationIdInvoiceIdBodyDeclaredItemsCountRegExpTwo).min(putApiOperationOperationIdInvoiceIdBodyDeclaredItemsCountMinTwo).max(putApiOperationOperationIdInvoiceIdBodyDeclaredItemsCountMaxTwo)]).nullish(),
   "declaredGrossWeight": zod.union([zod.number().min(putApiOperationOperationIdInvoiceIdBodyDeclaredGrossWeightMinOne),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdBodyDeclaredGrossWeightRegExpTwo).min(putApiOperationOperationIdInvoiceIdBodyDeclaredGrossWeightMinTwo)]).nullish(),
   "declaredNetWeight": zod.union([zod.number().min(putApiOperationOperationIdInvoiceIdBodyDeclaredNetWeightMinOne),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdBodyDeclaredNetWeightRegExpTwo).min(putApiOperationOperationIdInvoiceIdBodyDeclaredNetWeightMinTwo)]).nullish(),
+  "totalInvoiceValue": zod.union([zod.number().min(putApiOperationOperationIdInvoiceIdBodyTotalInvoiceValueMinOne),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdBodyTotalInvoiceValueRegExpTwo).min(putApiOperationOperationIdInvoiceIdBodyTotalInvoiceValueMinTwo)]).nullish(),
+  "totalProductsValue": zod.union([zod.number().min(putApiOperationOperationIdInvoiceIdBodyTotalProductsValueMinOne),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdBodyTotalProductsValueRegExpTwo).min(putApiOperationOperationIdInvoiceIdBodyTotalProductsValueMinTwo)]).nullish(),
   "issuerCnpj": zod.string().max(putApiOperationOperationIdInvoiceIdBodyIssuerCnpjMax).nullish(),
   "issuerUf": zod.string().min(putApiOperationOperationIdInvoiceIdBodyIssuerUfMin).max(putApiOperationOperationIdInvoiceIdBodyIssuerUfMax).nullish(),
   "accessKey": zod.string().min(putApiOperationOperationIdInvoiceIdBodyAccessKeyMin).max(putApiOperationOperationIdInvoiceIdBodyAccessKeyMax).nullish(),
@@ -266,29 +394,59 @@ export const PutApiOperationOperationIdInvoiceIdBody = zod.object({
 export const putApiOperationOperationIdInvoiceIdResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const putApiOperationOperationIdInvoiceIdResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const putApiOperationOperationIdInvoiceIdResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiOperationOperationIdInvoiceIdResponseTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const putApiOperationOperationIdInvoiceIdResponseTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PutApiOperationOperationIdInvoiceIdResponse = zod.object({
   "operationId": zod.uuid().optional(),
   "number": zod.string().optional(),
   "issuedOn": zod.iso.date().nullish(),
+  "entryDate": zod.iso.date().nullish(),
+  "exitDate": zod.iso.date().nullish(),
+  "exitTime": zod.iso.time({}).nullish(),
   "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', putApiOperationOperationIdInvoiceIdResponseDeclaredItemsCountRegExpTwo)]).nullish(),
   "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdResponseDeclaredGrossWeightRegExpTwo)]).nullish(),
   "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdResponseDeclaredNetWeightRegExpTwo)]).nullish(),
+  "totalInvoiceValue": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdResponseTotalInvoiceValueRegExpTwo)]).nullish(),
+  "totalProductsValue": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdInvoiceIdResponseTotalProductsValueRegExpTwo)]).nullish(),
   "issuerCnpj": zod.string().optional(),
   "issuerUf": zod.string().optional(),
   "accessKey": zod.string().optional(),
   "observation": zod.string().optional(),
   "status": zod.enum(['Pending', 'Confirmed', 'Canceled']).optional(),
+  "source": zod.enum(['RomaneioImport', 'Manual']).optional(),
   "statusNote": zod.string().optional(),
   "confirmedBy": zod.uuid().nullish(),
   "confirmedOn": zod.iso.datetime({"offset":true}).nullish(),
   "canceledBy": zod.uuid().nullish(),
   "canceledOn": zod.iso.datetime({"offset":true}).nullish(),
+  "documents": zod.array(zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 })
+
+export const DeleteApiOperationOperationIdInvoiceIdParams = zod.object({
+  "operationId": zod.uuid(),
+  "id": zod.uuid()
+})
+
+export const DeleteApiOperationOperationIdInvoiceIdResponse = zod.unknown()
 
 export const PostApiOperationOperationIdInvoiceIdConfirmParams = zod.object({
   "operationId": zod.uuid(),
@@ -306,25 +464,48 @@ export const PostApiOperationOperationIdInvoiceIdConfirmBody = zod.object({
 export const postApiOperationOperationIdInvoiceIdConfirmResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const postApiOperationOperationIdInvoiceIdConfirmResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdInvoiceIdConfirmResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdInvoiceIdConfirmResponseTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdInvoiceIdConfirmResponseTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PostApiOperationOperationIdInvoiceIdConfirmResponse = zod.object({
   "operationId": zod.uuid().optional(),
   "number": zod.string().optional(),
   "issuedOn": zod.iso.date().nullish(),
+  "entryDate": zod.iso.date().nullish(),
+  "exitDate": zod.iso.date().nullish(),
+  "exitTime": zod.iso.time({}).nullish(),
   "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdInvoiceIdConfirmResponseDeclaredItemsCountRegExpTwo)]).nullish(),
   "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdConfirmResponseDeclaredGrossWeightRegExpTwo)]).nullish(),
   "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdConfirmResponseDeclaredNetWeightRegExpTwo)]).nullish(),
+  "totalInvoiceValue": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdConfirmResponseTotalInvoiceValueRegExpTwo)]).nullish(),
+  "totalProductsValue": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdConfirmResponseTotalProductsValueRegExpTwo)]).nullish(),
   "issuerCnpj": zod.string().optional(),
   "issuerUf": zod.string().optional(),
   "accessKey": zod.string().optional(),
   "observation": zod.string().optional(),
   "status": zod.enum(['Pending', 'Confirmed', 'Canceled']).optional(),
+  "source": zod.enum(['RomaneioImport', 'Manual']).optional(),
   "statusNote": zod.string().optional(),
   "confirmedBy": zod.uuid().nullish(),
   "confirmedOn": zod.iso.datetime({"offset":true}).nullish(),
   "canceledBy": zod.uuid().nullish(),
   "canceledOn": zod.iso.datetime({"offset":true}).nullish(),
+  "documents": zod.array(zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -346,25 +527,48 @@ export const PostApiOperationOperationIdInvoiceIdCancelBody = zod.object({
 export const postApiOperationOperationIdInvoiceIdCancelResponseDeclaredItemsCountRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const postApiOperationOperationIdInvoiceIdCancelResponseDeclaredGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdInvoiceIdCancelResponseDeclaredNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdInvoiceIdCancelResponseTotalInvoiceValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdInvoiceIdCancelResponseTotalProductsValueRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
 export const PostApiOperationOperationIdInvoiceIdCancelResponse = zod.object({
   "operationId": zod.uuid().optional(),
   "number": zod.string().optional(),
   "issuedOn": zod.iso.date().nullish(),
+  "entryDate": zod.iso.date().nullish(),
+  "exitDate": zod.iso.date().nullish(),
+  "exitTime": zod.iso.time({}).nullish(),
   "declaredItemsCount": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdInvoiceIdCancelResponseDeclaredItemsCountRegExpTwo)]).nullish(),
   "declaredGrossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdCancelResponseDeclaredGrossWeightRegExpTwo)]).nullish(),
   "declaredNetWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdCancelResponseDeclaredNetWeightRegExpTwo)]).nullish(),
+  "totalInvoiceValue": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdCancelResponseTotalInvoiceValueRegExpTwo)]).nullish(),
+  "totalProductsValue": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdInvoiceIdCancelResponseTotalProductsValueRegExpTwo)]).nullish(),
   "issuerCnpj": zod.string().optional(),
   "issuerUf": zod.string().optional(),
   "accessKey": zod.string().optional(),
   "observation": zod.string().optional(),
   "status": zod.enum(['Pending', 'Confirmed', 'Canceled']).optional(),
+  "source": zod.enum(['RomaneioImport', 'Manual']).optional(),
   "statusNote": zod.string().optional(),
   "confirmedBy": zod.uuid().nullish(),
   "confirmedOn": zod.iso.datetime({"offset":true}).nullish(),
   "canceledBy": zod.uuid().nullish(),
   "canceledOn": zod.iso.datetime({"offset":true}).nullish(),
+  "documents": zod.array(zod.object({
+  "invoiceId": zod.uuid().optional(),
+  "file": zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})

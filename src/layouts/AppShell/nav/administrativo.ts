@@ -11,10 +11,11 @@ import type { NavFragment } from "./types";
  * `/administrative/operations`) — idem, não duplicar. O item "Início" agora
  * aponta pra `/administrative` (SPEC-17, Home real com quick actions —
  * antes era link morto pra `/administrativo`, rota que nunca existiu).
- * `administrativoLog`/`administrativoOccurrences` continuam órfãos,
- * apontando pra rota antiga: SPEC-06 (que os removeria) foi cancelada, sem
- * spec própria ainda pra essas duas telas — SPEC-17 não reabre essa
- * decisão, ver `specs/17-administrative-home/spec.md` §14 D2.
+ * `administrativoLog`/`administrativoOccurrences` (órfãos, apontando pra
+ * rota antiga inexistente) foram removidos: "Log" virou aba real dentro do
+ * shell de Operação (SPEC-39) e "Ocorrências" idem (SPEC-43, nova aba
+ * própria, paralela a Log) — nenhum dos dois precisa mais de entrada no
+ * menu Administrativo.
  */
 const fragment: NavFragment = {
   area: "administrativo",
@@ -26,20 +27,6 @@ const fragment: NavFragment = {
       to: "/administrative",
       icon: "bi-house-door",
       order: 1,
-    },
-    {
-      labelKey: "navigation.administrativoLog",
-      to: "/administrativo/log",
-      icon: "bi-journal-text",
-      order: 9,
-      legacyOrphanRoute: true,
-    },
-    {
-      labelKey: "navigation.administrativoOccurrences",
-      to: "/administrativo/ocorrencias",
-      icon: "bi-exclamation-triangle",
-      order: 10,
-      legacyOrphanRoute: true,
     },
   ],
 };

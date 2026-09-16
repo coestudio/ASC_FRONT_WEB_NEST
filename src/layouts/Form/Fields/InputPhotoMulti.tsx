@@ -9,7 +9,9 @@ import { useObjectUrls } from "@/hooks";
  * Upload de múltiplas imagens com grid de preview (thumbnails), cada uma
  * removível individualmente antes do envio (RF6/RF7/CA4/CA5 da
  * SPEC-SHARE-01). `accept` fixo em `image/*`, sem crop (CA7 — crop continua
- * exclusivo de `InputAvatar`). `field.value` vira `File[]`; quem envia
+ * exclusivo de `InputAvatar`). `capture="environment"` abre a câmera
+ * traseira direto em browsers mobile que suportam o atributo, sem
+ * regressão em desktop (SPEC-35). `field.value` vira `File[]`; quem envia
  * decide o `multipart/form-data` (um `append` por foto, RF8). Ex.: fotos de
  * `OperationContainer` (SPEC-07-05).
  */
@@ -57,6 +59,7 @@ function InputPhotoMulti<T extends FieldValues>({
                 ref={inputRef}
                 type="file"
                 accept="image/*"
+                capture="environment"
                 multiple
                 className="d-none"
                 onChange={(e) => {

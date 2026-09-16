@@ -26,22 +26,12 @@ export const containerOperationStatusOptions: EnumOptionDTO[] = [
   },
   {
     "value": 3,
-    "key": "Stuffed",
+    "key": "Sealed",
     "name": {
-      "pt-BR": "Ovado",
-      "en": "Stuffed",
-      "es": "Llenado",
-      "zh": "已装箱"
-    }
-  },
-  {
-    "value": 4,
-    "key": "Shipped",
-    "name": {
-      "pt-BR": "Embarcado",
-      "en": "Shipped",
-      "es": "Embarcado",
-      "zh": "已装船"
+      "pt-BR": "Lacrado",
+      "en": "Sealed",
+      "es": "Precintado",
+      "zh": "已封条"
     }
   }
 ];

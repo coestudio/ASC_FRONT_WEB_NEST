@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { Modal } from "@/components/ui/modal";
 import * as mammoth from "mammoth";
 import * as XLSX from "xlsx";
 
@@ -202,7 +203,7 @@ export function FilePreviewModal({ show, onHide, file }: FilePreviewModalProps) 
 
   return (
     <Modal show={show} onHide={onHide} centered size="lg">
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title className="h6 mb-0 text-truncate">{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
