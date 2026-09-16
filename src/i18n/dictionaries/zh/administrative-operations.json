@@ -257,9 +257,21 @@
       "status": "状态"
     },
     "photosTitle": "集装箱照片",
-    "photosAdd": "照片",
-    "photosUpload": "上传照片",
+    "photosAddToSlot": "添加照片",
     "photosRemove": "移除照片",
+    "photosOther": "其他照片",
+    "photosChecklistComplete": "清单已完成",
+    "photosChecklistMissing": "还缺 {count} 张照片",
+    "photoSlots": {
+      "EmptyExternal": "空箱 — 外部",
+      "EmptyInternal": "空箱 — 内部",
+      "FirstRow": "第一排",
+      "Fifty": "50%",
+      "Hundred": "100%",
+      "FullExternal": "满箱 — 外部",
+      "Sealed": "已封铅",
+      "ShipownerSeal": "船东铅封"
+    },
     "confirm": {
       "deleteTitle": "取消关联集装箱",
       "deleteMessage": "确定要将集装箱 {identifier} 从此作业中取消关联吗？"

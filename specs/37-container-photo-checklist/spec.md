@@ -2,11 +2,11 @@
 
 - **ID:** SPEC-37
 - **Nome:** container-photo-checklist
-- **Status:** WAITING_APPROVAL — decisões de §3 fechadas com o usuário
-  (2026-09-15).
+- **Status:** IMPLEMENTED (2026-09-16) — ver §9 (Implementation Notes).
+  Decisões de §3 fechadas com o usuário (2026-09-15).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Containers.tsx`
-  (`InputPhotoMulti` de fotos do container)
+  (checklist de fotos do container, `InputPhotoSingle` por slot)
 - **Contexto do pedido:** item do `TODO.md` ("modal de adicionar imagens
   do container precisa de um checklist das imagens necessárias").
 
@@ -81,3 +81,57 @@ inventar nem pedir ao Core um campo novo.
 
 - **R1** — Baixo, decisão de negócio já fechada (§3) com base num enum
   real do Core, não inventado.
+
+## 9. Implementation Notes (2026-09-16)
+
+**Confirmado antes de implementar:** `ContainerPhotoSlot` já estava
+exposto no client gerado (`src/api/generated/model/containerPhotoSlot.ts`,
+`ContainerPhotoDTO.slot`, `postApiOperationOperationIdContainerIdPhotoBody`)
+— o `just map` do §6 já tinha acontecido numa rodada anterior (SPEC-39),
+sem trabalho extra de contrato aqui.
+
+**Achado durante a implementação (mesmo gap sinalizado na revisão da
+SPEC-38 do Core):** o enum gerado tem **9** valores, não 8 —
+`None` + os 8 reais. `None` nunca conta como um dos 8 obrigatórios do
+checklist (`ContainerPhotoSlotKey = Exclude<ContainerPhotoSlot, "None">`).
+
+**RF1/RF3 (checklist):** `Containers.tsx` — `ContainerPhotos` monta uma
+célula por slot (`ContainerPhotoSlotCell`, ordem fixa do enum,
+`PHOTO_CHECKLIST_SLOTS`), cada uma com ícone de check/aviso conforme tem
+ou não foto, mais um badge no topo ("Checklist completo" /
+"Faltam N fotos") — RF3 (sinalização clara) resolvido nos dois níveis
+(por slot e no agregado).
+
+**RF2 (upload associa slot):** substituí o uploader único
+(`InputPhotoMulti`, sem slot, sempre `"None"`) por um `InputPhotoSingle`
+por célula — cada um já sobe a foto com o slot fixo daquela célula assim
+que selecionada (auto-upload via `watch`+`useEffect`, mesmo padrão do
+`InputAvatar` em `profile-modal.tsx` e do `SelectAsync` em
+`Responsible.tsx`, sem botão "Salvar" extra). Isso muda a UX de "escolher
+N fotos e enviar em lote, sem categoria" pra "uma foto por categoria,
+sobe na hora" — mudança de comportamento esperada pelo próprio pedido da
+SPEC (upload que associa slot só faz sentido por célula).
+
+**Achado extra, fora do RF literal mas necessário pra não perder dado:**
+fotos já existentes com `slot = None`/`null` (uploads de antes desta
+SPEC, quando tudo subia sem categoria) ficariam invisíveis na nova UI se
+eu só renderizasse o checklist — adicionei uma seção "Outras fotos"
+abaixo do checklist, mesma grade/remoção de antes, só pra esse caso
+legado. Não é um RF novo, é preservação de dado que já existia.
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Containers.tsx`
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+  — removidas `photosAdd`/`photosUpload` (órfãs após a troca de UI),
+  adicionadas `photosAddToSlot`, `photosOther`,
+  `photosChecklistComplete`, `photosChecklistMissing` (`{count}`) e o
+  namespace `photoSlots.*` (8 chaves, rótulo de cada slot); `toast.
+  photoUploaded` ajustada pra singular (upload agora é sempre 1 foto por
+  vez, não mais em lote).
+- `src/lib/validation/operation-container.ts` — **apagado**: schema
+  (`operationContainerPhotosFormSchema`) ficou com zero consumidores
+  depois da troca de UI (confirmado por grep antes de apagar).
+
+**Validação:** `bun run check` (tsc --noEmit) limpo. `bun run lint` sem
+findings em `Containers.tsx` nem nos dicionários tocados. CA1-CA3
+verificáveis em código; CA4 confirmado.

@@ -257,9 +257,21 @@
       "status": "Estado"
     },
     "photosTitle": "Fotos del contenedor",
-    "photosAdd": "Fotos",
-    "photosUpload": "Enviar fotos",
+    "photosAddToSlot": "Agregar foto",
     "photosRemove": "Quitar foto",
+    "photosOther": "Otras fotos",
+    "photosChecklistComplete": "Checklist completo",
+    "photosChecklistMissing": "Faltan {count} fotos",
+    "photoSlots": {
+      "EmptyExternal": "Vacío — Externo",
+      "EmptyInternal": "Vacío — Interno",
+      "FirstRow": "Primera fila",
+      "Fifty": "50%",
+      "Hundred": "100%",
+      "FullExternal": "Lleno — Externo",
+      "Sealed": "Precintado",
+      "ShipownerSeal": "Precinto del armador"
+    },
     "confirm": {
       "deleteTitle": "Desvincular contenedor",
       "deleteMessage": "¿Desvincular el contenedor {identifier} de esta operación?"
@@ -268,7 +280,7 @@
       "linked": "Contenedor vinculado con éxito.",
       "updated": "Vínculo actualizado con éxito.",
       "unlinked": "Contenedor desvinculado con éxito.",
-      "photoUploaded": "Fotos enviadas con éxito.",
+      "photoUploaded": "Foto enviada con éxito.",
       "photoDeleted": "Foto eliminada con éxito.",
       "error": "No fue posible completar la acción. Inténtelo de nuevo."
     },

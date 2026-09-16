@@ -46,7 +46,12 @@ import {
 } from "@/api/generated/zod/cargo-unit/cargo-unit.zod";
 import { getApiOperationOperationIdInvoice } from "@/api/generated/endpoints/invoice/invoice";
 import { getApiOperationOperationIdRomaneio } from "@/api/generated/endpoints/romaneio/romaneio";
-import type { CargoUnitDTO, ContainerOperationDTO, SealDTO } from "@/api/generated/model";
+import type {
+  CargoUnitDTO,
+  ContainerOperationDTO,
+  ContainerPhotoSlot,
+  SealDTO,
+} from "@/api/generated/model";
 import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
 import { resolveCargoUnitStatusLabel } from "@/api/generated/static/cargoUnitStatusOptions";
 import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
@@ -54,21 +59,35 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
   InputNumber,
-  InputPhotoMulti,
+  InputPhotoSingle,
   InputText,
   InputTextArea,
   Select,
   SelectAsync,
 } from "@/layouts/Form/Fields/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
-import {
-  operationContainerPhotosFormSchema,
-  type OperationContainerPhotosFormValues,
-} from "@/lib/validation/operation-container";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import type { TranslationKey } from "@/i18n/translate";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
+
+// SPEC-37: os 8 slots reais de foto do container, ordem fixa do enum
+// (`ContainerPhotoSlot`, `Domain/Operations/Container/Photos/*` no Core) —
+// exclui `None`, que não é um slot de checklist (foto sem categoria, nunca
+// satisfaz nenhum dos 8 obrigatórios).
+type ContainerPhotoSlotKey = Exclude<ContainerPhotoSlot, "None">;
+
+const PHOTO_CHECKLIST_SLOTS: ContainerPhotoSlotKey[] = [
+  "EmptyExternal",
+  "EmptyInternal",
+  "FirstRow",
+  "Fifty",
+  "Hundred",
+  "FullExternal",
+  "Sealed",
+  "ShipownerSeal",
+];
 
 type LinkFormValues = z.infer<typeof PostApiOperationOperationIdContainerBody>;
 type UpdateFormValues = z.infer<typeof PutApiOperationOperationIdContainerIdBody>;
@@ -158,8 +177,9 @@ function ContainerSearchInput({
  * Aba Containers (SPEC-07-05) — vínculo de containers à operação: lista
  * paginada (`operation-container` gerado), criação do vínculo (busca de
  * container existente + tara), edição (só `tara` — `status` é sempre
- * calculado no Core desde SPEC-35, só exibição) e fotos por container
- * (`InputPhotoMulti`). Sem rota própria (D2 revertida em SPEC-07-02 §13) —
+ * calculado no Core desde SPEC-35, só exibição) e fotos por container —
+ * checklist dos 8 `ContainerPhotoSlot` obrigatórios (`InputPhotoSingle`
+ * por slot, SPEC-37). Sem rota própria (D2 revertida em SPEC-07-02 §13) —
  * montada pelo shell via estado local.
  *
  * SPEC-07-11 estende a lista com a ação de **estufagem** (criação de
@@ -756,9 +776,15 @@ function AddSealModal({
  * Fotos do vínculo container↔operação — mantém sua própria busca
  * (`operation-container/{id}` gerado) pra sempre mostrar a lista de fotos
  * atual, mesmo com o modal de edição já aberto com um snapshot antigo do
- * registro. RF2/RF7 da SPEC-SHARE-01: preview em grid, remoção individual
- * antes do envio (dentro do `InputPhotoMulti`) e exclusão de foto já salva
- * (botão próprio, chama o DELETE do Core).
+ * registro.
+ *
+ * SPEC-37: checklist dos 8 `ContainerPhotoSlot` obrigatórios — cada slot
+ * tem sua própria célula (`ContainerPhotoSlotCell`), sinalizando se já tem
+ * foto anexada e oferecendo upload (`InputPhotoSingle`, associa o slot
+ * fixo dessa célula) quando não tem. Fotos com `slot` fora dos 8
+ * (`None`/`null`, dado legado de antes desta SPEC) aparecem numa seção
+ * separada "Outras fotos" — achado da implementação: sem essa seção elas
+ * ficariam invisíveis na UI, mesmo continuando a existir no Core.
  */
 function ContainerPhotos({
   operationId,
@@ -777,31 +803,15 @@ function ContainerPhotos({
   const uploadMutation = usePostApiOperationOperationIdContainerIdPhoto();
   const deletePhotoMutation = useDeleteApiOperationOperationIdContainerIdPhotoPhotoId();
 
-  const methods = useForm<OperationContainerPhotosFormValues>({
-    resolver: zodResolver(operationContainerPhotosFormSchema),
-    defaultValues: { files: [] },
-  });
-
   const invalidateDetail = () =>
     queryClient.invalidateQueries({
       queryKey: getGetApiOperationOperationIdContainerIdQueryKey(operationId, containerLinkId),
     });
 
-  const handleUpload: SubmitHandler<OperationContainerPhotosFormValues> = async (values) => {
-    if (values.files.length === 0) return;
+  const handleUpload = async (slot: ContainerPhotoSlotKey, file: File) => {
     try {
-      // RF8 do InputPhotoMulti (SPEC-SHARE-01): o endpoint só aceita um
-      // arquivo por vez — um POST por foto selecionada, sem slot específico
-      // (não pedido pela SPEC-07-05, RF3 só cobre o `Select` de status).
-      for (const file of values.files) {
-        await uploadMutation.mutateAsync({
-          operationId,
-          id: containerLinkId,
-          data: { file, slot: "None" },
-        });
-      }
+      await uploadMutation.mutateAsync({ operationId, id: containerLinkId, data: { file, slot } });
       toast.success(t("administrative-operations.containers.toast.photoUploaded"));
-      methods.reset({ files: [] });
       invalidateDetail();
       onChanged();
     } catch {
@@ -829,54 +839,169 @@ function ContainerPhotos({
     (photo): photo is typeof photo & { file: NonNullable<typeof photo.file> } => !!photo.file,
   );
 
+  const photosBySlot = new Map<ContainerPhotoSlotKey, typeof photos>();
+  const otherPhotos: typeof photos = [];
+  for (const photo of photos) {
+    const slot = photo.slot;
+    if (slot && (PHOTO_CHECKLIST_SLOTS as string[]).includes(slot)) {
+      const key = slot as ContainerPhotoSlotKey;
+      photosBySlot.set(key, [...(photosBySlot.get(key) ?? []), photo]);
+    } else {
+      otherPhotos.push(photo);
+    }
+  }
+
+  const missingCount = PHOTO_CHECKLIST_SLOTS.filter(
+    (slot) => (photosBySlot.get(slot)?.length ?? 0) === 0,
+  ).length;
+
   return (
     <div>
-      <h2 className="h6">{t("administrative-operations.containers.photosTitle")}</h2>
+      <div className="d-flex align-items-center justify-content-between mb-2">
+        <h2 className="h6 mb-0">{t("administrative-operations.containers.photosTitle")}</h2>
+        <Badge
+          bg={missingCount === 0 ? "success" : "warning"}
+          text={missingCount === 0 ? undefined : "dark"}
+        >
+          {missingCount === 0
+            ? t("administrative-operations.containers.photosChecklistComplete")
+            : t("administrative-operations.containers.photosChecklistMissing", {
+                count: missingCount,
+              })}
+        </Badge>
+      </div>
 
-      {photos.length > 0 ? (
-        <div className="d-flex flex-wrap gap-2 mb-3">
-          {photos.map((photo) => (
-            <div
-              key={photo.id}
-              className="position-relative rounded overflow-hidden border"
-              style={{ width: 88, height: 88 }}
-            >
-              <img
-                src={photo.file.url}
-                alt=""
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-              <Button
-                type="button"
-                variant="danger"
-                size="sm"
-                className="position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
-                style={{ width: 20, height: 20, lineHeight: 1 }}
-                aria-label={t("administrative-operations.containers.photosRemove")}
-                onClick={() => handleDeletePhoto(photo.id)}
+      <div className="d-flex flex-column gap-2 mb-3">
+        {PHOTO_CHECKLIST_SLOTS.map((slot) => (
+          <ContainerPhotoSlotCell
+            key={slot}
+            slot={slot}
+            photos={photosBySlot.get(slot) ?? []}
+            onUpload={handleUpload}
+            onRemove={handleDeletePhoto}
+            removing={deletePhotoMutation.isPending}
+          />
+        ))}
+      </div>
+
+      {otherPhotos.length > 0 ? (
+        <div className="mt-3">
+          <div className="small fw-semibold text-body-secondary mb-1">
+            {t("administrative-operations.containers.photosOther")}
+          </div>
+          <div className="d-flex flex-wrap gap-2">
+            {otherPhotos.map((photo) => (
+              <div
+                key={photo.id}
+                className="position-relative rounded overflow-hidden border"
+                style={{ width: 88, height: 88 }}
               >
-                <i className="bi bi-x" aria-hidden />
-              </Button>
-            </div>
-          ))}
+                <img
+                  src={photo.file.url}
+                  alt=""
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                <Button
+                  type="button"
+                  variant="danger"
+                  size="sm"
+                  className="position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
+                  style={{ width: 20, height: 20, lineHeight: 1 }}
+                  aria-label={t("administrative-operations.containers.photosRemove")}
+                  onClick={() => handleDeletePhoto(photo.id)}
+                >
+                  <i className="bi bi-x" aria-hidden />
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
+    </div>
+  );
+}
 
-      <Form onSubmit={methods.handleSubmit(handleUpload)}>
-        <InputPhotoMulti<OperationContainerPhotosFormValues>
+type SlotUploadFormValues = { file: File | null };
+
+/**
+ * Uma célula do checklist (SPEC-37) — mostra as fotos já anexadas a este
+ * slot (com remoção individual) e, sempre, um controle de upload
+ * (`InputPhotoSingle`) que já sobe a foto assim que selecionada (mesmo
+ * padrão de auto-submit do `InputAvatar` em `profile-modal.tsx`/do
+ * `SelectAsync` em `Responsible.tsx` — sem botão "Salvar" extra).
+ */
+function ContainerPhotoSlotCell({
+  slot,
+  photos,
+  onUpload,
+  onRemove,
+  removing,
+}: {
+  slot: ContainerPhotoSlotKey;
+  photos: { id: string; file: { url?: string } }[];
+  onUpload: (slot: ContainerPhotoSlotKey, file: File) => Promise<void>;
+  onRemove: (photoId: string) => void;
+  removing: boolean;
+}) {
+  const t = useT();
+  const methods = useForm<SlotUploadFormValues>({ defaultValues: { file: null } });
+  const watchedFile = methods.watch("file");
+  const hasPhoto = photos.length > 0;
+
+  useEffect(() => {
+    if (!watchedFile) return;
+    onUpload(slot, watchedFile).finally(() => methods.setValue("file", null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedFile]);
+
+  return (
+    <div className="d-flex align-items-start gap-2 border rounded p-2">
+      <i
+        className={`bi ${hasPhoto ? "bi-check-circle-fill text-success" : "bi-exclamation-circle text-warning"} fs-5 mt-1`}
+        aria-hidden
+      />
+      <div className="flex-grow-1 min-w-0">
+        <div className="fw-semibold small">
+          {t(`administrative-operations.containers.photoSlots.${slot}` as TranslationKey)}
+        </div>
+
+        {hasPhoto ? (
+          <div className="d-flex flex-wrap gap-2 mt-1">
+            {photos.map((photo) => (
+              <div
+                key={photo.id}
+                className="position-relative rounded overflow-hidden border"
+                style={{ width: 64, height: 64 }}
+              >
+                <img
+                  src={photo.file.url}
+                  alt=""
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+                <Button
+                  type="button"
+                  variant="danger"
+                  size="sm"
+                  className="position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
+                  style={{ width: 18, height: 18, lineHeight: 1 }}
+                  aria-label={t("administrative-operations.containers.photosRemove")}
+                  disabled={removing}
+                  onClick={() => onRemove(photo.id)}
+                >
+                  <i className="bi bi-x" aria-hidden />
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        <InputPhotoSingle<SlotUploadFormValues>
           methods={methods}
-          fieldName="files"
-          label={t("administrative-operations.containers.photosAdd")}
+          fieldName="file"
+          label={t("administrative-operations.containers.photosAddToSlot")}
+          config={{ containerClass: "mb-0 mt-2" }}
         />
-        <Button
-          type="submit"
-          variant="outline-primary"
-          size="sm"
-          disabled={methods.formState.isSubmitting}
-        >
-          {t("administrative-operations.containers.photosUpload")}
-        </Button>
-      </Form>
+      </div>
     </div>
   );
 }
