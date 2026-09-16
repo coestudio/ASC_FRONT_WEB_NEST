@@ -17,23 +17,29 @@ import {
 } from "@/api/generated/endpoints/responsible/responsible";
 import { PostApiOperationOperationIdResponsibleBody } from "@/api/generated/zod/responsible/responsible.zod";
 import type { InternalRole, ResponsibleDTO } from "@/api/generated/model";
+import {
+  internalRoleOptions,
+  resolveInternalRoleLabel,
+} from "@/api/generated/static/internalRoleOptions";
 import { InputText, SelectAsync } from "@/layouts/Form/Fields/Index";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { usePagination } from "@/hooks/usePagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
-import { useT } from "@/lib/ui-prefs";
+import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-// SPEC-21 RF2 (ajuste pós-implementação): só `InternalRole` — o filtro por
-// `user.type` (Internal/External) foi removido, Responsável de Operação só
-// pode ser staff interno (SPEC-39 do Core já garante isso na busca de
-// vincular), então a distinção nunca varia e não faz sentido como filtro.
+// SPEC-21 RF2 (ajuste pós-implementação, pedido do usuário): opções do
+// filtro vêm do snapshot estático gerado do enum real do Core
+// (`internalRoleOptions`, `x-snapshot` de `GET /api/user/roles`, mesmo
+// padrão já usado em `src/data/admin-roles.ts` e `admin/access/index.tsx`)
+// — não mais uma lista hardcoded no componente. `user.type`
+// (Internal/External) não entra: Responsável de Operação só pode ser staff
+// interno (SPEC-39 do Core já garante isso na busca de vincular), então
+// essa distinção nunca varia e não serve como filtro.
 type RoleFilterKey = InternalRole;
-
-const ROLE_FILTER_OPTIONS: RoleFilterKey[] = ["Agent", "Supervisor", "Laboratory"];
 
 type LinkFormValues = z.infer<typeof PostApiOperationOperationIdResponsibleBody>;
 
@@ -60,6 +66,7 @@ function initials(name: string): string {
  */
 export function OperationResponsibleTab({ operationId }: { operationId: string }) {
   const t = useT();
+  const locale = useLocale();
   const queryClient = useQueryClient();
 
   const [roleFilter, setRoleFilter] = useState<Set<RoleFilterKey>>(() => new Set());
@@ -137,7 +144,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
     return items.filter((item) => {
       // SPEC-21 RF2: sem seleção = sem filtro (mostra todos). Com seleção,
       // OR entre as roles marcadas (user.roles — sem user.type, ver
-      // ROLE_FILTER_OPTIONS).
+      // internalRoleOptions acima).
       if (roleFilter.size > 0 && !item.user.roles.some((role) => roleFilter.has(role))) {
         return false;
       }
@@ -178,18 +185,21 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             role="group"
             aria-label={t("administrative-operations.responsible.filter.byRole")}
           >
-            {ROLE_FILTER_OPTIONS.map((key) => (
-              <Button
-                key={key}
-                type="button"
-                size="sm"
-                variant={roleFilter.has(key) ? "primary" : "outline-primary"}
-                onClick={() => toggleRoleFilter(key)}
-                aria-pressed={roleFilter.has(key)}
-              >
-                {t(`administrative-operations.responsible.roles.${key}` as TranslationKey)}
-              </Button>
-            ))}
+            {internalRoleOptions.map((opt) => {
+              const key = opt.key as RoleFilterKey;
+              return (
+                <Button
+                  key={key}
+                  type="button"
+                  size="sm"
+                  variant={roleFilter.has(key) ? "primary" : "outline-primary"}
+                  onClick={() => toggleRoleFilter(key)}
+                  aria-pressed={roleFilter.has(key)}
+                >
+                  {resolveInternalRoleLabel(key, locale)}
+                </Button>
+              );
+            })}
           </div>
           {roleFilter.size > 0 ? (
             <Button

@@ -384,3 +384,19 @@ filtro), `RoleFilterKey` agora é só `InternalRole` (não mais união com
 badge de `user.type` no card de cada linha (RF já existente da SPEC-16)
 **não muda** — só o filtro. `bun run check`/`lint` revalidados, sem
 findings novos.
+
+**Segunda correção pós-implementação (2026-09-16, mesmo dia, pedido do
+usuário):** opções do filtro trocadas de lista hardcoded
+(`ROLE_FILTER_OPTIONS: RoleFilterKey[]`) pro snapshot estático gerado do
+enum real do Core — `internalRoleOptions`/`resolveInternalRoleLabel`
+(`src/api/generated/static/internalRoleOptions.ts`, `x-snapshot` de
+`GET /api/user/roles`, `just map`), mesmo padrão já usado em
+`src/data/admin-roles.ts` e `admin/access/index.tsx` (bind por
+`opt.key`, label via `resolveInternalRoleLabel(key, locale)` com
+`useLocale()`). Motivo: evita 2 fontes de verdade divergentes pro mesmo
+enum (lista hardcoded no componente vs. dicionário `roles.*` vs. o
+enum real do Core) — se o Core ganhar um `InternalRole` novo, o filtro
+agora aparece sozinho depois de um `just map`, sem editar
+`Responsible.tsx`. Os badges de papel no card de cada linha (SPEC-16)
+continuam via `t("...roles.*")` do dicionário local — não fazem parte
+deste pedido, ficaram fora do escopo desta correção.
