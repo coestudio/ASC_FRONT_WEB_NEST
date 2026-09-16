@@ -8,12 +8,26 @@ import { Modal as BootstrapModal, type ModalProps } from "react-bootstrap";
  * `backdrop="static"`/`keyboard={false}`, sobrescrevível só se um caso
  * realmente precisar (não deveria precisar).
  *
+ * `scrollable` por padrão: sem isso, um modal com conteúdo mais alto que a
+ * viewport (ex. formulário de 11 campos) cresce pra fora da tela e os
+ * botões do rodapé (Cancelar/Salvar) ficam inacessíveis sem rolar a página
+ * inteira por trás do backdrop. Com `scrollable`, o header/footer do
+ * react-bootstrap ficam fixos dentro do modal e só o `Modal.Body` rola —
+ * os botões de ação sempre visíveis.
+ *
  * Use este componente em vez de importar `Modal` direto de
  * `react-bootstrap`. `Modal.Header` nunca leva `closeButton` — o "X" some,
  * a única saída é o botão do rodapé.
  */
-export function Modal({ backdrop = "static", keyboard = false, ...props }: ModalProps) {
-  return <BootstrapModal backdrop={backdrop} keyboard={keyboard} {...props} />;
+export function Modal({
+  backdrop = "static",
+  keyboard = false,
+  scrollable = true,
+  ...props
+}: ModalProps) {
+  return (
+    <BootstrapModal backdrop={backdrop} keyboard={keyboard} scrollable={scrollable} {...props} />
+  );
 }
 
 Modal.Header = BootstrapModal.Header;
