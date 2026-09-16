@@ -15,7 +15,8 @@ export interface ClientDetailDTO {
   collaborations?: CollaboratorDTO[];
   fullName: string;
   shortName?: string;
-  document: string;
+  /** @nullable */
+  document?: string | null;
   phone?: string;
   email?: string;
   id: string;

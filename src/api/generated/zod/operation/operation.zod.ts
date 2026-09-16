@@ -151,7 +151,7 @@ export const PostApiOperationResponse = zod.object({
   "client": zod.object({
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),
@@ -199,7 +199,7 @@ export const GetApiOperationIdResponse = zod.object({
   "client": zod.object({
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),
@@ -261,7 +261,7 @@ export const PutApiOperationIdResponse = zod.object({
   "client": zod.object({
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),
@@ -319,7 +319,7 @@ export const PatchApiOperationIdStatusResponse = zod.object({
   "client": zod.object({
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),

@@ -8,7 +8,8 @@
 export interface ClientDTO {
   fullName: string;
   shortName?: string;
-  document: string;
+  /** @nullable */
+  document?: string | null;
   phone?: string;
   email?: string;
   id: string;

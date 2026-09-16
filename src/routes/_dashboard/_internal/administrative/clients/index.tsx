@@ -31,14 +31,23 @@ import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-// Formata `document` (só CNPJ cabe no shape gerado, `ClientCreate.document`
-// tem min/max 14) pro padrão `00.000.000/0000-00" — mesmo helper do
-// `ClientCards.tsx` do Portal legado, adaptado (lá também tratava CPF, aqui
-// não precisa).
-function formatDocument(doc: string): string {
+// Formata `document` — CPF (11 dígitos) ou CNPJ (14), opcional desde a
+// SPEC-42/50 (antes só cabia CNPJ). Vazio/nulo retorna vazio (RF2).
+function formatDocument(doc: string | null | undefined): string {
+  if (!doc) return "";
   const d = doc.replace(/\D/g, "");
   if (d.length === 14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+  if (d.length === 11) return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   return doc;
+}
+
+// Tipo de documento pelo tamanho normalizado — RF3 (chip do card).
+function documentType(doc: string | null | undefined): "cpf" | "cnpj" | null {
+  if (!doc) return null;
+  const d = doc.replace(/\D/g, "");
+  if (d.length === 11) return "cpf";
+  if (d.length === 14) return "cnpj";
+  return null;
 }
 
 // Iniciais do nome pro avatar do card — mesma ideia do `ClientCards.tsx`
@@ -258,7 +267,7 @@ function ClientsPageBody() {
       col: { md: 6 },
     },
     {
-      type: "InputCNPJ",
+      type: "InputDocument",
       fieldName: "document",
       label: t("administrative-clients.form.document"),
       col: { md: 6 },
@@ -315,7 +324,7 @@ function ClientsPageBody() {
     {
       key: "document",
       headerKey: "administrative-clients.colDocument",
-      render: (c) => c.document,
+      render: (c) => formatDocument(c.document) || "—",
     },
     {
       key: "phone",
@@ -370,21 +379,34 @@ function ClientsPageBody() {
           descriptionKey="administrative-clients.description"
           queryOptions={listQueryOptions}
           columns={columns}
-          renderCard={(c) => (
-            <Card className={styles.card}>
-              <Card.Body>
-                <div className={styles.top}>
-                  <div className={styles.avatar}>{initials(c.fullName)}</div>
-                  <span className={styles.chip}>{t("administrative-clients.docTypeCnpj")}</span>
-                </div>
-                <div className={styles.name}>{c.fullName}</div>
-                <div className={styles.doc}>
-                  <i className="bi bi-card-text me-1" aria-hidden />
-                  {formatDocument(c.document)}
-                </div>
-              </Card.Body>
-            </Card>
-          )}
+          renderCard={(c) => {
+            const docType = documentType(c.document);
+            return (
+              <Card className={styles.card}>
+                <Card.Body>
+                  <div className={styles.top}>
+                    <div className={styles.avatar}>{initials(c.fullName)}</div>
+                    {docType ? (
+                      <span className={styles.chip}>
+                        {t(
+                          docType === "cpf"
+                            ? "administrative-clients.docTypeCpf"
+                            : "administrative-clients.docTypeCnpj",
+                        )}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className={styles.name}>{c.fullName}</div>
+                  {c.document ? (
+                    <div className={styles.doc}>
+                      <i className="bi bi-card-text me-1" aria-hidden />
+                      {formatDocument(c.document)}
+                    </div>
+                  ) : null}
+                </Card.Body>
+              </Card>
+            );
+          }}
           getItemKey={(c) => c.id}
           search={search}
           onSearchChange={(value) => {

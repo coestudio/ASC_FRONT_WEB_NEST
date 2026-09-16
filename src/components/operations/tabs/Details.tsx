@@ -95,7 +95,7 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
           />
           <DetailField
             label={t("administrative-operations.details.document")}
-            value={operation.client.document}
+            value={operation.client.document ?? ""}
             md={6}
           />
           <DetailField
