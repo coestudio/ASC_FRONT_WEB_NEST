@@ -445,3 +445,62 @@ const {mutation: mutationOptions} = options ?
       > => {
       return useMutation(getDeleteApiOperationOperationIdResponsibleIdMutationOptions(options), queryClient);
     }
+    export const postApiOperationOperationIdResponsibleMe = (
+    operationId: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<ResponsibleDTO>(
+      {url: `/api/operation/${operationId}/responsible/me`, method: 'POST', signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdResponsibleMeMutationKey = () => ['postApiOperationOperationIdResponsibleMe'] as const;
+
+export const getPostApiOperationOperationIdResponsibleMeMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdResponsibleMe>>, TError,PostApiOperationOperationIdResponsibleMeMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdResponsibleMe>>, TError,PostApiOperationOperationIdResponsibleMeMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdResponsibleMeMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdResponsibleMe>>, PostApiOperationOperationIdResponsibleMeMutationVariables> = (props) => {
+          const {operationId} = props ?? {};
+
+          return  postApiOperationOperationIdResponsibleMe(operationId,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdResponsibleMeMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdResponsibleMe>>>
+
+    export type PostApiOperationOperationIdResponsibleMeMutationError = void
+    export type PostApiOperationOperationIdResponsibleMeMutationVariables = {operationId: string}
+
+    export const usePostApiOperationOperationIdResponsibleMe = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdResponsibleMe>>, TError,PostApiOperationOperationIdResponsibleMeMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdResponsibleMe>>,
+        TError,
+        PostApiOperationOperationIdResponsibleMeMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdResponsibleMeMutationOptions(options), queryClient);
+    }

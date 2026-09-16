@@ -31,11 +31,13 @@ import type {
   PostApiOperationOperationIdRomaneioImportAnalyzeBody,
   RomaneioCreate,
   RomaneioDTO,
+  RomaneioDeleteBatch,
   RomaneioImportAnalysisDTO,
   RomaneioImportApply,
   RomaneioImportApplyResultDTO,
   RomaneioLoteComparisonDTO,
-  RomaneioUpdate
+  RomaneioUpdate,
+  RomaneioUpdateBatch
 } from '../../model';
 
 import { apiRequest } from '../../../mutator.ts';
@@ -687,6 +689,130 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getDeleteApiOperationOperationIdRomaneioIdMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdRomaneioDeleteBatch = (
+    operationId: string,
+    romaneioDeleteBatch: RomaneioDeleteBatch,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<void>(
+      {url: `/api/operation/${operationId}/romaneio/delete-batch`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: romaneioDeleteBatch, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdRomaneioDeleteBatchMutationKey = () => ['postApiOperationOperationIdRomaneioDeleteBatch'] as const;
+
+export const getPostApiOperationOperationIdRomaneioDeleteBatchMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioDeleteBatch>>, TError,PostApiOperationOperationIdRomaneioDeleteBatchMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioDeleteBatch>>, TError,PostApiOperationOperationIdRomaneioDeleteBatchMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdRomaneioDeleteBatchMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioDeleteBatch>>, PostApiOperationOperationIdRomaneioDeleteBatchMutationVariables> = (props) => {
+          const {operationId,data} = props ?? {};
+
+          return  postApiOperationOperationIdRomaneioDeleteBatch(operationId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdRomaneioDeleteBatchMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioDeleteBatch>>>
+    export type PostApiOperationOperationIdRomaneioDeleteBatchMutationBody = RomaneioDeleteBatch
+    export type PostApiOperationOperationIdRomaneioDeleteBatchMutationError = void
+    export type PostApiOperationOperationIdRomaneioDeleteBatchMutationVariables = {operationId: string;data: RomaneioDeleteBatch}
+
+    export const usePostApiOperationOperationIdRomaneioDeleteBatch = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioDeleteBatch>>, TError,PostApiOperationOperationIdRomaneioDeleteBatchMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioDeleteBatch>>,
+        TError,
+        PostApiOperationOperationIdRomaneioDeleteBatchMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdRomaneioDeleteBatchMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdRomaneioUpdateBatch = (
+    operationId: string,
+    romaneioUpdateBatch: RomaneioUpdateBatch,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<RomaneioDTO[]>(
+      {url: `/api/operation/${operationId}/romaneio/update-batch`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: romaneioUpdateBatch, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdRomaneioUpdateBatchMutationKey = () => ['postApiOperationOperationIdRomaneioUpdateBatch'] as const;
+
+export const getPostApiOperationOperationIdRomaneioUpdateBatchMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioUpdateBatch>>, TError,PostApiOperationOperationIdRomaneioUpdateBatchMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioUpdateBatch>>, TError,PostApiOperationOperationIdRomaneioUpdateBatchMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdRomaneioUpdateBatchMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioUpdateBatch>>, PostApiOperationOperationIdRomaneioUpdateBatchMutationVariables> = (props) => {
+          const {operationId,data} = props ?? {};
+
+          return  postApiOperationOperationIdRomaneioUpdateBatch(operationId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdRomaneioUpdateBatchMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioUpdateBatch>>>
+    export type PostApiOperationOperationIdRomaneioUpdateBatchMutationBody = RomaneioUpdateBatch
+    export type PostApiOperationOperationIdRomaneioUpdateBatchMutationError = void
+    export type PostApiOperationOperationIdRomaneioUpdateBatchMutationVariables = {operationId: string;data: RomaneioUpdateBatch}
+
+    export const usePostApiOperationOperationIdRomaneioUpdateBatch = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioUpdateBatch>>, TError,PostApiOperationOperationIdRomaneioUpdateBatchMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioUpdateBatch>>,
+        TError,
+        PostApiOperationOperationIdRomaneioUpdateBatchMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdRomaneioUpdateBatchMutationOptions(options), queryClient);
     }
     export const postApiOperationOperationIdRomaneioImportAnalyze = (
     operationId: string,

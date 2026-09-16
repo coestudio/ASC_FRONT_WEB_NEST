@@ -61,6 +61,7 @@
     "searchPlaceholder": "按姓名或邮箱搜索...",
     "linkPlaceholder": "输入以搜索用户...",
     "link": "关联",
+    "selfLink": "将我添加为负责人",
     "unlink": "取消关联",
     "emptyState": "未找到负责人。",
     "filter": {

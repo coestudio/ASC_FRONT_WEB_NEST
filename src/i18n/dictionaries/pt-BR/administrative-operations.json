@@ -61,6 +61,7 @@
     "searchPlaceholder": "Buscar por nome ou e-mail...",
     "linkPlaceholder": "Digite para buscar um usuário...",
     "link": "Vincular",
+    "selfLink": "Me adicionar como responsável",
     "unlink": "Desvincular",
     "emptyState": "Nenhum responsável encontrado.",
     "filter": {

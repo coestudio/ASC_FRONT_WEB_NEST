@@ -2,8 +2,8 @@
 
 - **ID:** SPEC-52
 - **Nome:** profile-modal-close-on-save
-- **Status:** WAITING_APPROVAL — 1 decisão de escopo assumida (§6),
-  confirmar antes de aprovar.
+- **Status:** IMPLEMENTED — decisão do §6 confirmada pelo usuário (avatar
+  fora do escopo).
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/components/profile/{detail-tab,address-tab,
 password-tab,profile-modal}.tsx`.
@@ -90,3 +90,32 @@ extra em `handleAvatarSelected`).
 
 Nenhum — mudança aditiva e reversível, 4 arquivos, sem mudança de
 contrato/dado.
+
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/profile/detail-tab.tsx` — prop `onSaved?: () => void`,
+    chamado após `toast.success(...)` no caminho de sucesso.
+  - `src/components/profile/address-tab.tsx` — idem.
+  - `src/components/profile/password-tab.tsx` — idem, depois do
+    `methods.reset(...)` já existente.
+  - `src/components/profile/profile-modal.tsx` — passa `onSaved={onClose}`
+    pras 3 abas. Upload de avatar (`handleAvatarSelected`) não foi tocado.
+- **Comandos executados:**
+  - `bun run check` — VERIFIED (sem erro).
+  - `bun run lint` — 66 problems / 3 errors / 63 warnings, todos em
+    `src/lib/session.server.ts` e `src/lib/ui-prefs.tsx` (baseline
+    pré-existente, alheio a esta mudança) — sem regressão.
+- **Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Editar nome/e-mail em Detalhes e salvar fecha o modal. | PASS (código: `onSaved` chamado após sucesso) |
+| CA2 | Editar endereço e salvar fecha o modal. | PASS |
+| CA3 | Trocar senha (com sucesso) fecha o modal. | PASS |
+| CA4 | Erro de validação/backend em qualquer aba mantém o modal aberto, com o toast de erro visível. | PASS (`onSaved` só é chamado dentro do `try`, no caminho de sucesso; `catch` não muda) |
+| CA5 | `bun run check` + `bun run lint` sem regressão. | PASS |
+
+- **Decisões tomadas durante a implementação:** nenhuma além da já
+  confirmada no §6 (avatar fora do escopo).
+- **Limitações conhecidas:** nenhuma.

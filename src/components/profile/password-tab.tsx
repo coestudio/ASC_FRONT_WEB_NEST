@@ -26,8 +26,10 @@ type PasswordInput = z.infer<typeof passwordSchema>;
  */
 export function PasswordTab({
   onSubmittingChange,
+  onSaved,
 }: {
   onSubmittingChange?: (isSubmitting: boolean) => void;
+  onSaved?: () => void;
 }) {
   const t = useT();
   const methods = useForm<PasswordInput>({
@@ -49,6 +51,7 @@ export function PasswordTab({
       await mutation.mutateAsync({ data });
       methods.reset({ currentPassword: "", newPassword: "", newPasswordConfirm: "" });
       toast.success(t("shell.profileModal.saved"));
+      onSaved?.();
     } catch {
       toast.error(t("shell.profileModal.saveError"));
     }

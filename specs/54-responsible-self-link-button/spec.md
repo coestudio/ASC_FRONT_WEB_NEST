@@ -2,8 +2,10 @@
 
 - **ID:** SPEC-54
 - **Nome:** responsible-self-link-button
-- **Status:** DRAFT — depende de `warren/Core/specs/44-responsible-self-link`
-  (`DRAFT`).
+- **Status:** IMPLEMENTED — dependência do Core (`specs/44-responsible-self-link`)
+  resolvida nesta sessão; `just map` já rodado (hook
+  `usePostApiOperationOperationIdResponsibleMe` presente em
+  `src/api/generated/endpoints/responsible/responsible.ts`).
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/components/operations/tabs/Responsible.tsx`.
 - **Depende de (Core):** `specs/44-responsible-self-link` (`DRAFT`) —
@@ -78,3 +80,46 @@ locales) — rótulo do botão.
 ## 10. Riscos
 
 Nenhum — mudança isolada a um arquivo, botão aditivo.
+
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/operations/tabs/Responsible.tsx` — botão
+    "Me adicionar como responsável" (`variant="outline-primary"`, ícone
+    `bi-person-plus`) ao lado do "Vincular" existente. Usa
+    `usePostApiOperationOperationIdResponsibleMe()` (hook gerado, sem
+    editar `src/api/generated/**`) e `useUser()` pra saber o `id` do
+    usuário logado. Desabilitado quando `list` já contém
+    `item.user.id === user?.id` (`isSelfLinked`) ou enquanto a mutation
+    está pendente. Sucesso: toast + `invalidateList()` (mesma função já
+    usada pelo fluxo de "Vincular"/desvincular). Erro: toast genérico
+    (`administrative-operations.responsible.toast.error`, já existente —
+    cobre também o caso de corrida 409).
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+    — chave nova `responsible.selfLink` nos 4 locales.
+- **Comandos executados:**
+  - `bun run check` — VERIFIED (sem erro).
+  - `bun run lint` — 66 problems / 3 errors / 63 warnings, todos
+    pré-existentes em `src/lib/session.server.ts` e `src/lib/ui-prefs.tsx`
+    — sem regressão.
+  - `just map` — já rodado pelo usuário antes desta sessão de
+    implementação (dependência do Core resolvida); não rodado novamente
+    aqui.
+- **Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | Clicar em "Me adicionar" vincula o usuário logado sem abrir modal. | PASS (chamada direta à mutation, sem modal) |
+| CA2 | Botão fica desabilitado/oculto quando o usuário já está na lista de vinculados. | PASS (desabilitado via `isSelfLinked`) |
+| CA3 | `bun run check` + `bun run lint` sem regressão. | PASS |
+| CA4 | 4 dicts de i18n com a chave nova. | PASS |
+
+- **Decisões tomadas durante a implementação:** o spec.md estava em
+  `DRAFT` citando a dependência do Core como pendente — reconfirmado que a
+  dependência já foi resolvida (endpoint presente no client gerado,
+  `just map` já rodado) antes de implementar; objetivo/escopo do spec.md
+  não mudaram, só o status. Optei por **desabilitar** (não ocultar) o
+  botão quando já vinculado — opção explicitamente permitida pelo §3
+  ("tanto faz pro requisito").
+- **Limitações conhecidas:** nenhuma — não mexe no botão "Vincular"/modal
+  existente, nem na pendência de busca do `TODO.md` (fora de escopo, §4).

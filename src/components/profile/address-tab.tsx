@@ -35,9 +35,11 @@ type AddressInput = z.infer<typeof addressSchema>;
 export function AddressTab({
   address,
   onSubmittingChange,
+  onSaved,
 }: {
   address: AddressDTO;
   onSubmittingChange?: (isSubmitting: boolean) => void;
+  onSaved?: () => void;
 }) {
   const t = useT();
   const queryClient = useQueryClient();
@@ -70,6 +72,7 @@ export function AddressTab({
       await mutation.mutateAsync({ data });
       await queryClient.invalidateQueries({ queryKey: profileMeQueryOptions().queryKey });
       toast.success(t("shell.profileModal.saved"));
+      onSaved?.();
     } catch {
       toast.error(t("shell.profileModal.saveError"));
     }

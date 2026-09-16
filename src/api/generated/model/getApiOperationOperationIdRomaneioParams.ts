@@ -7,6 +7,7 @@
 
 export type GetApiOperationOperationIdRomaneioParams = {
 Search?: string;
+IsStuffed?: boolean;
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$
  */

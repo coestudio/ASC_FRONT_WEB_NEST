@@ -61,6 +61,7 @@
     "searchPlaceholder": "Buscar por nombre o correo...",
     "linkPlaceholder": "Escriba para buscar un usuario...",
     "link": "Vincular",
+    "selfLink": "Agregarme como responsable",
     "unlink": "Desvincular",
     "emptyState": "No se encontró ningún responsable.",
     "filter": {

@@ -2,11 +2,11 @@
 
 - **ID:** SPEC-51
 - **Nome:** modal-close-button
-- **Status:** WAITING_APPROVAL — sem `[NEEDS_DECISION]` de escopo, mas
-  reverte uma decisão de design anterior explícita (ver §2) — pedido
-  direto do usuário conta como a confirmação exigida pela regra "decisão
-  já tomada, alguém pede pra mudar → PARE e confirme antes de
-  sobrescrever".
+- **Status:** IMPLEMENTED — aprovado pelo usuário ("APROVAR SPEC-51") e
+  implementado em 2026-09-16. Reverteu uma decisão de design anterior
+  explícita (ver §2) — pedido direto do usuário contou como a confirmação
+  exigida pela regra "decisão já tomada, alguém pede pra mudar → PARE e
+  confirme antes de sobrescrever".
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/components/ui/modal.tsx` (único arquivo — ver §2).
 - **Depende de:** nenhuma.
@@ -97,3 +97,44 @@ de "só ação explícita fecha o modal".
 
 Nenhum — mudança de um arquivo, comportamento aditivo (só adiciona uma
 forma a mais de fechar, não remove nenhuma existente).
+
+## Implementation Notes
+
+- **Arquivo alterado:** `src/components/ui/modal.tsx`.
+  - `Modal.Header` deixou de ser um reexport direto de
+    `BootstrapModal.Header` e passou a ser um wrapper local `Header` que
+    aplica `closeButton = true` por padrão (sobrescrevível com
+    `closeButton={false}`), exatamente como no §3 da spec.
+  - Import passou a trazer também o tipo `ModalHeaderProps` de
+    `react-bootstrap` (necessário pro TS — `BootstrapModal.HeaderProps`
+    não existe como namespace; o pacote exporta o tipo separadamente como
+    `ModalHeaderProps`).
+  - Comentário do topo do arquivo reescrito: removida a frase "`Modal.Header`
+    nunca leva `closeButton` — o "X" some, a única saída é o botão do
+    rodapé" e adicionada a explicação da nova decisão (fechamento por
+    botão do rodapé **e** pelo "X" do header, ambos chamando o mesmo
+    `onHide`). `backdrop="static"`/`keyboard={false}` permanecem
+    documentados e inalterados.
+- **Comandos executados:**
+  - `bun run check` → `tsc --noEmit` sem erros. **VERIFIED**.
+  - `bun run lint` → `66 problems (3 errors, 63 warnings)`, todos em
+    `src/lib/session.server.ts` (3 erros `react-hooks/rules-of-hooks`) e
+    `src/lib/ui-prefs.tsx` (10 warnings `react-refresh/only-export-components`),
+    idêntico ao baseline conhecido pré-existente — nenhuma regressão
+    introduzida por este arquivo. **VERIFIED**.
+  - `just map` não se aplica — nenhuma mudança de contrato do Core.
+- **Critérios de aceitação:**
+
+  | # | Critério | Resultado |
+  | --- | --- | --- |
+  | CA1 | `ConfirmationModal`, `CrudRecordModal`, `ProfileModal`, `FilePreviewModal` e as demais instâncias em `components/operations/tabs/**` mostram "X" no header. | PASS — todas usam `Modal.Header` do wrapper único; `closeButton = true` por padrão propaga a todas sem alteração de consumidor. |
+  | CA2 | Clicar no "X" fecha o modal (mesmo efeito do botão Cancelar/Fechar do rodapé). | PASS — comportamento nativo do `BootstrapModal.Header closeButton` chama o `onHide` já passado ao `<Modal>` pai, confirmado por leitura de código (nenhum consumidor precisou de prop extra, conforme §2 da spec). |
+  | CA3 | Clique fora do modal (backdrop) e ESC continuam sem fechar. | PASS — `backdrop="static"`/`keyboard={false}` não foram tocados no wrapper `Modal`. |
+  | CA4 | `bun run check` + `bun run lint` sem regressão. | PASS — ver comandos acima. |
+
+- **Decisões tomadas durante a implementação:** nenhuma decisão nova além
+  do que já estava explícito na spec; único ajuste técnico foi o nome do
+  tipo TS (`ModalHeaderProps` em vez de `BootstrapModal.HeaderProps`, que
+  não existe nessa forma na tipagem do `react-bootstrap`).
+- **Limitações conhecidas:** nenhuma — `WindowsConfirmation` (fora do
+  escopo, §4) continua sem `Modal.Header`/"X", como já esperado pela spec.

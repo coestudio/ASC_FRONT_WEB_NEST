@@ -14,6 +14,7 @@ import {
   getGetApiOperationOperationIdResponsibleQueryOptions,
   useDeleteApiOperationOperationIdResponsibleId,
   usePostApiOperationOperationIdResponsible,
+  usePostApiOperationOperationIdResponsibleMe,
 } from "@/api/generated/endpoints/responsible/responsible";
 import { PostApiOperationOperationIdResponsibleBody } from "@/api/generated/zod/responsible/responsible.zod";
 import type { InternalRole, ResponsibleDTO } from "@/api/generated/model";
@@ -26,6 +27,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { usePagination } from "@/hooks/usePagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { useUser } from "@/hooks";
 import type { TranslationKey } from "@/i18n/translate";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
@@ -68,6 +70,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
   const t = useT();
   const locale = useLocale();
   const queryClient = useQueryClient();
+  const { user } = useUser();
 
   const [roleFilter, setRoleFilter] = useState<Set<RoleFilterKey>>(() => new Set());
   const [linkModalOpen, setLinkModalOpen] = useState(false);
@@ -84,6 +87,27 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
 
   const linkMutation = usePostApiOperationOperationIdResponsible();
   const unlinkMutation = useDeleteApiOperationOperationIdResponsibleId();
+  const selfLinkMutation = usePostApiOperationOperationIdResponsibleMe();
+
+  // SPEC-54: alternativa ao "Vincular" (busca de usuário) — vincula o
+  // próprio usuário logado num clique, sem passar pelo `SelectAsync`
+  // (bypassa a pendência de busca registrada no TODO.md).
+  const isSelfLinked = query.data?.some((item) => item.user.id === user?.id) ?? false;
+
+  const handleSelfLink = () => {
+    selfLinkMutation.mutate(
+      { operationId },
+      {
+        onSuccess: () => {
+          toast.success(t("administrative-operations.responsible.toast.linked"));
+          invalidateList();
+        },
+        onError: () => {
+          toast.error(t("administrative-operations.responsible.toast.error"));
+        },
+      },
+    );
+  };
 
   // SPEC-21 Fase 2 / SPEC-39 (Core): rota dedicada já devolve só staff
   // interno ativo e ainda não vinculado a esta operação — sem filtro
@@ -213,7 +237,16 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             </Button>
           ) : null}
         </Col>
-        <Col md={3} className="d-flex justify-content-end align-items-center">
+        <Col md={3} className="d-flex justify-content-end align-items-center gap-2">
+          <Button
+            variant="outline-primary"
+            size="sm"
+            disabled={isSelfLinked || selfLinkMutation.isPending}
+            onClick={handleSelfLink}
+          >
+            <i className="bi bi-person-plus me-1" aria-hidden />
+            {t("administrative-operations.responsible.selfLink")}
+          </Button>
           <Button
             variant="primary"
             size="sm"
