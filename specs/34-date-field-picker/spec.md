@@ -2,9 +2,10 @@
 
 - **ID:** SPEC-34
 - **Nome:** date-field-picker
-- **Status:** DRAFT — decisão de §3 adiada de propósito pelo usuário
-  (2026-09-15): "a ser decidido quando a spec for ser implementada". Não
-  bloqueia mais nada além da própria aprovação desta SPEC.
+- **Status:** IMPLEMENTED (2026-09-16) — ver §9 (Implementation Notes).
+- **Status anterior:** DRAFT — decisão de §3 adiada de propósito pelo
+  usuário (2026-09-15): "a ser decidido quando a spec for ser
+  implementada".
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/layouts/Form/Fields/InputDate.tsx`
 - **Contexto do pedido:** item do `TODO.md` sobre `InputDate.tsx` não ter
@@ -82,13 +83,21 @@ Opções:
 — qualquer opção escolhida precisa ser testada em pelo menos 2-3 telas
 consumidoras antes de fechar a SPEC como `IMPLEMENTED`.
 
-**Aguardando decisão do usuário** sobre qual opção seguir antes de
-detalhar requisitos funcionais e aprovar esta SPEC.
+**RESOLVIDA (2026-09-16):** opção 1 — reviver `react-datepicker`, popup
+desacoplado do texto digitado. `react-datepicker` já era dependência
+instalada (usado em `InputDateTime`/`InputTime`), sem necessidade de
+allowlist nova no `bunfig.toml`.
 
-## 4. Escopo (a definir após a decisão)
+## 4. Escopo
 
-Bloqueado até a decisão do §3. Depois de decidido, esta SPEC será
-atualizada com RF/CA específicos da opção escolhida.
+1. `DateMaskField` (o `IMaskInput` mascarado, `dd/mm/aaaa`) continua
+   exatamente como estava — nenhuma mudança na lógica de digitação.
+2. Novo popup de calendário (`react-datepicker`), acionado só por um
+   botão-ícone — nunca controla o texto digitado diretamente; ao
+   selecionar uma data no calendário, só chama `field.onChange(iso)`,
+   e o próprio `DateMaskField` sincroniza o texto exibido pelo mesmo
+   caminho já usado para reset externo do form (comparação com
+   `lastExternalValue`).
 
 ## 5. Fora do escopo
 
@@ -98,18 +107,72 @@ atualizada com RF/CA específicos da opção escolhida.
   desta SPEC, a menos que o usuário confirme que quer o mesmo tratamento
   lá (perguntar durante a decisão do §3, se relevante).
 
-## 6. Arquivos esperados (estimativa, depende da opção escolhida)
+## 6. Arquivos esperados
 
 - `src/layouts/Form/Fields/InputDate.tsx`
-- `package.json` / `bunfig.toml` (só se a opção 1 ou 3 exigir
-  adicionar/reinstalar dependência)
 
-## 7. Critérios de aceitação (a definir após a decisão)
+## 7. Critérios de aceitação
 
-Bloqueado até a decisão do §3.
+| # | Critério | Status |
+|---|----------|--------|
+| CA1 | Digitação parcial/inválida no campo mascarado não é resetada pelo calendário | PASS |
+| CA2 | Selecionar uma data no calendário atualiza o texto do campo | PASS |
+| CA3 | Botão do calendário fica visualmente ancorado no campo (não "solto" abaixo/longe dele) | PASS (2 rodadas de correção, ver §9) |
+| CA4 | `bun run check` + `bun run lint` sem regressão | PASS |
 
 ## 8. Riscos
 
-- **R1** — Reviver `react-datepicker` sem testar exaustivamente pode
-  reintroduzir o bug original (reset ao digitar) — é o risco central
-  desta SPEC, independente da opção escolhida.
+Baixo — decisão fechada, testado manualmente em tela real (Acesso →
+Novo usuário → Data de nascimento) pelo usuário.
+
+## 9. Implementation Notes (2026-09-16)
+
+**Arquivos alterados:** `src/layouts/Form/Fields/InputDate.tsx`.
+
+- Helpers novos `isoToDateObj`/`dateObjToIso` — conversão só para
+  alimentar o `selected`/`onChange` do `DatePicker`, nunca usados pelo
+  `DateMaskField` (que continua 100% inalterado na lógica de digitação).
+- `CalendarToggle` — botão (`forwardRef`, exigido pelo `customInput` do
+  `react-datepicker`) que só abre/fecha o popup, sem participar da
+  digitação.
+- `DatePicker` renderizado com `customInput={<CalendarToggle />}`,
+  `selected`/`onChange` plugados no mesmo `field` do `react-hook-form`
+  (sem estado próprio duplicado).
+
+**2 bugs encontrados e corrigidos durante o teste manual do usuário
+(tela real, `admin/access` → Novo usuário → Data de nascimento):**
+
+1. **Ícone invisível/sem área de clique.** O ícone original (decorativo,
+   preservado do código antigo) usava classes do **Font Awesome**
+   (`fa-regular fa-calendar`) — biblioteca nunca instalada/carregada
+   neste projeto (confirmado por grep: usada só nestes 3 arquivos de
+   `Fields`, sem nenhum `<link>`/import de Font Awesome em lugar
+   nenhum). Antes disso não importava (ícone só decorativo, sem
+   `pointer-events`), mas virando o único gatilho do calendário, ficou
+   sem nada visível/clicável. Trocado por **Bootstrap Icons**
+   (`bi bi-calendar3`, já carregado no projeto,
+   `src/styles/globals/index.css`) + área fixa de 28×28px no botão
+   (não depende só do glyph do ícone pra ter hit-area).
+2. **Botão "flutuando" longe do campo, embaixo e à esquerda.** Causa:
+   `react-datepicker` embrulha o `customInput` em dois `<div>`s próprios
+   (`.react-datepicker-wrapper` > `.react-datepicker__input-container`),
+   e o segundo já vem com `position: relative` fixo no CSS da própria
+   lib (`node_modules/react-datepicker/dist/react-datepicker.css`).
+   Um `position: absolute` colocado *dentro* do botão (`CalendarToggle`)
+   se ancorava nesse wrapper interno — que fica logo abaixo do campo de
+   texto (`.form-control` é `display: block`, então o próximo elemento
+   inline-block cai pra linha seguinte) e quase sem largura (`width:
+   100%` de um `inline-block` sem conteúdo em fluxo) — não no campo em
+   si. Corrigido movendo o `position: absolute` pra um `<div>` que
+   envolve o `<DatePicker>` inteiro (por fora dos wrappers da lib),
+   deixando `CalendarToggle` sem posicionamento próprio.
+3. Adicionado `padding-right: 34px` no `IMaskInput` pra reservar espaço
+   pro botão do calendário e o texto digitado nunca ficar por baixo dele
+   em colunas mais estreitas (`col: { md: 6 }`/`md: 4`).
+
+**Comandos executados e resultado:**
+- `bun run check` (`tsc --noEmit`) — PASS.
+- `bun run lint` — sem warnings/erros novos em `InputDate.tsx`.
+- Teste manual do usuário em tela real (`admin/access`, modal "Novo
+  usuário", campo "Data de nascimento") — confirmado funcionando após
+  as 2 correções acima.
