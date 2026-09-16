@@ -2,8 +2,8 @@
 
 - **ID:** SPEC-36
 - **Nome:** destuffing-screen
-- **Status:** WAITING_APPROVAL — decisões de §5 fechadas com o usuário
-  (2026-09-15).
+- **Status:** IMPLEMENTED (2026-09-16) — ver §13 (Implementation Notes).
+  Decisões de §5 fechadas com o usuário (2026-09-15).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/operations/tabs/Containers.tsx` (referência),
   nova tela/aba a definir
@@ -123,3 +123,42 @@ Namespace `administrative-operations`, sub-namespace novo `destuffing.*`,
 ## 12. Riscos
 
 - **R1** — Baixo, decisão de IA de informação já fechada (§5).
+
+## 13. Implementation Notes (2026-09-16)
+
+**RF1 (listagem):** novo `AllStuffedCargoSection` (`Containers.tsx`),
+toggle na barra de ações da aba (botão "Ver todos os fardos estufados",
+ao lado de "Vincular container", decisão §5.1: seção dentro de
+Containers, não nova aba). Usa `GetApiOperationOperationIdCargoParams`
+já existente com `Status: "Stuffed"`, paginação real via
+`Offset`/`Limit` + `ListPagination` (não o `Limit: 100` fixo que
+`CargoUnitsModal` usa — RF1 pediu considerar paginação de verdade, §7).
+
+**RF2 (desestufar da listagem):** reaproveita `CancelCargoUnitModal` tal
+qual — já era genérico sobre `cargoUnit`/`operationId`, sem depender de
+container, então não precisou de nenhuma extração pra módulo
+compartilhado (§10 previa isso "se necessário"; não foi — mesmo arquivo,
+`Containers.tsx`, já bastava).
+
+**RF3 (container de origem):** achado durante a implementação —
+`CargoUnitDTO` não devolve o container aninhado, só
+`containerOperationId`. Resolvido com uma segunda busca leve
+(`getGetApiOperationOperationIdContainerQueryOptions(operationId, {
+Limit: 200 })`) só pra montar um `Map<containerOperationId,
+identifier>` — precisa cobrir todos os vínculos da operação, não só a
+página atual da tabela principal (que usa `PAGE_SIZE`, tipicamente bem
+menor).
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Containers.tsx`
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+  — novo namespace `destuffing.*` (`toggle`/`title`/`empty`/
+  `colContainer`); as demais colunas/labels da tabela reaproveitam as
+  chaves já existentes de `stuffing.*` (`colStatus`, `colIdentified`,
+  `colGrossWeight`, `colActions`, `yes`/`no`, `cancelTitle` — nenhuma
+  duplicata criada).
+
+**Validação:** `bun run check` (tsc --noEmit) limpo. `bun run lint` sem
+findings em `Containers.tsx` nem nos dicionários tocados. CA1-CA3
+verificáveis em código; CA4 (`CargoUnitsModal` por container) não sofreu
+nenhuma alteração — continua funcionando como antes; CA5 confirmado.

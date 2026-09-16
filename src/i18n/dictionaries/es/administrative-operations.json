@@ -321,6 +321,12 @@
         "canceled": "Fardo cancelado con éxito."
       }
     },
+    "destuffing": {
+      "toggle": "Ver todos los fardos estibados",
+      "title": "Fardos estibados de la operación",
+      "empty": "No hay fardos estibados en esta operación.",
+      "colContainer": "Contenedor de origen"
+    },
     "seal": {
       "title": "Precinto",
       "activeBadge": "Precintado",

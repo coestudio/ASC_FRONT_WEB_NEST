@@ -321,6 +321,12 @@
         "canceled": "Cargo unit canceled successfully."
       }
     },
+    "destuffing": {
+      "toggle": "View all stuffed cargo units",
+      "title": "Stuffed cargo units of the operation",
+      "empty": "No stuffed cargo units in this operation.",
+      "colContainer": "Origin container"
+    },
     "seal": {
       "title": "Seal",
       "activeBadge": "Sealed",

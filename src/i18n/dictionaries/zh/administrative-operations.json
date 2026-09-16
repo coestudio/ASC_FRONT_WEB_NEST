@@ -321,6 +321,12 @@
         "canceled": "包件已取消。"
       }
     },
+    "destuffing": {
+      "toggle": "查看所有已装箱的包件",
+      "title": "该操作的已装箱包件",
+      "empty": "该操作没有已装箱的包件。",
+      "colContainer": "所在集装箱"
+    },
     "seal": {
       "title": "封条",
       "activeBadge": "已封条",

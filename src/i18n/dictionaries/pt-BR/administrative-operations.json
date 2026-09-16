@@ -321,6 +321,12 @@
         "canceled": "Fardo cancelado com sucesso."
       }
     },
+    "destuffing": {
+      "toggle": "Ver todos os fardos estufados",
+      "title": "Fardos estufados da operação",
+      "empty": "Nenhum fardo estufado nesta operação.",
+      "colContainer": "Container de origem"
+    },
     "seal": {
       "title": "Lacre",
       "activeBadge": "Lacrado",

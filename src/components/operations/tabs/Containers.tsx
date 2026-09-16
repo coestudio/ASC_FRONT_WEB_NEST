@@ -208,6 +208,10 @@ export function Containers({ operationId }: { operationId: string }) {
   const [stuffQuantityFor, setStuffQuantityFor] = useState<ContainerOperationDTO | null>(null);
   const [stuffBatchFor, setStuffBatchFor] = useState<ContainerOperationDTO | null>(null);
   const [cargoUnitsFor, setCargoUnitsFor] = useState<ContainerOperationDTO | null>(null);
+  // SPEC-36: seção/toggle "ver todos os fardos estufados" — ponto de
+  // entrada adicional além do `CargoUnitsModal` por container (que
+  // continua existindo em paralelo, decisão §5/CA4).
+  const [showAllStuffed, setShowAllStuffed] = useState(false);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
     Search: search || undefined,
@@ -313,11 +317,22 @@ export function Containers({ operationId }: { operationId: string }) {
             }}
           />
         </div>
-        <Button variant="primary" onClick={openLinkModal}>
-          <i className="bi bi-plus-lg me-1" aria-hidden />
-          {t("administrative-operations.containers.new")}
-        </Button>
+        <div className="d-flex gap-2">
+          <Button
+            variant={showAllStuffed ? "secondary" : "outline-secondary"}
+            onClick={() => setShowAllStuffed((v) => !v)}
+          >
+            <i className="bi bi-list-ul me-1" aria-hidden />
+            {t("administrative-operations.containers.destuffing.toggle")}
+          </Button>
+          <Button variant="primary" onClick={openLinkModal}>
+            <i className="bi bi-plus-lg me-1" aria-hidden />
+            {t("administrative-operations.containers.new")}
+          </Button>
+        </div>
       </div>
+
+      {showAllStuffed ? <AllStuffedCargoSection operationId={operationId} /> : null}
 
       {query.isLoading ? (
         <LoadingState variant="inline" />
@@ -1631,5 +1646,118 @@ function CancelCargoUnitModal({
         </Modal.Footer>
       </Form>
     </Modal>
+  );
+}
+
+/**
+ * SPEC-36: listagem de todos os fardos `Stuffed` da operação, independente
+ * de container — ponto de entrada adicional pra desestufar sem precisar
+ * abrir `CargoUnitsModal` container por container (que continua existindo
+ * em paralelo, CA4). Reaproveita `CancelCargoUnitModal` (já genérico sobre
+ * `cargoUnit`, sem depender de container). `GetApiOperationOperationIdCargo
+ * Params` não devolve o container aninhado — só `containerOperationId` —
+ * então o identifier de origem (RF3) vem de um join local contra a lista
+ * de vínculos da operação (`ContainerOperationDTO`, mesma fonte da tabela
+ * principal desta aba).
+ */
+function AllStuffedCargoSection({ operationId }: { operationId: string }) {
+  const t = useT();
+  const locale = useLocale();
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const [cancelTarget, setCancelTarget] = useState<CargoUnitDTO | null>(null);
+
+  const cargoQuery = useSsrSafeQuery(
+    getGetApiOperationOperationIdCargoQueryOptions(operationId, {
+      Status: "Stuffed",
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+    }),
+  );
+  // Busca leve só pra resolver `containerOperationId → identifier` — não é
+  // a listagem paginada principal da aba (que fica limitada à página
+  // atual), precisa cobrir todos os containers vinculados à operação.
+  const containersQuery = useSsrSafeQuery(
+    getGetApiOperationOperationIdContainerQueryOptions(operationId, { Limit: 200 }),
+  );
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({
+      queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
+    });
+
+  const items = cargoQuery.data?.items ?? [];
+  const total = Number(cargoQuery.data?.total ?? 0);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const identifierByContainerId = new Map(
+    (containersQuery.data?.items ?? []).map((c) => [c.id, c.container.identifier]),
+  );
+
+  return (
+    <div className="border rounded p-3 mb-3">
+      <h2 className="h6 mb-3">{t("administrative-operations.containers.destuffing.title")}</h2>
+
+      {cargoQuery.isLoading ? (
+        <LoadingState variant="inline" />
+      ) : items.length === 0 ? (
+        <div className="alert alert-secondary mb-0">
+          {t("administrative-operations.containers.destuffing.empty")}
+        </div>
+      ) : (
+        <div className="table-responsive">
+          <Table hover size="sm" className="align-middle mb-0">
+            <thead>
+              <tr>
+                <th>{t("administrative-operations.containers.stuffing.colStatus")}</th>
+                <th>{t("administrative-operations.containers.stuffing.colIdentified")}</th>
+                <th>{t("administrative-operations.containers.stuffing.colGrossWeight")}</th>
+                <th>{t("administrative-operations.containers.destuffing.colContainer")}</th>
+                <th>{t("administrative-operations.containers.stuffing.colActions")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((unit) => (
+                <tr key={unit.id}>
+                  <td>
+                    <Badge bg="secondary">
+                      {resolveCargoUnitStatusLabel(unit.status ?? "Stuffed", locale)}
+                    </Badge>
+                  </td>
+                  <td>
+                    {unit.identified
+                      ? t("administrative-operations.containers.stuffing.yes")
+                      : t("administrative-operations.containers.stuffing.no")}
+                  </td>
+                  <td>{unit.grossWeight != null ? String(unit.grossWeight) : "—"}</td>
+                  <td>{identifierByContainerId.get(unit.containerOperationId ?? "") ?? "—"}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      title={t("administrative-operations.containers.stuffing.cancelTitle")}
+                      onClick={() => setCancelTarget(unit)}
+                    >
+                      <i className="bi bi-x-circle" aria-hidden />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
+
+      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+
+      {cancelTarget ? (
+        <CancelCargoUnitModal
+          operationId={operationId}
+          cargoUnit={cancelTarget}
+          onClose={() => setCancelTarget(null)}
+          onCanceled={invalidate}
+        />
+      ) : null}
+    </div>
   );
 }
