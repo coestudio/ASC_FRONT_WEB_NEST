@@ -16,7 +16,7 @@ import {
   usePostApiOperationOperationIdResponsible,
 } from "@/api/generated/endpoints/responsible/responsible";
 import { PostApiOperationOperationIdResponsibleBody } from "@/api/generated/zod/responsible/responsible.zod";
-import type { InternalRole, ResponsibleDTO, UserType } from "@/api/generated/model";
+import type { InternalRole, ResponsibleDTO } from "@/api/generated/model";
 import { InputText, SelectAsync } from "@/layouts/Form/Fields/Index";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { usePagination } from "@/hooks/usePagination";
@@ -27,17 +27,13 @@ import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-// SPEC-21 RF2: união de UserType e InternalRole — cada opção do filtro é uma
-// chave que aparece ou em `user.type` ou em `user.roles`.
-type RoleFilterKey = UserType | InternalRole;
+// SPEC-21 RF2 (ajuste pós-implementação): só `InternalRole` — o filtro por
+// `user.type` (Internal/External) foi removido, Responsável de Operação só
+// pode ser staff interno (SPEC-39 do Core já garante isso na busca de
+// vincular), então a distinção nunca varia e não faz sentido como filtro.
+type RoleFilterKey = InternalRole;
 
-const ROLE_FILTER_OPTIONS: RoleFilterKey[] = [
-  "Internal",
-  "External",
-  "Agent",
-  "Supervisor",
-  "Laboratory",
-];
+const ROLE_FILTER_OPTIONS: RoleFilterKey[] = ["Agent", "Supervisor", "Laboratory"];
 
 type LinkFormValues = z.infer<typeof PostApiOperationOperationIdResponsibleBody>;
 
@@ -140,11 +136,10 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
     const queryText = search.trim().toLowerCase();
     return items.filter((item) => {
       // SPEC-21 RF2: sem seleção = sem filtro (mostra todos). Com seleção,
-      // OR entre as roles marcadas — cruza user.type e user.roles.
-      if (roleFilter.size > 0) {
-        const matchesType = roleFilter.has(item.user.type);
-        const matchesRole = item.user.roles.some((role) => roleFilter.has(role));
-        if (!matchesType && !matchesRole) return false;
+      // OR entre as roles marcadas (user.roles — sem user.type, ver
+      // ROLE_FILTER_OPTIONS).
+      if (roleFilter.size > 0 && !item.user.roles.some((role) => roleFilter.has(role))) {
+        return false;
       }
       if (!queryText) return true;
       const name = item.user.profile.fullName ?? item.user.userName;

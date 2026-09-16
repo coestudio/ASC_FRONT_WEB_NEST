@@ -367,3 +367,20 @@ inesperado de outras SPECs do Core). `bun run check` e `bun run lint`
 sem nenhum finding em `Responsible.tsx` nem nos dicionários tocados.
 CA1-CA6 verificáveis em código; CA7 (Fase 2) passa a ser válido agora que
 a SPEC-39 saiu do papel.
+
+**Correção pós-implementação (2026-09-16, mesmo dia, pedido do
+usuário):** RF2 original incluía `user.type` (`Internal`/`External`) nas
+opções do filtro (§9 "união de `user.type` e `user.roles`"). O usuário
+apontou que isso não faz sentido — Responsável de Operação só pode ser
+staff interno (a própria Fase 2/SPEC-39 já garante isso na busca de
+vincular), então a distinção `Internal`/`External` nunca varia na
+prática e não serve como filtro. `ROLE_FILTER_OPTIONS` reduzido pra só
+`InternalRole` (`Agent`/`Supervisor`/`Laboratory`, os 3 papéis reais —
+"Operador" citado pelo usuário corresponde ao badge `Supervisor`, rótulo
+de tradução inalterado, `roles.Supervisor` continua "Supervisor(a)" em
+pt-BR; nenhuma renomeação de rótulo foi pedida, só redução do escopo do
+filtro), `RoleFilterKey` agora é só `InternalRole` (não mais união com
+`UserType`), lógica do `useMemo` simplificada pra só `matchesRole`. O
+badge de `user.type` no card de cada linha (RF já existente da SPEC-16)
+**não muda** — só o filtro. `bun run check`/`lint` revalidados, sem
+findings novos.
