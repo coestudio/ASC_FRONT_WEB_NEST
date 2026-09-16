@@ -2,18 +2,26 @@
 
 - **ID:** SPEC-44
 - **Nome:** container-seal-investigation
-- **Status:** DRAFT — Core `specs/33-container-seal-lifecycle-gaps`
-  (`WAITING_APPROVAL`) já tem o desenho fechado (2026-09-15). As
-  perguntas de §3 abaixo já têm resposta via Core — ver §3.1 novo. Falta
-  só detalhar RF/CA de frontend, o que pode acontecer já, sem esperar a
-  implementação do Core (mas a implementação real do frontend depende do
-  endpoint/contrato do Core existir).
-- **Autor:** portal-dev-agent (rascunho)
+- **Status:** DRAFT (revisado 2026-09-16) — Core
+  `specs/33-container-seal-lifecycle-gaps` já é **`IMPLEMENTED`**
+  (2026-09-15, atualizado de `WAITING_APPROVAL`) — contrato real
+  existe agora, não é mais desenho fechado só no papel. **Atenção,
+  achado novo (2026-09-16):** Core `specs/35-container-status-derived`
+  (`IMPLEMENTED`) mexeu **na mesma tela/área** (`Containers.tsx`) — o
+  campo `sealDate` que esta investigação documenta abaixo (§2) **não
+  existe mais no Core** (`ContainerOperationModel.SealDate` foi
+  removido, redundante com `SealModel.CreatedOn`). Qualquer
+  implementação desta SPEC-44 precisa ler também a SPEC-35 antes de
+  desenhar a tela — ver §3.2 novo abaixo.
+- **Autor:** portal-dev-agent (rascunho); revisão de status 2026-09-16
+  (cruzamento com Core `specs/33` e `specs/35`)
 - **Área investigada:** `src/components/operations/tabs/Containers.tsx`
 - **Depende de (Core):** `specs/33-container-seal-lifecycle-gaps`
-  (`WAITING_APPROVAL`) — status na entidade, 1 lacre ativo por vez,
+  (`IMPLEMENTED`) — status na entidade, 1 lacre ativo por vez,
   `DELETE .../seal/{id}` vira soft-delete, consulta dedicada de estado
-  atual.
+  atual; e `specs/35-container-status-derived` (`IMPLEMENTED`) — Status
+  do Container passa a ser calculado (`Sealed` deriva do lacre ativo),
+  `SealDate` extinto.
 - **Contexto do pedido:** item do `TODO.md` pedindo para investigar a UI
   de lacre depois que o Core definir o fluxo com histórico — este
   documento é a investigação do estado atual, não uma proposta de
@@ -83,9 +91,10 @@ a definir — respondido em §3.1.
    de apagar a linha.
 3. **O que é "histórico"?** Não é evento separado — é a própria linha do
    `SealModel` preservada (nunca apagada), mais uma **consulta dedicada
-   de estado atual** (endpoint/campo novo, ex. `GET .../seal/current`, ou
-   campo `CurrentSeal` no DTO do container) pra saber o lacre ativo agora
-   sem precisar que o frontend infira da lista.
+   de estado atual**: **confirmado o endpoint real** —
+   `GET operation/{operationId}/container/{id}/seal/current` →
+   `SealDTO?`, 200 com corpo `null` quando o container está deslacrado
+   (estado válido, não é 404).
 4. **Múltiplos lacres ao longo do tempo?** Sim — um container pode ser
    lacrado/deslacrado várias vezes; só não pode ter mais de um `Active`
    simultâneo.
@@ -93,33 +102,66 @@ a definir — respondido em §3.1.
    (território de permissão não tratado ali) — perguntar ao Core/usuário
    se surgir necessidade real na implementação do frontend.
 
-## 4. Escopo (frontend, depende do endpoint do Core existir)
+## 3.2 Achado novo — impacto da Core `specs/35-container-status-derived` (2026-09-16)
 
-1. Botão "Lacrar" (chama `AddSeal`) e "Deslacrar" (chama `DELETE
-   .../seal/{id}`, agora soft-delete) substituindo o campo livre
-   `sealDate` atual.
-2. Exibir o lacre ativo atual (via a consulta dedicada que o Core vai
-   expor) em vez de um campo de data solto.
+Descoberto **depois** desta investigação original: uma SPEC do Core
+separada (`35-container-status-derived`, `IMPLEMENTED`) reformulou o
+próprio `Status` do `ContainerOperationModel`, na mesma área de tela que
+esta SPEC-44 investiga. Efeitos que esta SPEC precisa incorporar antes
+de desenhar RF/CA de implementação:
+
+- **`ContainerOperationModel.SealDate` foi removido** — o campo livre
+  que esta investigação documentou em §2 (`sealDate`, `Containers.tsx:192,
+  199,388-389`) **não existe mais do lado Core**. Não é mais "substituir
+  por um botão Lacrar/Deslacrar" (§4 item 1) — é remover o campo porque
+  ele simplesmente não tem mais coluna nenhuma por trás.
+- **`ContainerOperationStatus` agora é `Empty`/`Stuffing`/`Sealed`**
+  (3 valores, calculado — nunca mais `Stuffed`/`Shipped`). `Sealed`
+  **já é** exatamente "tem lacre ativo" — ou seja, o Status do container
+  já reflete sozinho se está lacrado, sem o frontend precisar cruzar
+  `Status` com a consulta de `seal/current` separadamente pra saber
+  "está lacrado?" (a consulta dedicada continua útil pra saber **qual**
+  lacre, não **se** está lacrado).
+- `PUT .../container/{id}` não aceita mais `status` nem `sealDate` no
+  body — se a tela de edição de container (`Containers.tsx`) hoje manda
+  esses campos no update, isso precisa sair do formulário também
+  (não é specificamente desta SPEC-44, mas é a mesma tela — coordenar
+  as duas implementações juntas, não em PRs separados que se pisam).
+
+## 4. Escopo (frontend, contrato do Core já existe — falta `just map`)
+
+1. Botão "Lacrar" (`POST .../container/{id}/seal`, `AddSeal`) e
+   "Deslacrar" (`DELETE .../seal/{id}`, soft-delete) **removendo** o
+   campo livre `sealDate` do formulário (não "substituindo por outro
+   campo de data" — o dado não existe mais, ver §3.2).
+2. Exibir o lacre ativo atual via
+   `GET .../container/{id}/seal/current`.
 3. Exibir histórico de lacres (linhas com `Status = Removed` inclusas)
    como lista cronológica, se a tela tiver espaço/necessidade — decisão
    de UI na implementação, sem impacto de negócio.
-4. Tratar o erro `SealAlreadyActive` (400, `MessageCode` novo do Core)
-   como toast, não crash — mesma convenção já usada para outros erros de
-   negócio do projeto.
+4. Tratar os erros `SealAlreadyActive`/`SealAlreadyRemoved` (400,
+   `MessageCode` do Core) como toast, não crash — mesma convenção já
+   usada para outros erros de negócio do projeto.
+5. **Novo (§3.2):** remover `status`/`sealDate` do formulário de edição
+   de container também (`ContainerOperationViewModel.Update` do Core só
+   aceita `Tara` agora) — coordenar com quem for reestruturar o form de
+   edição de container por causa da SPEC-35, mesma tela.
 
 ## 5. Fora do escopo
 
 - Qualquer mudança de código nesta rodada (aguardando `just map`
-  expor o contrato de SPEC-33 do Core implementado).
-- Desenhar o contrato do Core — já fechado em SPEC-33, território do
-  `core-spec-agent`, não desta SPEC.
+  expor o contrato de SPEC-33/SPEC-35 do Core, ambas já `IMPLEMENTED`).
+- Desenhar o contrato do Core — já fechado em SPEC-33/SPEC-35,
+  território do `core-spec-agent`, não desta SPEC.
 - Permissão de quem pode lacrar/deslacrar (§3.1.5) — a confirmar depois,
   não bloqueia o desenho de UI.
 
 ## 6. Arquivos relevantes
 
 - `src/components/operations/tabs/Containers.tsx` (campo `sealDate`
-  atual, linhas 192/199/388-389, a substituir por §4).
+  atual, linhas 192/199/388-389, a **remover** — não mais substituir por
+  §4; e o form de edição de container que hoje manda `status`/`sealDate`
+  no `PUT`, também precisa perder esses dois campos, ver §3.2).
 
 ## 7. Critérios de aceitação (implementação, após `just map`)
 

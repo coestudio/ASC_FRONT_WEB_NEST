@@ -2,14 +2,25 @@
 
 - **ID:** SPEC-42
 - **Nome:** multi-stuffing-checkbox
-- **Status:** DRAFT
-- **Autor:** portal-dev-agent (rascunho)
+- **Status:** DRAFT (revisado 2026-09-16) — **§4 já resolvido pelo Core.**
+  `specs/31-cargo-stuffing-batch-identified` já é `IMPLEMENTED`
+  (2026-09-15, mesmo dia deste rascunho) e respondeu exatamente a
+  pergunta em aberto abaixo: existe endpoint dedicado
+  `POST .../cargo/stuff/identified-batch` (opção 1 do §4, endpoint novo,
+  não N chamadas sequenciais). Ainda não apareceu em
+  `src/api/generated/**` porque `just map` não rodou depois da
+  implementação do Core — nenhuma referência a `identified-batch` no
+  client gerado hoje. Assim que `just map` rodar, RF3/RF4 deixam de
+  depender de decisão de UX de erro parcial (o backend já é atômico:
+  tudo-ou-nada, ver Core SPEC-31 §"Decisões técnicas").
+- **Autor:** portal-dev-agent (rascunho); revisão de status 2026-09-16
+  (cruzamento com Core `specs/31-cargo-stuffing-batch-identified`)
 - **Área:** nova tela/aba a definir, `src/components/operations/tabs/Containers.tsx`
   (referência dos modos existentes)
-- **Depende de (Core):** a confirmar se o endpoint atual de estufagem
-  suporta múltiplos `CargoUnit` numa única chamada, ou se precisa de um
-  endpoint novo em lote — referenciar por tema ("spec Core de estufagem
-  em lote") se o Core precisar mudar; ver §4.
+- **Depende de (Core):** ~~a confirmar se o endpoint atual de estufagem
+  suporta múltiplos `CargoUnit` numa única chamada~~ — **resolvido**:
+  `specs/31-cargo-stuffing-batch-identified` (`IMPLEMENTED`). Falta só
+  `just map` pra expor `identified-batch` no client gerado.
 - **Contexto do pedido:** item do `TODO.md` pedindo uma tela nova que
   liste todos os fardos do romaneio com checkbox, selecione vários de uma
   vez e estufe todos juntos num único container.
@@ -56,30 +67,37 @@ fardo por fardo.
    usado em outros formulários da aba Containers).
 4. Ação de estufar todos os fardos selecionados nesse container.
 
-## 4. `[NEEDS_DECISION]` — confirmar contrato de estufagem em lote
+## 4. ~~`[NEEDS_DECISION]`~~ — RESOLVIDO pelo Core (2026-09-16)
 
-Não está confirmado, sem testar contra o Core, se
-`usePostApiOperationOperationIdCargoStuffIdentified` aceita múltiplos ids
-numa única chamada ou é estritamente 1 fardo por chamada
-(`PostApiOperationOperationIdCargoStuffIdentifiedBody` — confirmar o
-shape exato do body gerado ao implementar). Duas situações possíveis:
+**Era:** não estava confirmado se o endpoint de estufagem aceitava
+múltiplos ids numa única chamada.
 
-1. **Se o endpoint já aceita array de ids** — a nova tela é só front:
-   monta uma única chamada com os ids selecionados.
-2. **Se o endpoint só aceita 1 id por chamada** — a nova tela dispara N
-   chamadas sequenciais (uma por fardo selecionado), tratando sucesso
-   parcial (alguns fardos estufados, outros com erro) — isso é uma
-   decisão de UX que precisa ser confirmada com o usuário (ex.: "parar no
-   primeiro erro" vs. "continuar e reportar quais falharam ao final") e
-   pode justificar pedir ao Core um endpoint de lote de verdade (fora do
-   escopo desta SPEC decidir sozinho — se a opção 2 for confirmada como
-   realidade, marcar como `SCOPE CONFLICT`/depender de spec Core nova
-   antes de implementar).
+**Resposta (Core `specs/31-cargo-stuffing-batch-identified`,
+`IMPLEMENTED`):** opção 1 confirmada — endpoint dedicado
+`POST operation/{operationId}/cargo/stuff/identified-batch`, payload
+`{ ContainerOperationId, Items: [{ RomaneioId, InvoiceId }] }` (um
+`InvoiceId` por item, já que os fardos selecionados podem vir de NFs
+diferentes — decisão de negócio já fechada do lado Core, §3.2 daquela
+spec). Comportamento:
 
-**Aguardando confirmação técnica do shape do endpoint (fácil de checar
-lendo o client gerado ao iniciar a implementação) e, se for o caso 2,
-decisão do usuário sobre o comportamento de erro parcial** antes de
-fechar os requisitos funcionais definitivos.
+- **Atômico, tudo-ou-nada.** Se qualquer linha do lote já estiver
+  ocupada (por outra chamada concorrente ou já estufada), a leva inteira
+  é recusada (400, `CargoUnitRomaneioLineAlreadyLinked`) e **nenhuma**
+  `CargoUnit` é criada — sem sucesso parcial. Isso **elimina** a
+  necessidade da decisão de UX de "parar no primeiro erro vs. continuar e
+  reportar" — não existe erro parcial para tratar, é sucesso total ou
+  falha total numa única resposta.
+- Retorna `CargoStuffResultDTO` (já usado pelo Modo B) com todas as
+  `CargoUnit`s criadas de uma vez.
+- Validações de payload (lote vazio, `RomaneioId` duplicado) já vêm como
+  400 com `MessageCode` dedicado do Core (`CargoUnitBatchItemsRequired`,
+  `CargoUnitBatchDuplicateRomaneioLine`) — tratar como toast, mesmo
+  padrão de outros erros de negócio do projeto.
+
+**Ainda falta:** rodar `just map` — nenhuma referência a
+`identified-batch` existe hoje em `src/api/generated/**`, confirmado por
+grep. Implementação real desta SPEC continua bloqueada só por isso, não
+mais por decisão de contrato/UX.
 
 ## 5. Fora do escopo
 
@@ -87,24 +105,31 @@ fechar os requisitos funcionais definitivos.
 - Desestufar em lote (fora do pedido, ver SPEC-36 para desestufagem
   individual).
 
-## 6. Requisitos funcionais (dependem de §4)
+## 6. Requisitos funcionais (bloqueados só por `just map`, ver §4)
 
 - **RF1** — Nova tela/seção lista fardos do romaneio disponíveis para
   estufar (não já estufados/cancelados), com checkbox de seleção
   múltipla.
 - **RF2** — Seleção de container de destino via `SelectAsync`.
-- **RF3** — Ação "Estufar selecionados" dispara a estufagem de todos os
-  fardos marcados no container escolhido — mecanismo exato (chamada
-  única vs. N chamadas) definido pela investigação do §4.
-- **RF4** — Feedback de sucesso/erro por fardo, se o mecanismo for N
-  chamadas (§4.2).
+- **RF3** — Ação "Estufar selecionados" dispara **uma única chamada**
+  (`POST .../cargo/stuff/identified-batch`) com todos os fardos
+  marcados, resolvendo o `InvoiceId` de cada item (mesmo `Invoice` já
+  vinculado a cada linha de Romaneio na listagem, ou seleção explícita se
+  a UI permitir NFs diferentes no mesmo lote).
+- **RF4** — Feedback de erro **é sempre tudo-ou-nada** (backend atômico,
+  §4): em caso de 400, exibir toast com a mensagem do `MessageCode`
+  retornado (ex. `CargoUnitBatchDuplicateRomaneioLine`,
+  `CargoUnitRomaneioLineAlreadyLinked`) — não há mais "feedback por
+  fardo" a desenhar, porque não existe sucesso parcial.
 
 ## 7. Camada de dados
 
 - Reaproveitar `getGetApiOperationOperationIdRomaneioQueryOptions`
-  (fardos do romaneio) e `usePostApiOperationOperationIdCargoStuffIdentified`
-  — confirmar exatamente o shape aceito antes de desenhar a chamada
-  final (§4).
+  (fardos do romaneio).
+- Nova chamada (após `just map`):
+  `usePostApiOperationOperationIdCargoStuffIdentifiedBatch` (nome exato a
+  confirmar no client gerado) — body
+  `{ ContainerOperationId, Items: [{ RomaneioId, InvoiceId }] }`.
 
 ## 8. UI
 
@@ -127,14 +152,20 @@ Namespace `administrative-operations` (novo sub-namespace, ex.
 
 | # | Critério |
 | --- | --- |
+| CA0 | `just map` executado, `identified-batch` presente no client gerado |
 | CA1 | Tela lista fardos do romaneio com checkbox de seleção múltipla |
 | CA2 | Selecionar container de destino via `SelectAsync` |
-| CA3 | Ação de estufar processa todos os fardos selecionados, com feedback claro de sucesso/erro (conforme mecanismo confirmado no §4) |
+| CA3 | Ação de estufar dispara 1 única chamada em lote; erro (400) exibe toast com a mensagem do `MessageCode` retornado, sem estado parcial |
 | CA4 | `bun run check` + `bun run lint` sem regressão |
 
 ## 12. Riscos
 
-- **R1** — Se o endpoint só aceitar 1 fardo por chamada (§4.2), a UX de
-  erro parcial precisa ser bem definida com o usuário antes da
-  implementação, para não deixar o estado do romaneio inconsistente sem
-  feedback claro.
+- ~~**R1** — Se o endpoint só aceitar 1 fardo por chamada, a UX de erro
+  parcial precisa ser bem definida~~ — **não se aplica mais**: o Core
+  entregou endpoint em lote atômico (§4), não há erro parcial a desenhar.
+- **R2 (novo, 2026-09-16)** — risco de processo, não de negócio: não
+  implementar antes de rodar `just map` e confirmar o nome exato do hook
+  gerado e o shape de `Items` no client — o nome usado neste documento
+  (`usePostApiOperationOperationIdCargoStuffIdentifiedBatch`) é uma
+  suposição baseada na convenção Orval do projeto, não confirmado contra
+  o client real ainda.
