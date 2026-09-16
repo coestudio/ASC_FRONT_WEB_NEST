@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-44
 - **Nome:** container-seal-investigation
-- **Status:** DRAFT (revisado 2026-09-16) — Core
+- **Status:** IMPLEMENTED (2026-09-16) — ver §9 (Implementation Notes). Core
   `specs/33-container-seal-lifecycle-gaps` já é **`IMPLEMENTED`**
   (2026-09-15, atualizado de `WAITING_APPROVAL`) — contrato real
   existe agora, não é mais desenho fechado só no papel. **Atenção,
@@ -178,3 +178,81 @@ de desenhar RF/CA de implementação:
 - **R1** — Baixo: desenho de negócio já fechado no Core (SPEC-33). Risco
   de processo residual: não implementar até `just map` expor o contrato
   real (endpoints/DTOs do SPEC-33 ainda não implementados no Core).
+
+## 9. Implementation Notes (2026-09-16)
+
+**Achado antes de implementar:** o client gerado já commitado nesta branch
+(gerado contra `dev-asc-api.alexstewart.com.br`, `.env`) **não tinha** o
+hook `useGetApiOperationOperationIdContainerIdSealCurrent` nem os tipos de
+`SealCreate`/`SealDTO`/`SealName` — a API remota de dev ainda não tinha o
+deploy de SPEC-33/SPEC-35 do Core. O Core local (`localhost:5766`) já
+tinha. Rodei `just map` de novo com um `.env.local` novo (gitignored,
+`API_URL=http://localhost:5766`) pra pegar o contrato real antes de
+implementar — sem isso, os hooks confirmados no pedido desta tarefa
+simplesmente não existiam pra importar. O diff resultante em
+`src/api/generated/**` trouxe também contrato de outras SPECs do Core já
+implementadas localmente mas não usadas aqui (occurrence tracking/SPEC-39,
+`stuff/identified-batch`/SPEC-31/42) — não implementei UI nova pra esses,
+só ficou o client gerado disponível pra quando alguém pegar aquelas SPECs.
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Containers.tsx`:
+  - Removidos `sealDate`/`status` do formulário de edição de container
+    (`updateForm`) — `status` virou só exibição (`Badge`, lido de
+    `editing.status`, calculado no Core desde SPEC-35).
+  - Novo componente `ContainerSeal` — exibe o lacre ativo via
+    `useGetApiOperationOperationIdContainerIdSealCurrent` (CA3), botão
+    "Lacrar" (abre `AddSealModal`) e "Deslacrar" (confirmação via
+    `ConfirmationModal` + `useDeleteApiOperationOperationIdContainerIdSealSealId`,
+    CA1/CA2). Montado dentro do modal de edição de container, ao lado de
+    `ContainerPhotos`.
+  - Novo componente `AddSealModal` — formulário de lacre: `userId`
+    (`SelectAsync` sobre `getApiUser`, mesmo padrão de
+    `Responsible.tsx`/`fetchUserOptions` — o Core exige o responsável
+    explícito, não necessariamente o usuário logado no portal), `name`
+    (`Select` sobre o snapshot `sealNameOptions`), `label`/`description`
+    opcionais.
+  - Erros de negócio (`SealAlreadyActive`/`SealAlreadyRemoved`) caem no
+    mesmo `catch` genérico de toast já usado no resto do arquivo — sem
+    extração de `MessageCode` específico (não é o padrão já usado em
+    nenhum outro catch deste arquivo).
+
+**Decisões onde a SPEC deixava espaço de julgamento:**
+- **Histórico de lacres (§4 item 3, nice-to-have):** não implementado. O
+  Core (`Controllers/Operation/Container/Container.Seal.cs`) só expõe
+  `AddSeal`/`RemoveSeal`/`GetCurrentSeal` — não há endpoint de listagem de
+  lacres (ativos + removidos) por container. `GET /api/container/seals` é
+  o endpoint de opções estáticas do enum `SealName`, não uma listagem de
+  registros. Sem esse endpoint não há dado pra montar a lista cronológica
+  sem inventar contrato novo no Core — registrado aqui como débito, não
+  implementado nesta rodada (a SPEC já marcava como opcional/"decisão de
+  UI na implementação, sem impacto de negócio").
+- **`userId` do lacre:** peguei o mesmo padrão já usado na aba
+  Responsáveis (busca assíncrona de usuário, não o usuário logado) — o
+  Core exige `userId` explícito e a UI não tinha indicação de que devesse
+  ser sempre o operador logado no portal (pode ser diferente de quem
+  fisicamente lacrou o container).
+- **Permissão de quem pode lacrar/deslacrar (§3.1.5):** continua em
+  aberto, como a SPEC já previa — não bloqueou a implementação.
+
+**Comandos executados e resultado:**
+- `bun run check` (`tsc --noEmit`) — PASS.
+- `bun run lint` (`eslint .`) — sem warnings/erros novos em
+  `Containers.tsx`; os 3 erros pré-existentes em `src/lib/session.server.ts`
+  (`react-hooks/rules-of-hooks` sobre `useSession` do TanStack Start, falso
+  positivo de nome) não são desta SPEC — arquivo não tocado aqui.
+
+**Critérios de aceitação:**
+
+| # | Critério | Status |
+|---|----------|--------|
+| CA1 | Botão "Lacrar" chama `AddSeal`; erro de negócio vira toast | PASS |
+| CA2 | Botão "Deslacrar" chama `DELETE .../seal/{id}` (soft-delete) | PASS |
+| CA3 | Lacre ativo atual é exibido via a consulta dedicada de estado atual do Core, não inferido de uma lista | PASS |
+| CA4 | Campo livre `sealDate` é removido do form de edição de container | PASS |
+| CA5 | `bun run check` + `bun run lint` sem regressão | PASS |
+
+**Limitações conhecidas / débito:**
+- Lista de histórico de lacres não implementada (falta endpoint de
+  listagem no Core, ver acima) — se vier a importar, é uma SPEC nova no
+  Core primeiro.

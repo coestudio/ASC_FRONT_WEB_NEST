@@ -192,7 +192,8 @@
       "invoice": "Nota Fiscal",
       "reports": "Relatórios",
       "responsible": "Responsáveis",
-      "log": "Log"
+      "log": "Log",
+      "occurrences": "Ocorrências"
     },
     "statusLabel": "Status da operação",
     "statusUpdated": "Status da operação atualizado com sucesso.",
@@ -217,7 +218,29 @@
   "log": {
     "description": "Histórico de eventos registrados nesta operação.",
     "byUser": "por {user}",
-    "emptyState": "Nenhum evento registrado."
+    "emptyState": "Nenhum evento registrado.",
+    "loadError": "Não foi possível carregar o log da operação.",
+    "actions": {
+      "RomaneioImported": "Romaneio importado",
+      "InvoiceCreated": "Nota fiscal criada",
+      "InvoiceUpdated": "Nota fiscal atualizada",
+      "InvoiceConfirmed": "Nota fiscal confirmada",
+      "InvoiceCanceled": "Nota fiscal cancelada",
+      "InvoiceAutoCreated": "Nota fiscal criada automaticamente",
+      "CargoUnitStuffed": "Fardo estufado",
+      "CargoUnitCanceled": "Fardo cancelado",
+      "ContainerLinked": "Container vinculado",
+      "ContainerStatusChanged": "Status do container alterado",
+      "ContainerSealAdded": "Lacre do container registrado",
+      "DocumentCreated": "Documento criado"
+    },
+    "entityTypes": {
+      "Romaneio": "Romaneio",
+      "Invoice": "Nota fiscal",
+      "CargoUnit": "Fardo",
+      "Container": "Container",
+      "Document": "Documento"
+    }
   },
   "containers": {
     "new": "Vincular container",
@@ -232,8 +255,7 @@
     "form": {
       "container": "Container",
       "tara": "Tara",
-      "status": "Status do vínculo",
-      "sealDate": "Data do lacre"
+      "status": "Status"
     },
     "photosTitle": "Fotos do container",
     "photosAdd": "Fotos",
@@ -261,7 +283,8 @@
       "form": {
         "invoice": "Nota fiscal",
         "romaneio": "Fardo do romaneio",
-        "quantity": "Quantidade"
+        "quantity": "Quantidade",
+        "lote": "Lote"
       },
       "resultIdentifiedTitle": "{count} fardo(s) estufado(s): identificadores abaixo.",
       "resultManualTitle": "{count} unidade(s) anônima(s) estufada(s) (peso bruto médio: {weight} kg).",
@@ -280,6 +303,25 @@
         "identifiedSuccess": "Fardo estufado com sucesso.",
         "quantitySuccess": "Estufagem concluída com sucesso.",
         "canceled": "Fardo cancelado com sucesso."
+      }
+    },
+    "seal": {
+      "title": "Lacre",
+      "activeBadge": "Lacrado",
+      "none": "Nenhum lacre ativo.",
+      "sealButton": "Lacrar",
+      "unsealButton": "Deslacrar",
+      "confirmUnsealTitle": "Deslacrar container",
+      "confirmUnsealMessage": "Remover o lacre ativo deste container?",
+      "form": {
+        "user": "Responsável pelo lacre",
+        "name": "Tipo de lacre",
+        "label": "Identificação do lacre",
+        "description": "Descrição"
+      },
+      "toast": {
+        "sealed": "Container lacrado com sucesso.",
+        "unsealed": "Lacre removido com sucesso."
       }
     }
   },
@@ -355,6 +397,50 @@
       "created": "Nota fiscal criada com sucesso.",
       "confirmed": "Nota fiscal confirmada com sucesso.",
       "canceled": "Nota fiscal cancelada com sucesso.",
+      "error": "Não foi possível concluir a ação. Tente novamente."
+    },
+    "subtabs": {
+      "listing": "Listagem",
+      "comparisonInvoice": "Comparação NF",
+      "comparisonLot": "Comparação Lotes"
+    },
+    "comparison": {
+      "colNumber": "Nota fiscal",
+      "colLote": "Lote",
+      "noLote": "Sem lote",
+      "colDeclaredItemsCount": "Fardos declarados",
+      "colDeclaredGrossWeight": "Peso bruto declarado (kg)",
+      "colDeclaredNetWeight": "Peso líquido declarado (kg)",
+      "colStuffedItemsCount": "Fardos estufados",
+      "colStuffedGrossWeight": "Peso bruto estufado (kg)",
+      "colStuffedNetWeight": "Peso líquido estufado (kg)",
+      "loadErrorInvoice": "Não foi possível carregar a comparação por nota fiscal.",
+      "loadErrorLot": "Não foi possível carregar a comparação por lote.",
+      "emptyInvoice": "Nenhuma nota fiscal para comparar.",
+      "emptyLot": "Nenhum lote para comparar."
+    }
+  },
+  "occurrences": {
+    "description": "Ocorrências registradas manualmente nesta operação.",
+    "new": "Nova ocorrência",
+    "newTitle": "Nova ocorrência",
+    "editTitle": "Editar ocorrência",
+    "loadError": "Não foi possível carregar as ocorrências da operação.",
+    "empty": "Nenhuma ocorrência registrada para esta operação.",
+    "colTitle": "Título",
+    "colNote": "Nota",
+    "colPhotos": "Fotos",
+    "colCreatedAt": "Criado em",
+    "colActions": "Ações",
+    "form": {
+      "title": "Título",
+      "note": "Nota",
+      "photos": "Fotos"
+    },
+    "photosEditNote": "Fotos só podem ser adicionadas na criação da ocorrência.",
+    "toast": {
+      "created": "Ocorrência registrada com sucesso.",
+      "updated": "Ocorrência atualizada com sucesso.",
       "error": "Não foi possível concluir a ação. Tente novamente."
     }
   }

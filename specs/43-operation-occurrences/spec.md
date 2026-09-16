@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-43
 - **Nome:** operation-occurrences
-- **Status:** DRAFT (revisado 2026-09-16) — **§6 e §7 já resolvidos pelo
+- **Status:** IMPLEMENTED (2026-09-16). Ver §15 "Implementation Notes".
+- **Status anterior:** DRAFT (revisado 2026-09-16) — **§6 e §7 já resolvidos pelo
   Core.** `specs/32-operation-occurrences` já é `IMPLEMENTED`
   (2026-09-16): CRUD completo (Create/GetAll/GetById/Update — **sem
   Delete**), qualquer usuário Internal pode criar (sem role específico),
@@ -176,3 +177,45 @@ do Core for conhecido.
 - **R1** — Maior risco é confundir esta re-proposta com a SPEC-06
   cancelada e herdar requisitos não confirmados dela — esta SPEC
   deliberadamente não reaproveita nada da SPEC-06 além do tema geral.
+
+## 15. Implementation Notes (2026-09-16)
+
+- **§5 `[NEEDS_DECISION]` fechada:** aba própria "Ocorrências", paralela a
+  Log — a recomendação do documento foi adotada sem mudança. Registrada em
+  `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
+  (`Tab` ganhou o valor `"occurrences"`, oitava aba do shell, sem sub-rota,
+  mesmo padrão de estado local das outras 7).
+- **Arquivos tocados/criados:**
+  `src/components/operations/tabs/Occurrences.tsx` (novo — listagem
+  paginada, modal de criação multipart com `InputPhotoMulti`, modal de
+  edição só título/nota, fotos existentes mostradas read-only no modal de
+  edição); `src/lib/validation/operation-occurrence.ts` (novo — schema de
+  criação remapeado de `PostApiOperationOperationIdOccurrenceBody`,
+  `Title`/`Note` desembrulhados de `.optional()` via `.unwrap()`, mesmo
+  precedente de `operation-container.ts`, regra 2 do AGENTS.md); rota do
+  shell (ver acima); `src/layouts/AppShell/nav/administrativo.ts` (RF1,
+  entrada `administrativoOccurrences` removida, junto com
+  `administrativoLog` da SPEC-39, num único pass no arquivo);
+  `src/i18n/dictionaries/{pt-BR,en,es,zh}/navigation.json` (chave
+  `administrativoOccurrences` removida, confirmado por grep que não tinha
+  outro uso); `src/i18n/dictionaries/{pt-BR,en,es,zh}
+  /administrative-operations.json` (namespace novo `occurrences.*` + chave
+  `shell.tabs.occurrences`).
+- **`just map`:** mesma situação/mesma decisão documentada na SPEC-39 §11 —
+  rodado nesta sessão contra o Core local, mas só os arquivos gerados
+  aditivos de `operation/{operationId}/occurrence` foram mantidos (resto do
+  diff, não relacionado, revertido pra não puxar a regressão de
+  Containers.tsx/SPEC-44 pra dentro desta entrega).
+- **Débito conhecido, documentado e aceito (não é bug desta implementação):**
+  sem `DELETE` (não existe no Core, §4); fotos só entram no `Create`, não é
+  possível adicionar/remover foto de uma ocorrência já existente via
+  `Edit` (limitação do Core, `PutApiOperationOperationIdOccurrenceIdBody`
+  só tem `title`/`note`) — a tela mostra as fotos existentes como
+  read-only no modal de edição, com uma nota explicando a limitação
+  (`occurrences.photosEditNote`).
+- **Gate de criação:** nenhum `useCan` adicional além do guard de área já
+  aplicado pela rota — qualquer usuário Internal autenticado vê o botão
+  "Nova ocorrência" (CA3), conforme §6.
+- **`bun run check`/`bun run lint`:** ambos passam sem erro novo (ver
+  detalhe dos 3 erros pré-existentes e não relacionados em
+  `session.server.ts`, SPEC-39 §11).

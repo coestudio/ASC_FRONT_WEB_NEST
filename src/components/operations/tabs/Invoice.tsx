@@ -2,23 +2,30 @@ import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Form, Nav, Spinner, Tab, Table } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
+  getGetApiOperationOperationIdInvoiceComparisonQueryOptions,
   getGetApiOperationOperationIdInvoiceQueryKey,
   getGetApiOperationOperationIdInvoiceQueryOptions,
   usePostApiOperationOperationIdInvoice,
   usePostApiOperationOperationIdInvoiceIdCancel,
   usePostApiOperationOperationIdInvoiceIdConfirm,
 } from "@/api/generated/endpoints/invoice/invoice";
+import { getGetApiOperationOperationIdRomaneioComparisonByLoteQueryOptions } from "@/api/generated/endpoints/romaneio/romaneio";
 import {
   PostApiOperationOperationIdInvoiceBody,
   PostApiOperationOperationIdInvoiceIdConfirmBody,
 } from "@/api/generated/zod/invoice/invoice.zod";
-import type { FileDTO, InvoiceDTO } from "@/api/generated/model";
+import type {
+  FileDTO,
+  InvoiceComparisonDTO,
+  InvoiceDTO,
+  RomaneioLoteComparisonDTO,
+} from "@/api/generated/model";
 import { resolveInvoiceSourceLabel } from "@/api/generated/static/invoiceSourceOptions";
 import { resolveInvoiceStatusLabel } from "@/api/generated/static/invoiceStatusOptions";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -55,14 +62,58 @@ function sourceBadgeVariant(source: InvoiceDTO["source"]): string {
 }
 
 /**
- * Aba Nota Fiscal (SPEC-07-10) — lista paginada das `Invoice`s da operação
- * (`invoice` gerado), criação manual com upload real de N arquivos numa
- * única chamada multipart (`Files: (Blob | File)[]`, D-NEW resolvida no
- * Core) e ações Confirmar/Cancelar restritas a `Status=Pending` +
- * `Source=Manual`. Sem rota própria (D2 revertida em SPEC-07-02 §13) —
- * montada pelo shell via estado local.
+ * Aba Nota Fiscal (SPEC-07-10, SPEC-41) — 3 sub-abas via
+ * `Nav`/`Tab.Container` do React-Bootstrap (`variant="pills"`, pra não
+ * conflitar visualmente com a `Nav variant="tabs"` do shell de Operação
+ * um nível acima — RF1):
+ *  - "Listagem" — CRUD de NF (comportamento idêntico ao pré-SPEC-41, RF2).
+ *  - "Comparação NF" — leitura pura, declarado vs. estufado por NF (RF3).
+ *  - "Comparação Lotes" — idem, por lote (RF4).
+ * Sem rota própria (D2 revertida em SPEC-07-02 §13) — montada pelo shell
+ * via estado local.
  */
 export function Invoice({ operationId }: { operationId: string }) {
+  const t = useT();
+
+  return (
+    <Tab.Container defaultActiveKey="listing" id={`invoice-subtabs-${operationId}`}>
+      <Nav variant="pills" className="mb-3">
+        <Nav.Item>
+          <Nav.Link eventKey="listing">
+            {t("administrative-operations.invoice.subtabs.listing")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="comparisonInvoice">
+            {t("administrative-operations.invoice.subtabs.comparisonInvoice")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="comparisonLot">
+            {t("administrative-operations.invoice.subtabs.comparisonLot")}
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+      <Tab.Content>
+        <Tab.Pane eventKey="listing">
+          <InvoiceListing operationId={operationId} />
+        </Tab.Pane>
+        <Tab.Pane eventKey="comparisonInvoice">
+          <InvoiceComparisonTab operationId={operationId} />
+        </Tab.Pane>
+        <Tab.Pane eventKey="comparisonLot">
+          <InvoiceLoteComparisonTab operationId={operationId} />
+        </Tab.Pane>
+      </Tab.Content>
+    </Tab.Container>
+  );
+}
+
+/**
+ * Sub-aba "Listagem" (RF2) — conteúdo original de `Invoice.tsx` antes da
+ * SPEC-41, movido tal e qual (CRUD de NF, sem mudança de comportamento).
+ */
+function InvoiceListing({ operationId }: { operationId: string }) {
   const t = useT();
   const locale = useLocale();
   const queryClient = useQueryClient();
@@ -518,5 +569,225 @@ function StatusChangeModal({
         </Modal.Footer>
       </Form>
     </Modal>
+  );
+}
+
+/** Converte o valor numérico (às vezes string, por causa do `pattern` do
+ * Zod gerado) pra `number`, tratando ausência como 0 — mesma convenção dos
+ * DTOs de comparação (`Stuffed* = 0` quando nada foi estufado ainda). */
+function toNumber(value?: number | string | null): number {
+  if (value == null || value === "") return 0;
+  return Number(value);
+}
+
+/** Badge de divergência (RF3/RF4, §8) — verde quando estufado bate com o
+ * declarado, vermelho quando diverge. */
+function DivergenceBadge({
+  declared,
+  stuffed,
+  format,
+}: {
+  declared?: number | string | null;
+  stuffed?: number | string | null;
+  format: (value?: number | string | null) => string;
+}) {
+  const matches = toNumber(declared) === toNumber(stuffed);
+  return <Badge bg={matches ? "success" : "danger"}>{format(stuffed)}</Badge>;
+}
+
+/**
+ * Sub-aba "Comparação NF" (RF3) — leitura pura de
+ * `invoice/comparison`, uma linha por `Invoice` da operação, comparando as
+ * 3 métricas declaradas na NF contra o que já foi estufado (`CargoUnit`).
+ * Sem ação corretiva aqui (fora do escopo, SPEC §6).
+ */
+function InvoiceComparisonTab({ operationId }: { operationId: string }) {
+  const t = useT();
+  const locale = useLocale();
+  const query = useSsrSafeQuery(
+    getGetApiOperationOperationIdInvoiceComparisonQueryOptions(operationId),
+  );
+
+  const formatQty = (value?: number | string | null) => toNumber(value).toLocaleString(locale);
+  const formatWeight = (value?: number | string | null) =>
+    toNumber(value).toLocaleString(locale, { minimumFractionDigits: 2 });
+
+  const items: InvoiceComparisonDTO[] = query.data ?? [];
+
+  if (query.isLoading) return <LoadingState variant="inline" />;
+
+  if (query.isError) {
+    return (
+      <div className="alert alert-danger d-flex align-items-center justify-content-between gap-3">
+        <span>{t("administrative-operations.invoice.comparison.loadErrorInvoice")}</span>
+        <button
+          type="button"
+          className="btn btn-outline-danger btn-sm"
+          onClick={() => query.refetch()}
+        >
+          {t("administrative-operations.shell.retry")}
+        </button>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="alert alert-secondary">
+        {t("administrative-operations.invoice.comparison.emptyInvoice")}
+      </div>
+    );
+  }
+
+  return (
+    <div className="table-responsive">
+      <Table hover className="align-middle mb-0">
+        <thead>
+          <tr>
+            <th>{t("administrative-operations.invoice.comparison.colNumber")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colDeclaredItemsCount")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colDeclaredGrossWeight")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colDeclaredNetWeight")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colStuffedItemsCount")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colStuffedGrossWeight")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colStuffedNetWeight")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item) => (
+            <tr key={item.invoiceId}>
+              <td>{item.number || "—"}</td>
+              <td>{formatQty(item.declaredItemsCount)}</td>
+              <td>{formatWeight(item.declaredGrossWeight)}</td>
+              <td>{formatWeight(item.declaredNetWeight)}</td>
+              <td>
+                <DivergenceBadge
+                  declared={item.declaredItemsCount}
+                  stuffed={item.stuffedItemsCount}
+                  format={formatQty}
+                />
+              </td>
+              <td>
+                <DivergenceBadge
+                  declared={item.declaredGrossWeight}
+                  stuffed={item.stuffedGrossWeight}
+                  format={formatWeight}
+                />
+              </td>
+              <td>
+                <DivergenceBadge
+                  declared={item.declaredNetWeight}
+                  stuffed={item.stuffedNetWeight}
+                  format={formatWeight}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
+  );
+}
+
+/**
+ * Sub-aba "Comparação Lotes" (RF4) — leitura pura de
+ * `romaneio/comparison-by-lote`, uma linha por lote. `Lote: null` é um item
+ * especial (`CargoUnit`s estufadas sem lote resolvível, dado histórico
+ * anterior à SPEC-25 do Core) — exibido com o rótulo "Sem lote" em vez de
+ * tentar renderizar `null` cru (§4 da SPEC).
+ */
+function InvoiceLoteComparisonTab({ operationId }: { operationId: string }) {
+  const t = useT();
+  const locale = useLocale();
+  const query = useSsrSafeQuery(
+    getGetApiOperationOperationIdRomaneioComparisonByLoteQueryOptions(operationId),
+  );
+
+  const formatQty = (value?: number | string | null) => toNumber(value).toLocaleString(locale);
+  const formatWeight = (value?: number | string | null) =>
+    toNumber(value).toLocaleString(locale, { minimumFractionDigits: 2 });
+
+  const items: RomaneioLoteComparisonDTO[] = query.data ?? [];
+
+  if (query.isLoading) return <LoadingState variant="inline" />;
+
+  if (query.isError) {
+    return (
+      <div className="alert alert-danger d-flex align-items-center justify-content-between gap-3">
+        <span>{t("administrative-operations.invoice.comparison.loadErrorLot")}</span>
+        <button
+          type="button"
+          className="btn btn-outline-danger btn-sm"
+          onClick={() => query.refetch()}
+        >
+          {t("administrative-operations.shell.retry")}
+        </button>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="alert alert-secondary">
+        {t("administrative-operations.invoice.comparison.emptyLot")}
+      </div>
+    );
+  }
+
+  return (
+    <div className="table-responsive">
+      <Table hover className="align-middle mb-0">
+        <thead>
+          <tr>
+            <th>{t("administrative-operations.invoice.comparison.colLote")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colDeclaredItemsCount")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colDeclaredGrossWeight")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colDeclaredNetWeight")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colStuffedItemsCount")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colStuffedGrossWeight")}</th>
+            <th>{t("administrative-operations.invoice.comparison.colStuffedNetWeight")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item, index) => (
+            <tr key={item.lote ?? `sem-lote-${index}`}>
+              <td>
+                {item.lote ? (
+                  item.lote
+                ) : (
+                  <Badge bg="secondary">
+                    {t("administrative-operations.invoice.comparison.noLote")}
+                  </Badge>
+                )}
+              </td>
+              <td>{formatQty(item.declaredItemsCount)}</td>
+              <td>{formatWeight(item.declaredGrossWeight)}</td>
+              <td>{formatWeight(item.declaredNetWeight)}</td>
+              <td>
+                <DivergenceBadge
+                  declared={item.declaredItemsCount}
+                  stuffed={item.stuffedItemsCount}
+                  format={formatQty}
+                />
+              </td>
+              <td>
+                <DivergenceBadge
+                  declared={item.declaredGrossWeight}
+                  stuffed={item.stuffedGrossWeight}
+                  format={formatWeight}
+                />
+              </td>
+              <td>
+                <DivergenceBadge
+                  declared={item.declaredNetWeight}
+                  stuffed={item.stuffedNetWeight}
+                  format={formatWeight}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,16 +13,22 @@ import { getApiContainer } from "@/api/generated/endpoints/container/container";
 import {
   getGetApiOperationOperationIdContainerIdQueryKey,
   getGetApiOperationOperationIdContainerIdQueryOptions,
+  getGetApiOperationOperationIdContainerIdSealCurrentQueryKey,
+  getGetApiOperationOperationIdContainerIdSealCurrentQueryOptions,
   getGetApiOperationOperationIdContainerQueryKey,
   getGetApiOperationOperationIdContainerQueryOptions,
   useDeleteApiOperationOperationIdContainerId,
   useDeleteApiOperationOperationIdContainerIdPhotoPhotoId,
+  useDeleteApiOperationOperationIdContainerIdSealSealId,
   usePostApiOperationOperationIdContainer,
   usePostApiOperationOperationIdContainerIdPhoto,
+  usePostApiOperationOperationIdContainerIdSeal,
   usePutApiOperationOperationIdContainerId,
 } from "@/api/generated/endpoints/operation-container/operation-container";
+import { getApiUser } from "@/api/generated/endpoints/user/user";
 import {
   PostApiOperationOperationIdContainerBody,
+  PostApiOperationOperationIdContainerIdSealBody,
   PutApiOperationOperationIdContainerIdBody,
 } from "@/api/generated/zod/operation-container/operation-container.zod";
 import {
@@ -39,16 +45,13 @@ import {
 } from "@/api/generated/zod/cargo-unit/cargo-unit.zod";
 import { getApiOperationOperationIdInvoice } from "@/api/generated/endpoints/invoice/invoice";
 import { getApiOperationOperationIdRomaneio } from "@/api/generated/endpoints/romaneio/romaneio";
-import type { CargoUnitDTO, ContainerOperationDTO } from "@/api/generated/model";
-import {
-  containerOperationStatusOptions,
-  resolveContainerOperationStatusLabel,
-} from "@/api/generated/static/containerOperationStatusOptions";
+import type { CargoUnitDTO, ContainerOperationDTO, SealDTO } from "@/api/generated/model";
+import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
 import { resolveCargoUnitStatusLabel } from "@/api/generated/static/cargoUnitStatusOptions";
+import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
-  InputDate,
   InputNumber,
   InputPhotoMulti,
   InputText,
@@ -73,6 +76,7 @@ type StuffIdentifiedFormValues = z.infer<
 >;
 type StuffQuantityFormValues = z.infer<typeof PostApiOperationOperationIdCargoStuffQuantityBody>;
 type CancelCargoFormValues = z.infer<typeof PostApiOperationOperationIdCargoIdCancelBody>;
+type SealFormValues = z.infer<typeof PostApiOperationOperationIdContainerIdSealBody>;
 
 /**
  * Normaliza `""` pra `null` (mesma causa raiz documentada em
@@ -113,9 +117,10 @@ function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Reso
 /**
  * Aba Containers (SPEC-07-05) — vínculo de containers à operação: lista
  * paginada (`operation-container` gerado), criação do vínculo (busca de
- * container existente + tara), edição (tara/data do lacre/status via
- * `Select`) e fotos por container (`InputPhotoMulti`). Sem rota própria
- * (D2 revertida em SPEC-07-02 §13) — montada pelo shell via estado local.
+ * container existente + tara), edição (só `tara` — `status` é sempre
+ * calculado no Core desde SPEC-35, só exibição) e fotos por container
+ * (`InputPhotoMulti`). Sem rota própria (D2 revertida em SPEC-07-02 §13) —
+ * montada pelo shell via estado local.
  *
  * SPEC-07-11 estende a lista com a ação de **estufagem** (criação de
  * `CargoUnit`): dois fluxos separados por botão (D1 fechada, não modal
@@ -123,7 +128,11 @@ function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Reso
  * `stuff/identified`) e "Estufar por quantidade" (Modo B,
  * `stuff/quantity`) — mais um terceiro botão pra ver/cancelar as
  * `CargoUnit`s já estufadas de um container (`CargoUnit` nunca é editável,
- * só criada ou cancelada com motivo, §3.4).
+ * só criada ou cancelada com motivo, §3.4). SPEC-46 acrescenta `lote`
+ * obrigatório nos dois modos (Core `specs/25-cargo-stuffing-lote-scope`).
+ *
+ * SPEC-44 substitui o antigo campo livre `sealDate` (extinto no Core,
+ * SPEC-35) por ação dedicada de lacre/deslacre — ver `ContainerSeal` abaixo.
  */
 export function Containers({ operationId }: { operationId: string }) {
   const t = useT();
@@ -189,15 +198,13 @@ export function Containers({ operationId }: { operationId: string }) {
 
   const updateForm = useForm<UpdateFormValues>({
     resolver: withEmptyStringsAsNull(PutApiOperationOperationIdContainerIdBody),
-    defaultValues: { tara: "", sealDate: "", status: "Empty" },
+    defaultValues: { tara: "" },
   });
 
   useEffect(() => {
     if (!editing) return;
     updateForm.reset({
       tara: editing.tara != null ? String(editing.tara) : "",
-      sealDate: editing.sealDate ?? "",
-      status: editing.status,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
@@ -372,21 +379,20 @@ export function Containers({ operationId }: { operationId: string }) {
           </Modal.Header>
           <Form noValidate onSubmit={updateForm.handleSubmit(handleUpdateSubmit)}>
             <Modal.Body>
-              <Select<UpdateFormValues>
-                methods={updateForm}
-                fieldName="status"
-                label={t("administrative-operations.containers.form.status")}
-                enumOptions={containerOperationStatusOptions}
-              />
+              {/* Status é sempre calculado no Core (SPEC-35) — só exibição,
+                  nunca mais um campo de formulário submetido no PUT. */}
+              <div className="mb-3">
+                <span className="text-body-secondary small d-block mb-1">
+                  {t("administrative-operations.containers.form.status")}
+                </span>
+                <Badge bg="secondary">
+                  {resolveContainerOperationStatusLabel(editing.status, locale)}
+                </Badge>
+              </div>
               <InputText<UpdateFormValues>
                 methods={updateForm}
                 fieldName="tara"
                 label={t("administrative-operations.containers.form.tara")}
-              />
-              <InputDate<UpdateFormValues>
-                methods={updateForm}
-                fieldName="sealDate"
-                label={t("administrative-operations.containers.form.sealDate")}
               />
             </Modal.Body>
             <Modal.Footer>
@@ -402,7 +408,12 @@ export function Containers({ operationId }: { operationId: string }) {
             </Modal.Footer>
           </Form>
 
-          <div className="px-4 pb-4">
+          <div className="px-4 pb-4 d-flex flex-column gap-4">
+            <ContainerSeal
+              operationId={operationId}
+              containerLinkId={editing.id}
+              onChanged={invalidateList}
+            />
             <ContainerPhotos
               operationId={operationId}
               containerLinkId={editing.id}
@@ -451,6 +462,224 @@ export function Containers({ operationId }: { operationId: string }) {
         />
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Lacre do container (SPEC-44) — substitui o antigo campo livre `sealDate`
+ * (extinto no Core, SPEC-35) por ação dedicada: "Lacrar" (`AddSeal`) e
+ * "Deslacrar" (`DELETE .../seal/{id}`, soft-delete no Core). O lacre ativo
+ * atual vem sempre da consulta dedicada (`seal/current`, CA3 da SPEC-44) —
+ * nunca inferido de uma lista. Sem lista de histórico (nice-to-have do §4
+ * item 3 da SPEC-44): o Core não expõe hoje um endpoint de listagem de
+ * lacres por container (só o lacre ativo), então não há dado pra montar
+ * essa lista sem inventar um novo endpoint — fora do escopo desta
+ * implementação, registrado como débito no spec.md.
+ */
+function ContainerSeal({
+  operationId,
+  containerLinkId,
+  onChanged,
+}: {
+  operationId: string;
+  containerLinkId: string;
+  onChanged: () => void;
+}) {
+  const t = useT();
+  const locale = useLocale();
+  const queryClient = useQueryClient();
+  const [addSealOpen, setAddSealOpen] = useState(false);
+  const [confirmUnseal, setConfirmUnseal] = useState(false);
+
+  const currentSealQuery = useSsrSafeQuery(
+    getGetApiOperationOperationIdContainerIdSealCurrentQueryOptions(operationId, containerLinkId),
+  );
+  const removeSealMutation = useDeleteApiOperationOperationIdContainerIdSealSealId();
+
+  // Contrato do Core: 200 com corpo `null` quando não há lacre ativo — não é
+  // erro, é o estado "deslacrado" (SPEC-33/44). O tipo gerado não reflete a
+  // nulabilidade do corpo (limitação do Orval sobre `SealDTO?`), por isso o
+  // cast aqui.
+  const currentSeal = (currentSealQuery.data ?? null) as SealDTO | null;
+
+  const invalidateSeal = () => {
+    queryClient.invalidateQueries({
+      queryKey: getGetApiOperationOperationIdContainerIdSealCurrentQueryKey(
+        operationId,
+        containerLinkId,
+      ),
+    });
+    onChanged();
+  };
+
+  const handleUnseal = async () => {
+    if (!currentSeal) return;
+    try {
+      await removeSealMutation.mutateAsync({
+        operationId,
+        id: containerLinkId,
+        sealId: currentSeal.id,
+      });
+      toast.success(t("administrative-operations.containers.seal.toast.unsealed"));
+      invalidateSeal();
+    } catch {
+      toast.error(t("administrative-operations.containers.toast.error"));
+    } finally {
+      setConfirmUnseal(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="h6">{t("administrative-operations.containers.seal.title")}</h2>
+
+      {currentSealQuery.isLoading ? (
+        <LoadingState variant="inline" />
+      ) : currentSeal ? (
+        <div className="d-flex align-items-center flex-wrap gap-2 mb-2">
+          <Badge bg="success">{t("administrative-operations.containers.seal.activeBadge")}</Badge>
+          <span>
+            {currentSeal.name
+              ? sealNameOptions.find((opt) => opt.key === currentSeal.name)?.name[locale]
+              : null}
+            {currentSeal.label ? ` — ${currentSeal.label}` : ""}
+          </span>
+          <Button
+            size="sm"
+            variant="outline-danger"
+            onClick={() => setConfirmUnseal(true)}
+            disabled={removeSealMutation.isPending}
+          >
+            {t("administrative-operations.containers.seal.unsealButton")}
+          </Button>
+        </div>
+      ) : (
+        <div className="d-flex align-items-center flex-wrap gap-2 mb-2">
+          <span className="text-body-secondary">
+            {t("administrative-operations.containers.seal.none")}
+          </span>
+          <Button size="sm" variant="outline-primary" onClick={() => setAddSealOpen(true)}>
+            {t("administrative-operations.containers.seal.sealButton")}
+          </Button>
+        </div>
+      )}
+
+      {addSealOpen ? (
+        <AddSealModal
+          operationId={operationId}
+          containerLinkId={containerLinkId}
+          onClose={() => setAddSealOpen(false)}
+          onSealed={() => {
+            invalidateSeal();
+            setAddSealOpen(false);
+          }}
+        />
+      ) : null}
+
+      {confirmUnseal ? (
+        <ConfirmationModal
+          show
+          title={t("administrative-operations.containers.seal.confirmUnsealTitle")}
+          message={t("administrative-operations.containers.seal.confirmUnsealMessage")}
+          variant="danger"
+          onConfirm={handleUnseal}
+          onCancel={() => setConfirmUnseal(false)}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * Formulário de "Lacrar" (SPEC-44 CA1) — `SealCreate` exige `userId`
+ * explícito (quem lacrou fisicamente, não necessariamente quem está logado
+ * no portal): mesma busca assíncrona de usuário já usada na aba
+ * Responsáveis (`getApiUser`, `fetchUserOptions`). `name` vem do enum
+ * `SealName` (snapshot estático); `label`/`description` são opcionais.
+ */
+function AddSealModal({
+  operationId,
+  containerLinkId,
+  onClose,
+  onSealed,
+}: {
+  operationId: string;
+  containerLinkId: string;
+  onClose: () => void;
+  onSealed: () => void;
+}) {
+  const t = useT();
+  const mutation = usePostApiOperationOperationIdContainerIdSeal();
+
+  const methods = useForm<SealFormValues>({
+    resolver: withEmptyStringsAsNull(PostApiOperationOperationIdContainerIdSealBody),
+    defaultValues: { userId: "", name: "NONE", label: "", description: "" },
+  });
+
+  const fetchUserOptions = (search: string) =>
+    getApiUser({ Search: search, Limit: 20 }).then((res) =>
+      res.items.map((user) => ({
+        value: user.id,
+        label: user.profile.fullName || user.profile.email,
+      })),
+    );
+
+  const handleSubmit: SubmitHandler<SealFormValues> = async (values) => {
+    try {
+      await mutation.mutateAsync({ operationId, id: containerLinkId, data: values });
+      toast.success(t("administrative-operations.containers.seal.toast.sealed"));
+      onSealed();
+    } catch {
+      toast.error(t("administrative-operations.containers.toast.error"));
+    }
+  };
+
+  return (
+    <Modal show onHide={onClose} centered>
+      <Modal.Header>
+        <Modal.Title className="h5 mb-0">
+          {t("administrative-operations.containers.seal.sealButton")}
+        </Modal.Title>
+      </Modal.Header>
+      <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
+        <Modal.Body>
+          <SelectAsync<SealFormValues>
+            methods={methods}
+            fieldName="userId"
+            label={t("administrative-operations.containers.seal.form.user")}
+            fetchOptions={fetchUserOptions}
+          />
+          <Select<SealFormValues>
+            methods={methods}
+            fieldName="name"
+            label={t("administrative-operations.containers.seal.form.name")}
+            enumOptions={sealNameOptions}
+          />
+          <InputText<SealFormValues>
+            methods={methods}
+            fieldName="label"
+            label={t("administrative-operations.containers.seal.form.label")}
+          />
+          <InputTextArea<SealFormValues>
+            methods={methods}
+            fieldName="description"
+            label={t("administrative-operations.containers.seal.form.description")}
+            maxLength={255}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={onClose}>
+            {t("crud.recordModal.cancel")}
+          </Button>
+          <Button type="submit" variant="primary" disabled={methods.formState.isSubmitting}>
+            {methods.formState.isSubmitting ? (
+              <Spinner size="sm" animation="border" className="me-2" />
+            ) : null}
+            {t("administrative-operations.containers.seal.sealButton")}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
   );
 }
 
@@ -610,24 +839,43 @@ function StuffIdentifiedModal({
       containerOperationId: containerLink.id,
       romaneioId: "",
       invoiceId: "",
+      lote: "",
     },
   });
+
+  // Mapa auxiliar `romaneioId → lote` populado a cada busca do `SelectAsync`
+  // abaixo — o Core agora exige `lote` no payload (SPEC-25 do Core/SPEC-46
+  // aqui), e o valor já está disponível na própria linha do romaneio
+  // escolhida, sem precisar de nova consulta.
+  const romaneioLoteByIdRef = useRef<Record<string, string>>({});
 
   const fetchInvoiceOptions = (search: string) =>
     getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) =>
       res.items.map((invoice) => ({ value: invoice.id, label: invoice.number ?? invoice.id })),
     );
 
-  // "Lote" não é campo do payload (D2) — só filtro de UI dentro deste
-  // `SelectAsync`: o rótulo já combina lote/NF/identificador do fardo pra
-  // o operador achar a linha certa digitando qualquer um dos três.
   const fetchRomaneioOptions = (search: string) =>
-    getApiOperationOperationIdRomaneio(operationId, { Search: search, Limit: 20 }).then((res) =>
-      res.items.map((romaneio) => ({
+    getApiOperationOperationIdRomaneio(operationId, { Search: search, Limit: 20 }).then((res) => {
+      res.items.forEach((romaneio) => {
+        romaneioLoteByIdRef.current[romaneio.id] = romaneio.lote ?? "";
+      });
+      return res.items.map((romaneio) => ({
         value: romaneio.id,
         label: `${romaneio.lote} · NF ${romaneio.notaFiscal ?? "—"} · ${romaneio.itemIdentifier}`,
-      })),
-    );
+      }));
+    });
+
+  const romaneioId = methods.watch("romaneioId");
+
+  // Preenche `lote` sozinho assim que o operador escolhe a linha do
+  // romaneio (recomendação da SPEC-46 §4/`[NEEDS_DECISION-1]`, opção 1) —
+  // campo fica desabilitado abaixo, é confirmação visual, não digitação.
+  useEffect(() => {
+    if (!romaneioId) return;
+    const lote = romaneioLoteByIdRef.current[romaneioId];
+    if (lote != null) methods.setValue("lote", lote);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [romaneioId]);
 
   const handleSubmit: SubmitHandler<StuffIdentifiedFormValues> = async (values) => {
     try {
@@ -663,6 +911,12 @@ function StuffIdentifiedModal({
             fieldName="romaneioId"
             label={t("administrative-operations.containers.stuffing.form.romaneio")}
             fetchOptions={fetchRomaneioOptions}
+          />
+          <InputText<StuffIdentifiedFormValues>
+            methods={methods}
+            fieldName="lote"
+            label={t("administrative-operations.containers.stuffing.form.lote")}
+            disabled
           />
         </Modal.Body>
         <Modal.Footer>
@@ -712,6 +966,7 @@ function StuffQuantityModal({
       containerOperationId: containerLink.id,
       invoiceId: "",
       quantity: 1,
+      lote: "",
     },
   });
 
@@ -801,6 +1056,11 @@ function StuffQuantityModal({
               methods={methods}
               fieldName="quantity"
               label={t("administrative-operations.containers.stuffing.form.quantity")}
+            />
+            <InputText<StuffQuantityFormValues>
+              methods={methods}
+              fieldName="lote"
+              label={t("administrative-operations.containers.stuffing.form.lote")}
             />
           </Modal.Body>
           <Modal.Footer>

@@ -192,7 +192,8 @@
       "invoice": "Factura",
       "reports": "Informes",
       "responsible": "Responsables",
-      "log": "Registro"
+      "log": "Registro",
+      "occurrences": "Incidencias"
     },
     "statusLabel": "Estado de la operación",
     "statusUpdated": "Estado de la operación actualizado con éxito.",
@@ -217,7 +218,29 @@
   "log": {
     "description": "Historial de eventos registrados en esta operación.",
     "byUser": "por {user}",
-    "emptyState": "No hay eventos registrados."
+    "emptyState": "No hay eventos registrados.",
+    "loadError": "No fue posible cargar el registro de la operación.",
+    "actions": {
+      "RomaneioImported": "Romaneo importado",
+      "InvoiceCreated": "Factura creada",
+      "InvoiceUpdated": "Factura actualizada",
+      "InvoiceConfirmed": "Factura confirmada",
+      "InvoiceCanceled": "Factura cancelada",
+      "InvoiceAutoCreated": "Factura creada automáticamente",
+      "CargoUnitStuffed": "Fardo estibado",
+      "CargoUnitCanceled": "Fardo cancelado",
+      "ContainerLinked": "Contenedor vinculado",
+      "ContainerStatusChanged": "Estado del contenedor cambiado",
+      "ContainerSealAdded": "Precinto del contenedor registrado",
+      "DocumentCreated": "Documento creado"
+    },
+    "entityTypes": {
+      "Romaneio": "Romaneo",
+      "Invoice": "Factura",
+      "CargoUnit": "Fardo",
+      "Container": "Contenedor",
+      "Document": "Documento"
+    }
   },
   "containers": {
     "new": "Vincular contenedor",
@@ -232,8 +255,7 @@
     "form": {
       "container": "Contenedor",
       "tara": "Tara",
-      "status": "Estado del vínculo",
-      "sealDate": "Fecha del precinto"
+      "status": "Estado"
     },
     "photosTitle": "Fotos del contenedor",
     "photosAdd": "Fotos",
@@ -261,7 +283,8 @@
       "form": {
         "invoice": "Factura",
         "romaneio": "Fardo del romaneo",
-        "quantity": "Cantidad"
+        "quantity": "Cantidad",
+        "lote": "Lote"
       },
       "resultIdentifiedTitle": "{count} fardo(s) estibado(s): identificadores abajo.",
       "resultManualTitle": "{count} unidad(es) anónima(s) estibada(s) (peso bruto promedio: {weight} kg).",
@@ -280,6 +303,25 @@
         "identifiedSuccess": "Fardo estibado con éxito.",
         "quantitySuccess": "Estiba completada con éxito.",
         "canceled": "Fardo cancelado con éxito."
+      }
+    },
+    "seal": {
+      "title": "Precinto",
+      "activeBadge": "Precintado",
+      "none": "Ningún precinto activo.",
+      "sealButton": "Precintar",
+      "unsealButton": "Quitar precinto",
+      "confirmUnsealTitle": "Quitar precinto del contenedor",
+      "confirmUnsealMessage": "¿Quitar el precinto activo de este contenedor?",
+      "form": {
+        "user": "Responsable del precinto",
+        "name": "Tipo de precinto",
+        "label": "Identificación del precinto",
+        "description": "Descripción"
+      },
+      "toast": {
+        "sealed": "Contenedor precintado con éxito.",
+        "unsealed": "Precinto quitado con éxito."
       }
     }
   },
@@ -356,6 +398,50 @@
       "confirmed": "Factura confirmada con éxito.",
       "canceled": "Factura cancelada con éxito.",
       "error": "No fue posible completar la acción. Inténtelo de nuevo."
+    },
+    "subtabs": {
+      "listing": "Listado",
+      "comparisonInvoice": "Comparación NF",
+      "comparisonLot": "Comparación de lotes"
+    },
+    "comparison": {
+      "colNumber": "Factura",
+      "colLote": "Lote",
+      "noLote": "Sin lote",
+      "colDeclaredItemsCount": "Fardos declarados",
+      "colDeclaredGrossWeight": "Peso bruto declarado (kg)",
+      "colDeclaredNetWeight": "Peso neto declarado (kg)",
+      "colStuffedItemsCount": "Fardos estibados",
+      "colStuffedGrossWeight": "Peso bruto estibado (kg)",
+      "colStuffedNetWeight": "Peso neto estibado (kg)",
+      "loadErrorInvoice": "No fue posible cargar la comparación por factura.",
+      "loadErrorLot": "No fue posible cargar la comparación por lote.",
+      "emptyInvoice": "Ninguna factura para comparar.",
+      "emptyLot": "Ningún lote para comparar."
+    }
+  },
+  "occurrences": {
+    "description": "Incidencias registradas manualmente en esta operación.",
+    "new": "Nueva incidencia",
+    "newTitle": "Nueva incidencia",
+    "editTitle": "Editar incidencia",
+    "loadError": "No fue posible cargar las incidencias de la operación.",
+    "empty": "Ninguna incidencia registrada para esta operación.",
+    "colTitle": "Título",
+    "colNote": "Nota",
+    "colPhotos": "Fotos",
+    "colCreatedAt": "Creado el",
+    "colActions": "Acciones",
+    "form": {
+      "title": "Título",
+      "note": "Nota",
+      "photos": "Fotos"
+    },
+    "photosEditNote": "Las fotos solo pueden agregarse al crear la incidencia.",
+    "toast": {
+      "created": "Incidencia registrada con éxito.",
+      "updated": "Incidencia actualizada con éxito.",
+      "error": "No fue posible concluir la acción. Inténtalo de nuevo."
     }
   }
 }

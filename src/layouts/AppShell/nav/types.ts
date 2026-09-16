@@ -14,11 +14,13 @@ export type NavItem = {
   icon?: string;
   order?: number;
   /**
-   * `true` só nos poucos itens órfãos sem rota real ainda (ex.:
-   * `administrativoLog`/`administrativoOccurrences`, SPEC-06 cancelada) —
-   * força o sidebar (`AppShell`) a renderizar `<a href>` (navegação
-   * full-page) em vez de `<Link to>` tipado, porque `to` aqui não existe em
-   * `routeTree.gen.ts`. Remover a flag assim que o item ganhar rota real.
+   * `true` só nos itens órfãos sem rota real ainda — força o sidebar
+   * (`AppShell`) a renderizar `<a href>` (navegação full-page) em vez de
+   * `<Link to>` tipado, porque `to` aqui não existe em `routeTree.gen.ts`.
+   * Remover a flag assim que o item ganhar rota real. Sem consumidor hoje
+   * (os dois exemplos antigos, `administrativoLog`/`administrativoOccurrences`,
+   * foram removidos nas SPEC-39/SPEC-43 — viraram abas reais dentro do shell
+   * de Operação) — mecanismo mantido pro próximo item órfão que aparecer.
    */
   legacyOrphanRoute?: boolean;
 };

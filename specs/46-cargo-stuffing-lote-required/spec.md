@@ -2,9 +2,10 @@
 
 - **ID:** SPEC-46
 - **Nome:** cargo-stuffing-lote-required
-- **Status:** DRAFT — achado durante revisão cruzada Core↔NewPortal
-  (2026-09-16), não é pedido novo do usuário, é **regressão iminente**
-  numa tela já `IMPLEMENTED`.
+- **Status:** IMPLEMENTED (2026-09-16) — ver §9 (Implementation Notes).
+  Achado durante revisão cruzada Core↔NewPortal (2026-09-16), não era
+  pedido novo do usuário, era **regressão iminente** numa tela já
+  `IMPLEMENTED`.
 - **Autor:** claude (revisão de sincronização Core↔NewPortal, 2026-09-16)
 - **Área:** `src/components/operations/tabs/Containers.tsx`
   (`StuffIdentifiedModal`, `StuffQuantityModal` — ambos já `IMPLEMENTED`,
@@ -140,3 +141,62 @@ novo algo que a tela já sabe.
   checar o estado atual do `src/api/generated/**` imediatamente.
 - R2 — Baixo risco técnico de implementação em si (campo de formulário
   simples nos dois modais).
+
+## 9. Implementation Notes (2026-09-16)
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Containers.tsx`:
+  - `StuffIdentifiedModal` — `lote` adicionado ao `defaultValues`, campo
+    `InputText` novo (`disabled`) no form. Preenchimento automático via
+    `[NEEDS_DECISION-1]` opção 1 (recomendação da SPEC): um
+    `romaneioLoteByIdRef` (`useRef<Record<string,string>>`) é populado a
+    cada resposta de `fetchRomaneioOptions` (mapeia `romaneio.id →
+    romaneio.lote`), e um `useEffect` observando `methods.watch("romaneioId")`
+    chama `methods.setValue("lote", ...)` assim que a linha é escolhida —
+    sem round-trip novo ao Core, o dado já vinha na mesma resposta que
+    monta o rótulo do `SelectAsync`. Comentário `D2` (linha antiga
+    621-623, "Lote não é campo do payload") removido/corrigido.
+  - `StuffQuantityModal` — `lote` adicionado ao `defaultValues`, campo
+    `InputText` livre (sem `disabled`, sem linha pré-selecionada pra
+    derivar) logo abaixo de `quantity`.
+- `specs/42-multi-stuffing-checkbox` (modal de estufagem em lote,
+  `stuff/identified-batch`) — **não implementado nesta rodada** (fora do
+  escopo desta SPEC-46 por design, §5); o client gerado já expõe `lote`
+  por item em `PostApiOperationOperationIdCargoStuffIdentifiedBatchBody`
+  (confirmado após `just map` contra o Core local, ver nota abaixo) pra
+  quem for implementar aquela SPEC não repetir o mesmo erro de sincronia.
+
+**Achado antes de implementar (mesmo achado da SPEC-44):** o client
+gerado já commitado nesta branch tinha `lote` presente nos schemas Zod de
+`stuff/identified`/`stuff/quantity` (`just map` anterior já tinha pego
+essa parte do contrato do Core remoto de dev), então CA0 já estava
+satisfeito antes de eu começar. Rodei `just map` de novo mesmo assim (motivado
+pelo gap da SPEC-44, `seal/current` ausente) contra o Core local
+(`localhost:5766`, via `.env.local` novo) — não mudou nada relevante para
+esta SPEC-46 além de já confirmar `lote` também no `identified-batch`
+(SPEC-31/42, fora de escopo aqui).
+
+**Comandos executados e resultado:**
+- `bun run check` (`tsc --noEmit`) — PASS.
+- `bun run lint` (`eslint .`) — sem warnings/erros novos em
+  `Containers.tsx`.
+
+**Critérios de aceitação:**
+
+| # | Critério | Status |
+|---|----------|--------|
+| CA0 | `just map` executado, campo `Lote` presente nos 2 schemas Zod gerados (`identified`/`quantity`) | PASS |
+| CA1 | `StuffIdentifiedModal` envia Lote, sucesso e erro de divergência tratados como toast (catch genérico já existente) | PASS |
+| CA2 | `StuffQuantityModal` envia Lote | PASS |
+| CA3 | Comentário `D2` corrigido | PASS |
+| CA4 | `bun run check` + `bun run lint` sem regressão | PASS |
+
+**Limitações conhecidas / débito:**
+- Erro de divergência (`CargoUnitRomaneioMustMatchDeclaredLote`) cai no
+  mesmo `catch` genérico de toast já usado em todo o arquivo — não há
+  extração de `MessageCode` específico pra exibir uma mensagem mais
+  precisa (nenhum outro catch deste arquivo faz isso hoje; manter
+  consistência de padrão em vez de inventar um novo aqui).
+- `specs/42-multi-stuffing-checkbox` continua sem implementação — quando
+  alguém pegar aquela SPEC, o campo `lote` por item já está disponível no
+  client gerado.

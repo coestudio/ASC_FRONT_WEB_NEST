@@ -192,7 +192,8 @@
       "invoice": "发票",
       "reports": "报告",
       "responsible": "负责人",
-      "log": "日志"
+      "log": "日志",
+      "occurrences": "事件记录"
     },
     "statusLabel": "作业状态",
     "statusUpdated": "作业状态更新成功。",
@@ -217,7 +218,29 @@
   "log": {
     "description": "此作业记录的事件历史。",
     "byUser": "由 {user}",
-    "emptyState": "暂无记录的事件。"
+    "emptyState": "暂无记录的事件。",
+    "loadError": "无法加载该作业的日志。",
+    "actions": {
+      "RomaneioImported": "装箱单已导入",
+      "InvoiceCreated": "发票已创建",
+      "InvoiceUpdated": "发票已更新",
+      "InvoiceConfirmed": "发票已确认",
+      "InvoiceCanceled": "发票已取消",
+      "InvoiceAutoCreated": "发票已自动创建",
+      "CargoUnitStuffed": "货件已装箱",
+      "CargoUnitCanceled": "货件已取消",
+      "ContainerLinked": "集装箱已关联",
+      "ContainerStatusChanged": "集装箱状态已变更",
+      "ContainerSealAdded": "集装箱封条已登记",
+      "DocumentCreated": "文件已创建"
+    },
+    "entityTypes": {
+      "Romaneio": "装箱单",
+      "Invoice": "发票",
+      "CargoUnit": "货件",
+      "Container": "集装箱",
+      "Document": "文件"
+    }
   },
   "containers": {
     "new": "关联集装箱",
@@ -232,8 +255,7 @@
     "form": {
       "container": "集装箱",
       "tara": "皮重",
-      "status": "关联状态",
-      "sealDate": "封条日期"
+      "status": "状态"
     },
     "photosTitle": "集装箱照片",
     "photosAdd": "照片",
@@ -261,7 +283,8 @@
       "form": {
         "invoice": "发票",
         "romaneio": "分捡单包件",
-        "quantity": "数量"
+        "quantity": "数量",
+        "lote": "批次"
       },
       "resultIdentifiedTitle": "已装箱 {count} 个包件：标识如下。",
       "resultManualTitle": "已装箱 {count} 个匿名单元（平均毛重：{weight} 千克）。",
@@ -280,6 +303,25 @@
         "identifiedSuccess": "包件装箱成功。",
         "quantitySuccess": "装箱完成成功。",
         "canceled": "包件已取消。"
+      }
+    },
+    "seal": {
+      "title": "封条",
+      "activeBadge": "已封条",
+      "none": "暂无生效中的封条。",
+      "sealButton": "加封条",
+      "unsealButton": "拆封条",
+      "confirmUnsealTitle": "拆除集装箱封条",
+      "confirmUnsealMessage": "确定要移除此集装箱当前生效的封条吗？",
+      "form": {
+        "user": "封条责任人",
+        "name": "封条类型",
+        "label": "封条标识",
+        "description": "描述"
+      },
+      "toast": {
+        "sealed": "集装箱封条成功。",
+        "unsealed": "封条移除成功。"
       }
     }
   },
@@ -356,6 +398,50 @@
       "confirmed": "发票确认成功。",
       "canceled": "发票取消成功。",
       "error": "无法完成该操作，请重试。"
+    },
+    "subtabs": {
+      "listing": "列表",
+      "comparisonInvoice": "发票对比",
+      "comparisonLot": "批次对比"
+    },
+    "comparison": {
+      "colNumber": "发票",
+      "colLote": "批次",
+      "noLote": "无批次",
+      "colDeclaredItemsCount": "申报包数",
+      "colDeclaredGrossWeight": "申报毛重（千克）",
+      "colDeclaredNetWeight": "申报净重（千克）",
+      "colStuffedItemsCount": "已装箱包数",
+      "colStuffedGrossWeight": "已装箱毛重（千克）",
+      "colStuffedNetWeight": "已装箱净重（千克）",
+      "loadErrorInvoice": "无法加载按发票的对比数据。",
+      "loadErrorLot": "无法加载按批次的对比数据。",
+      "emptyInvoice": "没有可对比的发票。",
+      "emptyLot": "没有可对比的批次。"
+    }
+  },
+  "occurrences": {
+    "description": "此作业中手动登记的事件记录。",
+    "new": "新增事件记录",
+    "newTitle": "新增事件记录",
+    "editTitle": "编辑事件记录",
+    "loadError": "无法加载该作业的事件记录。",
+    "empty": "此作业暂无事件记录。",
+    "colTitle": "标题",
+    "colNote": "备注",
+    "colPhotos": "照片",
+    "colCreatedAt": "创建时间",
+    "colActions": "操作",
+    "form": {
+      "title": "标题",
+      "note": "备注",
+      "photos": "照片"
+    },
+    "photosEditNote": "照片只能在创建事件记录时添加。",
+    "toast": {
+      "created": "事件记录已成功登记。",
+      "updated": "事件记录已成功更新。",
+      "error": "无法完成操作，请重试。"
     }
   }
 }

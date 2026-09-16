@@ -22,10 +22,10 @@ import styles from "./index.module.css";
  *
  * Navegação: itens com rota real usam `<Link to>` tipado (client-side,
  * sem full-page reload — antes todo o sidebar usava `<a href>`, causando um
- * flash branco a cada clique). Os poucos itens `legacyOrphanRoute: true`
- * (ver `nav/types.ts`) continuam em `<a href>` — apontam pra rota que não
- * existe em `routeTree.gen.ts` (`administrativoLog`/`administrativoOccurrences`,
- * SPEC-06 cancelada), `<Link to>` tipado não aceitaria.
+ * flash branco a cada clique). Itens `legacyOrphanRoute: true` (ver
+ * `nav/types.ts`) continuam em `<a href>` — apontam pra rota que não existe
+ * em `routeTree.gen.ts`, `<Link to>` tipado não aceitaria. Nenhum item usa a
+ * flag hoje (os dois órfãos de Administrativo saíram nas SPEC-39/SPEC-43).
  */
 
 function isChildActive(items: NavItem[], pathname: string): boolean {

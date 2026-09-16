@@ -2,7 +2,8 @@
 
 - **ID:** SPEC-39
 - **Nome:** operation-log-audit
-- **Status:** DRAFT (revisado 2026-09-16) — **§5 já resolvido pelo Core.**
+- **Status:** IMPLEMENTED (2026-09-16). Ver §11 "Implementation Notes".
+- **Status anterior:** DRAFT (revisado 2026-09-16) — **§5 já resolvido pelo Core.**
   `specs/28-operation-audit-log` já é `IMPLEMENTED` (2026-09-16):
   `GET /operation/{id}/log`, paginado, filtros opcionais `entityType`/
   `entityId` na query string, retorna `PagedDTO<OperationEventDTO>`
@@ -162,3 +163,48 @@ dados (mudança de navegação/i18n).
   usuário — se a UI quiser mostrar nome legível, precisa cruzar com outro
   endpoint (`/user/{id}` ou equivalente) ou aceitar mostrar só o id;
   decisão de UI a fechar na implementação, não bloqueia o resto da SPEC.
+
+## 11. Implementation Notes (2026-09-16)
+
+- **Arquivos tocados:** `src/components/operations/tabs/Log.tsx` (reescrito
+  — mock removido, consome `useSsrSafeQuery` +
+  `getGetApiOperationIdLogQueryOptions`, paginação real via
+  `ListPagination`); `src/layouts/AppShell/nav/administrativo.ts` (RF4,
+  removida a entrada `administrativoLog` — mesmo commit da remoção de
+  `administrativoOccurrences`, SPEC-43); `src/layouts/AppShell/nav/types.ts`
+  e `src/layouts/AppShell/index.tsx` (comentários que citavam os dois itens
+  órfãos como exemplo, atualizados); `src/i18n/dictionaries/{pt-BR,en,es,zh}
+  /navigation.json` (RF5, chave `administrativoLog` removida — confirmado
+  por grep, RF6, que não era usada em mais nenhum lugar);
+  `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+  (chaves novas `log.loadError`, `log.actions.*` — 12 valores do enum
+  `OperationEventAction` — e `log.entityTypes.*` — 5 valores de
+  `OperationEventEntityType`).
+- **`just map` não estava rodado nesta branch** apesar do que a tarefa
+  presumia — rodado nesta sessão (Core local em `http://localhost:5766`,
+  `.env.local` copiado pro worktree). O diff completo do `orval` trouxe
+  bem mais do que o log/ocorrências (mudanças não relacionadas em
+  container/cargo-unit/romaneio/invoice/profile/user, parte delas
+  quebrando `Containers.tsx` — território de SPEC-44, ainda em fase de
+  investigação, não decidida). Decisão: aplicar do regen só os arquivos
+  aditivos referentes a `operation/{id}/log` e
+  `operation/{operationId}/occurrence` (SPEC-43), revertendo pra HEAD todo
+  o resto do client gerado que não seja consumido por essas duas telas —
+  evita puxar uma regressão de escopo alheio pra dentro desta entrega.
+  `just map` de verdade (sincronizando 100% com o Core atual) fica pendente
+  como tarefa separada, quando SPEC-44 (e as demais specs Core que já
+  avançaram: comparação de invoice, lote de romaneio, seal status) tiverem
+  dono no frontend.
+- **Rótulos de `Action`/`EntityType`:** mapa local em i18n
+  (`administrative-operations.log.actions.*`/`.entityTypes.*`), lido via
+  `t(\`...${entry.action}\` as TranslationKey)` — mesmo padrão já usado em
+  `Responsible.tsx` pra enums sem rota `Aux`. Sem endpoint de lookup no
+  Core (confirmado, nunca existiu pra esse enum).
+- **`createdBy` (R2):** mostrado cru (o `Guid`) via
+  `administrative-operations.log.byUser`; nenhuma resolução de nome de
+  usuário foi implementada — debt conhecido, não bloqueante, como o
+  documento já previa.
+- **`bun run check`/`bun run lint`:** ambos passam sem erro novo. `lint`
+  reporta 3 erros pré-existentes em `src/lib/session.server.ts`
+  (`react-hooks/rules-of-hooks`, arquivo não tocado nesta entrega) — debt
+  anterior a esta sessão, não uma regressão introduzida por esta SPEC.

@@ -2,10 +2,7 @@
 
 - **ID:** SPEC-41
 - **Nome:** invoice-comparison-subtabs
-- **Status:** DRAFT (revisado 2026-09-16) — **§4 já resolvido pelo
-  Core.** `specs/30-invoice-lote-comparison` já é `IMPLEMENTED`
-  (2026-09-16): dois endpoints reais, contrato completo abaixo. Ainda
-  não apareceu em `src/api/generated/**` porque `just map` não rodou.
+- **Status:** IMPLEMENTED (2026-09-16)
 - **Autor:** portal-dev-agent (rascunho); revisão de status 2026-09-16
   (cruzamento com Core `specs/30-invoice-lote-comparison`)
 - **Área:** `src/components/operations/tabs/Invoice.tsx`
@@ -148,3 +145,64 @@ Namespace `administrative-operations.invoice` (4 locales):
   aplica mais, contrato já existe. Ainda vale considerar dividir em duas
   entregas (RF1/RF2 primeiro, RF3/RF4 depois) por tamanho de PR, não por
   dependência.
+
+## 13. Implementation Notes (2026-09-16)
+
+- **Arquivos tocados:** `src/components/operations/tabs/Invoice.tsx`,
+  `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`,
+  este `spec.md`. `src/api/generated/**` também mudou como efeito
+  colateral necessário (ver achado abaixo) — geração 100% automática via
+  `just map`, sem edição manual.
+- **Achado antes de implementar — CA0 não estava satisfeito:** ao abrir
+  este worktree, `src/api/generated/**` **não** tinha
+  `invoice/comparison` nem `romaneio/comparison-by-lote` (confirmado por
+  grep), apesar do enunciado da tarefa dizer que `just map` já tinha
+  rodado nesta branch. Rodei `just map` eu mesmo (Core local em
+  `http://localhost:5766`, criei `.env.local` gitignored apontando pra
+  lá) — CA0 agora satisfeito, hooks confirmados:
+  `useGetApiOperationOperationIdInvoiceComparison` e
+  `useGetApiOperationOperationIdRomaneioComparisonByLote`, exatamente os
+  nomes informados.
+- **Efeito colateral do `just map`:** o Core avançou em outras specs
+  desde o último `just map` commitado (ex.: `SealDate` removido de
+  `ContainerOperationDTO`, já documentado como regressão conhecida em
+  `specs/44-container-seal-investigation` §"achado novo" e
+  `specs/46-cargo-stuffing-lote-required`). Isso deixa
+  `Containers.tsx` com 5 erros de `tsc` pré-existentes e **fora do
+  escopo desta SPEC** (não tocado, por instrução explícita). `bun run
+  check` portanto **não fica 100% limpo** — os únicos erros restantes
+  são esses 5, em `Containers.tsx`, não relacionados a Nota
+  Fiscal/comparação. `bun run lint` fica no baseline (66
+  problemas/3 erros pré-existentes em `session.server.ts`, nenhum novo
+  introduzido por este trabalho). Confirmado comparando lint antes/depois
+  via stash temporário. Débito de follow-up: alguém precisa fechar
+  SPEC-44/46 (ou abrir uma nova) pra sincronizar `Containers.tsx` com o
+  Core atual.
+- **Estrutura:** `Invoice` virou um wrapper fino com `Tab.Container`
+  (`defaultActiveKey="listing"`) + `Nav variant="pills"` (não `"tabs"`,
+  pra não colidir visualmente com a `Nav variant="tabs"` do shell de
+  Operação um nível acima — RF1). O CRUD original foi renomeado pra
+  `InvoiceListing` (não exportado) e movido pra dentro do
+  `Tab.Pane eventKey="listing"`, sem nenhuma outra mudança de lógica.
+- **Tab.Pane sem `unmountOnExit`:** as 3 sub-abas ficam montadas ao mesmo
+  tempo (comportamento padrão do `Tab.Pane`), então as duas queries de
+  comparação disparam assim que a aba "Nota Fiscal" é aberta, não só
+  quando o usuário clica na sub-aba — mesmo padrão de custo que
+  `ProfileModal` já tinha (missas concorrentes ficam ok, é leitura leve).
+  Se isso incomodar no futuro, dá pra adicionar `mountOnEnter` — não fiz
+  isso agora pra manter a paridade visual com `ProfileModal`
+  (`d-none`/sempre montado).
+- **Badge de divergência:** por decisão de design (não estava 100%
+  fechado no §8), apliquei o badge **por métrica** (fardos/peso
+  bruto/peso líquido), não um único badge por linha — cada célula
+  "estufado" vem com `bg-success`/`bg-danger` comparando contra o
+  respectivo valor declarado. Comparação numérica via `Number(...)`,
+  tratando `null`/`undefined`/`""` como `0` (mesma convenção do Core pra
+  "nada estufado ainda").
+- **"Sem lote":** linha com `lote: null` renderiza um `Badge bg="secondary"`
+  com o texto de `comparison.noLote`, em vez do valor cru.
+- **i18n:** namespace `administrative-operations.invoice.subtabs.*` e
+  `administrative-operations.invoice.comparison.*`, chaves iguais nos 4
+  locales, traduzidas (não copiadas) em `en`/`es`/`zh`.
+- **Fora do escopo, como já previsto:** nenhuma ação corretiva nas
+  sub-abas de comparação (RF3/RF4 são só leitura).

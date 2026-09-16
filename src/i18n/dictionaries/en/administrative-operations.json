@@ -192,7 +192,8 @@
       "invoice": "Invoice",
       "reports": "Reports",
       "responsible": "Responsible parties",
-      "log": "Log"
+      "log": "Log",
+      "occurrences": "Occurrences"
     },
     "statusLabel": "Operation status",
     "statusUpdated": "Operation status updated successfully.",
@@ -217,7 +218,29 @@
   "log": {
     "description": "History of events recorded for this operation.",
     "byUser": "by {user}",
-    "emptyState": "No events recorded."
+    "emptyState": "No events recorded.",
+    "loadError": "Could not load the operation log.",
+    "actions": {
+      "RomaneioImported": "Packing list imported",
+      "InvoiceCreated": "Invoice created",
+      "InvoiceUpdated": "Invoice updated",
+      "InvoiceConfirmed": "Invoice confirmed",
+      "InvoiceCanceled": "Invoice canceled",
+      "InvoiceAutoCreated": "Invoice auto-created",
+      "CargoUnitStuffed": "Cargo unit stuffed",
+      "CargoUnitCanceled": "Cargo unit canceled",
+      "ContainerLinked": "Container linked",
+      "ContainerStatusChanged": "Container status changed",
+      "ContainerSealAdded": "Container seal recorded",
+      "DocumentCreated": "Document created"
+    },
+    "entityTypes": {
+      "Romaneio": "Packing list",
+      "Invoice": "Invoice",
+      "CargoUnit": "Cargo unit",
+      "Container": "Container",
+      "Document": "Document"
+    }
   },
   "containers": {
     "new": "Link container",
@@ -232,8 +255,7 @@
     "form": {
       "container": "Container",
       "tara": "Tare",
-      "status": "Link status",
-      "sealDate": "Seal date"
+      "status": "Status"
     },
     "photosTitle": "Container photos",
     "photosAdd": "Photos",
@@ -261,7 +283,8 @@
       "form": {
         "invoice": "Invoice",
         "romaneio": "Bale (romaneio)",
-        "quantity": "Quantity"
+        "quantity": "Quantity",
+        "lote": "Batch"
       },
       "resultIdentifiedTitle": "{count} bale(s) stuffed: identifiers below.",
       "resultManualTitle": "{count} anonymous unit(s) stuffed (average gross weight: {weight} kg).",
@@ -280,6 +303,25 @@
         "identifiedSuccess": "Bale stuffed successfully.",
         "quantitySuccess": "Stuffing completed successfully.",
         "canceled": "Cargo unit canceled successfully."
+      }
+    },
+    "seal": {
+      "title": "Seal",
+      "activeBadge": "Sealed",
+      "none": "No active seal.",
+      "sealButton": "Seal",
+      "unsealButton": "Unseal",
+      "confirmUnsealTitle": "Unseal container",
+      "confirmUnsealMessage": "Remove the active seal from this container?",
+      "form": {
+        "user": "Responsible for the seal",
+        "name": "Seal type",
+        "label": "Seal identification",
+        "description": "Description"
+      },
+      "toast": {
+        "sealed": "Container sealed successfully.",
+        "unsealed": "Seal removed successfully."
       }
     }
   },
@@ -355,6 +397,50 @@
       "created": "Invoice created successfully.",
       "confirmed": "Invoice confirmed successfully.",
       "canceled": "Invoice canceled successfully.",
+      "error": "Could not complete the action. Please try again."
+    },
+    "subtabs": {
+      "listing": "Listing",
+      "comparisonInvoice": "Invoice comparison",
+      "comparisonLot": "Lot comparison"
+    },
+    "comparison": {
+      "colNumber": "Invoice",
+      "colLote": "Lot",
+      "noLote": "No lot",
+      "colDeclaredItemsCount": "Declared bales",
+      "colDeclaredGrossWeight": "Declared gross weight (kg)",
+      "colDeclaredNetWeight": "Declared net weight (kg)",
+      "colStuffedItemsCount": "Stuffed bales",
+      "colStuffedGrossWeight": "Stuffed gross weight (kg)",
+      "colStuffedNetWeight": "Stuffed net weight (kg)",
+      "loadErrorInvoice": "Could not load the invoice comparison.",
+      "loadErrorLot": "Could not load the lot comparison.",
+      "emptyInvoice": "No invoice to compare.",
+      "emptyLot": "No lot to compare."
+    }
+  },
+  "occurrences": {
+    "description": "Occurrences manually recorded for this operation.",
+    "new": "New occurrence",
+    "newTitle": "New occurrence",
+    "editTitle": "Edit occurrence",
+    "loadError": "Could not load the operation's occurrences.",
+    "empty": "No occurrences recorded for this operation.",
+    "colTitle": "Title",
+    "colNote": "Note",
+    "colPhotos": "Photos",
+    "colCreatedAt": "Created at",
+    "colActions": "Actions",
+    "form": {
+      "title": "Title",
+      "note": "Note",
+      "photos": "Photos"
+    },
+    "photosEditNote": "Photos can only be added when the occurrence is created.",
+    "toast": {
+      "created": "Occurrence recorded successfully.",
+      "updated": "Occurrence updated successfully.",
       "error": "Could not complete the action. Please try again."
     }
   }
