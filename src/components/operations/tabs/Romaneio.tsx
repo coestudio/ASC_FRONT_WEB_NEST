@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
+  getGetApiOperationOperationIdRomaneioExportQueryKey,
   getGetApiOperationOperationIdRomaneioQueryKey,
   getGetApiOperationOperationIdRomaneioQueryOptions,
   useDeleteApiOperationOperationIdRomaneioId,
@@ -16,6 +17,7 @@ import {
   usePostApiOperationOperationIdRomaneioImportApply,
   usePutApiOperationOperationIdRomaneioId,
 } from "@/api/generated/endpoints/romaneio/romaneio";
+import { axiosInstance } from "@/api/mutator";
 import {
   PostApiOperationOperationIdRomaneioBody,
   PostApiOperationOperationIdRomaneioImportAnalyzeBody,
@@ -29,7 +31,6 @@ import type {
   RomaneioImportInvalidDTO,
   RomaneioImportRowDTO,
 } from "@/api/generated/model";
-import { resolveRomaneioSourceLabel } from "@/api/generated/static/romaneioSourceOptions";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
@@ -38,7 +39,7 @@ import { InputFileSingle } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import type { TranslationKey } from "@/i18n/translate";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
-import { useLocale, useT } from "@/lib/ui-prefs";
+import { useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -89,13 +90,13 @@ const DIFF_FIELD_LABELS: Record<string, TranslationKey> = {
  */
 export function Romaneio({ operationId }: { operationId: string }) {
   const t = useT();
-  const locale = useLocale();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: RomaneioDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<RomaneioDTO | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const listQueryOptions = getGetApiOperationOperationIdRomaneioQueryOptions(operationId, {
     Search: search || undefined,
@@ -219,16 +220,8 @@ export function Romaneio({ operationId }: { operationId: string }) {
     {
       key: "peso",
       headerKey: "administrative-operations.romaneio.colPeso",
+      align: "end",
       render: (r) => (r.peso != null ? String(r.peso) : "—"),
-    },
-    {
-      key: "source",
-      headerKey: "administrative-operations.romaneio.colSource",
-      render: (r) => (
-        <span className="badge text-bg-secondary">
-          {r.source ? resolveRomaneioSourceLabel(r.source, locale) : "—"}
-        </span>
-      ),
     },
     {
       key: "actions",
@@ -255,9 +248,58 @@ export function Romaneio({ operationId }: { operationId: string }) {
     setPendingDelete(null);
   };
 
+  /**
+   * Dispara o download do romaneio exportado (RF1). O endpoint gerado
+   * (`getApiOperationOperationIdRomaneioExport`) passa pelo `apiRequest`
+   * genérico, que só devolve o corpo já desembrulhado — sem acesso aos
+   * headers da resposta (`Content-Disposition`, necessário pro nome do
+   * arquivo) nem controle de `responseType`. Por isso a chamada aqui usa
+   * `axiosInstance` (mesmo transporte do mutator, exportado por ele pra
+   * esse tipo de caso) direto, reaproveitando a URL do endpoint gerado
+   * (`getGetApiOperationOperationIdRomaneioExportQueryKey`) em vez de
+   * duplicar o path à mão.
+   */
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const [url] = getGetApiOperationOperationIdRomaneioExportQueryKey(operationId);
+      const response = await axiosInstance.get<Blob>(url, { responseType: "blob" });
+
+      // Nome do arquivo: usa o `Content-Disposition` do Core quando vem
+      // (RF1); sem ele, cai num default com o id da operação (R1 da SPEC —
+      // formato exato do Core não confirmado até a implementação).
+      const disposition = (response.headers as Record<string, string>)["content-disposition"];
+      const match = disposition?.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+      const filename = match ? decodeURIComponent(match[1]) : `romaneio-${operationId}.xlsx`;
+
+      const blobUrl = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+
+      toast.success(t("administrative-operations.romaneio.export.toast.success"));
+    } catch {
+      toast.error(t("administrative-operations.romaneio.export.toast.error"));
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <>
-      <div className="d-flex justify-content-end mb-2">
+      <div className="d-flex justify-content-end gap-2 mb-2">
+        <Button variant="outline-primary" size="sm" onClick={handleExport} disabled={exporting}>
+          {exporting ? (
+            <Spinner size="sm" animation="border" className="me-1" />
+          ) : (
+            <i className="bi bi-download me-1" aria-hidden />
+          )}
+          {t("administrative-operations.romaneio.export.button")}
+        </Button>
         <Button variant="outline-primary" size="sm" onClick={() => setImportOpen(true)}>
           <i className="bi bi-file-earmark-spreadsheet me-1" aria-hidden />
           {t("administrative-operations.romaneio.import.button")}
@@ -269,6 +311,7 @@ export function Romaneio({ operationId }: { operationId: string }) {
         descriptionKey="administrative-operations.romaneio.description"
         queryOptions={listQueryOptions}
         columns={columns}
+        spreadsheetVariant
         renderCard={(r) => (
           <Card>
             <Card.Body>

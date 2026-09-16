@@ -102,6 +102,13 @@
     "colPeso": "Weight (kg)",
     "colSource": "Source",
     "colActions": "Actions",
+    "export": {
+      "button": "Export",
+      "toast": {
+        "success": "Packing list exported successfully.",
+        "error": "Could not export the packing list. Please try again."
+      }
+    },
     "form": {
       "itemIdentifier": "Bale identifier",
       "itemCode": "Item code",
