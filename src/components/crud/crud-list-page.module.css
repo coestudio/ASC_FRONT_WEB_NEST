@@ -51,3 +51,16 @@
   --bs-table-accent-bg: var(--brand-primary-soft);
   background-color: var(--brand-primary-soft);
 }
+
+/* Variante "planilha" (SPEC-31) — grade visível em todas as bordas (via
+   `bordered`/`size="sm"` do react-bootstrap) e cabeçalho mais denso, pra
+   aproximar do visual da planilha Excel de referência. Opt-in
+   (`spreadsheetVariant`), não altera as demais listagens CRUD. */
+.crudTableSpreadsheet thead th {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.crudTableSpreadsheet tbody td {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}

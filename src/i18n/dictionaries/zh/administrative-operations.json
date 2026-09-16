@@ -101,6 +101,13 @@
     "colPeso": "重量（千克）",
     "colSource": "来源",
     "colActions": "操作",
+    "export": {
+      "button": "导出",
+      "toast": {
+        "success": "装箱单导出成功。",
+        "error": "无法导出装箱单，请重试。"
+      }
+    },
     "form": {
       "itemIdentifier": "包裹标识",
       "itemCode": "项目代码",

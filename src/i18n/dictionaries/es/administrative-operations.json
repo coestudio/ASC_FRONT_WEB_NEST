@@ -101,6 +101,13 @@
     "colPeso": "Peso (kg)",
     "colSource": "Origen",
     "colActions": "Acciones",
+    "export": {
+      "button": "Exportar",
+      "toast": {
+        "success": "Romaneo exportado con éxito.",
+        "error": "No fue posible exportar el romaneo. Inténtelo de nuevo."
+      }
+    },
     "form": {
       "itemIdentifier": "Identificador del fardo",
       "itemCode": "Código del artículo",

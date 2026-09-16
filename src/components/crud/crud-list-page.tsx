@@ -57,6 +57,9 @@ export type CrudColumn<T> = {
   key: string;
   headerKey: TranslationKey;
   render: (item: T) => ReactNode;
+  /** Alinhamento do cabeçalho e da célula (ex.: `"end"` pra coluna numérica
+   * de peso — SPEC-31). Sem valor, mantém o alinhamento padrão (`start`). */
+  align?: "start" | "end" | "center";
 };
 
 /** Shape mínimo que toda resposta paginada do Core segue (`PagedDTOOfXxxDTO` gerado pelo Orval). */
@@ -97,6 +100,10 @@ export type CrudListPageProps<
   emptyMessageKey?: TranslationKey;
   /** `true` quando os dados são mock (sem endpoint no Core) — mostra o `MockDataBanner`. */
   isMock?: boolean;
+  /** `true` deixa a tabela com grade visível e mais densa (planilha Excel —
+   * SPEC-31). Opt-in, `false` mantém o visual padrão (hairline, sem grade
+   * vertical) usado pelas demais listagens CRUD. */
+  spreadsheetVariant?: boolean;
 };
 
 /**
@@ -119,6 +126,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   onPageChange,
   emptyMessageKey,
   viewMode,
+  spreadsheetVariant,
 }: Pick<
   CrudListPageProps<T, TQueryData, TError>,
   | "queryOptions"
@@ -129,6 +137,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   | "pageSize"
   | "onPageChange"
   | "emptyMessageKey"
+  | "spreadsheetVariant"
 > & { viewMode: ViewMode }) {
   const t = useT();
   const query = useSsrSafeQuery(queryOptions);
@@ -156,11 +165,21 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
         </div>
       ) : (
         <div className={styles.tableCard}>
-          <Table responsive hover className={`align-middle mb-0 ${styles.crudTable}`}>
+          <Table
+            responsive
+            hover
+            bordered={spreadsheetVariant}
+            size={spreadsheetVariant ? "sm" : undefined}
+            className={`align-middle mb-0 ${styles.crudTable} ${
+              spreadsheetVariant ? styles.crudTableSpreadsheet : ""
+            }`}
+          >
             <thead>
               <tr>
                 {columns.map((col) => (
-                  <th key={col.key}>{t(col.headerKey)}</th>
+                  <th key={col.key} className={col.align ? `text-${col.align}` : undefined}>
+                    {t(col.headerKey)}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -168,7 +187,9 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
               {items.map((item) => (
                 <tr key={getItemKey(item)}>
                   {columns.map((col) => (
-                    <td key={col.key}>{col.render(item)}</td>
+                    <td key={col.key} className={col.align ? `text-${col.align}` : undefined}>
+                      {col.render(item)}
+                    </td>
                   ))}
                 </tr>
               ))}
@@ -211,6 +232,7 @@ export function CrudListPage<
   onCreate,
   emptyMessageKey,
   isMock,
+  spreadsheetVariant,
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
@@ -264,6 +286,7 @@ export function CrudListPage<
           onPageChange={onPageChange}
           emptyMessageKey={emptyMessageKey}
           viewMode={viewMode}
+          spreadsheetVariant={spreadsheetVariant}
         />
       ) : (
         <LoadingState variant="inline" />
