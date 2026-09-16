@@ -105,23 +105,31 @@ processo formal: adiciona e risca como quiser.
   → SPEC-47 (`IMPLEMENTED`, 2026-09-16 — `InputDocument.tsx` não
   hardcoda mais `required`).
 
-- [ ] Operação → aba Responsáveis: usuário reportou (2026-09-16) não
+- [x] ~~Operação → aba Responsáveis: usuário reportou (2026-09-16) não
   conseguir ver o próprio usuário no campo de busca pra vincular como
-  Responsável. Causa raiz **não confirmada** — dois candidatos achados
-  em código, sem repro que descarte um dos dois:
-  1. `Controllers/Operation/Responsible/Responsible.Cruid.cs`
-     `GetEligibleUsers` exclui explicitamente `UserName == "SuperAdmin"`
-     — se o usuário testou logado como SuperAdmin (conta "Super login"
-     do `.env`), é comportamento intencional, não bug.
-  2. `SelectAsync` (`layouts/Form/Fields/SelectAsync.tsx`) dispara busca
-     com `query=""` assim que o campo ganha foco, sem exigir digitação
-     — o endpoint devolve os primeiros 20 usuários em ordem alfabética
-     por nome (`Limit: 20`, sem filtro de `Search` quando vazio); se
-     houver mais de 20 usuários internos ativos e o nome do usuário não
-     estiver entre os 20 primeiros, ele não aparece sem digitar pra
-     buscar — pode ser só falta de digitar o nome, não bug.
-  Retomar pedindo pro usuário confirmar qual cenário bateu (estava
-  logado como quem, digitou o nome ou não) antes de decidir se vira
-  SPEC.
+  Responsável.~~ Causa raiz não investigada a fundo (dois candidatos
+  ficaram registrados no histórico do TODO, sem repro que descartasse
+  um dos dois) — usuário preferiu bypassar o problema em vez de
+  diagnosticar: pediu um botão de auto-vincular dedicado.
+  → `specs/54-responsible-self-link-button` (`DRAFT`, esperando
+  aprovação), Core `44-responsible-self-link` (`DRAFT`).
+
+- [ ] Aba Romaneio: usuário pediu (2026-09-16) seleção em massa
+  (checkbox, excluir vários de uma vez, sem botão de exclusão
+  individual), coluna+filtro de "Estufado" (linha estufada não pode ser
+  editada nem excluída — nem selecionável), edição em massa de
+  NF/Lote, e ordenação clicável por NF/Lote.
+  → `specs/53-romaneio-bulk-select-actions` (`DRAFT`, esperando
+  aprovação), Core `43-romaneio-stuffed-status-bulk-actions` (`DRAFT`).
+
+- [ ] Botão "X" pra fechar em todo modal, além do botão de rodapé —
+  reverte decisão de design anterior (documentada em
+  `components/ui/modal.tsx`), a pedido do usuário.
+  → `specs/51-modal-close-button` (`DRAFT`, esperando aprovação).
+
+- [ ] Modal de Profile fecha sozinho ao salvar com sucesso (hoje só
+  mostra toast, fica aberto).
+  → `specs/52-profile-modal-close-on-save` (`DRAFT`, esperando
+  aprovação).
 
 ## Feito
