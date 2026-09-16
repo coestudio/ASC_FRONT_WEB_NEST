@@ -172,7 +172,8 @@
       "toast": {
         "analyzeError": "Could not analyze the spreadsheet. Please try again.",
         "applyError": "Could not apply the import. Please try again.",
-        "applySuccess": "Import applied: {created} created, {updated} updated, {deleted} deleted."
+        "applySuccess": "Import applied: {created} created, {updated} updated, {deleted} deleted.",
+        "applyNoop": "Nothing was imported: no selected bale resulted in a create, update or delete."
       },
       "fields": {
         "itemCode": "Item code",

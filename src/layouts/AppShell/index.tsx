@@ -32,6 +32,26 @@ function isChildActive(items: NavItem[], pathname: string): boolean {
   return items.some((i) => pathname === i.to || pathname.startsWith(i.to + "/"));
 }
 
+/**
+ * Item de navegação "mais específico" que casa com a rota atual — corrige um
+ * bug em que, ex., "Início" (`to: "/administrative"`) ficava marcado como
+ * ativo ao mesmo tempo que "Operações" (`to: "/administrative/operations"`),
+ * porque `/administrative` é prefixo de toda rota da seção. Em vez de cada
+ * item decidir sozinho se é ativo (prefixo simples), a seção inteira escolhe
+ * só o item com o `to` mais longo entre os que casam com o pathname atual —
+ * só ele acende.
+ */
+function getActiveItemTo(items: NavItem[], pathname: string): string | null {
+  let best: string | null = null;
+  for (const item of items) {
+    const matches = pathname === item.to || pathname.startsWith(item.to + "/");
+    if (matches && (best === null || item.to.length > best.length)) {
+      best = item.to;
+    }
+  }
+  return best;
+}
+
 function SidebarSection({
   section,
   pathname,
@@ -92,24 +112,30 @@ function SidebarSection({
       >
         <div ref={contentRef}>
           <Nav as="ul" className={`${styles.navSub} flex-column`}>
-            {section.items.map((item) => {
-              const itemActive = pathname === item.to || pathname.startsWith(item.to + "/");
-              return (
-                <Nav.Item as="li" key={item.to}>
-                  {item.legacyOrphanRoute ? (
-                    <Nav.Link as="a" href={item.to} active={itemActive}>
-                      {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
-                      {t(item.labelKey)}
-                    </Nav.Link>
-                  ) : (
-                    <Nav.Link as={Link} to={item.to} active={itemActive}>
-                      {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
-                      {t(item.labelKey)}
-                    </Nav.Link>
-                  )}
-                </Nav.Item>
-              );
-            })}
+            {(() => {
+              // "mais específico" evita que dois itens da mesma seção fiquem
+              // ativos ao mesmo tempo (ex.: "Início" + "Operações") — ver
+              // getActiveItemTo.
+              const activeTo = getActiveItemTo(section.items, pathname);
+              return section.items.map((item) => {
+                const itemActive = item.to === activeTo;
+                return (
+                  <Nav.Item as="li" key={item.to}>
+                    {item.legacyOrphanRoute ? (
+                      <Nav.Link as="a" href={item.to} active={itemActive}>
+                        {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
+                        {t(item.labelKey)}
+                      </Nav.Link>
+                    ) : (
+                      <Nav.Link as={Link} to={item.to} active={itemActive}>
+                        {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
+                        {t(item.labelKey)}
+                      </Nav.Link>
+                    )}
+                  </Nav.Item>
+                );
+              });
+            })()}
           </Nav>
         </div>
       </div>

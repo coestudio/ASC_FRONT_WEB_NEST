@@ -1,4 +1,5 @@
 import { Spinner } from "react-bootstrap";
+import styles from "./crud-row-actions.module.css";
 
 export type CrudRowActionsProps = {
   onView?: () => void;
@@ -19,7 +20,10 @@ export type CrudRowActionsProps = {
  * `onEdit` porque o Core não expõe update de Collaborator). Estilo fixo
  * (`btn-outline-primary/success/danger` + `bi-eye/pencil/trash`), o mesmo já
  * usado nas 9 telas migradas — não serve pro padrão de pílula/5-ações de
- * `admin/access` (fora de escopo, ver SPEC-18 §4).
+ * `admin/access` (fora de escopo, ver SPEC-18 §4). Botões quadrados e
+ * compactos (`crud-row-actions.module.css`, SPEC-47 item 3) — reduz a altura
+ * efetiva da linha, que ficava com gap grande em relação ao cabeçalho
+ * "AÇÕES" nas listagens densas (ex.: Romaneio, `spreadsheetVariant`).
  */
 export function CrudRowActions({
   onView,
@@ -30,11 +34,11 @@ export function CrudRowActions({
   disabled,
 }: CrudRowActionsProps) {
   return (
-    <div className="d-flex gap-2">
+    <div className={`d-flex ${styles.actions}`}>
       {onView ? (
         <button
           type="button"
-          className="btn btn-sm btn-outline-primary"
+          className={`btn btn-sm btn-outline-primary ${styles.button}`}
           disabled={disabled || viewLoading}
           onClick={onView}
         >
@@ -48,7 +52,7 @@ export function CrudRowActions({
       {onEdit ? (
         <button
           type="button"
-          className="btn btn-sm btn-outline-success"
+          className={`btn btn-sm btn-outline-success ${styles.button}`}
           disabled={disabled || editLoading}
           onClick={onEdit}
         >
@@ -62,7 +66,7 @@ export function CrudRowActions({
       {onDelete ? (
         <button
           type="button"
-          className="btn btn-sm btn-outline-danger"
+          className={`btn btn-sm btn-outline-danger ${styles.button}`}
           disabled={disabled}
           onClick={onDelete}
         >
