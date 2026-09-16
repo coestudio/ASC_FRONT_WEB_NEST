@@ -10,6 +10,7 @@ export * from './invoice/invoice.ts';
 export * from './operation/operation.ts';
 export * from './operation-container/operation-container.ts';
 export * from './operation-occurrence/operation-occurrence.ts';
+export * from './operation-reports/operation-reports.ts';
 export * from './product/product.ts';
 export * from './profile/profile.ts';
 export * from './responsible/responsible.ts';

@@ -212,16 +212,24 @@
     "tabPlaceholder": "此标签页的内容尚未实现。"
   },
   "reports": {
-    "description": "此作业已生成的报告列表。",
-    "colType": "类型",
-    "colGeneratedAt": "生成时间",
-    "colFormat": "格式",
-    "colStatus": "状态",
-    "colActions": "操作",
-    "statusReady": "可用",
-    "statusPending": "待处理",
-    "download": "下载",
-    "emptyState": "暂无可用报告。"
+    "description": "生成并下载此作业的报告。每份报告都是根据现有数据即时生成的——没有历史记录。",
+    "generate": "生成并下载",
+    "weight": {
+      "name": "Weight Report",
+      "description": "按集装箱和批次汇总及明细的重量报告（.xlsx）。"
+    },
+    "packingList": {
+      "name": "Packing List",
+      "description": "按集装箱列出的包裹清单（.xlsx）。"
+    },
+    "photographic": {
+      "name": "照片报告",
+      "description": "此作业各集装箱的照片（.docx）。"
+    },
+    "toast": {
+      "success": "{name} 生成成功。",
+      "error": "无法生成 {name}。请重试。"
+    }
   },
   "log": {
     "description": "此作业记录的事件历史。",
