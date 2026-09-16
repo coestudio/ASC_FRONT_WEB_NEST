@@ -1,0 +1,90 @@
+/* SPEC-49 — HTML convertido por mammoth/SheetJS não tem classe própria
+   nenhuma, só herda o reset cru do Bootstrap (h1 gigante, tabela sem
+   borda). Estiliza via :global() nas tags que a lib gera dentro do
+   container escopado — cores só por token --bs-*, nunca hex fixo. */
+
+.docx :global(h1) {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-block: 1rem 0.5rem;
+}
+
+.docx :global(h2) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-block: 0.875rem 0.5rem;
+}
+
+.docx :global(h3) {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-block: 0.75rem 0.375rem;
+}
+
+.docx :global(h4),
+.docx :global(h5),
+.docx :global(h6) {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-block: 0.625rem 0.375rem;
+}
+
+.docx :global(h1):first-child,
+.docx :global(h2):first-child,
+.docx :global(h3):first-child {
+  margin-top: 0;
+}
+
+.docx :global(p) {
+  margin-block: 0 0.75rem;
+  line-height: 1.6;
+  color: var(--bs-body-color);
+}
+
+.docx :global(ul),
+.docx :global(ol) {
+  margin-block: 0 0.75rem;
+  padding-inline-start: 1.5rem;
+  line-height: 1.6;
+}
+
+.docx {
+  overflow-wrap: break-word;
+}
+
+.docx :global(table) {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  width: 100%;
+  margin-block: 0.75rem;
+}
+
+.docx :global(table td),
+.docx :global(table th) {
+  border: 1px solid var(--bs-border-color);
+  padding: 0.375rem 0.5rem;
+}
+
+.sheet :global(table) {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.sheet :global(table td),
+.sheet :global(table th) {
+  border: 1px solid var(--bs-border-color);
+  padding: 0.375rem 0.5rem;
+  white-space: nowrap;
+}
+
+.sheet :global(table tr:first-child) {
+  font-weight: 600;
+  background-color: var(--bs-tertiary-bg);
+  border-bottom: 2px solid var(--bs-border-color);
+}
+
+.sheet :global(table tr:not(:first-child):nth-child(even)) {
+  background-color: var(--bs-tertiary-bg);
+}
