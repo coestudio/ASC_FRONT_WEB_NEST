@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-83
 - **Nome:** topbar-sidebar-height-reduction
-- **Status:** WAITING_APPROVAL — sem `[NEEDS_DECISION]`.
+- **Status:** IMPLEMENTED — sem `[NEEDS_DECISION]`.
 - **Autor:** claude (pedido do usuário, 2026-09-17: "a alturas dos height
   estão fixas, correto? 80px do sidebar e do main context... reduzir para
   60px")
@@ -77,3 +77,17 @@ Usuário pediu reduzir as duas para `60px`.
 - **R1** — Baixo: mudança puramente visual de CSS, sem lógica nova. Único
   risco é conteúdo do topbar ficar apertado nos `39px` de área útil — checar
   visualmente antes de fechar (CA2).
+
+## 8. Notas de implementação
+
+- `.sidebarHeader` e `.topbar` (`AppShell/index.module.css`) ajustados pra
+  `60px`; `.topbar` teve `padding: 15px 1.5rem` → `10px 1.5rem` (mesma
+  conta com border-bottom: `39px conteúdo + 10px + 10px + 1px = 60px`).
+  Comentários das linhas atualizados (80→60).
+- Breakpoint mobile (`64px`) inalterado, conforme escopo.
+- CA2 verificado por cálculo (maior elemento do topbar é
+  `.app-topbar__avatar`, `32px`, cabe folgado nos `39px` de área útil com
+  `align-items: center`) — sem ferramenta de captura visual disponível no
+  ambiente desta implementação para confirmação por screenshot.
+- `bun run check` + `bun run lint`: 0 erros, 63 warnings (baseline
+  pré-existente, sem regressão).
