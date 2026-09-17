@@ -2,9 +2,10 @@
 
 - **ID:** SPEC-81
 - **Nome:** listing-standard-search-sort
-- **Status:** WAITING_APPROVAL — sem `[NEEDS_DECISION]` de escopo
-  (confirmado pelo usuário via pergunta de escopo, 2026-09-17: "Todo o
-  ecossistema Operação + CRUD administrativo").
+- **Status:** IMPLEMENTED — sem `[NEEDS_DECISION]` pendente (confirmado
+  pelo usuário via pergunta de escopo, 2026-09-17: "Todo o ecossistema
+  Operação + CRUD administrativo"; ver §8 pras decisões tomadas na
+  implementação).
 - **Autor:** claude (pedido do usuário, 2026-09-17 — regra geral pras
   listagens que a sessão vem mexendo, usando a sub-aba de Estufagem/
   Romaneio como referência já pronta)
@@ -185,4 +186,80 @@ já existe.
 - **R2** — Depende de `Core/specs/48` pra §4.2 (Documents/Occurrences)
   — se o Core não for aprovado/implementado, essa parte fica `BLOCKED`,
   o resto da SPEC (ordenação inteira + busca do Invoice) segue
-  independente.
+  independente. **Resolvido:** `Core/specs/48` foi aprovada e
+  implementada antes desta (commit `a841874`), `just map` rodado contra
+  um Core local com o build atualizado — `Search` já chegou nos dois
+  `Query` gerados antes desta implementação começar §4.2.
+
+## 8. Notas de implementação
+
+- **`just map`** rodado contra Core local (`http://127.0.0.1:5766`,
+  restart do processo que já rodava desde antes desta sessão pra pegar o
+  build com SPEC-48) — diff mínimo e esperado: só `Search` novo em
+  `getApiOperationOperationIdDocumentParams.ts`/
+  `getApiOperationOperationIdOccurrenceParams.ts` e nos dois `zod`
+  correspondentes (CA3 confirmado via schema OpenAPI ao vivo, não só
+  pelo diff do client gerado).
+- **`nextSort`** (antes privada em `crud-list-page.tsx`) extraída pra
+  `src/components/crud/sort.ts` — exportar direto de `crud-list-page.tsx`
+  acionava o aviso `react-refresh/only-export-components` (arquivo de
+  componente exportando uma função não-componente), quebrando a baseline
+  de lint. Módulo `sort.ts` reusado tanto por `crud-list-page.tsx` quanto
+  pelo novo `sortable-th.tsx`.
+- **`src/components/crud/sortable-th.tsx`** (novo) — `<th>` clicável com
+  o mesmo ícone/ciclo (`bi-sort-up-alt`/`bi-sort-down-alt`/
+  `bi-arrow-down-up`) que `CrudColumn.sortKey` já usa em
+  `crud-list-page.tsx`, extraído pras 5 telas com tabela própria (não
+  usam `CrudColumn`) evitar reimplementar o mesmo JSX 5 vezes — não é
+  extensão de `CrudListPage`/`CrudColumn` (fora do escopo, §4.3), é um
+  componente novo e pequeno, só pro `<th>`.
+- **Chaves de `sortKey` conferidas linha a linha contra o `Sortable` de
+  cada `ViewModel.Query` no código do Core** (R1), não só pela tabela do
+  §4.1 — todas bateram exatamente com o que a spec já previa: `Client`
+  (fullName/document/email/createdAt), `Harbor`/`Terminal`/`Product`/
+  `Vessel` (name/createdAt), `Container` (identifier/tara/createdAt),
+  `User` (userName/fullName/email/isActive/type/createdAt), `Operation`
+  (number/status/opType/opDate), `ContainerOperation`
+  (identifier/createdAt — só `identifier` tem coluna visível na UI de
+  `Containers.tsx` hoje, `createdAt` não tem `<th>` pra prender o sort,
+  então não ganhou `sortKey` clicável), `Document`
+  (title/type/createdOn — atenção: `createdOn`, não `createdAt`),
+  `Invoice` (number/status/issuedOn — `issuedOn` anexado ao `<th>`
+  "Datas" existente, que hoje mostra `entryDate`/`exitDate`, não
+  `issuedOn`; é o `<th>` semanticamente mais próximo, nenhuma coluna nova
+  foi criada), `Occurrence` (title/createdOn).
+- **7 telas com `CrudColumn`** (`clients`, `registry/{harbor,terminal,
+  product,container,vessel}`, `admin/access`) ganharam `sort`
+  state + `Sort` no `queryOptions` + `sortKey` nas colunas cabíveis +
+  `sort`/`onSortChange` no `CrudListPage` — sem tocar em
+  `CrudListPage`/`CrudColumn` em si (já suportavam, SPEC-53).
+- **`client/collaborators/index.tsx`** — ordenação client-side (RF2):
+  `toPagedResult` ganhou parâmetro `sort`, nova função `sortItems`
+  (asc/desc via `localeCompare`) roda antes de fatiar a página; endpoint
+  sem `Sort` (mesma lacuna de contrato do R1 da SPEC-09), sem chamada ao
+  Core.
+- **5 telas sem `CrudColumn`** (`operations-list.tsx`, `Containers.tsx`,
+  `Documents.tsx`, `Invoice.tsx`, `Occurrences.tsx`) — `<th>` trocado
+  por `SortableTh` nas colunas com `sortKey` válido; `operations-list.tsx`
+  trocou `Sort: "-number"` fixo por `useState<string | undefined>
+  ("-number")` (mesmo default inicial).
+- **Busca (§4.2):** `Invoice.tsx`/`Documents.tsx`/`Occurrences.tsx`
+  ganharam `FilterText` (mesmo padrão de `Containers.tsx`), ligado a
+  `Search` no `queryOptions` — chaves `searchPlaceholder` novas nos 4
+  idiomas (`administrative-operations.{documents,invoice,occurrences}.
+  searchPlaceholder`).
+- `bun run check`: 0 erros. `bun run lint`: 0 erros, 63 warnings
+  (baseline pré-existente, sem regressão — a extração de `sort.ts` foi
+  justamente pra manter esse número). `bun run build` (produção)
+  concluído sem erro.
+- **Não verificado por screenshot** (sem ferramenta de captura visual no
+  ambiente desta implementação): CA1/CA2 visual (ícone alternando
+  asc/desc/neutro ao clicar), CA5 (nenhuma regressão visual de
+  busca/paginação nas 8 telas administrativas). Mitigação: `sortKey`
+  reusa exatamente o mesmo componente/lógica já em produção
+  (`CrudColumn`/`CrudListPage`, SPEC-53) ou uma extração 1:1 dela
+  (`SortableTh`); `bun run check`/`lint`/`build` cobrem a parte
+  estrutural. Os endpoints do Core exigem sessão autenticada — não deu
+  pra bater um `curl` direto pra confirmar o efeito do `Sort=campo` em
+  runtime sem um token de usuário interno; `dotnet test` (128 passed) já
+  cobre a mecânica de `ApplySort` no Core, inalterada por esta SPEC.

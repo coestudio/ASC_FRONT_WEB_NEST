@@ -76,6 +76,7 @@ function TerminalPageBody() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: TerminalDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<TerminalDTO | null>(null);
 
@@ -83,6 +84,7 @@ function TerminalPageBody() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   // Rótulo já resolvido do porto selecionado (edição/detalhe) — o
@@ -137,6 +139,7 @@ function TerminalPageBody() {
     {
       key: "name",
       headerKey: "administrative-registry.terminal.colName",
+      sortKey: "name",
       render: (r) => r.name,
     },
     {
@@ -147,6 +150,7 @@ function TerminalPageBody() {
     {
       key: "createdAt",
       headerKey: "administrative-registry.terminal.colCreatedAt",
+      sortKey: "createdAt",
       render: (r) => new Date(r.createdAt).toLocaleDateString(locale),
     },
   ];
@@ -198,6 +202,8 @@ function TerminalPageBody() {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}

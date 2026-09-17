@@ -36,6 +36,7 @@ import {
 } from "@/api/generated/static/operationServiceOptions";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import { SortableTh } from "@/components/crud/sortable-th";
 import {
   buildOperationEditFields,
   operationEditDefaultValues,
@@ -292,6 +293,9 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  // SPEC-81: era `Sort: "-number"` fixo — vira estado, mesmo default inicial
+  // (mais recente primeiro), agora clicável nas 4 colunas de `Sortable`.
+  const [sort, setSort] = useState<string | undefined>("-number");
   const [filters, setFilters] = useState<OperationFiltersValues>({
     opType: "",
     status: "",
@@ -322,7 +326,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     ClientId: filters.clientId || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
-    Sort: "-number",
+    Sort: sort,
   });
   const query = useSsrSafeQuery(listQueryOptions);
   const items = query.data?.items ?? [];
@@ -580,14 +584,22 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
           <Table responsive hover className={`align-middle mb-0 ${styles.operationsTable}`}>
             <thead>
               <tr>
-                <th>{t("administrative-operations.colNumber")}</th>
+                <SortableTh sortKey="number" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colNumber")}
+                </SortableTh>
                 <th>{t("administrative-operations.colClient")}</th>
                 <th>{t("administrative-operations.colProduct")}</th>
                 <th>{t("administrative-operations.colBooking")}</th>
-                <th>{t("administrative-operations.colType")}</th>
+                <SortableTh sortKey="opType" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colType")}
+                </SortableTh>
                 <th>{t("administrative-operations.colService")}</th>
-                <th>{t("administrative-operations.colStatus")}</th>
-                <th>{t("administrative-operations.colOpDate")}</th>
+                <SortableTh sortKey="status" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colStatus")}
+                </SortableTh>
+                <SortableTh sortKey="opDate" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colOpDate")}
+                </SortableTh>
               </tr>
             </thead>
             <tbody>

@@ -47,6 +47,7 @@ function ContainerPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ContainerDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerDTO | null>(null);
 
@@ -54,6 +55,7 @@ function ContainerPage() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiContainer();
@@ -98,11 +100,13 @@ function ContainerPage() {
     {
       key: "identifier",
       headerKey: "administrative-registry.container.colIdentifier",
+      sortKey: "identifier",
       render: (c) => c.identifier,
     },
     {
       key: "tara",
       headerKey: "administrative-registry.container.colTara",
+      sortKey: "tara",
       render: (c) => (c.tara != null ? String(c.tara) : "—"),
     },
     {
@@ -113,6 +117,7 @@ function ContainerPage() {
     {
       key: "createdAt",
       headerKey: "administrative-registry.container.colCreatedAt",
+      sortKey: "createdAt",
       render: (c) => new Date(c.createdAt).toLocaleDateString(locale),
     },
   ];
@@ -164,6 +169,8 @@ function ContainerPage() {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}

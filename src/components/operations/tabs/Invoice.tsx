@@ -29,6 +29,7 @@ import type {
 import { resolveInvoiceSourceLabel } from "@/api/generated/static/invoiceSourceOptions";
 import { resolveInvoiceStatusLabel } from "@/api/generated/static/invoiceStatusOptions";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import { SortableTh } from "@/components/crud/sortable-th";
 import { LoadingState } from "@/components/ui/loading-state";
 import { FilePreviewModal } from "@/components/ui/file-preview-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
@@ -40,6 +41,7 @@ import {
   InputTextArea,
   InputTime,
 } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -120,14 +122,19 @@ function InvoiceListing({ operationId }: { operationId: string }) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
+  // SPEC-81 §4.2 — busca por texto (`Search`, Core já aceita, só faltava a UI).
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<InvoiceDTO | null>(null);
   const [cancelTarget, setCancelTarget] = useState<InvoiceDTO | null>(null);
   const [previewing, setPreviewing] = useState<FileDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdInvoiceQueryOptions(operationId, {
+    Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
   const query = useSsrSafeQuery(listQueryOptions);
 
@@ -243,7 +250,17 @@ function InvoiceListing({ operationId }: { operationId: string }) {
 
   return (
     <div>
-      <div className="d-flex justify-content-end mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+        <div style={{ minWidth: 240 }}>
+          <FilterText
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            placeholder={t("administrative-operations.invoice.searchPlaceholder")}
+          />
+        </div>
         <Button variant="primary" onClick={openCreateModal}>
           <i className="bi bi-plus-lg me-1" aria-hidden />
           {t("administrative-operations.invoice.new")}
@@ -270,10 +287,16 @@ function InvoiceListing({ operationId }: { operationId: string }) {
           <Table hover className="align-middle mb-0">
             <thead>
               <tr>
-                <th>{t("administrative-operations.invoice.colNumber")}</th>
+                <SortableTh sortKey="number" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.invoice.colNumber")}
+                </SortableTh>
                 <th>{t("administrative-operations.invoice.colSource")}</th>
-                <th>{t("administrative-operations.invoice.colStatus")}</th>
-                <th>{t("administrative-operations.invoice.colDates")}</th>
+                <SortableTh sortKey="status" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.invoice.colStatus")}
+                </SortableTh>
+                <SortableTh sortKey="issuedOn" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.invoice.colDates")}
+                </SortableTh>
                 <th>{t("administrative-operations.invoice.colValues")}</th>
                 <th>{t("administrative-operations.invoice.colDocuments")}</th>
                 <th>{t("administrative-operations.invoice.colActions")}</th>

@@ -125,6 +125,7 @@ function AdminAccessPageContent() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   // Filtros de listagem (SPEC-32) — "" = "Todos" (sem parâmetro `Role`).
   const [roleFilter, setRoleFilter] = useState<InternalRole | "">("");
   const [isAdminFilter, setIsAdminFilter] = useState<IsAdminFilter>("all");
@@ -137,6 +138,7 @@ function AdminAccessPageContent() {
     IsAdmin: isAdminFilter === "admin" ? true : isAdminFilter === "nonAdmin" ? false : undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
   // Lookup de roles pro multi-select do form (fora do CrudListPage) — mesmo
   // guard de SSR via useSsrSafeQuery (SPEC-10); o cache já vem quente do
@@ -208,9 +210,24 @@ function AdminAccessPageContent() {
   ];
 
   const columns: CrudColumn<UserDTO>[] = [
-    { key: "name", headerKey: "access.colName", render: (u) => u.profile.fullName },
-    { key: "username", headerKey: "access.colUsername", render: (u) => u.userName },
-    { key: "email", headerKey: "access.colEmail", render: (u) => u.profile.email ?? "—" },
+    {
+      key: "name",
+      headerKey: "access.colName",
+      sortKey: "fullName",
+      render: (u) => u.profile.fullName,
+    },
+    {
+      key: "username",
+      headerKey: "access.colUsername",
+      sortKey: "userName",
+      render: (u) => u.userName,
+    },
+    {
+      key: "email",
+      headerKey: "access.colEmail",
+      sortKey: "email",
+      render: (u) => u.profile.email ?? "—",
+    },
     {
       key: "profile",
       headerKey: "access.colProfile",
@@ -219,6 +236,7 @@ function AdminAccessPageContent() {
     {
       key: "status",
       headerKey: "access.colStatus",
+      sortKey: "isActive",
       render: (u) => (
         <Badge pill bg={u.isActive ? "success" : "secondary"}>
           {t(u.isActive ? "access.active" : "access.inactive")}
@@ -228,11 +246,13 @@ function AdminAccessPageContent() {
     {
       key: "type",
       headerKey: "access.colType",
+      sortKey: "type",
       render: (u) => t(u.type === UserType.Internal ? "access.internal" : "access.external"),
     },
     {
       key: "createdAt",
       headerKey: "access.colCreatedAt",
+      sortKey: "createdAt",
       render: (u) => new Date(u.createdAt).toLocaleDateString(locale),
     },
   ];
@@ -397,6 +417,8 @@ function AdminAccessPageContent() {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           filters={
             <div className="d-flex gap-2 flex-wrap">
               <Form.Select

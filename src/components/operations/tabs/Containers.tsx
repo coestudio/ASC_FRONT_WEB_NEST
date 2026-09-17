@@ -33,6 +33,7 @@ import type { ContainerOperationDTO, ContainerPhotoSlot } from "@/api/generated/
 import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
 import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import { SortableTh } from "@/components/crud/sortable-th";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
@@ -136,6 +137,7 @@ export function Containers({ operationId }: { operationId: string }) {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [editing, setEditing] = useState<ContainerOperationDTO | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
@@ -152,6 +154,7 @@ export function Containers({ operationId }: { operationId: string }) {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
   const query = useSsrSafeQuery(listQueryOptions);
 
@@ -297,7 +300,9 @@ export function Containers({ operationId }: { operationId: string }) {
           <Table hover size="sm" className="align-middle mb-0">
             <thead>
               <tr>
-                <th>{t("administrative-operations.containers.colIdentifier")}</th>
+                <SortableTh sortKey="identifier" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.containers.colIdentifier")}
+                </SortableTh>
                 <th>{t("administrative-operations.containers.colTara")}</th>
                 <th>{t("administrative-operations.containers.colStatus")}</th>
                 <th>{t("administrative-operations.containers.colPhotos")}</th>

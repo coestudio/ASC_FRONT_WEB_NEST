@@ -127,6 +127,7 @@ function ClientsPageBody() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ClientDetailDTO } | null>(
     null,
   );
@@ -143,6 +144,7 @@ function ClientsPageBody() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiClient();
@@ -244,6 +246,7 @@ function ClientsPageBody() {
     {
       key: "fullName",
       headerKey: "administrative-clients.colFullName",
+      sortKey: "fullName",
       render: (c) => c.fullName,
     },
     {
@@ -254,6 +257,7 @@ function ClientsPageBody() {
     {
       key: "document",
       headerKey: "administrative-clients.colDocument",
+      sortKey: "document",
       render: (c) => formatDocument(c.document) || "—",
     },
     {
@@ -264,11 +268,13 @@ function ClientsPageBody() {
     {
       key: "email",
       headerKey: "administrative-clients.colEmail",
+      sortKey: "email",
       render: (c) => c.email ?? "—",
     },
     {
       key: "createdAt",
       headerKey: "administrative-clients.colCreatedAt",
+      sortKey: "createdAt",
       render: (c) => new Date(c.createdAt).toLocaleDateString(locale),
     },
   ];
@@ -343,6 +349,8 @@ function ClientsPageBody() {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}

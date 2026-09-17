@@ -92,6 +92,7 @@ function HarborPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: HarborDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<HarborDTO | null>(null);
 
@@ -99,6 +100,7 @@ function HarborPage() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiHarbor();
@@ -137,6 +139,7 @@ function HarborPage() {
     {
       key: "name",
       headerKey: "administrative-registry.harbor.colName",
+      sortKey: "name",
       render: (h) => h.name,
     },
     {
@@ -147,6 +150,7 @@ function HarborPage() {
     {
       key: "createdAt",
       headerKey: "administrative-registry.harbor.colCreatedAt",
+      sortKey: "createdAt",
       render: (h) => new Date(h.createdAt).toLocaleDateString(locale),
     },
   ];
@@ -198,6 +202,8 @@ function HarborPage() {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}

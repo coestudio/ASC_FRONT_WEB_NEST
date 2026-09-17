@@ -43,6 +43,7 @@ function VesselPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: VesselDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<VesselDTO | null>(null);
 
@@ -50,6 +51,7 @@ function VesselPage() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiVessel();
@@ -82,11 +84,13 @@ function VesselPage() {
     {
       key: "name",
       headerKey: "administrative-registry.vessel.colName",
+      sortKey: "name",
       render: (v) => v.name,
     },
     {
       key: "createdAt",
       headerKey: "administrative-registry.vessel.colCreatedAt",
+      sortKey: "createdAt",
       render: (v) => new Date(v.createdAt).toLocaleDateString(locale),
     },
   ];
@@ -135,6 +139,8 @@ function VesselPage() {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}

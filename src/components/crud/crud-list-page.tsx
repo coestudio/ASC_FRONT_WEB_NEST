@@ -12,6 +12,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { FilterText } from "@/layouts/Filters/Index";
 import { useMounted } from "@/hooks/useMounted";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import { nextSort } from "./sort";
 import styles from "./crud-list-page.module.css";
 
 export type CrudColumn<T> = {
@@ -45,18 +46,6 @@ export type CrudSelection<T> = {
   /** Linha não pode ser selecionada — checkbox desabilitado, sem `onClick`. */
   isDisabled?: (item: T) => boolean;
 };
-
-/**
- * Alterna a ordenação de uma coluna: sem ordenação → ascendente (`key`) →
- * descendente (`-key`) → volta a sem ordenação (`undefined`, Core aplica o
- * `defaultSort` do endpoint). Só uma coluna ordenada por vez — mesmo modelo
- * de `PageQuery.Sort` do Core (uma string só).
- */
-function nextSort(current: string | undefined, key: string): string | undefined {
-  if (current === key) return `-${key}`;
-  if (current === `-${key}`) return undefined;
-  return key;
-}
 
 /** Shape mínimo que toda resposta paginada do Core segue (`PagedDTOOfXxxDTO` gerado pelo Orval). */
 export type CrudPagedResult<T> = {

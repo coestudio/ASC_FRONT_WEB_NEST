@@ -43,6 +43,7 @@ function ProductPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ProductDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ProductDTO | null>(null);
 
@@ -50,6 +51,7 @@ function ProductPage() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiProduct();
@@ -82,11 +84,13 @@ function ProductPage() {
     {
       key: "name",
       headerKey: "administrative-registry.product.colName",
+      sortKey: "name",
       render: (p) => p.name,
     },
     {
       key: "createdAt",
       headerKey: "administrative-registry.product.colCreatedAt",
+      sortKey: "createdAt",
       render: (p) => new Date(p.createdAt).toLocaleDateString(locale),
     },
   ];
@@ -135,6 +139,8 @@ function ProductPage() {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
