@@ -149,10 +149,25 @@ export function CrudRowActions({
   const busy = disabled || viewLoading || editLoading;
   const controlled = onToggle != null;
 
+  // No modo controlado, `Dropdown.Item` não tem o `Dropdown`/contexto de
+  // sempre por perto (o menu é um `<div>` avulso via portal, sem
+  // `<Dropdown>` ao redor) — o fechamento automático que o react-bootstrap
+  // faz ao clicar um item some junto. Cada clique aqui fecha o menu
+  // explicitamente (`onToggle(false)`) antes de rodar a ação de verdade; no
+  // modo não-controlado (`onToggle` ausente), essa chamada não existe e o
+  // `Dropdown` de sempre continua fechando sozinho como sempre fechou.
+  const withClose = (fn?: () => void) =>
+    fn
+      ? () => {
+          if (controlled) onToggle?.(false);
+          fn();
+        }
+      : undefined;
+
   const items = (
     <>
       {onView ? (
-        <Dropdown.Item onClick={onView} disabled={disabled || viewLoading}>
+        <Dropdown.Item onClick={withClose(onView)} disabled={disabled || viewLoading}>
           <i className="bi bi-eye me-2" aria-hidden />
           {t("crud.list.rowActionsView")}
         </Dropdown.Item>
@@ -160,7 +175,7 @@ export function CrudRowActions({
       {extraActions?.map((action) => (
         <Dropdown.Item
           key={action.key}
-          onClick={action.onClick}
+          onClick={withClose(action.onClick)}
           href={action.href}
           download={action.download}
           target={action.target}
@@ -172,13 +187,13 @@ export function CrudRowActions({
         </Dropdown.Item>
       ))}
       {onEdit ? (
-        <Dropdown.Item onClick={onEdit} disabled={disabled || editLoading}>
+        <Dropdown.Item onClick={withClose(onEdit)} disabled={disabled || editLoading}>
           <i className="bi bi-pencil me-2" aria-hidden />
           {t("crud.list.rowActionsEdit")}
         </Dropdown.Item>
       ) : null}
       {onDelete ? (
-        <Dropdown.Item onClick={onDelete} disabled={disabled} className="text-danger">
+        <Dropdown.Item onClick={withClose(onDelete)} disabled={disabled} className="text-danger">
           <i className="bi bi-trash me-2" aria-hidden />
           {t("crud.list.rowActionsDelete")}
         </Dropdown.Item>

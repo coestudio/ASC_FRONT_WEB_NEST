@@ -253,6 +253,15 @@ touch.
   `table-active` (Bootstrap, linha) e uma classe `.cardActive` nova
   (contorno com `--brand-primary`, card não tem equivalente pronto do
   Bootstrap).
+- **Fechar ao escolher uma ação (2026-09-17, pedido do usuário):** como o
+  menu controlado é um `<div>` avulso (via portal, sem `<Dropdown>` ao
+  redor), o fechamento automático que o `Dropdown.Item` do react-bootstrap
+  faz sozinho ao clicar (via contexto do `Dropdown`) não existe nesse
+  modo — clicar "Ver"/"Editar"/"Excluir" acionava a ação mas deixava o
+  menu aberto. Corrigido com `withClose`, que embrulha cada
+  `onClick`/ação extra: no modo controlado, chama `onToggle(false)`
+  antes de rodar a ação de verdade; no modo antigo (`⋮` sempre visível),
+  não muda nada, o `Dropdown` de sempre continua fechando sozinho.
 - **`CrudRowActions`** ganhou modo controlado (`show`/`position`/
   `onToggle`): em vez de um `Dropdown` ancorado num toggle, renderiza um
   menu flutuante via `createPortal` pro `document.body`
