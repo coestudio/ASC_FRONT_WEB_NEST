@@ -6,6 +6,11 @@ processo formal: adiciona e risca como quiser.
 
 ## Pendente
 
+- [ ] Scrollbar na listagem (por enquanto só na sub-aba Estufagem de
+  Operacional, `StuffingTab`/`CrudListPage`) — usuário pediu 2026-09-17,
+  ainda não descrito em detalhe (altura fixa com scroll interno? Só
+  scroll horizontal pra tabela larga?). Vira SPEC quando o escopo exato
+  for confirmado.
 - [x] ~~Paginação enxuta — `list-pagination.tsx` lista página por página
   (quebra com muitas páginas, ex. 300). Trocar por `<< < (página) > >>`.
   Foco esperado é busca, não navegação manual de página.~~ → SPEC-28
