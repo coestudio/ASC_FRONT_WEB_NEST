@@ -20,10 +20,11 @@ export interface ClientUpdate {
      */
   shortName?: string | null;
   /**
-     * @minLength 14
+     * @minLength 11
      * @maxLength 14
+     * @nullable
      */
-  document: string;
+  document?: string | null;
   /**
      * @maxLength 150
      * @nullable

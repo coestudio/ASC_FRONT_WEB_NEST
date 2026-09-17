@@ -2,10 +2,11 @@
 
 - **ID:** SPEC-27
 - **Nome:** delete-user-unexpected-logout-audit
-- **Status:** IN_PROGRESS — Fase 1 (instrumentação de diagnóstico)
-  `IMPLEMENTED`; Fase 2 (correção definitiva) permanece `BLOCKED` até o
-  usuário reproduzir o bug com DevTools/Network aberto (ver §6) e decidir
-  §7.
+- **Status:** IMPLEMENTED (2026-09-17, confirmado pelo usuário — "SPEC-27
+  foi resolvida"). Fase 1 (instrumentação de diagnóstico) já estava
+  `IMPLEMENTED`; usuário não reproduz mais o sintoma e considera
+  encerrada, sem abrir Fase 2. Se o sintoma voltar, reabrir esta mesma
+  SPEC (não criar nova).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/access/index.tsx` (ação de
   excluir), `src/api/mutator.ts` (interceptor global de erro),

@@ -63,6 +63,9 @@ export const getApiOperationOperationIdRomaneioQueryLimitRegExpTwo = new RegExp(
 
 export const GetApiOperationOperationIdRomaneioQueryParams = zod.object({
   "Search": zod.string().optional(),
+  "NotaFiscal": zod.string().optional(),
+  "Lote": zod.string().optional(),
+  "IsStuffed": zod.boolean().optional(),
   "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioQueryOffsetRegExpTwo)]).optional(),
   "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioQueryLimitRegExpTwo)]).optional(),
   "Sort": zod.string().optional()
@@ -91,6 +94,7 @@ export const GetApiOperationOperationIdRomaneioResponse = zod.object({
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -161,6 +165,7 @@ export const PostApiOperationOperationIdRomaneioResponse = zod.object({
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -190,6 +195,7 @@ export const GetApiOperationOperationIdRomaneioIdResponse = zod.object({
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -255,6 +261,7 @@ export const PutApiOperationOperationIdRomaneioIdResponse = zod.object({
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -266,6 +273,62 @@ export const DeleteApiOperationOperationIdRomaneioIdParams = zod.object({
 })
 
 export const DeleteApiOperationOperationIdRomaneioIdResponse = zod.unknown()
+
+export const PostApiOperationOperationIdRomaneioDeleteBatchParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+
+
+
+export const PostApiOperationOperationIdRomaneioDeleteBatchBody = zod.object({
+  "ids": zod.array(zod.uuid()).min(1)
+})
+
+export const PostApiOperationOperationIdRomaneioDeleteBatchResponse = zod.unknown()
+
+export const PostApiOperationOperationIdRomaneioUpdateBatchParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+
+export const postApiOperationOperationIdRomaneioUpdateBatchBodyNotaFiscalMax = 50;
+
+export const postApiOperationOperationIdRomaneioUpdateBatchBodyLoteMax = 50;
+
+
+
+export const PostApiOperationOperationIdRomaneioUpdateBatchBody = zod.object({
+  "ids": zod.array(zod.uuid()).min(1),
+  "notaFiscal": zod.string().max(postApiOperationOperationIdRomaneioUpdateBatchBodyNotaFiscalMax).nullish(),
+  "lote": zod.string().min(1).max(postApiOperationOperationIdRomaneioUpdateBatchBodyLoteMax).nullish()
+})
+
+export const postApiOperationOperationIdRomaneioUpdateBatchResponsePesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioUpdateBatchResponsePesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioUpdateBatchResponsePesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const PostApiOperationOperationIdRomaneioUpdateBatchResponseItem = zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioUpdateBatchResponsePesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioUpdateBatchResponsePesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioUpdateBatchResponsePesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+export const PostApiOperationOperationIdRomaneioUpdateBatchResponse = zod.array(PostApiOperationOperationIdRomaneioUpdateBatchResponseItem)
 
 export const PostApiOperationOperationIdRomaneioImportAnalyzeParams = zod.object({
   "operationId": zod.uuid()
@@ -354,6 +417,7 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -373,6 +437,7 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -488,6 +553,7 @@ export const PostApiOperationOperationIdRomaneioImportApplyResponse = zod.object
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -578,6 +644,7 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -597,6 +664,7 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
   "lote": zod.string(),
   "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})

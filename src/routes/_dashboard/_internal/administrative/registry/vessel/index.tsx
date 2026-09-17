@@ -43,6 +43,7 @@ function VesselPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: VesselDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<VesselDTO | null>(null);
 
@@ -50,6 +51,7 @@ function VesselPage() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiVessel();
@@ -82,23 +84,14 @@ function VesselPage() {
     {
       key: "name",
       headerKey: "administrative-registry.vessel.colName",
+      sortKey: "name",
       render: (v) => v.name,
     },
     {
       key: "createdAt",
       headerKey: "administrative-registry.vessel.colCreatedAt",
+      sortKey: "createdAt",
       render: (v) => new Date(v.createdAt).toLocaleDateString(locale),
-    },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.vessel.colActions",
-      render: (v) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: v })}
-          onEdit={() => setModal({ mode: "edit", record: v })}
-          onDelete={() => setPendingDelete(v)}
-        />
-      ),
     },
   ];
 
@@ -130,11 +123,24 @@ function VesselPage() {
             </Card>
           )}
           getItemKey={(v) => v.id}
+          rowActions={(v, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              position={ctl.position}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: v })}
+              onEdit={() => setModal({ mode: "edit", record: v })}
+              onDelete={() => setPendingDelete(v)}
+            />
+          )}
+          onRowOpen={(v) => setModal({ mode: "view", record: v })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
@@ -157,6 +163,7 @@ function VesselPage() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as VesselDTO) : undefined}
         />
       ) : null}
 

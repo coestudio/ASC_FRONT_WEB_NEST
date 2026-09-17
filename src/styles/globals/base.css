@@ -1,17 +1,51 @@
 /* Reset/base — cores vêm do Bootstrap (--bs-body-bg/--bs-body-color),
    que já mudam sozinhas conforme data-bs-theme. */
 
+/* Bug: modal com `<Form>` envolvendo `Modal.Body` + `Modal.Footer` (padrão
+   usado em `crud-record-modal.tsx`, `profile-modal.tsx`, abas de Operação)
+   quebra o scroll interno do `.modal-dialog-scrollable` do Bootstrap. O CSS
+   do Bootstrap espera `.modal-header`/`.modal-body`/`.modal-footer` como
+   filhos DIRETOS de `.modal-content` (flex column): `.modal-body` tem
+   `flex: 1 1 auto` + `overflow-y: auto` pra encolher e virar a área que
+   rola, enquanto header/footer (`flex-shrink: 0`) ficam fixos. Com o
+   `<form>` no meio, `.modal-body`/`.modal-footer` viram netos, não filhos,
+   de `.modal-content` — o `<form>` (bloco comum, sem `flex`/`overflow`
+   próprios) vira o item flex de fato, mas como não encolhe (min-height
+   automático não vira 0 sem `overflow` diferente de `visible`), ele cresce
+   pra caber todo o conteúdo. Resultado: sem scroll nenhum, o
+   `overflow: hidden` de `.modal-content` só corta o final por baixo — em
+   modal com muitos campos, o rodapé (botão Fechar/Salvar) some sem
+   indicação de que dava pra rolar (bug relatado: "Detalhes do cliente" com
+   muitos campos preenchidos).
+   `display: contents` tira o `<form>` da árvore de caixas (mantém o
+   elemento e a semântica de submit no DOM) e devolve header/body/footer
+   como filhos diretos flex de `.modal-content`, restaurando o comportamento
+   padrão do Bootstrap. */
+.modal-dialog-scrollable .modal-content > form {
+  display: contents;
+}
+
 html {
   height: 100%;
 }
 
-html,
+/* `overflow-x: hidden` fica só no body, nunca também no html — declarar nos
+   dois cria dois scroll containers aninhados (a spec de CSS Overflow só
+   propaga o overflow do body pro viewport quando o html não declara overflow
+   próprio; com html também não-visible, o body vira um scroll box "interno",
+   separado do viewport). Isso quebra `.sidebar { position: sticky }`
+   (src/layouts/AppShell/index.module.css): o "ancestral com scroll" mais
+   próximo passa a ser o body em vez do viewport/documento, e como o body só
+   tem `min-height: 100%` (sem altura travada), esse box de scroll interno se
+   comporta de forma inconsistente conforme a altura da viewport/resolução do
+   monitor e não acompanha o scroll de conteúdo longo (ex.: aba Romaneio,
+   detalhes de Operação). Com o overflow-x só no body, o overflow dele
+   propaga pro viewport (comportamento padrão da spec) e sobra um único
+   contexto de scroll — o sticky da sidebar volta a ancorar no viewport real,
+   consistente em qualquer resolução. */
 body {
   max-width: 100vw;
   overflow-x: hidden;
-}
-
-body {
   min-height: 100%;
   display: flex;
   flex-direction: column;
@@ -152,6 +186,40 @@ a {
   --bs-btn-active-bg: var(--bs-primary);
   --bs-btn-active-border-color: var(--bs-primary);
   --bs-btn-active-color: var(--on-brand, #fff);
+}
+
+/* SPEC-70 — mesmo bug de raiz do bloco acima: `.nav-pills` do
+   bootstrap.min.css pré-compilado fixa `--bs-nav-pills-link-active-bg`
+   em `#0d6efd` (azul padrão do Bootstrap) em vez de ler `--bs-primary`,
+   então o pill ativo (ex.: sub-abas de Nota Fiscal) nunca seguia a marca
+   ativa. Reforça aqui com o mesmo token já usado em `.btn-primary`. */
+.nav-pills {
+  --bs-nav-pills-link-active-bg: var(--bs-primary);
+  --bs-nav-pills-link-active-color: var(--on-brand, #fff);
+}
+
+/* SPEC-56 — `.soft-card`/`.btn-soft` eram usadas em 3 lugares do código
+   (view-toggle.tsx, Log.tsx, administrative/operations/$id) mas nunca
+   tinham sido definidas em nenhum CSS do projeto: renderizavam sem borda,
+   fundo ou sombra. Definidas aqui com os tokens de tema já existentes. */
+.soft-card {
+  background: var(--surface);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-soft {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-bg: var(--surface);
+  --bs-btn-border-color: var(--bs-border-color);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--bs-secondary-bg);
+  --bs-btn-hover-border-color: var(--bs-border-color);
+  --bs-btn-active-color: var(--bs-body-color);
+  --bs-btn-active-bg: var(--bs-secondary-bg);
+  --bs-btn-active-border-color: var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
 }
 
 /* Item de dropdown (ex.: opções do submenu de preferências) — Bootstrap

@@ -4,12 +4,19 @@
     "searchPlaceholder": "Buscar...",
     "viewMode": "Modo de visualização",
     "error": "Não foi possível carregar os dados.",
-    "empty": "Nenhum registro encontrado."
+    "empty": "Nenhum registro encontrado.",
+    "rowActionsToggle": "Ações da linha",
+    "rowActionsView": "Ver",
+    "rowActionsEdit": "Editar",
+    "rowActionsDelete": "Excluir",
+    "selectAll": "Selecionar todos",
+    "selectRow": "Selecionar linha"
   },
   "recordModal": {
     "cancel": "Cancelar",
     "close": "Fechar",
-    "save": "Salvar"
+    "save": "Salvar",
+    "delete": "Excluir"
   },
   "mockDataBanner": {
     "message": "Dados de exemplo — sem endpoint no Core ainda."

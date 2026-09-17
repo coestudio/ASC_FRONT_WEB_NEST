@@ -43,6 +43,7 @@ function ProductPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ProductDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ProductDTO | null>(null);
 
@@ -50,6 +51,7 @@ function ProductPage() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiProduct();
@@ -82,23 +84,14 @@ function ProductPage() {
     {
       key: "name",
       headerKey: "administrative-registry.product.colName",
+      sortKey: "name",
       render: (p) => p.name,
     },
     {
       key: "createdAt",
       headerKey: "administrative-registry.product.colCreatedAt",
+      sortKey: "createdAt",
       render: (p) => new Date(p.createdAt).toLocaleDateString(locale),
-    },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.product.colActions",
-      render: (p) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: p })}
-          onEdit={() => setModal({ mode: "edit", record: p })}
-          onDelete={() => setPendingDelete(p)}
-        />
-      ),
     },
   ];
 
@@ -130,11 +123,24 @@ function ProductPage() {
             </Card>
           )}
           getItemKey={(p) => p.id}
+          rowActions={(p, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              position={ctl.position}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: p })}
+              onEdit={() => setModal({ mode: "edit", record: p })}
+              onDelete={() => setPendingDelete(p)}
+            />
+          )}
+          onRowOpen={(p) => setModal({ mode: "view", record: p })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
@@ -157,6 +163,7 @@ function ProductPage() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as ProductDTO) : undefined}
         />
       ) : null}
 

@@ -1,25 +1,29 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldValues, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, Form, Row, Spinner } from "react-bootstrap";
+import { Badge, Button, Card, Form, Row, Spinner } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
-import { z } from "zod";
+import { z, type ZodType } from "zod";
 
 import {
+  getGetApiOperationOperationIdRomaneioExportQueryKey,
   getGetApiOperationOperationIdRomaneioQueryKey,
   getGetApiOperationOperationIdRomaneioQueryOptions,
-  useDeleteApiOperationOperationIdRomaneioId,
   usePostApiOperationOperationIdRomaneio,
+  usePostApiOperationOperationIdRomaneioDeleteBatch,
   usePostApiOperationOperationIdRomaneioImportAnalyze,
   usePostApiOperationOperationIdRomaneioImportApply,
+  usePostApiOperationOperationIdRomaneioUpdateBatch,
   usePutApiOperationOperationIdRomaneioId,
 } from "@/api/generated/endpoints/romaneio/romaneio";
+import { axiosInstance } from "@/api/mutator";
 import {
   PostApiOperationOperationIdRomaneioBody,
   PostApiOperationOperationIdRomaneioImportAnalyzeBody,
   PostApiOperationOperationIdRomaneioImportApplyBody,
+  PostApiOperationOperationIdRomaneioUpdateBatchBody,
 } from "@/api/generated/zod/romaneio/romaneio.zod";
 import type {
   RomaneioDTO,
@@ -29,16 +33,19 @@ import type {
   RomaneioImportInvalidDTO,
   RomaneioImportRowDTO,
 } from "@/api/generated/model";
-import { resolveRomaneioSourceLabel } from "@/api/generated/static/romaneioSourceOptions";
-import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
+import {
+  CrudListPage,
+  type CrudColumn,
+  type CrudSelection,
+} from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { InputFileSingle } from "@/layouts/Form/Fields/Index";
+import { InputFileSingle, InputText } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import type { TranslationKey } from "@/i18n/translate";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
-import { useLocale, useT } from "@/lib/ui-prefs";
+import { useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -89,47 +96,94 @@ const DIFF_FIELD_LABELS: Record<string, TranslationKey> = {
  */
 export function Romaneio({ operationId }: { operationId: string }) {
   const t = useT();
-  const locale = useLocale();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: RomaneioDTO } | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<RomaneioDTO | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  // Filtro "Estufado" (RF1, §3.6) — `null` = Todos, sem parâmetro `IsStuffed`.
+  const [isStuffedFilter, setIsStuffedFilter] = useState<boolean | null>(null);
+  // Ordenação clicável por NF/Lote (RF5, §3.2) — valor cru de `Sort`.
+  const [sort, setSort] = useState<string | undefined>(undefined);
+  // Seleção em massa (RF2, §3.1) — linha estufada nunca entra aqui.
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const listQueryOptions = getGetApiOperationOperationIdRomaneioQueryOptions(operationId, {
     Search: search || undefined,
+    IsStuffed: isStuffedFilter ?? undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiOperationOperationIdRomaneio();
   const updateMutation = usePutApiOperationOperationIdRomaneioId();
-  const deleteMutation = useDeleteApiOperationOperationIdRomaneioId();
+  const deleteBatchMutation = usePostApiOperationOperationIdRomaneioDeleteBatch();
+  const updateBatchMutation = usePostApiOperationOperationIdRomaneioUpdateBatch();
 
-  const { submit, remove } = useCrudMutations<RomaneioFormValues, RomaneioDTO>({
+  const { submit } = useCrudMutations<RomaneioFormValues, RomaneioDTO>({
     onCreate: (values) => createMutation.mutateAsync({ operationId, data: values }),
     onUpdate: (values, record) =>
       updateMutation.mutateAsync({ operationId, id: record.id, data: values }),
-    onDelete: (record) => deleteMutation.mutateAsync({ operationId, id: record.id }),
     invalidateKey: getGetApiOperationOperationIdRomaneioQueryKey(operationId),
     messages: {
       created: "administrative-operations.romaneio.toast.created",
       updated: "administrative-operations.romaneio.toast.updated",
-      deleted: "administrative-operations.romaneio.toast.deleted",
       error: "administrative-operations.romaneio.toast.error",
     },
   });
 
-  // `invalidateList` usado pelo wizard de import (`ImportRomaneioModal`),
-  // fora do fluxo create/update/delete do `useCrudMutations` — mesma
-  // `queryKey`, chamada direta (o wizard já mostra seu próprio toast de
-  // sucesso/erro, ver `handleApply` abaixo).
+  // `invalidateList` usado pelo wizard de import (`ImportRomaneioModal`) e
+  // pelas ações em massa (§3.3), fora do fluxo create/update do
+  // `useCrudMutations` — mesma `queryKey`, chamada direta (cada fluxo mostra
+  // seu próprio toast de sucesso/erro).
   const queryClient = useQueryClient();
   const invalidateList = () =>
     queryClient.invalidateQueries({
       queryKey: getGetApiOperationOperationIdRomaneioQueryKey(operationId),
     });
+
+  const toggleSelected = (id: string) =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const selection: CrudSelection<RomaneioDTO> = {
+    selectedIds,
+    onToggle: toggleSelected,
+    onToggleAll: (ids, checked) => {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        // `ids` já vem filtrado pelo `CrudListPage` (só os selecionáveis da
+        // página atual) — aqui só marca/desmarca esse conjunto.
+        ids.forEach((id) => (checked ? next.add(id) : next.delete(id)));
+        return next;
+      });
+    },
+    isDisabled: (r) => r.isStuffed === true,
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      await deleteBatchMutation.mutateAsync({
+        operationId,
+        data: { ids: Array.from(selectedIds) },
+      });
+      toast.success(t("administrative-operations.romaneio.bulkActions.toastDeleteSuccess"));
+      setSelectedIds(new Set());
+      invalidateList();
+    } catch {
+      toast.error(t("administrative-operations.romaneio.bulkActions.toastError"));
+    } finally {
+      setBulkDeleteOpen(false);
+    }
+  };
 
   const fields: LayoutField[] = [
     {
@@ -212,32 +266,73 @@ export function Romaneio({ operationId }: { operationId: string }) {
       render: (r) => r.itemCode,
     },
     {
+      key: "notaFiscal",
+      headerKey: "administrative-operations.romaneio.colNotaFiscal",
+      sortKey: "notaFiscal",
+      render: (r) => r.notaFiscal ?? "—",
+    },
+    {
+      key: "instruction",
+      headerKey: "administrative-operations.romaneio.colInstruction",
+      render: (r) => r.instruction || "—",
+    },
+    {
       key: "lote",
       headerKey: "administrative-operations.romaneio.colLote",
+      sortKey: "lote",
       render: (r) => r.lote,
+    },
+    {
+      key: "pilha",
+      headerKey: "administrative-operations.romaneio.colPilha",
+      render: (r) => r.pilha || "—",
+    },
+    {
+      key: "pesoTara",
+      headerKey: "administrative-operations.romaneio.colPesoTara",
+      align: "end",
+      render: (r) => (r.pesoTara != null ? String(r.pesoTara) : "—"),
     },
     {
       key: "peso",
       headerKey: "administrative-operations.romaneio.colPeso",
+      align: "end",
       render: (r) => (r.peso != null ? String(r.peso) : "—"),
     },
     {
-      key: "source",
-      headerKey: "administrative-operations.romaneio.colSource",
+      key: "pesoBruto",
+      headerKey: "administrative-operations.romaneio.colPesoBruto",
+      align: "end",
+      render: (r) => (r.pesoBruto != null ? String(r.pesoBruto) : "—"),
+    },
+    {
+      key: "contrato",
+      headerKey: "administrative-operations.romaneio.colContrato",
+      render: (r) => r.contrato || "—",
+    },
+    {
+      key: "isStuffed",
+      headerKey: "administrative-operations.romaneio.colIsStuffed",
       render: (r) => (
-        <span className="badge text-bg-secondary">
-          {r.source ? resolveRomaneioSourceLabel(r.source, locale) : "—"}
-        </span>
+        <Badge bg={r.isStuffed ? "success" : "secondary"}>
+          {t(
+            r.isStuffed
+              ? "administrative-operations.romaneio.isStuffedYes"
+              : "administrative-operations.romaneio.isStuffedNo",
+          )}
+        </Badge>
       ),
     },
     {
       key: "actions",
       headerKey: "administrative-operations.romaneio.colActions",
+      align: "end",
       render: (r) => (
+        // RF2 (§3.4): sem exclusão individual (removida — vira só em massa);
+        // edição desabilitada em linha já estufada (regra de negócio §2).
         <CrudRowActions
           onView={() => setModal({ mode: "view", record: r })}
-          onEdit={() => setModal({ mode: "edit", record: r })}
-          onDelete={() => setPendingDelete(r)}
+          onEdit={r.isStuffed ? undefined : () => setModal({ mode: "edit", record: r })}
         />
       ),
     },
@@ -249,26 +344,93 @@ export function Romaneio({ operationId }: { operationId: string }) {
     if (ok) setModal(null);
   };
 
-  const confirmDelete = async () => {
-    if (!pendingDelete) return;
-    await remove(pendingDelete);
-    setPendingDelete(null);
+  /**
+   * Dispara o download do romaneio exportado (RF1). O endpoint gerado
+   * (`getApiOperationOperationIdRomaneioExport`) passa pelo `apiRequest`
+   * genérico, que só devolve o corpo já desembrulhado — sem acesso aos
+   * headers da resposta (`Content-Disposition`, necessário pro nome do
+   * arquivo) nem controle de `responseType`. Por isso a chamada aqui usa
+   * `axiosInstance` (mesmo transporte do mutator, exportado por ele pra
+   * esse tipo de caso) direto, reaproveitando a URL do endpoint gerado
+   * (`getGetApiOperationOperationIdRomaneioExportQueryKey`) em vez de
+   * duplicar o path à mão.
+   */
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const [url] = getGetApiOperationOperationIdRomaneioExportQueryKey(operationId);
+      const response = await axiosInstance.get<Blob>(url, { responseType: "blob" });
+
+      // Nome do arquivo: usa o `Content-Disposition` do Core quando vem
+      // (RF1); sem ele, cai num default com o id da operação (R1 da SPEC —
+      // formato exato do Core não confirmado até a implementação).
+      const disposition = (response.headers as Record<string, string>)["content-disposition"];
+      const match = disposition?.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+      const filename = match ? decodeURIComponent(match[1]) : `romaneio-${operationId}.xlsx`;
+
+      const blobUrl = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+
+      toast.success(t("administrative-operations.romaneio.export.toast.success"));
+    } catch {
+      toast.error(t("administrative-operations.romaneio.export.toast.error"));
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
     <>
-      <div className="d-flex justify-content-end mb-2">
-        <Button variant="outline-primary" size="sm" onClick={() => setImportOpen(true)}>
-          <i className="bi bi-file-earmark-spreadsheet me-1" aria-hidden />
-          {t("administrative-operations.romaneio.import.button")}
-        </Button>
-      </div>
+      {/* Barra de ação em massa (§3.3) — só aparece com algo selecionado. */}
+      {selectedIds.size > 0 ? (
+        <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
+          <span className="fw-semibold">
+            {t("administrative-operations.romaneio.bulkActions.selectedCount", {
+              count: String(selectedIds.size),
+            })}
+          </span>
+          <Button variant="outline-primary" size="sm" onClick={() => setBulkEditOpen(true)}>
+            <i className="bi bi-pencil me-1" aria-hidden />
+            {t("administrative-operations.romaneio.bulkActions.editNfLote")}
+          </Button>
+          <Button variant="danger" size="sm" onClick={() => setBulkDeleteOpen(true)}>
+            <i className="bi bi-trash me-1" aria-hidden />
+            {t("administrative-operations.romaneio.bulkActions.deleteSelected")}
+          </Button>
+        </div>
+      ) : null}
 
       <CrudListPage
         titleKey="administrative-operations.romaneio.title"
         descriptionKey="administrative-operations.romaneio.description"
+        headerActions={
+          <>
+            <Button variant="outline-primary" size="sm" onClick={handleExport} disabled={exporting}>
+              {exporting ? (
+                <Spinner size="sm" animation="border" className="me-1" />
+              ) : (
+                <i className="bi bi-download me-1" aria-hidden />
+              )}
+              {t("administrative-operations.romaneio.export.button")}
+            </Button>
+            <Button variant="outline-primary" size="sm" onClick={() => setImportOpen(true)}>
+              <i className="bi bi-file-earmark-spreadsheet me-1" aria-hidden />
+              {t("administrative-operations.romaneio.import.button")}
+            </Button>
+          </>
+        }
         queryOptions={listQueryOptions}
         columns={columns}
+        spreadsheetVariant
+        selection={selection}
+        sort={sort}
+        onSortChange={setSort}
         renderCard={(r) => (
           <Card>
             <Card.Body>
@@ -285,6 +447,29 @@ export function Romaneio({ operationId }: { operationId: string }) {
           setSearch(value);
           setPage(1);
         }}
+        filters={
+          <Form.Select
+            size="sm"
+            style={{ width: "auto" }}
+            aria-label={t("administrative-operations.romaneio.colIsStuffed")}
+            value={isStuffedFilter === null ? "all" : isStuffedFilter ? "stuffed" : "notStuffed"}
+            onChange={(e) => {
+              const value = e.target.value;
+              setIsStuffedFilter(value === "all" ? null : value === "stuffed");
+              setPage(1);
+            }}
+          >
+            <option value="all">
+              {t("administrative-operations.romaneio.filterIsStuffed.all")}
+            </option>
+            <option value="stuffed">
+              {t("administrative-operations.romaneio.filterIsStuffed.stuffed")}
+            </option>
+            <option value="notStuffed">
+              {t("administrative-operations.romaneio.filterIsStuffed.notStuffed")}
+            </option>
+          </Form.Select>
+        }
         page={page}
         pageSize={PAGE_SIZE}
         onPageChange={setPage}
@@ -309,16 +494,29 @@ export function Romaneio({ operationId }: { operationId: string }) {
         />
       ) : null}
 
-      {pendingDelete ? (
+      {bulkDeleteOpen ? (
         <ConfirmationModal
           show
-          title={t("administrative-operations.romaneio.confirm.deleteTitle")}
-          message={t("administrative-operations.romaneio.confirm.deleteMessage", {
-            name: pendingDelete.itemIdentifier,
+          title={t("administrative-operations.romaneio.bulkActions.confirmDeleteTitle")}
+          message={t("administrative-operations.romaneio.bulkActions.confirmDelete", {
+            count: String(selectedIds.size),
           })}
           variant="danger"
-          onConfirm={confirmDelete}
-          onCancel={() => setPendingDelete(null)}
+          onConfirm={handleBulkDelete}
+          onCancel={() => setBulkDeleteOpen(false)}
+        />
+      ) : null}
+
+      {bulkEditOpen ? (
+        <RomaneioBulkEditModal
+          operationId={operationId}
+          selectedIds={selectedIds}
+          mutation={updateBatchMutation}
+          onApplied={() => {
+            setSelectedIds(new Set());
+            invalidateList();
+          }}
+          onClose={() => setBulkEditOpen(false)}
         />
       ) : null}
 
@@ -330,6 +528,120 @@ export function Romaneio({ operationId }: { operationId: string }) {
         />
       ) : null}
     </>
+  );
+}
+
+type RomaneioBulkEditFormValues = z.infer<
+  typeof PostApiOperationOperationIdRomaneioUpdateBatchBody
+>;
+
+/**
+ * Normaliza `""` → `undefined` (não `null`) antes de validar — diferente do
+ * `emptyStringsToNull` do `CrudRecordModal` (que usa `null` pra *limpar*
+ * explicitamente um campo opcional num registro só). Aqui campo vazio
+ * significa "não mexe" (RF4, §3.3): mandar `undefined` faz o schema
+ * `.nullish()` aceitar sem violar o `min(1)` de `lote`, e o `update-batch`
+ * do Core não recebe a chave (JSON.stringify descarta `undefined`).
+ */
+function emptyStringsToUndefined<V>(value: V): V {
+  if (value === "") return undefined as unknown as V;
+  if (Array.isArray(value)) {
+    return value.map((item) => emptyStringsToUndefined(item)) as unknown as V;
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, val]) => [
+        key,
+        emptyStringsToUndefined(val),
+      ]),
+    ) as V;
+  }
+  return value;
+}
+
+function withEmptyStringsAsUndefined<T extends FieldValues>(schema: ZodType<T>): Resolver<T> {
+  const resolver = zodResolver(schema as never) as unknown as Resolver<T>;
+  return (values, context, options) => resolver(emptyStringsToUndefined(values), context, options);
+}
+
+/**
+ * Modal de edição em massa de NF/Lote (RF4, §3.3) — só os campos preenchidos
+ * são enviados ao `update-batch`; campo vazio não altera as linhas
+ * selecionadas. `ids` é montado a partir da seleção corrente, não é um campo
+ * editável do form (sem `Field` renderizado pra ele).
+ */
+function RomaneioBulkEditModal({
+  operationId,
+  selectedIds,
+  mutation,
+  onApplied,
+  onClose,
+}: {
+  operationId: string;
+  selectedIds: Set<string>;
+  mutation: ReturnType<typeof usePostApiOperationOperationIdRomaneioUpdateBatch>;
+  onApplied: () => void;
+  onClose: () => void;
+}) {
+  const t = useT();
+  const methods = useForm<RomaneioBulkEditFormValues>({
+    resolver: withEmptyStringsAsUndefined(PostApiOperationOperationIdRomaneioUpdateBatchBody),
+    defaultValues: { ids: Array.from(selectedIds), notaFiscal: "", lote: "" },
+  });
+
+  const handleSubmit = methods.handleSubmit(async (values) => {
+    try {
+      await mutation.mutateAsync({
+        operationId,
+        data: { ids: Array.from(selectedIds), notaFiscal: values.notaFiscal, lote: values.lote },
+      });
+      toast.success(t("administrative-operations.romaneio.bulkActions.toastSuccess"));
+      onApplied();
+      onClose();
+    } catch {
+      toast.error(t("administrative-operations.romaneio.bulkActions.toastError"));
+    }
+  });
+
+  return (
+    <Modal show onHide={onClose} centered>
+      <Modal.Header>
+        <Modal.Title className="h5 mb-0">
+          {t("administrative-operations.romaneio.bulkActions.editTitle")}
+        </Modal.Title>
+      </Modal.Header>
+      <Form noValidate onSubmit={handleSubmit}>
+        <Modal.Body>
+          <Row>
+            <InputText<RomaneioBulkEditFormValues>
+              methods={methods}
+              fieldName="notaFiscal"
+              label={t("administrative-operations.romaneio.bulkActions.fieldNotaFiscal")}
+              md={6}
+            />
+            <InputText<RomaneioBulkEditFormValues>
+              methods={methods}
+              fieldName="lote"
+              label={t("administrative-operations.romaneio.bulkActions.fieldLote")}
+              md={6}
+            />
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={onClose}>
+            {t("crud.recordModal.cancel")}
+          </Button>
+          <Button type="submit" variant="primary" disabled={mutation.isPending}>
+            {mutation.isPending ? (
+              <Spinner size="sm" animation="border" className="me-2" />
+            ) : (
+              <i className="bi bi-check-lg me-1" aria-hidden />
+            )}
+            {t("crud.recordModal.save")}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
   );
 }
 
@@ -429,13 +741,29 @@ function ImportRomaneioModal({
         deleteMissing: Array.from(selectedMissing),
       });
       const result = await applyMutation.mutateAsync({ operationId, data: payload });
-      toast.success(
-        t("administrative-operations.romaneio.import.toast.applySuccess", {
-          created: String(result.created ?? 0),
-          updated: String(result.updated ?? 0),
-          deleted: String(result.deleted ?? 0),
-        }),
-      );
+      const created = Number(result.created ?? 0);
+      const updated = Number(result.updated ?? 0);
+      const deleted = Number(result.deleted ?? 0);
+
+      // BUGFIX (investigação do fluxo de import — ver relatório da branch
+      // fix/sidebar-romaneio-import-acoes): o Core sempre responde 200 aqui,
+      // mesmo quando nada foi de fato criado/atualizado/excluído (ex.: todos
+      // os fardos da planilha já existem sem divergência — "unchanged" — ou
+      // ficaram em grupos não-acionáveis como "foreign"/"duplicated"). Sem
+      // essa checagem, o wizard fechava com um toast verde de "sucesso"
+      // mesmo sem persistir nada, e o usuário não entendia por que o fardo
+      // não aparecia na listagem depois. Avisa em vez de comemorar um no-op.
+      if (created === 0 && updated === 0 && deleted === 0) {
+        toast.warn(t("administrative-operations.romaneio.import.toast.applyNoop"));
+      } else {
+        toast.success(
+          t("administrative-operations.romaneio.import.toast.applySuccess", {
+            created: String(created),
+            updated: String(updated),
+            deleted: String(deleted),
+          }),
+        );
+      }
       onApplied();
       onClose();
     } catch {

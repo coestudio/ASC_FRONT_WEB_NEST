@@ -63,6 +63,30 @@ são inputs raw criados antes desta regra existir — violam-na. Migração pra
 `specs/02-app-shell-navigation/spec.md`. Não copiar esse padrão em nada
 novo, mesmo antes da SPEC-02 ser implementada.
 
+## `layouts/Filters/**` — campo de filtro/busca de listagem, **não** é `Form/Fields`
+
+**Filtro de listagem (busca livre, filtro de coluna) não é campo de
+formulário — vem de `layouts/Filters/**`, nunca de `layouts/Form/Fields`**
+(pedido do usuário, SPEC-77 do NewPortal). Motivo: todo campo de
+`Form/Fields` é `Controller`-based e sempre renderiza `<Form.Label>` +
+uma linha reservada pra mensagem de erro (`<Form.Text>`/
+`Form.Control.Feedback`) — faz sentido pra um campo validado dentro de um
+formulário, mas nenhum filtro de listagem tem rótulo visível nem
+validação, então essa linha de erro sobra sem função nenhuma.
+
+- `layouts/Filters/FilterText.tsx` — campo de texto controlado direto
+  (`value`/`onChange`, sem `react-hook-form`/`Controller`), sem label
+  visível (`aria-label` pro leitor de tela) e sem linha de erro. Ícone
+  opcional (`icon`, `bootstrap-icons`).
+- Antes de criar um novo `useForm<{ search: string }>` só pra reaproveitar
+  `InputText` num filtro (padrão antigo, removido no SPEC-77 — existiam 4
+  cópias quase idênticas espalhadas), usar/estender
+  `layouts/Filters/FilterText`.
+- Filtro de seleção (dropdown/`Select`/`SelectAsync`) continua fora desta
+  pasta por ora — só o filtro de texto foi migrado; se um filtro de
+  dropdown precisar do mesmo tratamento (sem label/erro), é SPEC nova,
+  não decisão implícita aqui.
+
 ## Regras gerais
 
 - Nome de arquivo/pasta em inglês (`user-table.tsx`, não `tabela-usuario.tsx`).

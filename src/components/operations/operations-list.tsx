@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Col, Row, Table } from "react-bootstrap";
+import { Badge, Button, Card, Col, Row, Spinner, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -36,10 +36,17 @@ import {
 } from "@/api/generated/static/operationServiceOptions";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import { SortableTh } from "@/components/crud/sortable-th";
+import {
+  buildOperationEditFields,
+  operationEditDefaultValues,
+  type OperationEditValues,
+} from "@/components/operations/operation-edit-fields";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { ListPagination } from "@/components/ui/list-pagination";
-import { InputText, Select, SelectAsync } from "@/layouts/Form/Fields/Index";
+import { Select, SelectAsync } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import type { Locale } from "@/i18n/config";
 import { useResponsiveViewMode } from "@/lib/view-mode";
 import { useLocale, useT } from "@/lib/ui-prefs";
@@ -74,13 +81,34 @@ function formatDate(value: string | null | undefined, locale: Locale): string {
  * falha de um item pontual não derruba os demais, a linha cai de volta pro id.
  */
 function useOperationEnrichment(id: string) {
-  const { data } = useSsrSafeQuery(getGetApiOperationIdQueryOptions(id));
+  const { data, isLoading, isError } = useSsrSafeQuery(getGetApiOperationIdQueryOptions(id));
   return {
     clientName: data?.client?.fullName,
     productName: data?.product?.name,
     vesselName: data?.vessel?.name,
     detail: data,
+    isLoading,
+    isError,
   };
+}
+
+/**
+ * Nunca mostra o Guid cru de `clientId`/`productId` (SPEC-66) — enquanto o
+ * enriquecimento carrega, um spinner discreto; se falhou ou resolveu sem
+ * nome, um traço.
+ */
+function EnrichedName({
+  value,
+  isLoading,
+  isError,
+}: {
+  value: string | undefined;
+  isLoading: boolean;
+  isError: boolean;
+}) {
+  if (isLoading) return <Spinner animation="border" size="sm" />;
+  if (isError || !value) return <>—</>;
+  return <>{value}</>;
 }
 
 type OperationFiltersValues = {
@@ -88,44 +116,6 @@ type OperationFiltersValues = {
   status: string;
   clientId: string;
 };
-
-/**
- * Busca livre (`Search` do Core) — campo isolado (não faz parte de um
- * `useForm` maior, só filtra a lista), mesmo racional do `ListSearchInput`
- * de `crud-list-page.tsx` (regra 10 do AGENTS.md: `layouts/Form/Fields`,
- * nunca `<input>` cru).
- */
-function OperationsSearchInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}) {
-  const methods = useForm<{ search: string }>({ defaultValues: { search: value } });
-  const search = methods.watch("search");
-
-  useEffect(() => {
-    if (search !== value) onChange(search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
-
-  useEffect(() => {
-    if (value !== methods.getValues("search")) methods.setValue("search", value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-
-  return (
-    <InputText
-      methods={methods}
-      fieldName="search"
-      placeholder={placeholder}
-      config={{ containerClass: "mb-0" }}
-    />
-  );
-}
 
 /**
  * Barra de filtros (tipo/status/cliente, RF3 da SPEC-07-01) — `Select`/
@@ -213,9 +203,10 @@ function OperationsFilters({
 // Create/Update do Core têm shapes diferentes (`opType`/`opService`/
 // `booking`/`instruction` só existem na criação — travados depois, regra do
 // Core) — dois schemas gerados, dois `LayoutField[]`, nunca um Zod escrito à
-// mão (regra 2 do AGENTS.md).
+// mão (regra 2 do AGENTS.md). `OperationEditValues` vem de
+// `operation-edit-fields.ts` (SPEC-33), compartilhado com a aba Detalhes do
+// shell (`Details.tsx`).
 type OperationCreateValues = z.infer<typeof PostApiOperationBody>;
-type OperationEditValues = z.infer<typeof PutApiOperationIdBody>;
 
 function createDefaultValues(): OperationCreateValues {
   return {
@@ -233,18 +224,6 @@ function createDefaultValues(): OperationCreateValues {
     opDate: "",
     startDate: "",
     observation: "",
-  };
-}
-
-function editDefaultValues(record?: OperationDetailDTO): OperationEditValues {
-  return {
-    clientId: record?.clientId ?? "",
-    productId: record?.productId ?? "",
-    vesselId: record?.vesselId ?? "",
-    nameDate: record?.nameDate ?? "",
-    opDate: record?.opDate ?? "",
-    startDate: record?.startDate ?? "",
-    observation: record?.observation ?? "",
   };
 }
 
@@ -314,6 +293,9 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  // SPEC-81: era `Sort: "-number"` fixo — vira estado, mesmo default inicial
+  // (mais recente primeiro), agora clicável nas 4 colunas de `Sortable`.
+  const [sort, setSort] = useState<string | undefined>("-number");
   const [filters, setFilters] = useState<OperationFiltersValues>({
     opType: "",
     status: "",
@@ -323,6 +305,12 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: OperationDetailDTO } | null>(
     null,
   );
+  // Clique seleciona/revela o menu de ações daquele item, na posição exata
+  // do clique; duplo-clique abre direto (SPEC-79, reaberta — mesmo
+  // mecanismo do `CrudListPage.rowActions`, implementado aqui à mão porque
+  // esta tela não usa o componente genérico, tabela própria, SPEC-07-01 §9).
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
   // Requisição de detalhe (`GET /api/operation/{id}`) em andamento — só
   // depois dela resolver é que o modal `edit`/`view` abre (mesmo padrão de
   // `administrative/clients/index.tsx`, `detailRequest`).
@@ -338,7 +326,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     ClientId: filters.clientId || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
-    Sort: "-number",
+    Sort: sort,
   });
   const query = useSsrSafeQuery(listQueryOptions);
   const items = query.data?.items ?? [];
@@ -459,56 +447,9 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     },
   ];
 
-  const editFields: LayoutField[] = [
-    {
-      type: "SelectAsync",
-      fieldName: "clientId",
-      label: t("administrative-operations.form.client"),
-      col: { md: 6 },
-      config: { fetchOptions: fetchClientOptions, selectedLabel: modal?.record?.client.fullName },
-    },
-    {
-      type: "SelectAsync",
-      fieldName: "productId",
-      label: t("administrative-operations.form.product"),
-      col: { md: 6 },
-      config: { fetchOptions: fetchProductOptions, selectedLabel: modal?.record?.product.name },
-    },
-    {
-      type: "SelectAsync",
-      fieldName: "vesselId",
-      label: t("administrative-operations.form.vessel"),
-      col: { md: 6 },
-      config: {
-        fetchOptions: fetchVesselOptions,
-        selectedLabel: modal?.record?.vessel?.name ?? undefined,
-      },
-    },
-    {
-      type: "InputDate",
-      fieldName: "nameDate",
-      label: t("administrative-operations.form.nameDate"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputDate",
-      fieldName: "opDate",
-      label: t("administrative-operations.form.opDate"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputDate",
-      fieldName: "startDate",
-      label: t("administrative-operations.form.startDate"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputTextArea",
-      fieldName: "observation",
-      label: t("administrative-operations.form.observation"),
-      col: { md: 12 },
-    },
-  ];
+  // Campos de edição — módulo compartilhado com a aba Detalhes do shell
+  // (`Details.tsx`, SPEC-33), nunca duplicados aqui.
+  const editFields: LayoutField[] = buildOperationEditFields({ t, record: modal?.record });
 
   const handleCreateSubmit = async (values: OperationCreateValues) => {
     try {
@@ -557,16 +498,17 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     navigate({ to: "/administrative/operations/$id", params: { id } });
   };
 
-  const renderRowActions = (operation: OperationDTO) => {
-    const isLoadingDetail = detailRequest?.id === operation.id;
-    return (
-      <CrudRowActions
-        onView={() => viewOperation(operation.id)}
-        onEdit={!readOnly ? () => setDetailRequest({ id: operation.id, mode: "edit" }) : undefined}
-        viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
-        editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
-      />
-    );
+  // Só um item ativo por vez — o menu em si é renderizado uma única vez,
+  // fora da tabela/grid (ver `activeOperation` abaixo), na posição exata do
+  // clique (SPEC-79 reaberta).
+  const activeOperation = items.find((operation) => operation.id === activeId) ?? null;
+  const closeRowActions = () => {
+    setActiveId(null);
+    setClickPos(null);
+  };
+  const selectRowActions = (id: string, e: { clientX: number; clientY: number }) => {
+    setActiveId(id);
+    setClickPos({ x: e.clientX, y: e.clientY });
   };
 
   return (
@@ -578,7 +520,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
       <div className="d-flex align-items-center gap-2 mb-4 flex-wrap">
         <div style={{ minWidth: 220 }}>
-          <OperationsSearchInput
+          <FilterText
             value={search}
             onChange={(value) => {
               setSearch(value);
@@ -627,8 +569,13 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
               key={operation.id}
               operation={operation}
               locale={locale}
-              onView={() => viewOperation(operation.id)}
+              onOpen={() => {
+                closeRowActions();
+                viewOperation(operation.id);
+              }}
               renderStatus={renderStatus}
+              active={activeId === operation.id}
+              onSelect={(e) => selectRowActions(operation.id, e)}
             />
           ))}
         </div>
@@ -637,15 +584,22 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
           <Table responsive hover className={`align-middle mb-0 ${styles.operationsTable}`}>
             <thead>
               <tr>
-                <th>{t("administrative-operations.colNumber")}</th>
+                <SortableTh sortKey="number" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colNumber")}
+                </SortableTh>
                 <th>{t("administrative-operations.colClient")}</th>
                 <th>{t("administrative-operations.colProduct")}</th>
                 <th>{t("administrative-operations.colBooking")}</th>
-                <th>{t("administrative-operations.colType")}</th>
+                <SortableTh sortKey="opType" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colType")}
+                </SortableTh>
                 <th>{t("administrative-operations.colService")}</th>
-                <th>{t("administrative-operations.colStatus")}</th>
-                <th>{t("administrative-operations.colOpDate")}</th>
-                <th>{t("administrative-operations.colActions")}</th>
+                <SortableTh sortKey="status" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colStatus")}
+                </SortableTh>
+                <SortableTh sortKey="opDate" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.colOpDate")}
+                </SortableTh>
               </tr>
             </thead>
             <tbody>
@@ -655,7 +609,12 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
                   operation={operation}
                   locale={locale}
                   renderStatus={renderStatus}
-                  renderActions={renderRowActions}
+                  active={activeId === operation.id}
+                  onSelect={(e) => selectRowActions(operation.id, e)}
+                  onOpen={() => {
+                    closeRowActions();
+                    viewOperation(operation.id);
+                  }}
                 />
               ))}
             </tbody>
@@ -664,6 +623,29 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       )}
 
       <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+
+      {activeOperation && clickPos
+        ? (() => {
+            const isLoadingDetail = detailRequest?.id === activeOperation.id;
+            return (
+              <CrudRowActions
+                show
+                position={clickPos}
+                onToggle={(show) => {
+                  if (!show) closeRowActions();
+                }}
+                onView={() => viewOperation(activeOperation.id)}
+                onEdit={
+                  !readOnly
+                    ? () => setDetailRequest({ id: activeOperation.id, mode: "edit" })
+                    : undefined
+                }
+                viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
+                editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
+              />
+            );
+          })()
+        : null}
 
       {modal?.mode === "create" ? (
         <CrudRecordModal<OperationCreateValues>
@@ -691,7 +673,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
           }}
           schema={PutApiOperationIdBody}
           fields={editFields}
-          defaultValues={editDefaultValues(modal.record)}
+          defaultValues={operationEditDefaultValues(modal.record)}
           onSubmit={handleEditSubmit}
           onClose={() => setModal(null)}
           extraContent={modal.record ? <OperationSummary operation={modal.record} /> : undefined}
@@ -701,74 +683,113 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
   );
 }
 
-/** Linha da tabela — busca o detalhe (enriquecimento) uma vez, reusa pras 3 colunas de nome. */
+/**
+ * Linha da tabela — busca o detalhe (enriquecimento) uma vez, reusa pras 3
+ * colunas de nome. Clique seleciona o item (o menu em si é um único
+ * `CrudRowActions` renderizado fora da tabela, na posição do clique — ver
+ * `activeOperation` em `OperationsList`); duplo-clique abre direto
+ * (`onOpen`) — SPEC-79 (reaberta: sem coluna/célula reservada nem menu
+ * ancorado num ponto fixo da linha).
+ */
 function OperationRow({
   operation,
   locale,
   renderStatus,
-  renderActions,
+  active,
+  onSelect,
+  onOpen,
 }: {
   operation: OperationDTO;
   locale: Locale;
   renderStatus: (operation: OperationDTO) => ReactNode;
-  renderActions: (operation: OperationDTO) => ReactNode;
+  active: boolean;
+  onSelect: (e: { clientX: number; clientY: number }) => void;
+  onOpen: () => void;
 }) {
-  const { clientName, productName } = useOperationEnrichment(operation.id);
+  const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
 
   return (
-    <tr>
+    <tr
+      onClick={onSelect}
+      onDoubleClick={onOpen}
+      className={active ? "table-active" : undefined}
+      style={{ cursor: "pointer" }}
+    >
       <td className="font-monospace">Nº {operation.number}</td>
-      <td className="fw-semibold">{clientName ?? operation.clientId}</td>
-      <td className="text-body-secondary">{productName ?? operation.productId}</td>
+      <td className="fw-semibold">
+        <EnrichedName value={clientName} isLoading={isLoading} isError={isError} />
+      </td>
+      <td className="text-body-secondary">
+        <EnrichedName value={productName} isLoading={isLoading} isError={isError} />
+      </td>
       <td className="text-body-secondary">{operation.booking || "—"}</td>
       <td>{resolveOperationTypeLabel(operation.opType, locale)}</td>
       <td>{resolveOperationServiceLabel(operation.opService, locale)}</td>
       <td>{renderStatus(operation)}</td>
       <td className="text-body-secondary">{formatDate(operation.opDate, locale)}</td>
-      <td>{renderActions(operation)}</td>
     </tr>
   );
 }
 
-/** Card (modo `cards` do `ViewToggle`) — mesmo enriquecimento da linha da tabela. */
+/**
+ * Card (modo `cards` do `ViewToggle`) — mesmo enriquecimento da linha da
+ * tabela. Clique seleciona o item; duplo-clique abre direto (`onOpen`) —
+ * SPEC-79 (antes, um clique já navegava; agora é preciso duplo-clique ou
+ * "Ver" no menu que aparece na posição do clique).
+ */
 function OperationCard({
   operation,
   locale,
-  onView,
+  onOpen,
   renderStatus,
+  active,
+  onSelect,
 }: {
   operation: OperationDTO;
   locale: Locale;
-  onView: () => void;
+  onOpen: () => void;
   renderStatus: (operation: OperationDTO) => ReactNode;
+  active: boolean;
+  onSelect: (e: { clientX: number; clientY: number }) => void;
 }) {
   const t = useT();
-  const { clientName, productName } = useOperationEnrichment(operation.id);
+  const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
 
   return (
     <div className="col-12 col-sm-6 col-lg-4">
-      <Card role="button" onClick={onView}>
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-start mb-2">
-            <span className="small text-body-secondary font-monospace">Nº {operation.number}</span>
-            {renderStatus(operation)}
-          </div>
-          <Card.Title className="h6 mb-1">{clientName ?? operation.clientId}</Card.Title>
-          <Card.Subtitle className="text-body-secondary small mb-2">
-            {productName ?? operation.productId}
-          </Card.Subtitle>
-          <div className="d-flex gap-2 small text-body-secondary">
-            <span>{resolveOperationTypeLabel(operation.opType, locale)}</span>
-            <span aria-hidden>·</span>
-            <span>{resolveOperationServiceLabel(operation.opService, locale)}</span>
-          </div>
-          {operation.booking ? (
-            <div className="small text-body-secondary mt-1">
-              {t("administrative-operations.colBooking")}: {operation.booking}
+      <div
+        className={active ? styles.cardActive : undefined}
+        style={{ cursor: "pointer" }}
+        onClick={onSelect}
+        onDoubleClick={onOpen}
+      >
+        <Card>
+          <Card.Body>
+            <div className="d-flex justify-content-between align-items-start mb-2">
+              <span className="small text-body-secondary font-monospace">
+                Nº {operation.number}
+              </span>
+              {renderStatus(operation)}
             </div>
-          ) : null}
-        </Card.Body>
-      </Card>
+            <Card.Title className="h6 mb-1">
+              <EnrichedName value={clientName} isLoading={isLoading} isError={isError} />
+            </Card.Title>
+            <Card.Subtitle className="text-body-secondary small mb-2">
+              <EnrichedName value={productName} isLoading={isLoading} isError={isError} />
+            </Card.Subtitle>
+            <div className="d-flex gap-2 small text-body-secondary">
+              <span>{resolveOperationTypeLabel(operation.opType, locale)}</span>
+              <span aria-hidden>·</span>
+              <span>{resolveOperationServiceLabel(operation.opService, locale)}</span>
+            </div>
+            {operation.booking ? (
+              <div className="small text-body-secondary mt-1">
+                {t("administrative-operations.colBooking")}: {operation.booking}
+              </div>
+            ) : null}
+          </Card.Body>
+        </Card>
+      </div>
     </div>
   );
 }

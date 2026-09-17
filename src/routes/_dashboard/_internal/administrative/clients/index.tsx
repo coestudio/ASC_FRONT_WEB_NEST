@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Card, Table } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -19,7 +19,6 @@ import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-rec
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { LoadingState } from "@/components/ui/loading-state";
-import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
@@ -31,14 +30,23 @@ import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-// Formata `document` (só CNPJ cabe no shape gerado, `ClientCreate.document`
-// tem min/max 14) pro padrão `00.000.000/0000-00" — mesmo helper do
-// `ClientCards.tsx` do Portal legado, adaptado (lá também tratava CPF, aqui
-// não precisa).
-function formatDocument(doc: string): string {
+// Formata `document` — CPF (11 dígitos) ou CNPJ (14), opcional desde a
+// SPEC-42/50 (antes só cabia CNPJ). Vazio/nulo retorna vazio (RF2).
+function formatDocument(doc: string | null | undefined): string {
+  if (!doc) return "";
   const d = doc.replace(/\D/g, "");
   if (d.length === 14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+  if (d.length === 11) return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   return doc;
+}
+
+// Tipo de documento pelo tamanho normalizado — RF3 (chip do card).
+function documentType(doc: string | null | undefined): "cpf" | "cnpj" | null {
+  if (!doc) return null;
+  const d = doc.replace(/\D/g, "");
+  if (d.length === 11) return "cpf";
+  if (d.length === 14) return "cnpj";
+  return null;
 }
 
 // Iniciais do nome pro avatar do card — mesma ideia do `ClientCards.tsx`
@@ -94,75 +102,6 @@ function toFormValues(record?: ClientDetailDTO): ClientFormValues {
 }
 
 /**
- * Relatórios/histórico do cliente — array mockado local, nunca uma query.
- *
- * MOCK — sem endpoint no Core, ver specs/05-administrativo-clientes/spec.md
- * ("Relatórios operacionais" está classificado "Faltante/não comprovado" no
- * mapa de paridade Portal×Core). Geração real de relatório é fora de escopo
- * da SPEC-05 (§4).
- */
-type MockClientReport = {
-  id: string;
-  name: string;
-  type: string;
-  generatedAt: string;
-  status: "Concluído" | "Pendente";
-};
-
-function buildMockReports(client: ClientDetailDTO): MockClientReport[] {
-  return [
-    {
-      id: `${client.id}-mock-1`,
-      name: "Resumo de operações do trimestre",
-      type: "Operacional",
-      generatedAt: "2026-06-30",
-      status: "Concluído",
-    },
-    {
-      id: `${client.id}-mock-2`,
-      name: "Extrato de romaneios",
-      type: "Financeiro",
-      generatedAt: "2026-07-15",
-      status: "Pendente",
-    },
-  ];
-}
-
-/** Seção extra do modal `view` (§9 da SPEC-02) — dados cadastrais reais já vêm pelos `fields`; aqui só o bloco mock de relatórios/histórico. */
-function ClientReportsSection({ client }: { client: ClientDetailDTO }) {
-  const t = useT();
-  const locale = useLocale();
-  const reports = buildMockReports(client);
-
-  return (
-    <div className="mt-4 border-top pt-3">
-      <h2 className="h6">{t("administrative-clients.detail.reportsTitle")}</h2>
-      <MockDataBanner className="mb-3" />
-      <Table responsive size="sm" className="align-middle mb-0">
-        <thead>
-          <tr>
-            <th>{t("administrative-clients.detail.reportsColName")}</th>
-            <th>{t("administrative-clients.detail.reportsColType")}</th>
-            <th>{t("administrative-clients.detail.reportsColGeneratedAt")}</th>
-            <th>{t("administrative-clients.detail.reportsColStatus")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reports.map((report) => (
-            <tr key={report.id}>
-              <td>{report.name}</td>
-              <td>{report.type}</td>
-              <td>{new Date(report.generatedAt).toLocaleDateString(locale)}</td>
-              <td>{report.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
-  );
-}
-
-/**
  * Gate de montagem (SPEC-10 §14): `detailQuery` abaixo usa `useSsrSafeQuery`
  * fora do `CrudListPage` — sem esse gate o hook existe na árvore durante o
  * SSR e a integração de streaming pode tentar buscá-lo mesmo com
@@ -188,6 +127,7 @@ function ClientsPageBody() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ClientDetailDTO } | null>(
     null,
   );
@@ -204,6 +144,7 @@ function ClientsPageBody() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiClient();
@@ -258,7 +199,7 @@ function ClientsPageBody() {
       col: { md: 6 },
     },
     {
-      type: "InputCNPJ",
+      type: "InputDocument",
       fieldName: "document",
       label: t("administrative-clients.form.document"),
       col: { md: 6 },
@@ -305,6 +246,7 @@ function ClientsPageBody() {
     {
       key: "fullName",
       headerKey: "administrative-clients.colFullName",
+      sortKey: "fullName",
       render: (c) => c.fullName,
     },
     {
@@ -315,7 +257,8 @@ function ClientsPageBody() {
     {
       key: "document",
       headerKey: "administrative-clients.colDocument",
-      render: (c) => c.document,
+      sortKey: "document",
+      render: (c) => formatDocument(c.document) || "—",
     },
     {
       key: "phone",
@@ -325,28 +268,14 @@ function ClientsPageBody() {
     {
       key: "email",
       headerKey: "administrative-clients.colEmail",
+      sortKey: "email",
       render: (c) => c.email ?? "—",
     },
     {
       key: "createdAt",
       headerKey: "administrative-clients.colCreatedAt",
+      sortKey: "createdAt",
       render: (c) => new Date(c.createdAt).toLocaleDateString(locale),
-    },
-    {
-      key: "actions",
-      headerKey: "administrative-clients.colActions",
-      render: (c) => {
-        const isLoadingDetail = detailRequest?.id === c.id;
-        return (
-          <CrudRowActions
-            onView={() => setDetailRequest({ id: c.id, mode: "view" })}
-            onEdit={() => setDetailRequest({ id: c.id, mode: "edit" })}
-            onDelete={() => setPendingDelete(c)}
-            viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
-            editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
-          />
-        );
-      },
     },
   ];
 
@@ -370,27 +299,58 @@ function ClientsPageBody() {
           descriptionKey="administrative-clients.description"
           queryOptions={listQueryOptions}
           columns={columns}
-          renderCard={(c) => (
-            <Card className={styles.card}>
-              <Card.Body>
-                <div className={styles.top}>
-                  <div className={styles.avatar}>{initials(c.fullName)}</div>
-                  <span className={styles.chip}>{t("administrative-clients.docTypeCnpj")}</span>
-                </div>
-                <div className={styles.name}>{c.fullName}</div>
-                <div className={styles.doc}>
-                  <i className="bi bi-card-text me-1" aria-hidden />
-                  {formatDocument(c.document)}
-                </div>
-              </Card.Body>
-            </Card>
-          )}
+          renderCard={(c) => {
+            const docType = documentType(c.document);
+            return (
+              <Card className={styles.card}>
+                <Card.Body>
+                  <div className={styles.top}>
+                    <div className={styles.avatar}>{initials(c.fullName)}</div>
+                    {docType ? (
+                      <span className={styles.chip}>
+                        {t(
+                          docType === "cpf"
+                            ? "administrative-clients.docTypeCpf"
+                            : "administrative-clients.docTypeCnpj",
+                        )}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className={styles.name}>{c.fullName}</div>
+                  {c.document ? (
+                    <div className={styles.doc}>
+                      <i className="bi bi-card-text me-1" aria-hidden />
+                      {formatDocument(c.document)}
+                    </div>
+                  ) : null}
+                </Card.Body>
+              </Card>
+            );
+          }}
           getItemKey={(c) => c.id}
+          rowActions={(c, ctl) => {
+            const isLoadingDetail = detailRequest?.id === c.id;
+            return (
+              <CrudRowActions
+                show={ctl.show}
+                position={ctl.position}
+                onToggle={ctl.onToggle}
+                onView={() => setDetailRequest({ id: c.id, mode: "view" })}
+                onEdit={() => setDetailRequest({ id: c.id, mode: "edit" })}
+                onDelete={() => setPendingDelete(c)}
+                viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
+                editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
+              />
+            );
+          }}
+          onRowOpen={(c) => setDetailRequest({ id: c.id, mode: "view" })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
@@ -413,11 +373,7 @@ function ClientsPageBody() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
-          extraContent={
-            modal.mode === "view" && modal.record ? (
-              <ClientReportsSection client={modal.record} />
-            ) : undefined
-          }
+          onDelete={modal.record ? () => setPendingDelete(modal.record as ClientDTO) : undefined}
         />
       ) : null}
 

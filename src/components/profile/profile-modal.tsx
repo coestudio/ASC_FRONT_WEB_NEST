@@ -147,13 +147,21 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
         </Nav>
 
         <div className={tab === "detail" ? "" : "d-none"}>
-          <DetailTab user={user} onSubmittingChange={setTabSubmitting("detail")} />
+          <DetailTab
+            user={user}
+            onSubmittingChange={setTabSubmitting("detail")}
+            onSaved={onClose}
+          />
         </div>
         <div className={tab === "address" ? "" : "d-none"}>
-          <AddressTab address={user.address} onSubmittingChange={setTabSubmitting("address")} />
+          <AddressTab
+            address={user.address}
+            onSubmittingChange={setTabSubmitting("address")}
+            onSaved={onClose}
+          />
         </div>
         <div className={tab === "password" ? "" : "d-none"}>
-          <PasswordTab onSubmittingChange={setTabSubmitting("password")} />
+          <PasswordTab onSubmittingChange={setTabSubmitting("password")} onSaved={onClose} />
         </div>
       </Modal.Body>
       <Modal.Footer>

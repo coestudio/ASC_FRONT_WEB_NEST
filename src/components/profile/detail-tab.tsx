@@ -70,9 +70,11 @@ function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Reso
 export function DetailTab({
   user,
   onSubmittingChange,
+  onSaved,
 }: {
   user: UserDetailDTO;
   onSubmittingChange?: (isSubmitting: boolean) => void;
+  onSaved?: () => void;
 }) {
   const t = useT();
   const queryClient = useQueryClient();
@@ -109,6 +111,7 @@ export function DetailTab({
       });
       queryClient.setQueryData(profileMeQueryOptions().queryKey, updated);
       toast.success(t("shell.profileModal.saved"));
+      onSaved?.();
     } catch {
       toast.error(t("shell.profileModal.saveError"));
     }

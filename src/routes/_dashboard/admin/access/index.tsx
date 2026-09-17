@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Card } from "react-bootstrap";
+import { Badge, Card, Form } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -16,9 +16,10 @@ import {
   getGetApiUserQueryKey,
 } from "@/api/generated/endpoints/user/user";
 import { PostApiUserBody } from "@/api/generated/zod/user/user.zod";
-import { UserType, type UserDTO } from "@/api/generated/model";
+import { UserType, type InternalRole, type UserDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
@@ -27,7 +28,6 @@ import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user"
 import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
-import type { TranslationKey } from "@/i18n/translate";
 import { resolveInternalRoleLabel } from "@/api/generated/static/internalRoleOptions";
 import styles from "./index.module.css";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -77,65 +77,9 @@ type PendingAction = {
   user: UserDTO;
 };
 
-/**
- * Ações da linha/card — pílulas circulares coloridas (verde pra editar e
- * redefinir senha, vermelho pra excluir, neutro pro resto), referência de
- * design: print da tela de Acesso (SPEC-11 escopo expandido). Compartilhada
- * entre a tabela e o card do `CrudListPage` pra não duplicar o markup.
- */
-function RowActions({
-  user: u,
-  setModal,
-  setPending,
-  t,
-}: {
-  user: UserDTO;
-  setModal: (v: { mode: CrudRecordMode; user?: UserDTO } | null) => void;
-  setPending: (v: PendingAction | null) => void;
-  t: (key: TranslationKey) => string;
-}) {
-  return (
-    <div className="d-flex gap-1 flex-wrap">
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
-        onClick={() => setModal({ mode: "view", user: u })}
-      >
-        <i className="bi bi-eye" aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
-        onClick={() => setModal({ mode: "edit", user: u })}
-      >
-        <i className="bi bi-pencil" aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
-        onClick={() => setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })}
-      >
-        <i className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`} aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
-        disabled={!u.profile.email}
-        title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
-        onClick={() => setPending({ kind: "resetPassword", user: u })}
-      >
-        <i className="bi bi-key" aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-        onClick={() => setPending({ kind: "delete", user: u })}
-      >
-        <i className="bi bi-trash" aria-hidden />
-      </button>
-    </div>
-  );
-}
+// Filtro admin/não-admin — 3 estados (SPEC-32 RF2): "all" não manda
+// `IsAdmin` no parâmetro do Core, os outros dois mandam `true`/`false`.
+type IsAdminFilter = "all" | "admin" | "nonAdmin";
 
 function toFormValues(user?: UserDTO): UserFormValues {
   return {
@@ -181,13 +125,20 @@ function AdminAccessPageContent() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
+  // Filtros de listagem (SPEC-32) — "" = "Todos" (sem parâmetro `Role`).
+  const [roleFilter, setRoleFilter] = useState<InternalRole | "">("");
+  const [isAdminFilter, setIsAdminFilter] = useState<IsAdminFilter>("all");
   const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
   const listQueryOptions = userListQueryOptions({
     Search: search || undefined,
+    Role: roleFilter || undefined,
+    IsAdmin: isAdminFilter === "admin" ? true : isAdminFilter === "nonAdmin" ? false : undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
   // Lookup de roles pro multi-select do form (fora do CrudListPage) — mesmo
   // guard de SSR via useSsrSafeQuery (SPEC-10); o cache já vem quente do
@@ -259,9 +210,24 @@ function AdminAccessPageContent() {
   ];
 
   const columns: CrudColumn<UserDTO>[] = [
-    { key: "name", headerKey: "access.colName", render: (u) => u.profile.fullName },
-    { key: "username", headerKey: "access.colUsername", render: (u) => u.userName },
-    { key: "email", headerKey: "access.colEmail", render: (u) => u.profile.email ?? "—" },
+    {
+      key: "name",
+      headerKey: "access.colName",
+      sortKey: "fullName",
+      render: (u) => u.profile.fullName,
+    },
+    {
+      key: "username",
+      headerKey: "access.colUsername",
+      sortKey: "userName",
+      render: (u) => u.userName,
+    },
+    {
+      key: "email",
+      headerKey: "access.colEmail",
+      sortKey: "email",
+      render: (u) => u.profile.email ?? "—",
+    },
     {
       key: "profile",
       headerKey: "access.colProfile",
@@ -270,6 +236,7 @@ function AdminAccessPageContent() {
     {
       key: "status",
       headerKey: "access.colStatus",
+      sortKey: "isActive",
       render: (u) => (
         <Badge pill bg={u.isActive ? "success" : "secondary"}>
           {t(u.isActive ? "access.active" : "access.inactive")}
@@ -279,17 +246,14 @@ function AdminAccessPageContent() {
     {
       key: "type",
       headerKey: "access.colType",
+      sortKey: "type",
       render: (u) => t(u.type === UserType.Internal ? "access.internal" : "access.external"),
     },
     {
       key: "createdAt",
       headerKey: "access.colCreatedAt",
+      sortKey: "createdAt",
       render: (u) => new Date(u.createdAt).toLocaleDateString(locale),
-    },
-    {
-      key: "actions",
-      headerKey: "access.colActions",
-      render: (u) => <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />,
     },
   ];
 
@@ -417,18 +381,79 @@ function AdminAccessPageContent() {
                 <Badge pill bg="info">
                   {t(u.type === UserType.Internal ? "access.internal" : "access.external")}
                 </Badge>
-                <div className="mt-2">
-                  <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />
-                </div>
               </Card.Body>
             </Card>
           )}
           getItemKey={(u) => u.id}
+          rowActions={(u, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              position={ctl.position}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", user: u })}
+              onEdit={() => setModal({ mode: "edit", user: u })}
+              onDelete={() => setPending({ kind: "delete", user: u })}
+              extraActions={[
+                {
+                  key: "toggleActive",
+                  icon: u.isActive ? "bi-slash-circle" : "bi-check-circle",
+                  label: t(u.isActive ? "access.actions.deactivate" : "access.actions.activate"),
+                  onClick: () =>
+                    setPending({ kind: u.isActive ? "deactivate" : "activate", user: u }),
+                },
+                {
+                  key: "resetPassword",
+                  icon: "bi-key",
+                  label: t("access.actions.resetPassword"),
+                  disabled: !u.profile.email,
+                  onClick: () => setPending({ kind: "resetPassword", user: u }),
+                },
+              ]}
+            />
+          )}
+          onRowOpen={(u) => setModal({ mode: "view", user: u })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
+          filters={
+            <div className="d-flex gap-2 flex-wrap">
+              <Form.Select
+                size="sm"
+                style={{ width: "auto" }}
+                aria-label={t("access.filters.role")}
+                value={roleFilter}
+                onChange={(e) => {
+                  setRoleFilter(e.target.value as InternalRole | "");
+                  setPage(1);
+                }}
+              >
+                <option value="">{t("access.filters.allRoles")}</option>
+                {roleFieldOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </Form.Select>
+              <Form.Select
+                size="sm"
+                style={{ width: "auto" }}
+                aria-label={t("access.filters.isAdmin")}
+                value={isAdminFilter}
+                onChange={(e) => {
+                  setIsAdminFilter(e.target.value as IsAdminFilter);
+                  setPage(1);
+                }}
+              >
+                <option value="all">{t("access.filters.allUsers")}</option>
+                <option value="admin">{t("access.filters.adminOnly")}</option>
+                <option value="nonAdmin">{t("access.filters.nonAdminOnly")}</option>
+              </Form.Select>
+            </div>
+          }
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}

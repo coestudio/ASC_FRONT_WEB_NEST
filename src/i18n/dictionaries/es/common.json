@@ -11,6 +11,7 @@
   "shell": {
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
+    "topbarFallback": "Portal interno",
     "profile": "Perfil",
     "preferences": "Preferencias",
     "theme": "Tema",
@@ -64,5 +65,12 @@
     "clearCacheTitle": "Limpiar caché local",
     "clearCacheMessage": "Esto borra localStorage, sessionStorage, cookies y el caché de React Query, y cierra tu sesión. ¿Continuar?",
     "clearCacheSuccess": "Caché local limpiado."
+  },
+  "pagination": {
+    "first": "Primera página",
+    "previous": "Página anterior",
+    "next": "Página siguiente",
+    "last": "Última página",
+    "position": "{page} de {totalPages}"
   }
 }

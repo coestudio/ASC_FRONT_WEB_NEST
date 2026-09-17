@@ -1,0 +1,30 @@
+/* Toggle único do menu de ações (dropdown, SPEC-55) — mesma ideia compacta
+   que os botões antigos (SPEC-47 item 3): quadrado, sem padding horizontal
+   sobrando, altura reduzida em relação ao `.btn-sm` padrão do Bootstrap
+   (pensado pra botão com texto). Reescrito de trio de botões pra um único
+   toggle de ícone (`bi-three-dots-vertical`). */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  line-height: 1;
+}
+
+/* React-Bootstrap injeta `::after` (seta) em todo `Dropdown.Toggle` por
+   padrão — aqui o toggle é só o ícone de kebab, sem seta extra. */
+.toggle::after {
+  display: none;
+}
+
+/* Menu flutuante do modo controlado (SPEC-79) — portalado pro
+   `document.body`, `position: fixed` calculado em JS (coordenadas do
+   clique, com clamp de viewport). `z-index` alto o bastante pra ficar
+   acima de qualquer `Modal`/conteúdo da página (não usa `--bs-zindex-
+   dropdown` porque, fora do fluxo normal de um `Dropdown` ancorado, o
+   valor padrão do Bootstrap não é garantido acima de tudo aqui). */
+.controlledMenu {
+  z-index: 1080;
+}

@@ -17,7 +17,10 @@ import type { OperationOccurrenceDTO } from "@/api/generated/model";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import { SortableTh } from "@/components/crud/sortable-th";
 import { InputPhotoMulti, InputText, InputTextArea } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import {
   operationOccurrenceCreateFormSchema,
@@ -51,12 +54,17 @@ export function Occurrences({ operationId }: { operationId: string }) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
+  // SPEC-81 §4.2 — busca por texto (`Search`, Core/specs/48 já `IMPLEMENTED`).
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [createOpen, setCreateOpen] = useState(false);
   const [editing, setEditing] = useState<OperationOccurrenceDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdOccurrenceQueryOptions(operationId, {
+    Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
   const query = useSsrSafeQuery(listQueryOptions);
 
@@ -122,7 +130,17 @@ export function Occurrences({ operationId }: { operationId: string }) {
         {t("administrative-operations.occurrences.description")}
       </p>
 
-      <div className="d-flex justify-content-end mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+        <div style={{ minWidth: 240 }}>
+          <FilterText
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            placeholder={t("administrative-operations.occurrences.searchPlaceholder")}
+          />
+        </div>
         <Button variant="primary" onClick={openCreateModal}>
           <i className="bi bi-plus-lg me-1" aria-hidden />
           {t("administrative-operations.occurrences.new")}
@@ -147,14 +165,18 @@ export function Occurrences({ operationId }: { operationId: string }) {
           {t("administrative-operations.occurrences.empty")}
         </div>
       ) : (
-        <div className="table-responsive">
+        <div className="soft-card table-responsive">
           <Table hover className="align-middle mb-0">
             <thead>
               <tr>
-                <th>{t("administrative-operations.occurrences.colTitle")}</th>
+                <SortableTh sortKey="title" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.occurrences.colTitle")}
+                </SortableTh>
                 <th>{t("administrative-operations.occurrences.colNote")}</th>
                 <th>{t("administrative-operations.occurrences.colPhotos")}</th>
-                <th>{t("administrative-operations.occurrences.colCreatedAt")}</th>
+                <SortableTh sortKey="createdOn" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.occurrences.colCreatedAt")}
+                </SortableTh>
                 <th>{t("administrative-operations.occurrences.colActions")}</th>
               </tr>
             </thead>
@@ -168,13 +190,7 @@ export function Occurrences({ operationId }: { operationId: string }) {
                   <td>{item.photos?.length ?? 0}</td>
                   <td>{new Date(item.createdAt).toLocaleString(locale)}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={() => setEditing(item)}
-                    >
-                      <i className="bi bi-pencil" aria-hidden />
-                    </button>
+                    <CrudRowActions onEdit={() => setEditing(item)} />
                   </td>
                 </tr>
               ))}

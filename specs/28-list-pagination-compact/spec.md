@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-28
 - **Nome:** list-pagination-compact
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/components/ui/list-pagination.tsx` (compartilhado, 9
   consumidores)
@@ -126,3 +126,48 @@ opção A se o usuário não se manifestar antes da aprovação):
 - **R1** — Baixo: componente isolado, sem mudança de contrato de props;
   risco limitado a regressão visual, verificável manualmente nas 9 telas
   consumidoras.
+
+## Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/ui/list-pagination.tsx` — reescrito: troca o
+    `Array.from({ length: totalPages }, ...)` (1 `Pagination.Item` por
+    página) por 4 botões fixos (`Pagination.First`/`Prev`/`Next`/`Last`) +
+    um `Pagination.Item` `disabled` central usado só como indicador
+    textual de posição (`t("pagination.position", { page, totalPages })`),
+    seguindo a opção A do §9 (indicador só-texto, sem input/`<select>`).
+    Assinatura pública (`page`, `totalPages`, `onPageChange`, `className`)
+    inalterada.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/common.json` — namespace
+    `pagination` novo (`first`, `previous`, `next`, `last`, `position`),
+    mesmas chaves nos 4 locales, `pt-BR` como fonte.
+- **Comandos executados:**
+  - `bun install` — `VERIFIED` (531 pacotes, sem erro; `node_modules`
+    estava ausente no worktree isolado).
+  - `bun run check` (`tsc --noEmit`) — `VERIFIED`, sem erros.
+  - `bun run lint` — `VERIFIED` a intenção (roda e reporta 3 erros/63
+    warnings pré-existentes, todos em arquivos não tocados por esta SPEC
+    — `src/lib/session.server.ts` (regra de hooks, débito antigo) e vários
+    `layouts/Form/Fields/*` (warnings de `any`/unused var pré-existentes).
+    Confirmado via `git diff` que nenhum desses arquivos foi alterado e via
+    `grep` no output que `list-pagination.tsx`/`common.json` não aparecem
+    entre os problemas — zero lint novo introduzido por esta SPEC).
+  - `just map` — não se aplica (RF8/§8: componente puramente visual, sem
+    contrato de API).
+- **Critérios de aceitação:**
+
+  | # | Critério | Resultado |
+  | --- | --- | --- |
+  | CA1 | `totalPages` grande renderiza sempre o mesmo número fixo de elementos | PASS — 4 botões + 1 indicador, sem `Array.from` por página |
+  | CA2 | `<<`/`<` desabilitados na 1ª página; `>`/`>>` desabilitados na última | PASS — `isFirst`/`isLast` controlam os 4 `disabled` |
+  | CA3 | Clique em cada botão chama `onPageChange` com o valor correto | PASS — `onPageChange(1)`, `(page - 1)`, `(page + 1)`, `(totalPages)` |
+  | CA4 | Os 9 consumidores continuam funcionando sem alteração de código | PASS — assinatura de props inalterada, nenhum consumidor tocado (`crud-list-page.tsx`, `operations-list.tsx`, abas de Operação) |
+  | CA5 | i18n: 4 locales com as mesmas chaves, `pt-BR` fonte | PASS — `pagination.{first,previous,next,last,position}` nos 4 `common.json`, JSON validado |
+  | CA6 | `bun run check` + `bun run lint` sem regressão | PASS — `check` limpo; `lint` só reporta débito pré-existente não relacionado |
+
+- **Decisões tomadas durante a implementação:** seguida a opção A do §9
+  (fallback já definido na SPEC, sem manifestação em contrário do usuário)
+  — indicador de posição é só texto, não interativo.
+- **Limitações conhecidas:** nenhuma nova. Débito de lint pré-existente
+  (`session.server.ts`, `layouts/Form/Fields/*`) permanece fora do escopo
+  desta SPEC.

@@ -32,9 +32,11 @@ import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 import { Containers } from "@/components/operations/tabs/Containers";
+import { Operational } from "@/components/operations/tabs/Operational";
 import { Documents } from "@/components/operations/tabs/Documents";
 import { Invoice } from "@/components/operations/tabs/Invoice";
 import { Occurrences } from "@/components/operations/tabs/Occurrences";
+import styles from "./index.module.css";
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/operations/$id/")({
   head: () => ({ meta: [{ title: "Operação — ASC" }] }),
@@ -42,15 +44,16 @@ export const Route = createFileRoute("/_dashboard/_internal/administrative/opera
 });
 
 /**
- * As 8 abas do detalhe (D2 da SPEC-07-02, §13): estado local do shell, sem
+ * As 9 abas do detalhe (D2 da SPEC-07-02, §13): estado local do shell, sem
  * sub-rota — 7 vieram das SPEC-07-03 a SPEC-07-09, a 8ª ("Ocorrências") da
- * SPEC-43. Todas já têm conteúdo real (ou mock declarado, ver `Reports.tsx`);
- * nenhum placeholder genérico sobra.
+ * SPEC-43, a 9ª ("Operacional") da SPEC-60. Todas já têm conteúdo real (ou
+ * mock declarado, ver `Reports.tsx`); nenhum placeholder genérico sobra.
  */
 type Tab =
   | "details"
   | "romaneio"
   | "containers"
+  | "operational"
   | "documents"
   | "invoice"
   | "reports"
@@ -62,6 +65,8 @@ const TABS: { key: Tab; labelKey: TranslationKey }[] = [
   { key: "details", labelKey: "administrative-operations.shell.tabs.details" },
   { key: "romaneio", labelKey: "administrative-operations.shell.tabs.romaneio" },
   { key: "containers", labelKey: "administrative-operations.shell.tabs.containers" },
+  // SPEC-60 §6 D1: logo após Containers (vincula container → opera a carga).
+  { key: "operational", labelKey: "administrative-operations.shell.tabs.operational" },
   { key: "documents", labelKey: "administrative-operations.shell.tabs.documents" },
   { key: "invoice", labelKey: "administrative-operations.shell.tabs.invoice" },
   { key: "reports", labelKey: "administrative-operations.shell.tabs.reports" },
@@ -146,6 +151,8 @@ function OperationShellBody({ id }: { id: string }) {
           <Romaneio operationId={operation.id} />
         ) : tab === "containers" ? (
           <Containers operationId={id} />
+        ) : tab === "operational" ? (
+          <Operational operationId={id} />
         ) : tab === "documents" ? (
           <Documents operationId={id} />
         ) : tab === "invoice" ? (
@@ -228,7 +235,7 @@ function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
   }, [status]);
 
   return (
-    <section className="soft-card mb-4">
+    <section className={`soft-card mb-4 ${styles.header}`}>
       <div className="d-flex flex-wrap align-items-end justify-content-between gap-3">
         <div>
           <div className="text-body-secondary small">

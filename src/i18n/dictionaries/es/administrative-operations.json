@@ -54,12 +54,14 @@
     "email": "Correo electrónico",
     "vesselEmpty": "Ningún buque vinculado",
     "createdAt": "Creado el",
-    "updatedAt": "Actualizado el"
+    "updatedAt": "Actualizado el",
+    "editButton": "Editar"
   },
   "responsible": {
     "searchPlaceholder": "Buscar por nombre o correo...",
     "linkPlaceholder": "Escriba para buscar un usuario...",
     "link": "Vincular",
+    "selfLink": "Agregarme como responsable",
     "unlink": "Desvincular",
     "emptyState": "No se encontró ningún responsable.",
     "filter": {
@@ -97,10 +99,44 @@
     "emptyState": "Ningún fardo registrado.",
     "colItemIdentifier": "Fardo",
     "colItemCode": "Código",
+    "colNotaFiscal": "Factura",
+    "colInstruction": "Instrucción",
     "colLote": "Lote",
+    "colPilha": "Pila",
+    "colPesoTara": "Peso Tara (kg)",
     "colPeso": "Peso (kg)",
+    "colPesoBruto": "Peso Bruto (kg)",
+    "colContrato": "Contrato",
+    "colIsStuffed": "Estufado",
     "colSource": "Origen",
     "colActions": "Acciones",
+    "isStuffedYes": "Estufado",
+    "isStuffedNo": "No estufado",
+    "filterIsStuffed": {
+      "all": "Todos",
+      "stuffed": "Estufado",
+      "notStuffed": "No estufado"
+    },
+    "bulkActions": {
+      "selectedCount": "{count} seleccionados",
+      "editNfLote": "Editar factura/lote",
+      "deleteSelected": "Eliminar seleccionados",
+      "confirmDeleteTitle": "Eliminar seleccionados",
+      "confirmDelete": "¿Eliminar {count} elementos? Esta acción no se puede deshacer.",
+      "editTitle": "Editar factura/lote en masa",
+      "fieldNotaFiscal": "Factura",
+      "fieldLote": "Lote",
+      "toastSuccess": "Cambio aplicado a las filas seleccionadas.",
+      "toastDeleteSuccess": "Elementos seleccionados eliminados con éxito.",
+      "toastError": "No fue posible completar la acción en masa. Inténtelo de nuevo."
+    },
+    "export": {
+      "button": "Exportar",
+      "toast": {
+        "success": "Romaneo exportado con éxito.",
+        "error": "No fue posible exportar el romaneo. Inténtelo de nuevo."
+      }
+    },
     "form": {
       "itemIdentifier": "Identificador del fardo",
       "itemCode": "Código del artículo",
@@ -164,7 +200,8 @@
       "toast": {
         "analyzeError": "No fue posible analizar la planilla. Inténtelo de nuevo.",
         "applyError": "No fue posible aplicar la importación. Inténtelo de nuevo.",
-        "applySuccess": "Importación aplicada: {created} creados, {updated} actualizados, {deleted} eliminados."
+        "applySuccess": "Importación aplicada: {created} creados, {updated} actualizados, {deleted} eliminados.",
+        "applyNoop": "No se importó nada: ningún fardo seleccionado generó creación, actualización o eliminación."
       },
       "fields": {
         "itemCode": "Código del artículo",
@@ -187,6 +224,7 @@
       "details": "Detalles",
       "romaneio": "Romaneo",
       "containers": "Contenedores",
+      "operational": "Operativo",
       "documents": "Documentos",
       "invoice": "Factura",
       "reports": "Informes",
@@ -203,16 +241,24 @@
     "tabPlaceholder": "El contenido de esta pestaña aún no fue implementado."
   },
   "reports": {
-    "description": "Lista de informes ya emitidos para esta operación.",
-    "colType": "Tipo",
-    "colGeneratedAt": "Generado el",
-    "colFormat": "Formato",
-    "colStatus": "Estado",
-    "colActions": "Acciones",
-    "statusReady": "Disponible",
-    "statusPending": "Pendiente",
-    "download": "Descargar",
-    "emptyState": "No hay informes disponibles."
+    "description": "Genere y descargue los informes de esta operación. Cada informe se genera al momento a partir de los datos existentes — no hay historial.",
+    "generate": "Generar y descargar",
+    "weight": {
+      "name": "Weight Report",
+      "description": "Peso agregado y detallado por container y lote (.xlsx)."
+    },
+    "packingList": {
+      "name": "Packing List",
+      "description": "Lista de fardos por container (.xlsx)."
+    },
+    "photographic": {
+      "name": "Informe Fotográfico",
+      "description": "Fotos de los containers de esta operación (.docx)."
+    },
+    "toast": {
+      "success": "{name} generado con éxito.",
+      "error": "No fue posible generar {name}. Intente de nuevo."
+    }
   },
   "log": {
     "description": "Historial de eventos registrados en esta operación.",
@@ -251,6 +297,8 @@
     "colStatus": "Estado",
     "colPhotos": "Fotos",
     "colActions": "Acciones",
+    "photosButton": "Fotos",
+    "photosModalTitle": "Fotos — {identifier}",
     "form": {
       "container": "Contenedor",
       "tara": "Tara",
@@ -260,6 +308,7 @@
     "photosAddToSlot": "Agregar foto",
     "photosRemove": "Quitar foto",
     "photosOther": "Otras fotos",
+    "photosAddOther": "Agregar foto",
     "photosChecklistComplete": "Checklist completo",
     "photosChecklistMissing": "Faltan {count} fotos",
     "photoSlots": {
@@ -285,19 +334,12 @@
       "error": "No fue posible completar la acción. Inténtelo de nuevo."
     },
     "stuffing": {
-      "actionIdentified": "Estibar fardo específico",
-      "actionQuantity": "Estibar por cantidad",
-      "actionBatch": "Estibar en lote",
-      "actionViewCargo": "Ver fardos estibados",
-      "identifiedTitle": "Estibar fardo específico — {identifier}",
-      "quantityTitle": "Estibar por cantidad — {identifier}",
-      "batchTitle": "Estibar en lote — {identifier}",
-      "batchEmpty": "No se encontró ningún fardo para esta factura.",
+      "quantityTitle": "Estibar por cantidad",
+      "batchTitle": "Estibar en contenedor",
       "batchSelected": "{count} fardo(s) seleccionado(s).",
       "submit": "Estibar",
       "form": {
         "invoice": "Factura",
-        "romaneio": "Fardo del romaneo",
         "quantity": "Cantidad",
         "lote": "Lote"
       },
@@ -315,31 +357,34 @@
       "cancelReason": "Motivo de la cancelación",
       "cancelConfirm": "Confirmar cancelación",
       "toast": {
-        "identifiedSuccess": "Fardo estibado con éxito.",
         "quantitySuccess": "Estiba completada con éxito.",
         "batchSuccess": "Fardos estibados con éxito.",
         "canceled": "Fardo cancelado con éxito."
-      }
+      },
+      "batchButton": "Estibar en contenedor",
+      "quantityButton": "Estibar por cantidad",
+      "batchSummary": "{count} fardo(s) de {nfCount} factura(s) diferente(s) serán estibados.",
+      "batchMissingInvoice": "La factura {notaFiscal} todavía no tiene una Invoice creada. Créela en la pestaña Factura antes de continuar."
     },
     "destuffing": {
-      "toggle": "Ver todos los fardos estibados",
       "title": "Fardos estibados de la operación",
       "empty": "No hay fardos estibados en esta operación.",
       "colContainer": "Contenedor de origen"
     },
     "seal": {
-      "title": "Precinto",
-      "activeBadge": "Precintado",
-      "none": "Ningún precinto activo.",
       "sealButton": "Precintar",
       "unsealButton": "Quitar precinto",
       "confirmUnsealTitle": "Quitar precinto del contenedor",
       "confirmUnsealMessage": "¿Quitar el precinto activo de este contenedor?",
+      "photoRequired": "Suba una foto del precinto antes de continuar.",
       "form": {
         "user": "Responsable del precinto",
         "name": "Tipo de precinto",
         "label": "Identificación del precinto",
-        "description": "Descripción"
+        "description": "Descripción",
+        "photo": "Foto del precinto",
+        "date": "Fecha del precinto",
+        "time": "Hora del precinto"
       },
       "toast": {
         "sealed": "Contenedor precintado con éxito.",
@@ -348,17 +393,30 @@
     },
     "searchPlaceholder": "Buscar por identificador del contenedor..."
   },
+  "operational": {
+    "subtabs": {
+      "stuffing": "Estiba",
+      "destuffing": "Desestiba"
+    },
+    "stuffing": {
+      "title": "Fardos disponibles para estibar",
+      "description": "Fardos de esta operación que todavía no fueron estibados.",
+      "empty": "Ningún fardo disponible para estibar."
+    }
+  },
   "documents": {
     "new": "Nuevo documento",
     "newTitle": "Nuevo documento",
     "editTitle": "Editar documento",
     "loadError": "No fue posible cargar los documentos de la operación.",
     "empty": "Ningún documento registrado para esta operación.",
+    "searchPlaceholder": "Buscar por título...",
     "colTitle": "Título",
     "colType": "Tipo",
-    "colFile": "Archivo",
-    "colCreatedAt": "Creado el",
+    "colFile": "Observaciones",
+    "colCreatedAt": "Subido el",
     "colActions": "Acciones",
+    "filterAllTypes": "Todos los tipos",
     "fileLink": "Abrir archivo",
     "download": "Descargar archivo",
     "preview": "Ver archivo",
@@ -379,6 +437,7 @@
     "newTitle": "Nueva factura",
     "loadError": "No fue posible cargar las facturas de la operación.",
     "empty": "Ninguna factura registrada para esta operación.",
+    "searchPlaceholder": "Buscar por número...",
     "colNumber": "Número",
     "colSource": "Origen",
     "colStatus": "Estado",
@@ -450,6 +509,7 @@
     "editTitle": "Editar incidencia",
     "loadError": "No fue posible cargar las incidencias de la operación.",
     "empty": "Ninguna incidencia registrada para esta operación.",
+    "searchPlaceholder": "Buscar por título o nota...",
     "colTitle": "Título",
     "colNote": "Nota",
     "colPhotos": "Fotos",

@@ -6,6 +6,9 @@ processo formal: adiciona e risca como quiser.
 
 ## Pendente
 
+- [x] ~~Scrollbar na listagem (por enquanto só na sub-aba Estufagem de
+  Operacional, `StuffingTab`/`CrudListPage`).~~ → SPEC-75 (`IMPLEMENTED`
+  — vertical, altura fixa, `CrudListPage.maxBodyHeight` opt-in)
 - [x] ~~Paginação enxuta — `list-pagination.tsx` lista página por página
   (quebra com muitas páginas, ex. 300). Trocar por `<< < (página) > >>`.
   Foco esperado é busca, não navegação manual de página.~~ → SPEC-28
@@ -64,21 +67,19 @@ processo formal: adiciona e risca como quiser.
 
 - [x] ~~Modal de Profile — 3 problemas: (avatar não atualiza,
   Phone/BirthDate travando vazio, botões Salvar/Cancelar em lugares
-  diferentes)~~ → SPEC-30 (`PARTIALLY_IMPLEMENTED` — RF2
-  Phone/BirthDate vazio e RF3 botões lado a lado confirmados
-  funcionando; **RF1 (avatar não atualiza) segue incompleto**, fix de
-  cache-bust não resolveu o que o usuário reportou, retomar nesta SPEC
-  numa próxima sessão de frontend, não abrir SPEC nova)
+  diferentes)~~ → SPEC-30 (`IMPLEMENTED`, 2026-09-16 — RF1 tinha causa
+  raiz no Core, `PATCH /profile/avatar` devolvia dado desatualizado;
+  corrigido em `Core/specs/40-profile-avatar-stale-response`, confirmado
+  em tela real pelo usuário)
 
 - [x] ~~Sidebar (topo): logo do brand não aparece.~~ → SPEC-29
   (`IMPLEMENTED`, reversão da decisão da SPEC-26)
 
-- [ ] Relatórios de verdade (aba Reports hoje é mock, SPEC-07-07): Weight
-  Report, Packing List, Relatório Fotográfico... → SPEC-40, `DEFERRED`
-  a pedido do usuário (2026-09-16) — bloqueada pelas 3 SPECs de
-  relatório do Core (`36`/`37`/`38`, `DRAFT`, prontas pra aprovar) e por
-  decisão de arquitetura em aberto sobre `.pdf` (fora do escopo do Core
-  hoje).
+- [x] ~~Relatórios de verdade (aba Reports hoje é mock, SPEC-07-07): Weight
+  Report, Packing List, Relatório Fotográfico...~~ → SPEC-40
+  (`IMPLEMENTED`, 2026-09-16, Core `36`/`37`/`38` também `IMPLEMENTED`).
+  Sem `.pdf` (fora do escopo do Core, sem LibreOffice hospedado) — só
+  `.xlsx`/`.docx`.
 
 - [x] ~~Aba Nota Fiscal ganha sub-abas: (1) listagem atual, (2) "Comparação
   NF"... (3) "Comparação Lotes"...~~ → SPEC-41 (`IMPLEMENTED`, Core
@@ -103,9 +104,35 @@ processo formal: adiciona e risca como quiser.
   negócio; Core `34-container-split-transfer-gaps` também `DEFERRED`)
 
 - [x] ~~`Profile.ViewModel.Document` obrigatório~~ — Core resolveu
-  (`27-profile-document-optional`, `IMPLEMENTED`). **Lado NewPortal
-  ainda não pego** — falta `just map` refletir o campo opcional e o
-  ajuste trivial em `DetailTab` (mesmo padrão do RF2 da SPEC-30, ver
-  aquela SPEC §"Fora do escopo" item 2 pro plano de quando fizer).
+  (`27-profile-document-optional`, `IMPLEMENTED`). Lado NewPortal
+  → SPEC-47 (`IMPLEMENTED`, 2026-09-16 — `InputDocument.tsx` não
+  hardcoda mais `required`).
+
+- [x] ~~Operação → aba Responsáveis: usuário reportou (2026-09-16) não
+  conseguir ver o próprio usuário no campo de busca pra vincular como
+  Responsável.~~ Causa raiz não investigada a fundo (dois candidatos
+  ficaram registrados no histórico do TODO, sem repro que descartasse
+  um dos dois) — usuário preferiu bypassar o problema em vez de
+  diagnosticar: pediu um botão de auto-vincular dedicado.
+  → `specs/54-responsible-self-link-button` (`DRAFT`, esperando
+  aprovação), Core `44-responsible-self-link` (`DRAFT`).
+
+- [ ] Aba Romaneio: usuário pediu (2026-09-16) seleção em massa
+  (checkbox, excluir vários de uma vez, sem botão de exclusão
+  individual), coluna+filtro de "Estufado" (linha estufada não pode ser
+  editada nem excluída — nem selecionável), edição em massa de
+  NF/Lote, e ordenação clicável por NF/Lote.
+  → `specs/53-romaneio-bulk-select-actions` (`DRAFT`, esperando
+  aprovação), Core `43-romaneio-stuffed-status-bulk-actions` (`DRAFT`).
+
+- [ ] Botão "X" pra fechar em todo modal, além do botão de rodapé —
+  reverte decisão de design anterior (documentada em
+  `components/ui/modal.tsx`), a pedido do usuário.
+  → `specs/51-modal-close-button` (`DRAFT`, esperando aprovação).
+
+- [ ] Modal de Profile fecha sozinho ao salvar com sucesso (hoje só
+  mostra toast, fica aberto).
+  → `specs/52-profile-modal-close-on-save` (`DRAFT`, esperando
+  aprovação).
 
 ## Feito

@@ -6,6 +6,7 @@ import * as XLSX from "xlsx";
 
 import { LoadingState } from "@/components/ui/loading-state";
 import { useT } from "@/lib/ui-prefs";
+import styles from "./file-preview-modal.module.css";
 
 /** Subtipo estrutural de `FileDTO` (regra 2 do AGENTS.md não se aplica — é
  * `type` de props, não schema Zod) — aceita o `FileDTO` gerado direto. */
@@ -142,7 +143,7 @@ function DocxPreview({ file }: { file: FilePreviewFile }) {
   if (failed) return <UnavailableFallback file={file} message={t("filePreview.error")} />;
   if (html === null) return <LoadingState variant="inline" />;
   // Conteúdo vem do parsing local de `mammoth`, não é HTML arbitrário de terceiro.
-  return <div className="file-preview-docx" dangerouslySetInnerHTML={{ __html: html }} />;
+  return <div className={styles.docx} dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 function SheetPreview({ file }: { file: FilePreviewFile }) {
@@ -181,7 +182,7 @@ function SheetPreview({ file }: { file: FilePreviewFile }) {
   return (
     // Conteúdo vem do parsing local de `xlsx`/SheetJS, não é HTML arbitrário de terceiro.
     <div
-      className="file-preview-sheet table-responsive"
+      className={`${styles.sheet} table-responsive`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

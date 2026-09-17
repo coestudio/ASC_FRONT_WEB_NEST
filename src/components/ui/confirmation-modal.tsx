@@ -48,10 +48,7 @@ export function ConfirmationModal({
       <Modal.Body className="text-center py-4">
         <p className="mb-0 text-break">{message}</p>
       </Modal.Body>
-      <Modal.Footer className="justify-content-center gap-2 border-top-0 pt-0">
-        <Button variant="outline-primary" size="sm" onClick={onCancel} disabled={loading}>
-          {cancelLabel}
-        </Button>
+      <Modal.Footer className="justify-content-end gap-2 border-top-0 pt-0">
         <Button
           variant={variant === "danger" ? "danger" : "primary"}
           size="sm"
@@ -63,6 +60,9 @@ export function ConfirmationModal({
           ) : (
             confirmLabel
           )}
+        </Button>
+        <Button variant="outline-primary" size="sm" onClick={onCancel} disabled={loading}>
+          {cancelLabel}
         </Button>
       </Modal.Footer>
     </Modal>

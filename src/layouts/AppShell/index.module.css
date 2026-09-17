@@ -1,7 +1,18 @@
+/* Shell de altura TRAVADA na viewport (não `min-height`) — nada fora daqui
+   rola o documento inteiro; só `.content` (dentro de `.main`) tem scroll
+   interno (ver abaixo). Isso substitui a abordagem antiga de sidebar
+   `position: sticky` acompanhando o scroll da página: com conteúdo bem
+   longo (ex. aba Romaneio, detalhes de Operação), o sticky descolava perto
+   do fim do `.shell` e sobrava espaço vazio embaixo da sidebar — variava
+   ainda mais dependendo da resolução do monitor. Com altura fixa, a sidebar
+   e o topbar nunca se movem: sempre ocupam 100% da viewport, direto, sem
+   depender de scroll container nenhum. `overflow: hidden` garante que nada
+   aqui dentro force o documento (html/body) a crescer além da viewport. */
 .shell {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
+  overflow: hidden;
   background-color: var(--bs-body-bg);
 }
 
@@ -12,23 +23,19 @@
   color: var(--sidebar-fg);
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 0;
-  /* dvh acompanha esconder/mostrar da toolbar do browser (mobile e alguns
-     browsers desktop, ex. Comet) — vh puro trava na altura do load e sobra
-     espaço embaixo da sidebar quando a toolbar recolhe e o viewport cresce.
-     vh primeiro como fallback pra browser sem suporte a dvh. */
-  height: 100vh;
-  height: 100dvh;
+  /* 100% da altura do `.shell`, que agora é travada na viewport — não
+     precisa mais de `position: sticky` (a sidebar nunca fica dentro de uma
+     área que rola, então não tem de onde "descolar"). */
+  height: 100%;
   overflow: visible;
   overflow-x: hidden;
   z-index: 10;
   border-radius: 0 1.5rem 1.5rem 0;
 }
-/* height = 80px, matched by .topbar. SPEC-29: reverte SPEC-26 (que
-   escondia a logo aqui) — volta a mostrar a marca ativa. */
+/* height = 60px, matched by .topbar (SPEC-83). SPEC-29: reverte SPEC-26
+   (que escondia a logo aqui) — volta a mostrar a marca ativa. */
 .sidebarHeader {
-  height: 80px;
+  height: 60px;
   box-sizing: border-box;
   border-bottom: 1px solid var(--sidebar-border);
   display: flex;
@@ -108,6 +115,15 @@
   color: var(--sidebar-active-fg, var(--brand-primary));
   font-weight: 600;
   box-shadow: inset 2px 0 0 var(--brand-primary);
+}
+/* Sem isso, clicar num item com o mouse deixa o anel de foco padrão do
+   browser "grudado" no link até algo tirar o foco — como o anel usa
+   `currentColor` (verde aqui), parecia um segundo item "ativo" ao lado do
+   item de rota real (`.active` acima). `:focus-visible` só acende em
+   navegação por teclado, que é quando o anel importa de verdade pra
+   acessibilidade. */
+.navSub a:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .sidebarFooter {
@@ -322,10 +338,19 @@
   border-radius: 1.5rem 0 0 1.5rem;
   margin: 0 0 0 0.85rem;
   box-shadow: var(--main-divider-shadow, -12px 0 28px -24px rgba(15, 25, 45, 0.45));
+  /* `.main` estica pra altura do `.shell` (100dvh, `align-items: stretch`
+     padrão do flex) e nunca mais cresce além disso — quem rola por dentro é
+     só `.content`. `overflow: hidden` também garante que as bordas
+     arredondadas continuem cortando o conteúdo como antes. */
+  overflow: hidden;
 }
-/* height = 50px content + 15px padding-top + 15px padding-bottom + 1px border-bottom = 80px, matched by .sidebarHeader */
+/* height = 39px content + 10px padding-top + 10px padding-bottom + 1px border-bottom = 60px, matched by .sidebarHeader (SPEC-83) */
 .topbar {
-  height: 80px;
+  height: 60px;
+  /* Nunca encolhe — `.topbar` e `.content` dividem a altura fixa de
+     `.main`; sem isso um flex item com `height` explícita ainda pode ser
+     espremido se o cálculo de altura dos irmãos apertar. */
+  flex-shrink: 0;
   box-sizing: border-box;
   border-top-left-radius: inherit;
   border-bottom: 1px solid var(--bs-border-color);
@@ -334,7 +359,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 1.5rem;
+  padding: 10px 1.5rem;
   font-size: 0.85rem;
   color: var(--ink-muted);
 }
@@ -352,6 +377,15 @@
   font-weight: 600;
 }
 .content {
+  /* Única área que rola dentro do shell — ocupa o resto da altura de
+     `.main` (que é `.topbar` + `.content`, um flex column) e rola por
+     dentro. `min-height: 0` é obrigatório aqui: sem isso, o item de um
+     flex column por padrão nunca encolhe abaixo da altura do próprio
+     conteúdo (min-height: auto), e o scroll interno nunca apareceria —
+     o conteúdo simplesmente vazaria pra fora de `.main`. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
   padding: 1.5rem;
   max-width: 1600px;
   width: 100%;

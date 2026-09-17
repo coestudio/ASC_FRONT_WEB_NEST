@@ -4,12 +4,19 @@
     "searchPlaceholder": "Search...",
     "viewMode": "View mode",
     "error": "Could not load the data.",
-    "empty": "No records found."
+    "empty": "No records found.",
+    "rowActionsToggle": "Row actions",
+    "rowActionsView": "View",
+    "rowActionsEdit": "Edit",
+    "rowActionsDelete": "Delete",
+    "selectAll": "Select all",
+    "selectRow": "Select row"
   },
   "recordModal": {
     "cancel": "Cancel",
     "close": "Close",
-    "save": "Save"
+    "save": "Save",
+    "delete": "Delete"
   },
   "mockDataBanner": {
     "message": "Sample data — no Core endpoint yet."

@@ -92,6 +92,7 @@ function HarborPage() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: HarborDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<HarborDTO | null>(null);
 
@@ -99,6 +100,7 @@ function HarborPage() {
     Search: search || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
 
   const createMutation = usePostApiHarbor();
@@ -137,6 +139,7 @@ function HarborPage() {
     {
       key: "name",
       headerKey: "administrative-registry.harbor.colName",
+      sortKey: "name",
       render: (h) => h.name,
     },
     {
@@ -147,18 +150,8 @@ function HarborPage() {
     {
       key: "createdAt",
       headerKey: "administrative-registry.harbor.colCreatedAt",
+      sortKey: "createdAt",
       render: (h) => new Date(h.createdAt).toLocaleDateString(locale),
-    },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.harbor.colActions",
-      render: (h) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: h })}
-          onEdit={() => setModal({ mode: "edit", record: h })}
-          onDelete={() => setPendingDelete(h)}
-        />
-      ),
     },
   ];
 
@@ -193,11 +186,24 @@ function HarborPage() {
             </Card>
           )}
           getItemKey={(h) => h.id}
+          rowActions={(h, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              position={ctl.position}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: h })}
+              onEdit={() => setModal({ mode: "edit", record: h })}
+              onDelete={() => setPendingDelete(h)}
+            />
+          )}
+          onRowOpen={(h) => setModal({ mode: "view", record: h })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
@@ -220,6 +226,7 @@ function HarborPage() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as HarborDTO) : undefined}
           extraContent={
             modal.mode === "view" && modal.record ? (
               <RelatedTerminals harborId={modal.record.id} />

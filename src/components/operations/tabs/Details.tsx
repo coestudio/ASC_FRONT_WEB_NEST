@@ -1,6 +1,20 @@
-import { Col, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Col, Row } from "react-bootstrap";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
+import {
+  getGetApiOperationIdQueryKey,
+  usePutApiOperationId,
+} from "@/api/generated/endpoints/operation/operation";
+import { PutApiOperationIdBody } from "@/api/generated/zod/operation/operation.zod";
 import type { OperationDetailDTO } from "@/api/generated/model";
+import { CrudRecordModal } from "@/components/crud/crud-record-modal";
+import {
+  buildOperationEditFields,
+  operationEditDefaultValues,
+  type OperationEditValues,
+} from "@/components/operations/operation-edit-fields";
 import type { Locale } from "@/i18n/config";
 import { useLocale, useT } from "@/lib/ui-prefs";
 
@@ -15,15 +29,30 @@ function formatDate(value: string | null | undefined, locale: Locale): string {
 }
 
 /**
- * Linha rótulo/valor — mesmo padrão de `OperationSummary`
- * (`operations-list.tsx`), extraído aqui só pra esta aba (dado real,
- * `OperationDetailDTO`).
+ * Linha rótulo/valor — rótulo pequeno/discreto acima, valor em destaque
+ * abaixo (mesmo padrão já usado no mock de `operational/operations/$id`),
+ * em vez do "**Rótulo:** valor" inline anterior: com várias colunas lado a
+ * lado o par bold+dois-pontos ficava difícil de escanear rápido; rótulo e
+ * valor em linhas separadas dá mais hierarquia visual sem gastar mais
+ * espaço vertical que o gap (`g-3`) já reservava.
  */
 function DetailField({ label, value, md = 4 }: { label: string; value: string; md?: number }) {
   return (
     <Col md={md}>
-      <strong>{label}:</strong> {value || "—"}
+      <div className="small text-body-secondary">{label}</div>
+      <div className="fw-semibold">{value || "—"}</div>
     </Col>
+  );
+}
+
+/** Título de seção com ícone — mesma ideia das abas do shell (ícone + texto),
+ * pra dar um ponto de referência visual rápido em cada bloco da aba. */
+function SectionTitle({ icon, children }: { icon: string; children: string }) {
+  return (
+    <h2 className="h6 text-body-secondary text-uppercase mb-3 d-flex align-items-center gap-2">
+      <i className={`bi ${icon}`} aria-hidden />
+      {children}
+    </h2>
   );
 }
 
@@ -33,17 +62,46 @@ function DetailField({ label, value, md = 4 }: { label: string; value: string; m
  * (RF2 da SPEC-07-03) já está no cabeçalho comum do shell (`OperationHeader`,
  * SPEC-07-02) — visível em qualquer aba, não duplicada aqui; esta aba mostra
  * o restante dos dados cadastrais que o cabeçalho não cobre.
+ *
+ * SPEC-33: botão "Editar" que abre o mesmo `CrudRecordModal<OperationEditValues>`
+ * já usado na listagem (`operations-list.tsx`), reaproveitando
+ * `editFields`/`OperationEditValues`/`usePutApiOperationId` a partir do
+ * módulo compartilhado `operation-edit-fields.ts` — nenhum campo novo,
+ * `booking`/`instruction` fora do escopo (não fazem parte de
+ * `OperationUpdate`, ver spec).
  */
 export function OperationDetailsTab({ operation }: { operation: OperationDetailDTO }) {
   const t = useT();
   const locale = useLocale();
+  const queryClient = useQueryClient();
+  const [editOpen, setEditOpen] = useState(false);
+
+  const updateMutation = usePutApiOperationId();
+
+  const handleEditSubmit = async (values: OperationEditValues) => {
+    try {
+      await updateMutation.mutateAsync({ id: operation.id, data: values });
+      toast.success(t("administrative-operations.toast.updated"));
+      queryClient.invalidateQueries({ queryKey: getGetApiOperationIdQueryKey(operation.id) });
+      setEditOpen(false);
+    } catch {
+      toast.error(t("administrative-operations.toast.error"));
+    }
+  };
 
   return (
     <div className="d-flex flex-column gap-4">
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <div className="d-flex justify-content-end">
+        <Button variant="outline-primary" size="sm" onClick={() => setEditOpen(true)}>
+          <i className="bi bi-pencil me-1" aria-hidden />
+          {t("administrative-operations.details.editButton")}
+        </Button>
+      </div>
+
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-person">
           {t("administrative-operations.details.clientSection")}
-        </h2>
+        </SectionTitle>
         <Row className="g-3">
           <DetailField
             label={t("administrative-operations.form.client")}
@@ -52,7 +110,7 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
           />
           <DetailField
             label={t("administrative-operations.details.document")}
-            value={operation.client.document}
+            value={operation.client.document ?? ""}
             md={6}
           />
           <DetailField
@@ -68,10 +126,10 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </Row>
       </section>
 
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-box-seam">
           {t("administrative-operations.details.productSection")}
-        </h2>
+        </SectionTitle>
         <Row className="g-3">
           <DetailField
             label={t("administrative-operations.form.product")}
@@ -96,10 +154,10 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </Row>
       </section>
 
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-calendar3">
           {t("administrative-operations.details.datesSection")}
-        </h2>
+        </SectionTitle>
         <Row className="g-3">
           <DetailField
             label={t("administrative-operations.form.nameDate")}
@@ -124,12 +182,29 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </Row>
       </section>
 
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-chat-left-text">
           {t("administrative-operations.form.observation")}
-        </h2>
+        </SectionTitle>
         <p className="mb-0">{operation.observation || "—"}</p>
       </section>
+
+      {editOpen ? (
+        <CrudRecordModal<OperationEditValues>
+          show
+          mode="edit"
+          titleKeys={{
+            create: "administrative-operations.newTitle",
+            edit: "administrative-operations.editTitle",
+            view: "administrative-operations.viewTitle",
+          }}
+          schema={PutApiOperationIdBody}
+          fields={buildOperationEditFields({ t, record: operation })}
+          defaultValues={operationEditDefaultValues(operation)}
+          onSubmit={handleEditSubmit}
+          onClose={() => setEditOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }

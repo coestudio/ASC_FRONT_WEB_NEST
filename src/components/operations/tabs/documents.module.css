@@ -1,0 +1,11 @@
+/* SPEC-85: preview de 2 linhas do campo `observation` na coluna
+   "Observação" da aba Documentos — evita que uma observação longa
+   estoure a altura da linha da tabela. */
+.observationPreview {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 28rem;
+  white-space: normal;
+}

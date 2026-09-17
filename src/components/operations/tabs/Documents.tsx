@@ -6,6 +6,8 @@ import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { FilePreviewModal } from "@/components/ui/file-preview-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import { SortableTh } from "@/components/crud/sortable-th";
 import { toast } from "react-toastify";
 import type { ZodType } from "zod";
 import { z } from "zod";
@@ -20,16 +22,18 @@ import {
   PostApiOperationOperationIdDocumentBody,
   PutApiOperationOperationIdDocumentIdBody,
 } from "@/api/generated/zod/document/document.zod";
-import type { DocumentDTO } from "@/api/generated/model";
+import type { DocumentDTO, DocumentType } from "@/api/generated/model";
 import {
   documentTypeOptions,
   resolveDocumentTypeLabel,
 } from "@/api/generated/static/documentTypeOptions";
 import { InputFileSingle, InputText, InputTextArea, Select } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import styles from "./documents.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -81,13 +85,23 @@ export function Documents({ operationId }: { operationId: string }) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
+  // SPEC-81 §4.2 — busca por texto (`Search`, Core/specs/48 já `IMPLEMENTED`
+  // no momento desta implementação — resolve o bloqueio que a SPEC-85 tinha
+  // documentado, que partiu de um Core sem esse campo ainda).
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
+  // SPEC-85 (3.3): filtro por Tipo de arquivo.
+  const [typeFilter, setTypeFilter] = useState<DocumentType | "">("");
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editing, setEditing] = useState<DocumentDTO | null>(null);
   const [previewing, setPreviewing] = useState<DocumentDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdDocumentQueryOptions(operationId, {
+    Search: search || undefined,
+    Type: typeFilter || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
+    Sort: sort,
   });
   const query = useSsrSafeQuery(listQueryOptions);
 
@@ -153,7 +167,36 @@ export function Documents({ operationId }: { operationId: string }) {
 
   return (
     <div>
-      <div className="d-flex justify-content-end mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+        <div className="d-flex gap-2 flex-wrap">
+          <div style={{ minWidth: 240 }}>
+            <FilterText
+              value={search}
+              onChange={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
+              placeholder={t("administrative-operations.documents.searchPlaceholder")}
+            />
+          </div>
+          <Form.Select
+            size="sm"
+            style={{ width: "auto" }}
+            aria-label={t("administrative-operations.documents.form.type")}
+            value={typeFilter}
+            onChange={(e) => {
+              setTypeFilter(e.target.value as DocumentType | "");
+              setPage(1);
+            }}
+          >
+            <option value="">{t("administrative-operations.documents.filterAllTypes")}</option>
+            {documentTypeOptions.map((opt) => (
+              <option key={opt.key} value={opt.key}>
+                {resolveDocumentTypeLabel(opt.key, locale)}
+              </option>
+            ))}
+          </Form.Select>
+        </div>
         <Button variant="primary" onClick={openCreateModal}>
           <i className="bi bi-plus-lg me-1" aria-hidden />
           {t("administrative-operations.documents.new")}
@@ -178,14 +221,20 @@ export function Documents({ operationId }: { operationId: string }) {
           {t("administrative-operations.documents.empty")}
         </div>
       ) : (
-        <div className="table-responsive">
+        <div className="soft-card table-responsive">
           <Table hover className="align-middle mb-0">
             <thead>
               <tr>
-                <th>{t("administrative-operations.documents.colTitle")}</th>
-                <th>{t("administrative-operations.documents.colType")}</th>
+                <SortableTh sortKey="title" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.documents.colTitle")}
+                </SortableTh>
+                <SortableTh sortKey="type" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.documents.colType")}
+                </SortableTh>
                 <th>{t("administrative-operations.documents.colFile")}</th>
-                <th>{t("administrative-operations.documents.colCreatedAt")}</th>
+                <SortableTh sortKey="createdOn" sort={sort} onSortChange={setSort}>
+                  {t("administrative-operations.documents.colCreatedAt")}
+                </SortableTh>
                 <th>{t("administrative-operations.documents.colActions")}</th>
               </tr>
             </thead>
@@ -197,50 +246,35 @@ export function Documents({ operationId }: { operationId: string }) {
                     <Badge bg="secondary">{resolveDocumentTypeLabel(item.type, locale)}</Badge>
                   </td>
                   <td>
-                    {item.file.url ? (
-                      <a href={item.file.url} target="_blank" rel="noreferrer">
-                        {item.file.name || t("administrative-operations.documents.fileLink")}
-                      </a>
+                    {item.observation ? (
+                      <span className={styles.observationPreview}>{item.observation}</span>
                     ) : (
                       "—"
                     )}
                   </td>
                   <td>{new Date(item.createdAt).toLocaleDateString(locale)}</td>
                   <td>
-                    <div className="d-flex gap-1">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setPreviewing(item)}
-                        title={t("administrative-operations.documents.preview")}
-                        aria-label={t("administrative-operations.documents.preview")}
-                      >
-                        <i className="bi bi-eye" aria-hidden />
-                      </button>
-                      {/* `download` só força o nome de arquivo quando o link
-                          é mesma origem — em storage externo (S3/blob) o
-                          browser ainda assim baixa em vez de navegar, contanto
-                          que o servidor não force Content-Disposition:inline;
-                          `target="_blank"` cobre o caso de acabar abrindo. */}
-                      <a
-                        className={`btn btn-sm btn-outline-primary${item.file.url ? "" : " disabled"}`}
-                        href={item.file.url}
-                        download={item.file.name}
-                        target="_blank"
-                        rel="noreferrer"
-                        title={t("administrative-operations.documents.download")}
-                        aria-disabled={!item.file.url}
-                      >
-                        <i className="bi bi-download" aria-hidden />
-                      </a>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setEditing(item)}
-                      >
-                        <i className="bi bi-pencil" aria-hidden />
-                      </button>
-                    </div>
+                    {/* `download` só força o nome de arquivo quando o link é
+                        mesma origem — em storage externo (S3/blob) o browser
+                        ainda assim baixa em vez de navegar, contanto que o
+                        servidor não force Content-Disposition:inline;
+                        `target="_blank"` cobre o caso de acabar abrindo. */}
+                    <CrudRowActions
+                      onView={() => setPreviewing(item)}
+                      extraActions={[
+                        {
+                          key: "download",
+                          icon: "bi-download",
+                          label: t("administrative-operations.documents.download"),
+                          href: item.file.url ?? undefined,
+                          download: item.file.name ?? undefined,
+                          target: "_blank",
+                          rel: "noreferrer",
+                          disabled: !item.file.url,
+                        },
+                      ]}
+                      onEdit={() => setEditing(item)}
+                    />
                   </td>
                 </tr>
               ))}

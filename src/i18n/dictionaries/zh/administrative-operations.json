@@ -54,12 +54,14 @@
     "email": "邮箱",
     "vesselEmpty": "未关联船舶",
     "createdAt": "创建时间",
-    "updatedAt": "更新时间"
+    "updatedAt": "更新时间",
+    "editButton": "编辑"
   },
   "responsible": {
     "searchPlaceholder": "按姓名或邮箱搜索...",
     "linkPlaceholder": "输入以搜索用户...",
     "link": "关联",
+    "selfLink": "将我添加为负责人",
     "unlink": "取消关联",
     "emptyState": "未找到负责人。",
     "filter": {
@@ -97,10 +99,44 @@
     "emptyState": "未登记任何包裹。",
     "colItemIdentifier": "包裹",
     "colItemCode": "代码",
+    "colNotaFiscal": "发票",
+    "colInstruction": "说明",
     "colLote": "批次",
+    "colPilha": "堆垛",
+    "colPesoTara": "皮重 (kg)",
     "colPeso": "重量（千克）",
+    "colPesoBruto": "毛重 (kg)",
+    "colContrato": "合同",
+    "colIsStuffed": "已装箱",
     "colSource": "来源",
     "colActions": "操作",
+    "isStuffedYes": "已装箱",
+    "isStuffedNo": "未装箱",
+    "filterIsStuffed": {
+      "all": "全部",
+      "stuffed": "已装箱",
+      "notStuffed": "未装箱"
+    },
+    "bulkActions": {
+      "selectedCount": "已选择 {count} 项",
+      "editNfLote": "批量编辑发票/批次",
+      "deleteSelected": "删除所选",
+      "confirmDeleteTitle": "删除所选",
+      "confirmDelete": "删除 {count} 项？此操作无法撤销。",
+      "editTitle": "批量编辑发票/批次",
+      "fieldNotaFiscal": "发票",
+      "fieldLote": "批次",
+      "toastSuccess": "已对所选行应用更改。",
+      "toastDeleteSuccess": "所选项目删除成功。",
+      "toastError": "无法完成批量操作，请重试。"
+    },
+    "export": {
+      "button": "导出",
+      "toast": {
+        "success": "装箱单导出成功。",
+        "error": "无法导出装箱单，请重试。"
+      }
+    },
     "form": {
       "itemIdentifier": "包裹标识",
       "itemCode": "项目代码",
@@ -164,7 +200,8 @@
       "toast": {
         "analyzeError": "无法分析表格，请重试。",
         "applyError": "无法应用导入，请重试。",
-        "applySuccess": "导入已应用：新建 {created} 个，更新 {updated} 个，删除 {deleted} 个。"
+        "applySuccess": "导入已应用：新建 {created} 个，更新 {updated} 个，删除 {deleted} 个。",
+        "applyNoop": "没有导入任何内容：所选的包裹未生成任何创建、更新或删除。"
       },
       "fields": {
         "itemCode": "项目代码",
@@ -187,6 +224,7 @@
       "details": "详情",
       "romaneio": "装箱单",
       "containers": "集装箱",
+      "operational": "作业操作",
       "documents": "文件",
       "invoice": "发票",
       "reports": "报告",
@@ -203,16 +241,24 @@
     "tabPlaceholder": "此标签页的内容尚未实现。"
   },
   "reports": {
-    "description": "此作业已生成的报告列表。",
-    "colType": "类型",
-    "colGeneratedAt": "生成时间",
-    "colFormat": "格式",
-    "colStatus": "状态",
-    "colActions": "操作",
-    "statusReady": "可用",
-    "statusPending": "待处理",
-    "download": "下载",
-    "emptyState": "暂无可用报告。"
+    "description": "生成并下载此作业的报告。每份报告都是根据现有数据即时生成的——没有历史记录。",
+    "generate": "生成并下载",
+    "weight": {
+      "name": "Weight Report",
+      "description": "按集装箱和批次汇总及明细的重量报告（.xlsx）。"
+    },
+    "packingList": {
+      "name": "Packing List",
+      "description": "按集装箱列出的包裹清单（.xlsx）。"
+    },
+    "photographic": {
+      "name": "照片报告",
+      "description": "此作业各集装箱的照片（.docx）。"
+    },
+    "toast": {
+      "success": "{name} 生成成功。",
+      "error": "无法生成 {name}。请重试。"
+    }
   },
   "log": {
     "description": "此作业记录的事件历史。",
@@ -251,6 +297,8 @@
     "colStatus": "状态",
     "colPhotos": "照片",
     "colActions": "操作",
+    "photosButton": "照片",
+    "photosModalTitle": "照片 — {identifier}",
     "form": {
       "container": "集装箱",
       "tara": "皮重",
@@ -260,6 +308,7 @@
     "photosAddToSlot": "添加照片",
     "photosRemove": "移除照片",
     "photosOther": "其他照片",
+    "photosAddOther": "添加照片",
     "photosChecklistComplete": "清单已完成",
     "photosChecklistMissing": "还缺 {count} 张照片",
     "photoSlots": {
@@ -285,19 +334,12 @@
       "error": "无法完成该操作，请重试。"
     },
     "stuffing": {
-      "actionIdentified": "装箱指定包件",
-      "actionQuantity": "按数量装箱",
-      "actionBatch": "批量装箱",
-      "actionViewCargo": "查看已装箱包件",
-      "identifiedTitle": "装箱指定包件 — {identifier}",
-      "quantityTitle": "按数量装箱 — {identifier}",
-      "batchTitle": "批量装箱 — {identifier}",
-      "batchEmpty": "未找到此发票对应的包件。",
+      "quantityTitle": "按数量装箱",
+      "batchTitle": "装箱到集装箱",
       "batchSelected": "已选择 {count} 个包件。",
       "submit": "装箱",
       "form": {
         "invoice": "发票",
-        "romaneio": "分捡单包件",
         "quantity": "数量",
         "lote": "批次"
       },
@@ -315,31 +357,34 @@
       "cancelReason": "取消原因",
       "cancelConfirm": "确认取消",
       "toast": {
-        "identifiedSuccess": "包件装箱成功。",
         "quantitySuccess": "装箱完成成功。",
         "batchSuccess": "包件批量装箱成功。",
         "canceled": "包件已取消。"
-      }
+      },
+      "batchButton": "装箱到集装箱",
+      "quantityButton": "按数量装箱",
+      "batchSummary": "将把 {count} 个包件（来自 {nfCount} 张不同发票）装箱。",
+      "batchMissingInvoice": "发票 {notaFiscal} 尚未创建。请先在发票标签页创建后再继续。"
     },
     "destuffing": {
-      "toggle": "查看所有已装箱的包件",
       "title": "该操作的已装箱包件",
       "empty": "该操作没有已装箱的包件。",
       "colContainer": "所在集装箱"
     },
     "seal": {
-      "title": "封条",
-      "activeBadge": "已封条",
-      "none": "暂无生效中的封条。",
       "sealButton": "加封条",
       "unsealButton": "拆封条",
       "confirmUnsealTitle": "拆除集装箱封条",
       "confirmUnsealMessage": "确定要移除此集装箱当前生效的封条吗？",
+      "photoRequired": "请先上传封条照片再继续。",
       "form": {
         "user": "封条责任人",
         "name": "封条类型",
         "label": "封条标识",
-        "description": "描述"
+        "description": "描述",
+        "photo": "封条照片",
+        "date": "封条日期",
+        "time": "封条时间"
       },
       "toast": {
         "sealed": "集装箱封条成功。",
@@ -348,17 +393,30 @@
     },
     "searchPlaceholder": "按集装箱识别码搜索..."
   },
+  "operational": {
+    "subtabs": {
+      "stuffing": "装箱",
+      "destuffing": "拆箱"
+    },
+    "stuffing": {
+      "title": "可装箱的包件",
+      "description": "该作业中尚未装箱的包件。",
+      "empty": "没有可装箱的包件。"
+    }
+  },
   "documents": {
     "new": "新建文件",
     "newTitle": "新建文件",
     "editTitle": "编辑文件",
     "loadError": "无法加载该作业的文件。",
     "empty": "此作业尚未登记任何文件。",
+    "searchPlaceholder": "按标题搜索...",
     "colTitle": "标题",
     "colType": "类型",
-    "colFile": "文件",
-    "colCreatedAt": "创建时间",
+    "colFile": "备注",
+    "colCreatedAt": "上传时间",
     "colActions": "操作",
+    "filterAllTypes": "所有类型",
     "fileLink": "打开文件",
     "download": "下载文件",
     "preview": "预览文件",
@@ -379,6 +437,7 @@
     "newTitle": "新建发票",
     "loadError": "无法加载该作业的发票。",
     "empty": "此作业尚未登记任何发票。",
+    "searchPlaceholder": "按编号搜索...",
     "colNumber": "编号",
     "colSource": "来源",
     "colStatus": "状态",
@@ -450,6 +509,7 @@
     "editTitle": "编辑事件记录",
     "loadError": "无法加载该作业的事件记录。",
     "empty": "此作业暂无事件记录。",
+    "searchPlaceholder": "按标题或备注搜索...",
     "colTitle": "标题",
     "colNote": "备注",
     "colPhotos": "照片",

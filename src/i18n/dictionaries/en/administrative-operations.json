@@ -54,12 +54,14 @@
     "email": "Email",
     "vesselEmpty": "No vessel linked",
     "createdAt": "Created at",
-    "updatedAt": "Updated at"
+    "updatedAt": "Updated at",
+    "editButton": "Edit"
   },
   "responsible": {
     "searchPlaceholder": "Search by name or email...",
     "linkPlaceholder": "Type to search a user...",
     "link": "Link",
+    "selfLink": "Add me as responsible",
     "unlink": "Unlink",
     "emptyState": "No responsible party found.",
     "filter": {
@@ -97,10 +99,44 @@
     "emptyState": "No bale registered.",
     "colItemIdentifier": "Bale",
     "colItemCode": "Code",
+    "colNotaFiscal": "Invoice",
+    "colInstruction": "Instruction",
     "colLote": "Batch",
+    "colPilha": "Stack",
+    "colPesoTara": "Tare Weight (kg)",
     "colPeso": "Weight (kg)",
+    "colPesoBruto": "Gross Weight (kg)",
+    "colContrato": "Contract",
+    "colIsStuffed": "Stuffed",
     "colSource": "Source",
     "colActions": "Actions",
+    "isStuffedYes": "Stuffed",
+    "isStuffedNo": "Not stuffed",
+    "filterIsStuffed": {
+      "all": "All",
+      "stuffed": "Stuffed",
+      "notStuffed": "Not stuffed"
+    },
+    "bulkActions": {
+      "selectedCount": "{count} selected",
+      "editNfLote": "Edit invoice/batch",
+      "deleteSelected": "Delete selected",
+      "confirmDeleteTitle": "Delete selected",
+      "confirmDelete": "Delete {count} items? This action cannot be undone.",
+      "editTitle": "Bulk edit invoice/batch",
+      "fieldNotaFiscal": "Invoice",
+      "fieldLote": "Batch",
+      "toastSuccess": "Change applied to the selected rows.",
+      "toastDeleteSuccess": "Selected items deleted successfully.",
+      "toastError": "Could not complete the bulk action. Please try again."
+    },
+    "export": {
+      "button": "Export",
+      "toast": {
+        "success": "Packing list exported successfully.",
+        "error": "Could not export the packing list. Please try again."
+      }
+    },
     "form": {
       "itemIdentifier": "Bale identifier",
       "itemCode": "Item code",
@@ -164,7 +200,8 @@
       "toast": {
         "analyzeError": "Could not analyze the spreadsheet. Please try again.",
         "applyError": "Could not apply the import. Please try again.",
-        "applySuccess": "Import applied: {created} created, {updated} updated, {deleted} deleted."
+        "applySuccess": "Import applied: {created} created, {updated} updated, {deleted} deleted.",
+        "applyNoop": "Nothing was imported: no selected bale resulted in a create, update or delete."
       },
       "fields": {
         "itemCode": "Item code",
@@ -187,6 +224,7 @@
       "details": "Details",
       "romaneio": "Packing list",
       "containers": "Containers",
+      "operational": "Operational",
       "documents": "Documents",
       "invoice": "Invoice",
       "reports": "Reports",
@@ -203,16 +241,24 @@
     "tabPlaceholder": "This tab's content has not been implemented yet."
   },
   "reports": {
-    "description": "List of reports already issued for this operation.",
-    "colType": "Type",
-    "colGeneratedAt": "Generated at",
-    "colFormat": "Format",
-    "colStatus": "Status",
-    "colActions": "Actions",
-    "statusReady": "Available",
-    "statusPending": "Pending",
-    "download": "Download",
-    "emptyState": "No reports available."
+    "description": "Generate and download this operation's reports. Each report is generated on demand from existing data — there is no history.",
+    "generate": "Generate and download",
+    "weight": {
+      "name": "Weight Report",
+      "description": "Aggregated and detailed weight by container and lot (.xlsx)."
+    },
+    "packingList": {
+      "name": "Packing List",
+      "description": "List of bales per container (.xlsx)."
+    },
+    "photographic": {
+      "name": "Photographic Report",
+      "description": "Photos of this operation's containers (.docx)."
+    },
+    "toast": {
+      "success": "{name} generated successfully.",
+      "error": "Could not generate {name}. Please try again."
+    }
   },
   "log": {
     "description": "History of events recorded for this operation.",
@@ -251,6 +297,8 @@
     "colStatus": "Status",
     "colPhotos": "Photos",
     "colActions": "Actions",
+    "photosButton": "Photos",
+    "photosModalTitle": "Photos — {identifier}",
     "form": {
       "container": "Container",
       "tara": "Tare",
@@ -260,6 +308,7 @@
     "photosAddToSlot": "Add photo",
     "photosRemove": "Remove photo",
     "photosOther": "Other photos",
+    "photosAddOther": "Add photo",
     "photosChecklistComplete": "Checklist complete",
     "photosChecklistMissing": "{count} photos missing",
     "photoSlots": {
@@ -285,19 +334,12 @@
       "error": "Could not complete the action. Please try again."
     },
     "stuffing": {
-      "actionIdentified": "Stuff specific bale",
-      "actionQuantity": "Stuff by quantity",
-      "actionBatch": "Batch stuffing",
-      "actionViewCargo": "View stuffed cargo",
-      "identifiedTitle": "Stuff specific bale — {identifier}",
-      "quantityTitle": "Stuff by quantity — {identifier}",
-      "batchTitle": "Batch stuffing — {identifier}",
-      "batchEmpty": "No bale found for this invoice.",
+      "quantityTitle": "Stuff by quantity",
+      "batchTitle": "Stuff into container",
       "batchSelected": "{count} bale(s) selected.",
       "submit": "Stuff",
       "form": {
         "invoice": "Invoice",
-        "romaneio": "Bale (romaneio)",
         "quantity": "Quantity",
         "lote": "Batch"
       },
@@ -315,31 +357,34 @@
       "cancelReason": "Cancellation reason",
       "cancelConfirm": "Confirm cancellation",
       "toast": {
-        "identifiedSuccess": "Bale stuffed successfully.",
         "quantitySuccess": "Stuffing completed successfully.",
         "batchSuccess": "Bales stuffed successfully.",
         "canceled": "Cargo unit canceled successfully."
-      }
+      },
+      "batchButton": "Stuff into container",
+      "quantityButton": "Stuff by quantity",
+      "batchSummary": "{count} bale(s) from {nfCount} different invoice(s) will be stuffed.",
+      "batchMissingInvoice": "Invoice {notaFiscal} has not been created yet. Create it in the Invoice tab before continuing."
     },
     "destuffing": {
-      "toggle": "View all stuffed cargo units",
       "title": "Stuffed cargo units of the operation",
       "empty": "No stuffed cargo units in this operation.",
       "colContainer": "Origin container"
     },
     "seal": {
-      "title": "Seal",
-      "activeBadge": "Sealed",
-      "none": "No active seal.",
       "sealButton": "Seal",
       "unsealButton": "Unseal",
       "confirmUnsealTitle": "Unseal container",
       "confirmUnsealMessage": "Remove the active seal from this container?",
+      "photoRequired": "Upload a photo of the seal before continuing.",
       "form": {
         "user": "Responsible for the seal",
         "name": "Seal type",
         "label": "Seal identification",
-        "description": "Description"
+        "description": "Description",
+        "photo": "Seal photo",
+        "date": "Seal date",
+        "time": "Seal time"
       },
       "toast": {
         "sealed": "Container sealed successfully.",
@@ -348,17 +393,30 @@
     },
     "searchPlaceholder": "Search by container identifier..."
   },
+  "operational": {
+    "subtabs": {
+      "stuffing": "Stuffing",
+      "destuffing": "Destuffing"
+    },
+    "stuffing": {
+      "title": "Bales available for stuffing",
+      "description": "Bales in this operation that have not been stuffed yet.",
+      "empty": "No bales available for stuffing."
+    }
+  },
   "documents": {
     "new": "New document",
     "newTitle": "New document",
     "editTitle": "Edit document",
     "loadError": "Could not load the operation's documents.",
     "empty": "No document registered for this operation.",
+    "searchPlaceholder": "Search by title...",
     "colTitle": "Title",
     "colType": "Type",
-    "colFile": "File",
-    "colCreatedAt": "Created at",
+    "colFile": "Notes",
+    "colCreatedAt": "Uploaded at",
     "colActions": "Actions",
+    "filterAllTypes": "All types",
     "fileLink": "Open file",
     "download": "Download file",
     "preview": "Preview file",
@@ -379,6 +437,7 @@
     "newTitle": "New invoice",
     "loadError": "Could not load the operation's invoices.",
     "empty": "No invoice registered for this operation.",
+    "searchPlaceholder": "Search by number...",
     "colNumber": "Number",
     "colSource": "Source",
     "colStatus": "Status",
@@ -450,6 +509,7 @@
     "editTitle": "Edit occurrence",
     "loadError": "Could not load the operation's occurrences.",
     "empty": "No occurrences recorded for this operation.",
+    "searchPlaceholder": "Search by title or note...",
     "colTitle": "Title",
     "colNote": "Note",
     "colPhotos": "Photos",

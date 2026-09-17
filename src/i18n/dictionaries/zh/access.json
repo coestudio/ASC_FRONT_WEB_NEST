@@ -64,6 +64,14 @@
     "resetPasswordSent": "新密码已通过邮件发送。",
     "error": "操作未能完成，请重试。"
   },
+  "filters": {
+    "role": "按角色筛选",
+    "allRoles": "所有角色",
+    "isAdmin": "按管理员筛选",
+    "allUsers": "所有用户",
+    "adminOnly": "仅管理员",
+    "nonAdminOnly": "仅非管理员"
+  },
   "rolesTitle": "权限配置",
   "rolesDescription": "各权限配置的参考说明，展示每种配置在系统中可以查看的内容。",
   "rolesEmpty": "内容尚未录入——权限说明待确认。"

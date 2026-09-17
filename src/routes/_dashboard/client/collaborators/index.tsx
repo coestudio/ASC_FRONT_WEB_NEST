@@ -52,6 +52,39 @@ function toFormValues(record?: CollaboratorDTO): CollaboratorFormValues {
   };
 }
 
+/** Valor comparável de `CollaboratorDTO` pra cada `sortKey` das colunas — ver `sortItems`. */
+function collaboratorSortValue(c: CollaboratorDTO, key: string): string {
+  switch (key) {
+    case "fullName":
+      return c.user.profile.fullName ?? "";
+    case "userName":
+      return c.user.userName;
+    case "email":
+      return c.user.profile.email ?? "";
+    case "createdAt":
+      return c.createdAt;
+    default:
+      return "";
+  }
+}
+
+/**
+ * Ordenação client-side (SPEC-81 §4.1) — `GET /api/client/{clientId}/
+ * collaborator` não tem `Sort` (mesma lacuna de contrato de busca/paginação
+ * já documentada abaixo), então o mesmo ciclo asc/desc/sem-ordenação de
+ * `CrudColumn.sortKey` ordena o array local antes de `toPagedResult` fatiar
+ * a página — sem chamada ao Core.
+ */
+function sortItems(items: CollaboratorDTO[], sort: string | undefined): CollaboratorDTO[] {
+  if (!sort) return items;
+  const descending = sort.startsWith("-");
+  const key = descending ? sort.slice(1) : sort;
+  const sorted = [...items].sort((a, b) =>
+    collaboratorSortValue(a, key).localeCompare(collaboratorSortValue(b, key)),
+  );
+  return descending ? sorted.reverse() : sorted;
+}
+
 /**
  * `GET /api/client/{clientId}/collaborator` devolve `CollaboratorDTO[]` puro
  * (sem `items`/`total`, diferente de todo outro endpoint de listagem do
@@ -62,6 +95,7 @@ function toFormValues(record?: CollaboratorDTO): CollaboratorFormValues {
 function toPagedResult(
   items: CollaboratorDTO[],
   search: string,
+  sort: string | undefined,
   page: number,
 ): CrudPagedResult<CollaboratorDTO> {
   const q = search.trim().toLowerCase();
@@ -74,8 +108,9 @@ function toPagedResult(
         );
       })
     : items;
+  const sorted = sortItems(filtered, sort);
   const start = (page - 1) * PAGE_SIZE;
-  return { items: filtered.slice(start, start + PAGE_SIZE), total: filtered.length };
+  return { items: sorted.slice(start, start + PAGE_SIZE), total: sorted.length };
 }
 
 /**
@@ -106,15 +141,19 @@ function CollaboratorsPageBody() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: CollaboratorDTO } | null>(
     null,
   );
   const [pendingDelete, setPendingDelete] = useState<CollaboratorDTO | null>(null);
 
   const listQueryOptions: UseQueryOptions<CrudPagedResult<CollaboratorDTO>> = {
-    queryKey: [...getGetApiClientClientIdCollaboratorQueryKey(clientId ?? ""), { search, page }],
+    queryKey: [
+      ...getGetApiClientClientIdCollaboratorQueryKey(clientId ?? ""),
+      { search, sort, page },
+    ],
     queryFn: async () =>
-      toPagedResult(await getApiClientClientIdCollaborator(clientId ?? ""), search, page),
+      toPagedResult(await getApiClientClientIdCollaborator(clientId ?? ""), search, sort, page),
     enabled: Boolean(clientId),
   };
 
@@ -204,34 +243,26 @@ function CollaboratorsPageBody() {
     {
       key: "fullName",
       headerKey: "client.collaborators.colFullName",
+      sortKey: "fullName",
       render: (c) => c.user.profile.fullName ?? "—",
     },
     {
       key: "userName",
       headerKey: "client.collaborators.colUserName",
+      sortKey: "userName",
       render: (c) => c.user.userName,
     },
     {
       key: "email",
       headerKey: "client.collaborators.colEmail",
+      sortKey: "email",
       render: (c) => c.user.profile.email ?? "—",
     },
     {
       key: "createdAt",
       headerKey: "client.collaborators.colCreatedAt",
+      sortKey: "createdAt",
       render: (c) => new Date(c.createdAt).toLocaleDateString(locale),
-    },
-    {
-      key: "actions",
-      headerKey: "client.collaborators.colActions",
-      // Sem botão de editar — o Core não expõe PUT/PATCH para Collaborator
-      // (R3 da SPEC-09). Só ver e excluir.
-      render: (c) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: c })}
-          onDelete={() => setPendingDelete(c)}
-        />
-      ),
     },
   ];
 
@@ -268,11 +299,25 @@ function CollaboratorsPageBody() {
             </Card>
           )}
           getItemKey={(c) => c.id}
+          rowActions={(c, ctl) => (
+            // Sem botão de editar — o Core não expõe PUT/PATCH para
+            // Collaborator (R3 da SPEC-09). Só ver e excluir.
+            <CrudRowActions
+              show={ctl.show}
+              position={ctl.position}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: c })}
+              onDelete={() => setPendingDelete(c)}
+            />
+          )}
+          onRowOpen={(c) => setModal({ mode: "view", record: c })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);
           }}
+          sort={sort}
+          onSortChange={setSort}
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
@@ -297,6 +342,9 @@ function CollaboratorsPageBody() {
           )}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={
+            modal.record ? () => setPendingDelete(modal.record as CollaboratorDTO) : undefined
+          }
         />
       ) : null}
 

@@ -15,12 +15,13 @@ function InputDocument<T extends FieldValues>({
   config = {},
   ...colProps
 }: InputDTO<T>) {
-  // Adiciona validação customizada
+  // Obrigatoriedade vem só do schema Zod gerado (zodResolver) — SPEC-47,
+  // Core specs/27-profile-document-optional tornou Document opcional.
+  // Valida formato só quando preenchido; vazio passa pro schema decidir.
   config.rules = {
     ...(config.rules || {}),
-    required: "Documento é obrigatório",
     validate: (value: string) => {
-      if (!value || value.trim() === "") return "Documento é obrigatório";
+      if (!value || value.trim() === "") return true;
       return isValidDocument(value) || "CPF ou CNPJ inválido";
     },
   };

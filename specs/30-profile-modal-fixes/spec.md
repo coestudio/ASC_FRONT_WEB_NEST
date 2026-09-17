@@ -2,12 +2,12 @@
 
 - **ID:** SPEC-30
 - **Nome:** profile-modal-fixes
-- **Status:** PARTIALLY_IMPLEMENTED (2026-09-16) — RF2 e RF3 confirmados
-  funcionando em tela real pelo usuário; **RF1 (avatar) incompleta**, ver
-  §13 (Implementation Notes) — o fix de cache-bust foi implementado mas o
-  usuário reportou que o avatar continua sem atualizar visualmente sem
-  reload, sem detalhe adicional ainda sobre o que exatamente falhou.
-  Retomar nesta SPEC (não abrir uma nova) na próxima sessão de frontend.
+- **Status:** IMPLEMENTED (2026-09-16) — RF1, RF2 e RF3 confirmados
+  funcionando em tela real pelo usuário. RF1 (avatar) tinha causa raiz no
+  Core (`PATCH /profile/avatar` devolvia dado desatualizado —
+  `warren/Core/specs/40-profile-avatar-stale-response`, `IMPLEMENTED`),
+  não no cache-bust do front (que já estava certo desde a implementação
+  original). Ver §13.
 - **Status anterior:** WAITING_APPROVAL — decisão de §6.1 fechada com o
   usuário (2026-09-15).
 - **Autor:** portal-dev-agent (rascunho); implementação parcial 2026-09-16
@@ -214,27 +214,43 @@ Novo usuário reaproveitando o mesmo `InputDate`; ProfileModal aberto via
   por aba, já que os 3 forms continuam montados simultaneamente,
   alternando só visibilidade via `d-none`).
 
-**RF1 — incompleta, não fechar como resolvida.** O fix de cache-bust
-(`resolveAvatarUrl`) foi implementado e o `bun run check`/`lint` passam,
-mas o usuário testou em tela real e reportou que o avatar **continua**
-sem atualizar visualmente sem reload — sem detalhe adicional ainda sobre
-em que ponto exatamente falha (se o cache-bust não teve efeito, se o
-`previewUrl` não está de fato mudando, se é outro componente lendo o
-avatar de outro lugar, etc.). **Próximos passos pra quem retomar:**
-1. Confirmar no DevTools (aba Network) se a URL do `<img>` realmente
-   ganha o sufixo `?v=...` depois do upload, e se muda entre uploads
-   sucessivos.
-2. Se a URL muda mas a imagem ainda não atualiza, o problema não é cache
-   de disco do browser — investigar se `previewUrl`/`user.profile.
-   avatarFile` de fato chega atualizado no componente (pode ser cache do
-   React Query não invalidando, ou o backend devolvendo dado desatualizado
-   na resposta do `PATCH avatar`).
-3. ~~Verificar se existe algum outro consumidor~~ — já checado
-   (2026-09-16): grep por `avatarFile` em `src/` confirma que
-   `ProfileModal`/`UserMenu` são os únicos 2 lugares que leem
-   `avatarFile.url` fora de `src/api/generated`. Não é essa a causa.
+**RF1 — causa raiz confirmada e corrigida (2026-09-16, retomada).** Era
+exatamente a hipótese 2 do "próximos passos" abaixo: **o backend
+devolvia dado desatualizado na resposta do `PATCH avatar`.**
+`Controllers/Profile/Profile.Info.cs` (`warren/Core`) buscava uma
+instância separada de `UserModel` pra mutar/salvar o avatar novo, mas no
+final devolvia a instância cacheada por request (`HttpContext.Items`,
+carregada pelo `AuthMiddleware` **antes** da troca) em vez da instância
+recém-atualizada — o banco ficava correto, mas a resposta do próprio
+upload trazia o avatar antigo. Corrigido em `warren/Core/specs/
+40-profile-avatar-stale-response` (`IMPLEMENTED`, teste automatizado
+confirma: revertido o fix, o teste falha; com o fix, passa).
+
+O cache-bust (`resolveAvatarUrl`, RF1 original desta SPEC) **continua
+necessário e correto** — ele é a defesa contra cache de disco do browser
+pra quando a URL do arquivo for reaproveitada; sem o fix do Core, porém,
+ele nunca tinha um `updatedAt` novo pra usar, porque a resposta nunca
+mudava. `just map` rodado contra o Core já com o fix (2026-09-16) — sem
+diff de contrato (mesmo `UserAdminDTO`, só o **dado** da resposta
+mudou, não o shape) — então nenhuma mudança de código adicional no
+NewPortal foi necessária pra fechar RF1.
+
+**Confirmado em tela real pelo usuário (2026-09-16):** avatar atualiza
+visualmente logo após o upload, sem precisar de Salvar nem reload. RF1
+fechado.
+
+Próximos passos antigos, mantidos como registro:
+1. ~~Confirmar no DevTools se a URL ganha `?v=...` e muda entre
+   uploads~~ — não era necessário confirmar, causa já achada na origem.
+2. ~~Investigar se o backend devolve dado desatualizado~~ — **era essa,
+   confirmada e corrigida.**
+3. ~~Verificar outro consumidor de `avatarFile`~~ — já descartado
+   (2026-09-16), não era a causa.
 
 **Comandos executados e resultado:**
-- `bun run check` (`tsc --noEmit`) — PASS.
+- `bun run check` (`tsc --noEmit`) — PASS (sessão original).
 - `bun run lint` — 66/3 (mesma baseline pré-existente de
   `session.server.ts`, sem regressão nos arquivos tocados).
+- `just map` contra Core local já com `specs/40-profile-avatar-stale-
+  response` — PASS, `git diff` confirma zero mudança de contrato (só
+  `src/api/snapshot.json` com timestamp novo, mesmo hash de schema).

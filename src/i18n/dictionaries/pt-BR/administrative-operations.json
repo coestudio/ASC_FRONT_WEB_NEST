@@ -54,12 +54,14 @@
     "email": "E-mail",
     "vesselEmpty": "Nenhum navio vinculado",
     "createdAt": "Criado em",
-    "updatedAt": "Atualizado em"
+    "updatedAt": "Atualizado em",
+    "editButton": "Editar"
   },
   "responsible": {
     "searchPlaceholder": "Buscar por nome ou e-mail...",
     "linkPlaceholder": "Digite para buscar um usuário...",
     "link": "Vincular",
+    "selfLink": "Me adicionar como responsável",
     "unlink": "Desvincular",
     "emptyState": "Nenhum responsável encontrado.",
     "filter": {
@@ -97,10 +99,44 @@
     "emptyState": "Nenhum fardo cadastrado.",
     "colItemIdentifier": "Fardo",
     "colItemCode": "Código",
+    "colNotaFiscal": "Nota Fiscal",
+    "colInstruction": "Instrução",
     "colLote": "Lote",
+    "colPilha": "Pilha",
+    "colPesoTara": "Peso Tara (kg)",
     "colPeso": "Peso (kg)",
+    "colPesoBruto": "Peso Bruto (kg)",
+    "colContrato": "Contrato",
+    "colIsStuffed": "Estufado",
     "colSource": "Origem",
     "colActions": "Ações",
+    "isStuffedYes": "Estufado",
+    "isStuffedNo": "Não estufado",
+    "filterIsStuffed": {
+      "all": "Todos",
+      "stuffed": "Estufado",
+      "notStuffed": "Não estufado"
+    },
+    "bulkActions": {
+      "selectedCount": "{count} selecionados",
+      "editNfLote": "Editar NF/Lote",
+      "deleteSelected": "Excluir selecionados",
+      "confirmDeleteTitle": "Excluir selecionados",
+      "confirmDelete": "Excluir {count} itens? Esta ação não pode ser desfeita.",
+      "editTitle": "Editar NF/Lote em massa",
+      "fieldNotaFiscal": "Nota fiscal",
+      "fieldLote": "Lote",
+      "toastSuccess": "Alteração aplicada às linhas selecionadas.",
+      "toastDeleteSuccess": "Itens selecionados excluídos com sucesso.",
+      "toastError": "Não foi possível concluir a ação em massa. Tente novamente."
+    },
+    "export": {
+      "button": "Exportar",
+      "toast": {
+        "success": "Romaneio exportado com sucesso.",
+        "error": "Não foi possível exportar o romaneio. Tente novamente."
+      }
+    },
     "form": {
       "itemIdentifier": "Identificador do fardo",
       "itemCode": "Código do item",
@@ -164,7 +200,8 @@
       "toast": {
         "analyzeError": "Não foi possível analisar a planilha. Tente novamente.",
         "applyError": "Não foi possível aplicar o import. Tente novamente.",
-        "applySuccess": "Import aplicado: {created} criados, {updated} atualizados, {deleted} excluídos."
+        "applySuccess": "Import aplicado: {created} criados, {updated} atualizados, {deleted} excluídos.",
+        "applyNoop": "Nada foi importado: nenhum fardo selecionado gerou criação, atualização ou exclusão."
       },
       "fields": {
         "itemCode": "Código do item",
@@ -187,6 +224,7 @@
       "details": "Detalhes",
       "romaneio": "Romaneio",
       "containers": "Containers",
+      "operational": "Operacional",
       "documents": "Documentos",
       "invoice": "Nota Fiscal",
       "reports": "Relatórios",
@@ -203,16 +241,24 @@
     "tabPlaceholder": "O conteúdo desta aba ainda não foi implementado nesta etapa."
   },
   "reports": {
-    "description": "Lista de relatórios já emitidos para esta operação.",
-    "colType": "Tipo",
-    "colGeneratedAt": "Gerado em",
-    "colFormat": "Formato",
-    "colStatus": "Status",
-    "colActions": "Ações",
-    "statusReady": "Disponível",
-    "statusPending": "Pendente",
-    "download": "Baixar",
-    "emptyState": "Nenhum relatório disponível."
+    "description": "Gere e baixe os relatórios desta operação. Cada relatório é gerado na hora, a partir dos dados já cadastrados — não há histórico.",
+    "generate": "Gerar e baixar",
+    "weight": {
+      "name": "Weight Report",
+      "description": "Peso agregado e detalhado por container e lote (.xlsx)."
+    },
+    "packingList": {
+      "name": "Packing List",
+      "description": "Lista de fardos por container (.xlsx)."
+    },
+    "photographic": {
+      "name": "Relatório Fotográfico",
+      "description": "Fotos dos containers desta operação (.docx)."
+    },
+    "toast": {
+      "success": "{name} gerado com sucesso.",
+      "error": "Não foi possível gerar {name}. Tente novamente."
+    }
   },
   "log": {
     "description": "Histórico de eventos registrados nesta operação.",
@@ -251,6 +297,8 @@
     "colStatus": "Status",
     "colPhotos": "Fotos",
     "colActions": "Ações",
+    "photosButton": "Fotos",
+    "photosModalTitle": "Fotos — {identifier}",
     "form": {
       "container": "Container",
       "tara": "Tara",
@@ -260,6 +308,7 @@
     "photosAddToSlot": "Adicionar foto",
     "photosRemove": "Remover foto",
     "photosOther": "Outras fotos",
+    "photosAddOther": "Adicionar foto",
     "photosChecklistComplete": "Checklist completo",
     "photosChecklistMissing": "Faltam {count} fotos",
     "photoSlots": {
@@ -285,19 +334,12 @@
       "error": "Não foi possível concluir a ação. Tente novamente."
     },
     "stuffing": {
-      "actionIdentified": "Estufar fardo específico",
-      "actionQuantity": "Estufar por quantidade",
-      "actionBatch": "Estufar em lote",
-      "actionViewCargo": "Ver fardos estufados",
-      "identifiedTitle": "Estufar fardo específico — {identifier}",
-      "quantityTitle": "Estufar por quantidade — {identifier}",
-      "batchTitle": "Estufar em lote — {identifier}",
-      "batchEmpty": "Nenhum fardo encontrado para esta nota fiscal.",
+      "quantityTitle": "Estufagem por quantidade",
+      "batchTitle": "Estufar em container",
       "batchSelected": "{count} fardo(s) selecionado(s).",
       "submit": "Estufar",
       "form": {
         "invoice": "Nota fiscal",
-        "romaneio": "Fardo do romaneio",
         "quantity": "Quantidade",
         "lote": "Lote"
       },
@@ -315,31 +357,34 @@
       "cancelReason": "Motivo do cancelamento",
       "cancelConfirm": "Confirmar cancelamento",
       "toast": {
-        "identifiedSuccess": "Fardo estufado com sucesso.",
         "quantitySuccess": "Estufagem concluída com sucesso.",
         "batchSuccess": "Fardos estufados com sucesso.",
         "canceled": "Fardo cancelado com sucesso."
-      }
+      },
+      "batchButton": "Estufar em container",
+      "quantityButton": "Estufagem por quantidade",
+      "batchSummary": "{count} fardo(s) de {nfCount} nota(s) fiscal(is) diferente(s) serão estufados.",
+      "batchMissingInvoice": "Nota fiscal {notaFiscal} não tem uma Invoice cadastrada. Crie a Invoice na aba Nota Fiscal antes de continuar."
     },
     "destuffing": {
-      "toggle": "Ver todos os fardos estufados",
       "title": "Fardos estufados da operação",
       "empty": "Nenhum fardo estufado nesta operação.",
       "colContainer": "Container de origem"
     },
     "seal": {
-      "title": "Lacre",
-      "activeBadge": "Lacrado",
-      "none": "Nenhum lacre ativo.",
       "sealButton": "Lacrar",
       "unsealButton": "Deslacrar",
       "confirmUnsealTitle": "Deslacrar container",
       "confirmUnsealMessage": "Remover o lacre ativo deste container?",
+      "photoRequired": "Envie uma foto do lacre antes de continuar.",
       "form": {
         "user": "Responsável pelo lacre",
         "name": "Tipo de lacre",
         "label": "Identificação do lacre",
-        "description": "Descrição"
+        "description": "Descrição",
+        "photo": "Foto do lacre",
+        "date": "Data do lacre",
+        "time": "Hora do lacre"
       },
       "toast": {
         "sealed": "Container lacrado com sucesso.",
@@ -348,17 +393,30 @@
     },
     "searchPlaceholder": "Buscar por identificador do container..."
   },
+  "operational": {
+    "subtabs": {
+      "stuffing": "Estufagem",
+      "destuffing": "Desestufagem"
+    },
+    "stuffing": {
+      "title": "Fardos disponíveis para estufagem",
+      "description": "Fardos desta operação que ainda não foram estufados.",
+      "empty": "Nenhum fardo disponível para estufagem."
+    }
+  },
   "documents": {
     "new": "Novo documento",
     "newTitle": "Novo documento",
     "editTitle": "Editar documento",
     "loadError": "Não foi possível carregar os documentos da operação.",
     "empty": "Nenhum documento cadastrado para esta operação.",
+    "searchPlaceholder": "Buscar por título...",
     "colTitle": "Título",
     "colType": "Tipo",
-    "colFile": "Arquivo",
-    "colCreatedAt": "Criado em",
+    "colFile": "Observação",
+    "colCreatedAt": "Enviado em",
     "colActions": "Ações",
+    "filterAllTypes": "Todos os tipos",
     "fileLink": "Abrir arquivo",
     "download": "Baixar arquivo",
     "preview": "Visualizar arquivo",
@@ -379,6 +437,7 @@
     "newTitle": "Nova nota fiscal",
     "loadError": "Não foi possível carregar as notas fiscais da operação.",
     "empty": "Nenhuma nota fiscal cadastrada para esta operação.",
+    "searchPlaceholder": "Buscar por número...",
     "colNumber": "Número",
     "colSource": "Origem",
     "colStatus": "Status",
@@ -450,6 +509,7 @@
     "editTitle": "Editar ocorrência",
     "loadError": "Não foi possível carregar as ocorrências da operação.",
     "empty": "Nenhuma ocorrência registrada para esta operação.",
+    "searchPlaceholder": "Buscar por título ou nota...",
     "colTitle": "Título",
     "colNote": "Nota",
     "colPhotos": "Fotos",

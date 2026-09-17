@@ -51,3 +51,38 @@
   --bs-table-accent-bg: var(--brand-primary-soft);
   background-color: var(--brand-primary-soft);
 }
+
+/* Variante "planilha" (SPEC-31) — grade visível em todas as bordas (via
+   `bordered`/`size="sm"` do react-bootstrap) e cabeçalho mais denso, pra
+   aproximar do visual da planilha Excel de referência. Opt-in
+   (`spreadsheetVariant`), não altera as demais listagens CRUD. */
+.crudTableSpreadsheet thead th {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+.crudTableSpreadsheet tbody td {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
+/* `fillHeight` (SPEC-75/76) — cabeçalho de coluna fixo enquanto as linhas
+   rolam por dentro de `.tableCard` (que vira o próprio contêiner de
+   scroll nesse modo). Opt-in via classe (só quando `fillHeight` é usado)
+   — sem isso, `position: sticky` aqui grudaria no scroll de `.content`
+   (o container da página inteira) pras demais listagens, que não têm
+   scroll próprio. */
+.crudTableStickyHead thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* Destaque do card selecionado (SPEC-79, clique revela o menu de ações) —
+   mesmo tratamento visual do `table-active` do Bootstrap na tabela, só que
+   como card não tem uma classe equivalente pronta, aplica um contorno com
+   o token de brand. */
+.cardActive {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--bs-border-radius-sm);
+}

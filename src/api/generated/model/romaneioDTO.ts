@@ -23,6 +23,7 @@ export interface RomaneioDTO {
   source?: RomaneioSource;
   lote: string;
   pilha?: string;
+  isStuffed?: boolean;
   id: string;
   createdAt: string;
   updatedAt: string;

@@ -27,7 +27,7 @@ export const GetApiClientResponse = zod.object({
   "items": zod.array(zod.object({
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),
@@ -65,7 +65,7 @@ export const postApiClientBodyFullNameMax = 100;
 export const postApiClientBodyShortNameMin = 3;
 export const postApiClientBodyShortNameMax = 50;
 
-export const postApiClientBodyDocumentMin = 14;
+export const postApiClientBodyDocumentMin = 11;
 export const postApiClientBodyDocumentMax = 14;
 
 export const postApiClientBodyRazaoSocialMax = 150;
@@ -93,7 +93,7 @@ export const PostApiClientBody = zod.object({
 }).optional(),
   "fullName": zod.string().min(postApiClientBodyFullNameMin).max(postApiClientBodyFullNameMax),
   "shortName": zod.string().min(postApiClientBodyShortNameMin).max(postApiClientBodyShortNameMax).nullish(),
-  "document": zod.string().min(postApiClientBodyDocumentMin).max(postApiClientBodyDocumentMax),
+  "document": zod.string().min(postApiClientBodyDocumentMin).max(postApiClientBodyDocumentMax).nullish(),
   "razaoSocial": zod.string().max(postApiClientBodyRazaoSocialMax).nullish(),
   "ie": zod.string().max(postApiClientBodyIeMax).nullish(),
   "phone": zod.string().max(postApiClientBodyPhoneMax).nullish(),
@@ -173,7 +173,7 @@ export const PostApiClientResponse = zod.object({
 })).optional(),
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),
@@ -257,7 +257,7 @@ export const GetApiClientIdResponse = zod.object({
 })).optional(),
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),
@@ -293,7 +293,7 @@ export const putApiClientIdBodyFullNameMax = 100;
 export const putApiClientIdBodyShortNameMin = 3;
 export const putApiClientIdBodyShortNameMax = 50;
 
-export const putApiClientIdBodyDocumentMin = 14;
+export const putApiClientIdBodyDocumentMin = 11;
 export const putApiClientIdBodyDocumentMax = 14;
 
 export const putApiClientIdBodyRazaoSocialMax = 150;
@@ -321,7 +321,7 @@ export const PutApiClientIdBody = zod.object({
 }).optional(),
   "fullName": zod.string().min(putApiClientIdBodyFullNameMin).max(putApiClientIdBodyFullNameMax),
   "shortName": zod.string().min(putApiClientIdBodyShortNameMin).max(putApiClientIdBodyShortNameMax).nullish(),
-  "document": zod.string().min(putApiClientIdBodyDocumentMin).max(putApiClientIdBodyDocumentMax),
+  "document": zod.string().min(putApiClientIdBodyDocumentMin).max(putApiClientIdBodyDocumentMax).nullish(),
   "razaoSocial": zod.string().max(putApiClientIdBodyRazaoSocialMax).nullish(),
   "ie": zod.string().max(putApiClientIdBodyIeMax).nullish(),
   "phone": zod.string().max(putApiClientIdBodyPhoneMax).nullish(),
@@ -401,7 +401,7 @@ export const PutApiClientIdResponse = zod.object({
 })).optional(),
   "fullName": zod.string(),
   "shortName": zod.string().optional(),
-  "document": zod.string(),
+  "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
   "id": zod.uuid(),

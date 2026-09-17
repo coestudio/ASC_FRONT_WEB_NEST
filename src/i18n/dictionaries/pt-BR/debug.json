@@ -1,0 +1,23 @@
+{
+  "title": "Debug — Catálogo de Erros",
+  "description": "Cada linha dispara uma rota do Core que só lança um erro de exemplo — serve pra conferir o formato real da resposta (ProblemDetails) de cada status HTTP.",
+  "colRoute": "Rota",
+  "colExpectedStatus": "Status esperado",
+  "colDescription": "Descrição",
+  "colAction": "Ação",
+  "colResult": "Resultado",
+  "trigger": "Disparar",
+  "triggering": "Disparando...",
+  "statusMatch": "Bateu",
+  "statusMismatch": "Divergente",
+  "notTriggeredYet": "Ainda não disparado",
+  "receivedStatus": "Status recebido",
+  "problemDetails": {
+    "title": "Title",
+    "detail": "Detail",
+    "status": "Status",
+    "instance": "Instance",
+    "extensions": "Extensions"
+  },
+  "unexpectedSuccess": "A chamada não deveria ter dado sucesso — verifique o cenário no Core."
+}
