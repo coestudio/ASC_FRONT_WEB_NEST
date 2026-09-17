@@ -22,7 +22,7 @@ import {
   PostApiOperationOperationIdDocumentBody,
   PutApiOperationOperationIdDocumentIdBody,
 } from "@/api/generated/zod/document/document.zod";
-import type { DocumentDTO } from "@/api/generated/model";
+import type { DocumentDTO, DocumentType } from "@/api/generated/model";
 import {
   documentTypeOptions,
   resolveDocumentTypeLabel,
@@ -33,6 +33,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import styles from "./documents.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -84,15 +85,20 @@ export function Documents({ operationId }: { operationId: string }) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
-  // SPEC-81 §4.2 — busca por texto (`Search`, Core/specs/48 já `IMPLEMENTED`).
+  // SPEC-81 §4.2 — busca por texto (`Search`, Core/specs/48 já `IMPLEMENTED`
+  // no momento desta implementação — resolve o bloqueio que a SPEC-85 tinha
+  // documentado, que partiu de um Core sem esse campo ainda).
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<string | undefined>(undefined);
+  // SPEC-85 (3.3): filtro por Tipo de arquivo.
+  const [typeFilter, setTypeFilter] = useState<DocumentType | "">("");
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editing, setEditing] = useState<DocumentDTO | null>(null);
   const [previewing, setPreviewing] = useState<DocumentDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdDocumentQueryOptions(operationId, {
     Search: search || undefined,
+    Type: typeFilter || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
     Sort: sort,
@@ -162,15 +168,34 @@ export function Documents({ operationId }: { operationId: string }) {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
-        <div style={{ minWidth: 240 }}>
-          <FilterText
-            value={search}
-            onChange={(value) => {
-              setSearch(value);
+        <div className="d-flex gap-2 flex-wrap">
+          <div style={{ minWidth: 240 }}>
+            <FilterText
+              value={search}
+              onChange={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
+              placeholder={t("administrative-operations.documents.searchPlaceholder")}
+            />
+          </div>
+          <Form.Select
+            size="sm"
+            style={{ width: "auto" }}
+            aria-label={t("administrative-operations.documents.form.type")}
+            value={typeFilter}
+            onChange={(e) => {
+              setTypeFilter(e.target.value as DocumentType | "");
               setPage(1);
             }}
-            placeholder={t("administrative-operations.documents.searchPlaceholder")}
-          />
+          >
+            <option value="">{t("administrative-operations.documents.filterAllTypes")}</option>
+            {documentTypeOptions.map((opt) => (
+              <option key={opt.key} value={opt.key}>
+                {resolveDocumentTypeLabel(opt.key, locale)}
+              </option>
+            ))}
+          </Form.Select>
         </div>
         <Button variant="primary" onClick={openCreateModal}>
           <i className="bi bi-plus-lg me-1" aria-hidden />
@@ -221,10 +246,8 @@ export function Documents({ operationId }: { operationId: string }) {
                     <Badge bg="secondary">{resolveDocumentTypeLabel(item.type, locale)}</Badge>
                   </td>
                   <td>
-                    {item.file.url ? (
-                      <a href={item.file.url} target="_blank" rel="noreferrer">
-                        {item.file.name || t("administrative-operations.documents.fileLink")}
-                      </a>
+                    {item.observation ? (
+                      <span className={styles.observationPreview}>{item.observation}</span>
                     ) : (
                       "—"
                     )}
