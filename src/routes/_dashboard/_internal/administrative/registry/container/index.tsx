@@ -115,18 +115,6 @@ function ContainerPage() {
       headerKey: "administrative-registry.container.colCreatedAt",
       render: (c) => new Date(c.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.container.colActions",
-      align: "end",
-      render: (c) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: c })}
-          onEdit={() => setModal({ mode: "edit", record: c })}
-          onDelete={() => setPendingDelete(c)}
-        />
-      ),
-    },
   ];
 
   const handleSubmit = async (values: ContainerFormValues) => {
@@ -160,6 +148,16 @@ function ContainerPage() {
             </Card>
           )}
           getItemKey={(c) => c.id}
+          rowActions={(c, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: c })}
+              onEdit={() => setModal({ mode: "edit", record: c })}
+              onDelete={() => setPendingDelete(c)}
+            />
+          )}
+          onRowOpen={(c) => setModal({ mode: "view", record: c })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -187,6 +185,7 @@ function ContainerPage() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as ContainerDTO) : undefined}
         />
       ) : null}
 

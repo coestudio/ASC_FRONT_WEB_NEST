@@ -89,18 +89,6 @@ function VesselPage() {
       headerKey: "administrative-registry.vessel.colCreatedAt",
       render: (v) => new Date(v.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.vessel.colActions",
-      align: "end",
-      render: (v) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: v })}
-          onEdit={() => setModal({ mode: "edit", record: v })}
-          onDelete={() => setPendingDelete(v)}
-        />
-      ),
-    },
   ];
 
   const handleSubmit = async (values: VesselFormValues) => {
@@ -131,6 +119,16 @@ function VesselPage() {
             </Card>
           )}
           getItemKey={(v) => v.id}
+          rowActions={(v, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: v })}
+              onEdit={() => setModal({ mode: "edit", record: v })}
+              onDelete={() => setPendingDelete(v)}
+            />
+          )}
+          onRowOpen={(v) => setModal({ mode: "view", record: v })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -158,6 +156,7 @@ function VesselPage() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as VesselDTO) : undefined}
         />
       ) : null}
 

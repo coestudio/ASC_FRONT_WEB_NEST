@@ -61,6 +61,15 @@ export type CrudRecordModalProps<T extends FieldValues> = {
   onClose: () => void;
   /** Conteúdo extra no modo `view` (ex.: seção mock de relatórios do Cliente, SPEC-05). */
   extraContent?: ReactNode;
+  /**
+   * Botão "Excluir" no rodapé, em `view`/`edit` (nunca em `create` — registro
+   * ainda não existe) — SPEC-79. Opcional: sem a prop, nenhum botão aparece
+   * (consumidor sem exclusão disponível, ex. `Collaborator`). Não muda o
+   * fluxo de confirmação em si — cada consumidor decide o que `onDelete` faz
+   * (tipicamente abrir a `ConfirmationModal` já existente na tela, mesma que
+   * o menu de ações da lista já aciona).
+   */
+  onDelete?: () => void;
 };
 
 /**
@@ -80,6 +89,7 @@ export function CrudRecordModal<T extends FieldValues>({
   onSubmit,
   onClose,
   extraContent,
+  onDelete,
 }: CrudRecordModalProps<T>) {
   const t = useT();
   const methods = useForm<T>({
@@ -125,6 +135,12 @@ export function CrudRecordModal<T extends FieldValues>({
           {extraContent}
         </Modal.Body>
         <Modal.Footer>
+          {onDelete && mode !== "create" ? (
+            <Button variant="outline-danger" onClick={onDelete} className="me-auto">
+              <i className="bi bi-trash me-1" aria-hidden />
+              {t("crud.recordModal.delete")}
+            </Button>
+          ) : null}
           <Button variant="outline-primary" onClick={onClose}>
             {t(readOnly ? "crud.recordModal.close" : "crud.recordModal.cancel")}
           </Button>

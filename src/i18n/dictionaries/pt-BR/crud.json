@@ -15,7 +15,8 @@
   "recordModal": {
     "cancel": "Cancelar",
     "close": "Fechar",
-    "save": "Salvar"
+    "save": "Salvar",
+    "delete": "Excluir"
   },
   "mockDataBanner": {
     "message": "Dados de exemplo — sem endpoint no Core ainda."

@@ -89,18 +89,6 @@ function ProductPage() {
       headerKey: "administrative-registry.product.colCreatedAt",
       render: (p) => new Date(p.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.product.colActions",
-      align: "end",
-      render: (p) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: p })}
-          onEdit={() => setModal({ mode: "edit", record: p })}
-          onDelete={() => setPendingDelete(p)}
-        />
-      ),
-    },
   ];
 
   const handleSubmit = async (values: ProductFormValues) => {
@@ -131,6 +119,16 @@ function ProductPage() {
             </Card>
           )}
           getItemKey={(p) => p.id}
+          rowActions={(p, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: p })}
+              onEdit={() => setModal({ mode: "edit", record: p })}
+              onDelete={() => setPendingDelete(p)}
+            />
+          )}
+          onRowOpen={(p) => setModal({ mode: "view", record: p })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -158,6 +156,7 @@ function ProductPage() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as ProductDTO) : undefined}
         />
       ) : null}
 

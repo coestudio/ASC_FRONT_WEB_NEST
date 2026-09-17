@@ -15,7 +15,8 @@
   "recordModal": {
     "cancel": "取消",
     "close": "关闭",
-    "save": "保存"
+    "save": "保存",
+    "delete": "删除"
   },
   "mockDataBanner": {
     "message": "示例数据 — Core 尚无对应接口。"

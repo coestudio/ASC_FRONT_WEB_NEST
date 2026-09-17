@@ -143,6 +143,24 @@ export type CrudListPageProps<
    * `CrudColumn.sortKey` pra deixar o cabeçalho clicável (SPEC-53). */
   sort?: string;
   onSortChange?: (sort: string | undefined) => void;
+  /**
+   * Menu de ações por item, revelado ao clicar na linha/card — SPEC-79.
+   * Substitui a antiga coluna fixa de ações (`CrudColumn` com
+   * `key: "actions"`): sem essa prop, nenhuma coluna/célula extra é
+   * renderizada (comportamento aditivo, igual às demais props opcionais).
+   * Quem chama monta `<CrudRowActions show={ctl.show} onToggle={ctl.onToggle}
+   * onView={...} ... />`, repassando o `show`/`onToggle` controlado que o
+   * `CrudListPage` calcula a partir do clique — o item recebido já é o
+   * registro da linha/card clicado.
+   */
+  rowActions?: (item: T, ctl: { show: boolean; onToggle: (show: boolean) => void }) => ReactNode;
+  /**
+   * Duplo-clique (ou atalho de mouse equivalente) na linha/card — SPEC-79.
+   * Mesmo destino que "Ver" no menu de `rowActions` (mesmo `onView` que o
+   * consumidor já usa lá), só que sem precisar abrir o menu primeiro. Sem
+   * `rowActions`, esta prop não tem efeito (linha/card não fica clicável).
+   */
+  onRowOpen?: (item: T) => void;
 };
 
 /**
@@ -178,6 +196,8 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   selection,
   sort,
   onSortChange,
+  rowActions,
+  onRowOpen,
 }: Pick<
   CrudListPageProps<T, TQueryData, TError>,
   | "queryOptions"
@@ -193,9 +213,16 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   | "selection"
   | "sort"
   | "onSortChange"
+  | "rowActions"
+  | "onRowOpen"
 > & { viewMode: ViewMode }) {
   const t = useT();
   const query = useSsrSafeQuery(queryOptions);
+  // Clique seleciona/revela o menu de `rowActions` daquele item; duplo-clique
+  // aciona `onRowOpen` direto (SPEC-79). Só um item ativo por vez — clicar
+  // fora fecha via `onToggle(false)` do próprio `Dropdown` (react-bootstrap
+  // já detecta clique fora do menu/âncora).
+  const [activeId, setActiveId] = useState<string | null>(null);
   const isLoading = query.isLoading;
   const isError = query.isError;
   const items = query.data?.items ?? [];
@@ -268,11 +295,37 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
           style={fillHeight ? { height: fillBodyHeight, overflowY: "auto" } : undefined}
         >
           <div className="row g-3">
-            {items.map((item) => (
-              <div className="col-12 col-sm-6 col-lg-4" key={getItemKey(item)}>
-                {renderCard(item)}
-              </div>
-            ))}
+            {items.map((item) => {
+              const id = getItemKey(item);
+              return (
+                <div className="col-12 col-sm-6 col-lg-4" key={id}>
+                  {rowActions ? (
+                    <div
+                      style={{ position: "relative", cursor: "pointer" }}
+                      onClick={() => setActiveId(id)}
+                      onDoubleClick={() => {
+                        onRowOpen?.(item);
+                        setActiveId(null);
+                      }}
+                    >
+                      {renderCard(item)}
+                      <div
+                        style={{ position: "absolute", top: "0.5rem", right: "0.5rem" }}
+                        onClick={(e) => e.stopPropagation()}
+                        onDoubleClick={(e) => e.stopPropagation()}
+                      >
+                        {rowActions(item, {
+                          show: activeId === id,
+                          onToggle: (show) => setActiveId(show ? id : null),
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    renderCard(item)
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       ) : (
@@ -347,6 +400,10 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                     </th>
                   );
                 })}
+                {/* Célula invisível (largura 0) espelhando a de `rowActions` no
+                    corpo — mantém a contagem de colunas do `<thead>` igual à
+                    do `<tbody>` (SPEC-79). */}
+                {rowActions ? <th style={{ width: 0, padding: 0 }} /> : null}
               </tr>
             </thead>
             <tbody>
@@ -354,7 +411,19 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                 const id = getItemKey(item);
                 const disabledForSelection = selection?.isDisabled?.(item) ?? false;
                 return (
-                  <tr key={id}>
+                  <tr
+                    key={id}
+                    onClick={rowActions ? () => setActiveId(id) : undefined}
+                    onDoubleClick={
+                      rowActions
+                        ? () => {
+                            onRowOpen?.(item);
+                            setActiveId(null);
+                          }
+                        : undefined
+                    }
+                    style={rowActions ? { cursor: "pointer" } : undefined}
+                  >
                     {selection ? (
                       <td>
                         <Form.Check
@@ -371,6 +440,21 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                         {col.render(item)}
                       </td>
                     ))}
+                    {rowActions ? (
+                      // Célula invisível (largura 0) — não é mais uma "coluna
+                      // de ações" visível (SPEC-79 remove a antiga), só a
+                      // âncora do menu controlado por clique na linha.
+                      <td
+                        style={{ width: 0, padding: 0 }}
+                        onClick={(e) => e.stopPropagation()}
+                        onDoubleClick={(e) => e.stopPropagation()}
+                      >
+                        {rowActions(item, {
+                          show: activeId === id,
+                          onToggle: (show) => setActiveId(show ? id : null),
+                        })}
+                      </td>
+                    ) : null}
                   </tr>
                 );
               })}
@@ -423,6 +507,8 @@ export function CrudListPage<
   selection,
   sort,
   onSortChange,
+  rowActions,
+  onRowOpen,
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
@@ -487,6 +573,8 @@ export function CrudListPage<
           selection={selection}
           sort={sort}
           onSortChange={onSortChange}
+          rowActions={rowActions}
+          onRowOpen={onRowOpen}
         />
       ) : (
         <LoadingState variant="inline" />

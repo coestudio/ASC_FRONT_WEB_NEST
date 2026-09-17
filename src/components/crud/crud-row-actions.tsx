@@ -35,6 +35,18 @@ export type CrudRowActionsProps = {
   disabled?: boolean;
   /** Ações adicionais (ex.: download) renderizadas entre "Ver" e "Editar" (SPEC-65). */
   extraActions?: CrudRowExtraAction[];
+  /**
+   * Modo controlado (SPEC-79) — quem chama decide quando o menu abre (ex.:
+   * clique na linha/card da listagem, `CrudListPage.rowActions`), em vez do
+   * toggle interno `⋮`. Passar `show`/`onToggle` juntos ativa esse modo: o
+   * toggle visível some, vira só uma âncora mínima (`1px`) pro Popper.js
+   * calcular a posição do menu a partir de onde o item clicado está,
+   * "position: absolute" na prática (a estratégia `fixed` do Popper já usada
+   * abaixo resolve o clipping do jeito que sempre resolveu). Sem essas duas
+   * props, comportamento antigo (toggle `⋮` sempre visível) inalterado.
+   */
+  show?: boolean;
+  onToggle?: (show: boolean) => void;
 };
 
 /**
@@ -81,25 +93,45 @@ export function CrudRowActions({
   editLoading,
   disabled,
   extraActions,
+  show,
+  onToggle,
 }: CrudRowActionsProps) {
   const t = useT();
   const busy = disabled || viewLoading || editLoading;
+  const controlled = onToggle != null;
 
   return (
-    <Dropdown align="end">
-      <Dropdown.Toggle
-        as="button"
-        type="button"
-        className={`btn btn-sm btn-soft ${styles.toggle}`}
-        disabled={busy}
-        aria-label={t("crud.list.rowActionsToggle")}
-      >
-        {viewLoading || editLoading ? (
-          <Spinner size="sm" animation="border" />
-        ) : (
-          <i className="bi bi-three-dots-vertical" aria-hidden />
-        )}
-      </Dropdown.Toggle>
+    <Dropdown
+      align="end"
+      show={controlled ? show : undefined}
+      onToggle={controlled ? (nextShow) => onToggle?.(nextShow) : undefined}
+    >
+      {controlled ? (
+        // Âncora invisível (1px) — só existe pro Popper ter uma posição de
+        // referência; quem abre/fecha é o `show`/`onToggle` controlado por
+        // fora (clique na linha/card), não um clique nela mesma.
+        // `bsPrefix` custom evita a classe `dropdown-toggle` (e sua seta
+        // `::after` do Bootstrap) cair num elemento de 1px.
+        <Dropdown.Toggle
+          as="span"
+          bsPrefix="crud-row-actions-anchor"
+          className={styles.controlledAnchor}
+        />
+      ) : (
+        <Dropdown.Toggle
+          as="button"
+          type="button"
+          className={`btn btn-sm btn-soft ${styles.toggle}`}
+          disabled={busy}
+          aria-label={t("crud.list.rowActionsToggle")}
+        >
+          {viewLoading || editLoading ? (
+            <Spinner size="sm" animation="border" />
+          ) : (
+            <i className="bi bi-three-dots-vertical" aria-hidden />
+          )}
+        </Dropdown.Toggle>
+      )}
       <Dropdown.Menu popperConfig={{ strategy: "fixed" }} renderOnMount>
         {onView ? (
           <Dropdown.Item onClick={onView} disabled={disabled || viewLoading}>

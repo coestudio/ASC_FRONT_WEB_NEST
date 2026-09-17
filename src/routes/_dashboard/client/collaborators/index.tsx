@@ -221,19 +221,6 @@ function CollaboratorsPageBody() {
       headerKey: "client.collaborators.colCreatedAt",
       render: (c) => new Date(c.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "client.collaborators.colActions",
-      align: "end",
-      // Sem botão de editar — o Core não expõe PUT/PATCH para Collaborator
-      // (R3 da SPEC-09). Só ver e excluir.
-      render: (c) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: c })}
-          onDelete={() => setPendingDelete(c)}
-        />
-      ),
-    },
   ];
 
   const handleSubmit = async (values: CollaboratorFormValues) => {
@@ -269,6 +256,17 @@ function CollaboratorsPageBody() {
             </Card>
           )}
           getItemKey={(c) => c.id}
+          rowActions={(c, ctl) => (
+            // Sem botão de editar — o Core não expõe PUT/PATCH para
+            // Collaborator (R3 da SPEC-09). Só ver e excluir.
+            <CrudRowActions
+              show={ctl.show}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: c })}
+              onDelete={() => setPendingDelete(c)}
+            />
+          )}
+          onRowOpen={(c) => setModal({ mode: "view", record: c })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -298,6 +296,9 @@ function CollaboratorsPageBody() {
           )}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={
+            modal.record ? () => setPendingDelete(modal.record as CollaboratorDTO) : undefined
+          }
         />
       ) : null}
 

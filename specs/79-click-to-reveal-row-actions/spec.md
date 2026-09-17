@@ -2,11 +2,7 @@
 
 - **ID:** SPEC-79
 - **Nome:** click-to-reveal-row-actions
-- **Status:** WAITING_APPROVAL — sem `[NEEDS_DECISION]` em aberto.
-  Decisão de interação fechada em §7 (Opção A, 2026-09-17, usuário:
-  "clique destaca linha/card e já mostra o menu de opções usando posição
-  absolute (um mini menu)"), inclusive o equivalente em mobile/touch
-  (resolvido por decorrência, sem gesto novo necessário).
+- **Status:** IMPLEMENTED (2026-09-17)
 - **Autor:** claude (pedido do usuário, 2026-09-17)
 - **Área:** `src/components/crud/crud-list-page.tsx`,
   `src/components/crud/crud-row-actions.tsx`,
@@ -227,3 +223,71 @@ touch.
 | CA7 | Clicar "Excluir" no modal aciona o mesmo fluxo de confirmação já existente na tela (sem duplicar lógica de exclusão). |
 | CA8 | Abas de Operação (Containers/Romaneio/Details/Operational) sem nenhuma mudança de comportamento de clique — só ganham o botão de excluir do modal se o consumidor decidir passar `onDelete` (RF9 nota, fora do escopo por padrão). |
 | CA9 | `bun run check` + `bun run lint` sem regressão. |
+
+## 10. Implementation Notes (2026-09-17)
+
+- **Mecanismo central** (`crud-list-page.tsx`): novas props opcionais
+  `rowActions?: (item, ctl: { show, onToggle }) => ReactNode` e
+  `onRowOpen?: (item) => void`. `CrudListPageBody` ganhou um estado
+  `activeId` (só um item ativo por vez) — clique em `<tr>`/card faz
+  `setActiveId(id)`; duplo-clique chama `onRowOpen` e limpa `activeId`.
+  Sem `rowActions`, nenhuma célula/coluna extra é renderizada (aditivo,
+  outros consumidores do `CrudListPage` inalterados).
+- **Tabela:** a antiga `<td>` de ações virou uma célula final `width: 0,
+  padding: 0` (só existe quando `rowActions` é passado), com
+  `onClick`/`onDoubleClick` com `stopPropagation` (clicar no menu não
+  reabre/reflete na linha). `<thead>` ganhou uma `<th>` espelho (mesma
+  largura zero) pra manter a contagem de colunas igual — sem isso o
+  `<thead>` ficava com uma coluna a menos que o `<tbody>`.
+- **Card:** `renderCard(item)` envolto num `div` `position: relative`
+  com o clique/duplo-clique; o menu fica num `div` `position: absolute;
+  top: 0.5rem; right: 0.5rem` por cima do card (mesma ideia da célula
+  zero-width da tabela, adaptada pro grid).
+- **`CrudRowActions`** ganhou modo controlado (`show`/`onToggle`): usa
+  `<Dropdown show={show} onToggle={...}>` e troca o toggle `⋮` visível
+  por uma âncora invisível de `1px` (`bsPrefix` customizado tira a seta
+  `::after` do Bootstrap) — só existe pro Popper.js medir uma posição de
+  referência; quem abre é o clique na linha/card, não a âncora em si. A
+  estratégia `strategy: "fixed"` do Popper (já existente, resolvia o
+  clipping do `.table-responsive`/`.tableCard`) continua funcionando sem
+  mudança — é o que faz o menu se comportar como "position: absolute"
+  ancorado no item clicado, mesmo dentro de containers com `overflow`.
+- **`CrudRecordModal`** ganhou `onDelete?: () => void` (RF6-8) — botão
+  "Excluir" (`btn-outline-danger`, `me-auto`) só quando `onDelete` está
+  presente e `mode !== "create"`. Cada consumidor passa
+  `onDelete={modal.record ? () => setPendingDelete(modal.record) : undefined}`,
+  reaproveitando o `pendingDelete`/`ConfirmationModal` que já existia —
+  nenhuma lógica de exclusão duplicada.
+- **8 telas migradas:** `clients`, `harbor`, `terminal`, `product`,
+  `container`, `vessel`, `collaborators` (rotas administrativas) +
+  `operations-list.tsx` (lista de Operações, tabela própria — não usa
+  `CrudListPage`, então o mesmo mecanismo de `activeId`/célula
+  zero-width/âncora foi replicado manualmente em `OperationRow`/
+  `OperationCard`). Em todas, a antiga `CrudColumn`/`<td>` de "actions"
+  foi removida e a coluna virou `rowActions`.
+  - **Achado corrigido:** `collaborators` tem sim `onDelete` disponível
+    (o comentário original da SPEC-55 dizia que não tinha — só não tem
+    `onEdit`, porque o Core não expõe update de `Collaborator`, R3 da
+    SPEC-09). O modal de `collaborators` ganhou o botão de excluir
+    normalmente.
+  - **`operations-list.tsx`:** o card antes navegava direto no clique
+    único (`<Card role="button" onClick={onView}>`) — agora segue o
+    mesmo padrão das outras 7 telas (clique revela o menu, duplo-clique
+    abre). `Operation` não tem `DELETE` no Core (nota já existente no
+    arquivo), então não há botão de excluir no modal aqui — RF6-8 não
+    se aplicam a esta tela por falta de capacidade, não por omissão.
+- **Fora do escopo, como previsto:** nenhuma aba/sub-aba de Operação
+  (Containers/Romaneio/Documents/Invoice/Occurrences/Details/
+  Operational) foi tocada — todas continuam com o toggle `⋮` visível de
+  sempre (modo não-controlado de `CrudRowActions`, sem `show`/
+  `onToggle`).
+- **i18n:** chave `crud.recordModal.delete` ("Excluir"/"Delete"/
+  "Eliminar"/"删除") adicionada nos 4 locales de `crud.json`. As chaves
+  `colActions`/`rowActionsToggle` das 8 telas migradas ficaram órfãs
+  (não removidas — baixo risco, sem custo de manutenção real, e evita
+  mexer em 4 arquivos JSON × 8 telas só por tidiness fora do escopo
+  desta SPEC).
+- `tsc --noEmit` limpo; `bun run lint` sem erro novo (baseline de 63
+  avisos, confirmada antes e depois). Não verificado visualmente em
+  navegador nesta sessão — comportamento de clique/duplo-clique/posição
+  do mini menu fica como validação pendente na primeira revisão visual.

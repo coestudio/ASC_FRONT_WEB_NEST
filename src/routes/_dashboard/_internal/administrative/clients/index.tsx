@@ -271,23 +271,6 @@ function ClientsPageBody() {
       headerKey: "administrative-clients.colCreatedAt",
       render: (c) => new Date(c.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "administrative-clients.colActions",
-      align: "end",
-      render: (c) => {
-        const isLoadingDetail = detailRequest?.id === c.id;
-        return (
-          <CrudRowActions
-            onView={() => setDetailRequest({ id: c.id, mode: "view" })}
-            onEdit={() => setDetailRequest({ id: c.id, mode: "edit" })}
-            onDelete={() => setPendingDelete(c)}
-            viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
-            editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
-          />
-        );
-      },
-    },
   ];
 
   const handleSubmit = async (values: ClientFormValues) => {
@@ -339,6 +322,21 @@ function ClientsPageBody() {
             );
           }}
           getItemKey={(c) => c.id}
+          rowActions={(c, ctl) => {
+            const isLoadingDetail = detailRequest?.id === c.id;
+            return (
+              <CrudRowActions
+                show={ctl.show}
+                onToggle={ctl.onToggle}
+                onView={() => setDetailRequest({ id: c.id, mode: "view" })}
+                onEdit={() => setDetailRequest({ id: c.id, mode: "edit" })}
+                onDelete={() => setPendingDelete(c)}
+                viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
+                editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
+              />
+            );
+          }}
+          onRowOpen={(c) => setDetailRequest({ id: c.id, mode: "view" })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -366,6 +364,7 @@ function ClientsPageBody() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as ClientDTO) : undefined}
         />
       ) : null}
 

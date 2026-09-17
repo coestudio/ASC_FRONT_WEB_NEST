@@ -18,3 +18,13 @@
 .toggle::after {
   display: none;
 }
+
+/* Âncora do modo controlado (SPEC-79) — invisível, só pro Popper medir uma
+   posição de referência (`getBoundingClientRect`); quem abre o menu é o
+   clique na linha/card, controlado por fora (`show`/`onToggle`), não esta
+   âncora em si. */
+.controlledAnchor {
+  display: inline-block;
+  width: 1px;
+  height: 1px;
+}

@@ -149,18 +149,6 @@ function TerminalPageBody() {
       headerKey: "administrative-registry.terminal.colCreatedAt",
       render: (r) => new Date(r.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.terminal.colActions",
-      align: "end",
-      render: (r) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: r })}
-          onEdit={() => setModal({ mode: "edit", record: r })}
-          onDelete={() => setPendingDelete(r)}
-        />
-      ),
-    },
   ];
 
   const handleSubmit = async (values: TerminalFormValues) => {
@@ -194,6 +182,16 @@ function TerminalPageBody() {
             </Card>
           )}
           getItemKey={(r) => r.id}
+          rowActions={(r, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: r })}
+              onEdit={() => setModal({ mode: "edit", record: r })}
+              onDelete={() => setPendingDelete(r)}
+            />
+          )}
+          onRowOpen={(r) => setModal({ mode: "view", record: r })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -221,6 +219,7 @@ function TerminalPageBody() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as TerminalDTO) : undefined}
         />
       ) : null}
 

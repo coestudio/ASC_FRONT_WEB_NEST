@@ -149,18 +149,6 @@ function HarborPage() {
       headerKey: "administrative-registry.harbor.colCreatedAt",
       render: (h) => new Date(h.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "administrative-registry.harbor.colActions",
-      align: "end",
-      render: (h) => (
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: h })}
-          onEdit={() => setModal({ mode: "edit", record: h })}
-          onDelete={() => setPendingDelete(h)}
-        />
-      ),
-    },
   ];
 
   const handleSubmit = async (values: HarborFormValues) => {
@@ -194,6 +182,16 @@ function HarborPage() {
             </Card>
           )}
           getItemKey={(h) => h.id}
+          rowActions={(h, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", record: h })}
+              onEdit={() => setModal({ mode: "edit", record: h })}
+              onDelete={() => setPendingDelete(h)}
+            />
+          )}
+          onRowOpen={(h) => setModal({ mode: "view", record: h })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -221,6 +219,7 @@ function HarborPage() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          onDelete={modal.record ? () => setPendingDelete(modal.record as HarborDTO) : undefined}
           extraContent={
             modal.mode === "view" && modal.record ? (
               <RelatedTerminals harborId={modal.record.id} />
