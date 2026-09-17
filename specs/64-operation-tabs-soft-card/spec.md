@@ -1,6 +1,6 @@
-# SPEC-62 — Unificar `.soft-card` nas abas do shell de Operação
+# SPEC-64 — Unificar `.soft-card` nas abas do shell de Operação
 
-- **ID:** SPEC-62
+- **ID:** SPEC-64
 - **Nome:** operation-tabs-soft-card
 - **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — pente fino de UI/UX
@@ -56,7 +56,7 @@ visualmente destoante dentro da mesma navegação por abas.
 ## 4. Fora do escopo
 
 - Unificação das ações de linha para `CrudRowActions` (`Documents.tsx`,
-  `Occurrences.tsx`) — SPEC-63.
+  `Occurrences.tsx`) — SPEC-65.
 - Qualquer mudança em `.soft-card` (CSS) em si — já fechada na SPEC-56.
 - Qualquer redesign de conteúdo interno dos itens (textos, ícones, ordem de
   campos) além da troca do wrapper.

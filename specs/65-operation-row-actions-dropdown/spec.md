@@ -1,6 +1,6 @@
-# SPEC-63 — Unificar ações de linha pro `CrudRowActions` (dropdown kebab)
+# SPEC-65 — Unificar ações de linha pro `CrudRowActions` (dropdown kebab)
 
-- **ID:** SPEC-63
+- **ID:** SPEC-65
 - **Nome:** operation-row-actions-dropdown
 - **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — pente fino de UI/UX
@@ -74,7 +74,7 @@ essas duas abas ainda usam botões de ícone soltos direto na `<td>`.
 ## 4. Fora do escopo
 
 - Mudar `.soft-card`/wrapper de tabela (`Documents.tsx`/`Occurrences.tsx`)
-  — SPEC-62.
+  — SPEC-64.
 - Adicionar exclusão de documento/ocorrência — não existe no contrato do
   Core, fora de escopo.
 - Mudar o comportamento de qualquer um dos 9 consumidores já existentes de

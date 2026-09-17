@@ -305,6 +305,7 @@
     "photosAddToSlot": "添加照片",
     "photosRemove": "移除照片",
     "photosOther": "其他照片",
+    "photosAddOther": "添加照片",
     "photosChecklistComplete": "清单已完成",
     "photosChecklistMissing": "还缺 {count} 张照片",
     "photoSlots": {

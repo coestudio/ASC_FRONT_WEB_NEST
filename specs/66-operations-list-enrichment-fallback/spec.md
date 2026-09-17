@@ -1,6 +1,6 @@
-# SPEC-64 — Fallback de enriquecimento em `operations-list.tsx`
+# SPEC-66 — Fallback de enriquecimento em `operations-list.tsx`
 
-- **ID:** SPEC-64
+- **ID:** SPEC-66
 - **Nome:** operations-list-enrichment-fallback
 - **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — pente fino de UI/UX

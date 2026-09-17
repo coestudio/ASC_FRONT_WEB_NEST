@@ -3,7 +3,7 @@ import { useT } from "@/lib/ui-prefs";
 import styles from "./crud-row-actions.module.css";
 
 /**
- * Ação extra genérica (SPEC-63) — cobre casos que não são só "ver"/"editar"/
+ * Ação extra genérica (SPEC-65) — cobre casos que não são só "ver"/"editar"/
  * "excluir" (ex.: download de arquivo com atributo nativo `href`/`download`
  * do `<a>`, sem precisar de `onClick` + blob). Renderizada entre "Ver" e
  * "Editar" no menu. Quando `href` está presente, o `Dropdown.Item`
@@ -33,7 +33,7 @@ export type CrudRowActionsProps = {
   editLoading?: boolean;
   /** Desabilita o toggle inteiro (ex.: enquanto outra ação da linha está em curso). */
   disabled?: boolean;
-  /** Ações adicionais (ex.: download) renderizadas entre "Ver" e "Editar" (SPEC-63). */
+  /** Ações adicionais (ex.: download) renderizadas entre "Ver" e "Editar" (SPEC-65). */
   extraActions?: CrudRowExtraAction[];
 };
 

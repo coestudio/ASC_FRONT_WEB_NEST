@@ -1,6 +1,6 @@
-# SPEC-65 — Portar hierarquia visual da aba Detalhes pro mock de `operational/operations/$id`
+# SPEC-67 — Portar hierarquia visual da aba Detalhes pro mock de `operational/operations/$id`
 
-- **ID:** SPEC-65
+- **ID:** SPEC-67
 - **Nome:** operational-mock-details-hierarchy
 - **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — pente fino de UI/UX

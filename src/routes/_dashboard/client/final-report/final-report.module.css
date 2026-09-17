@@ -1,4 +1,4 @@
-/* Wrapper de tabela (SPEC-66) — mesmo bloco de
+/* Wrapper de tabela (SPEC-68) — mesmo bloco de
    operations-list.module.css/crud-list-page.module.css, duplicado aqui de
    propósito pelo mesmo motivo já documentado nesses módulos: evita
    importar CSS Module privado de outro componente. */

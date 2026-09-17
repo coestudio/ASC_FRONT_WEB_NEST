@@ -1,6 +1,6 @@
-# SPEC-66 — Wrapper de tabela em `client/final-report`
+# SPEC-68 — Wrapper de tabela em `client/final-report`
 
-- **ID:** SPEC-66
+- **ID:** SPEC-68
 - **Nome:** final-report-table-card
 - **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — pente fino de UI/UX
