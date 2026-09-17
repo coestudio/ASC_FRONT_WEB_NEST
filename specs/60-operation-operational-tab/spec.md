@@ -2,8 +2,7 @@
 
 - **ID:** SPEC-60
 - **Nome:** operation-operational-tab
-- **Status:** DRAFT — decisões de §6 fechadas com o usuário (2026-09-16).
-  Falta só `APROVAR SPEC-60` para implementar.
+- **Status:** IMPLEMENTED (2026-09-16)
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/routes/_dashboard/_internal/administrative/operations/$id/index.tsx`
   (lista de abas do shell), `src/components/operations/tabs/Containers.tsx`
@@ -139,3 +138,38 @@ Já existe precedente de sub-abas dentro de uma aba (`Invoice.tsx`, SPEC-41,
   precisa decidir como a sub-aba Desestufagem filtra por container
   específico (parâmetro de rota/estado local) — detalhar na implementação
   se for essa a decisão.
+
+## 9. Implementation Notes (2026-09-16)
+
+- Nova aba "Operacional" (`type Tab`/`TABS` em `index.tsx`), posicionada
+  logo após "Containers" (D1). Renderiza `<Operational operationId={id} />`.
+- `Operational.tsx` (novo) — `Tab.Container`/`Nav variant="pills"` com
+  sub-abas `stuffing`/`destuffing`, mesmo padrão de `Invoice.tsx`
+  (SPEC-41). Contém, movidos de `Containers.tsx` sem mudança de
+  comportamento: `StuffIdentifiedModal`, `StuffQuantityModal`,
+  `StuffBatchModal`, `CancelCargoUnitModal`, e uma nova `StuffingTab`
+  (lista de containers com busca/paginação — reaproveita
+  `ContainerSearchInput`, exportado de `Containers.tsx` — + os 3 botões de
+  estufagem por linha) e `DestuffingTab` (ex-`AllStuffedCargoSection`,
+  sem a moldura/`<h2>` que tinha como seção dentro de Containers — a
+  sub-aba já rotula o conteúdo).
+- `Containers.tsx` perdeu: os 4 botões de carga por linha (estufagem ×3 +
+  "ver fardos estufados"), o toggle/seção "ver todos os fardos
+  estufados", e todas as funções/tipos/imports exclusivos de
+  `CargoUnit` (`StuffIdentifiedModal` etc., `CargoUnitsModal` removido
+  por completo — decisão D2 da SPEC-61, sem substituto). Ganhou os 2
+  botões novos da SPEC-61 (fotos/lacre) no lugar dos 4 antigos —
+  implementadas juntas nesta mesma sessão, ver SPEC-61.
+- Nenhuma chave i18n de estufagem/desestufagem foi renomeada — o código
+  movido continua lendo do namespace `administrative-operations.
+containers.stuffing`/`.destuffing` (evita churn de tradução em 4
+  idiomas); só a chave morta `destuffing.toggle` e `stuffing.
+actionViewCargo` foram removidas (botões que deixaram de existir). Chaves
+  novas: `shell.tabs.operational` e `operational.subtabs.{stuffing,
+  destuffing}` (4 idiomas).
+- Validação: `bun run check` (`tsc --noEmit`) e `bun run lint` sem erro
+  novo nos arquivos tocados (3 erros pré-existentes em
+  `lib/session.server.ts`, fora de escopo). `bun run dev` sobe sem erro
+  de build/rota. Não testado em navegador contra o Core (não havia
+  instância local rodando nesta sessão) — validação funcional real fica
+  pendente do usuário.

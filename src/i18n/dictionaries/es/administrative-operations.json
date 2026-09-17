@@ -219,6 +219,7 @@
       "details": "Detalles",
       "romaneio": "Romaneo",
       "containers": "Contenedores",
+      "operational": "Operativo",
       "documents": "Documentos",
       "invoice": "Factura",
       "reports": "Informes",
@@ -291,6 +292,10 @@
     "colStatus": "Estado",
     "colPhotos": "Fotos",
     "colActions": "Acciones",
+    "photosButton": "Fotos",
+    "sealActionButton": "Precinto",
+    "photosModalTitle": "Fotos — {identifier}",
+    "sealModalTitle": "Precinto — {identifier}",
     "form": {
       "container": "Contenedor",
       "tara": "Tara",
@@ -328,7 +333,6 @@
       "actionIdentified": "Estibar fardo específico",
       "actionQuantity": "Estibar por cantidad",
       "actionBatch": "Estibar en lote",
-      "actionViewCargo": "Ver fardos estibados",
       "identifiedTitle": "Estibar fardo específico — {identifier}",
       "quantityTitle": "Estibar por cantidad — {identifier}",
       "batchTitle": "Estibar en lote — {identifier}",
@@ -362,7 +366,6 @@
       }
     },
     "destuffing": {
-      "toggle": "Ver todos los fardos estibados",
       "title": "Fardos estibados de la operación",
       "empty": "No hay fardos estibados en esta operación.",
       "colContainer": "Contenedor de origen"
@@ -387,6 +390,12 @@
       }
     },
     "searchPlaceholder": "Buscar por identificador del contenedor..."
+  },
+  "operational": {
+    "subtabs": {
+      "stuffing": "Estiba",
+      "destuffing": "Desestiba"
+    }
   },
   "documents": {
     "new": "Nuevo documento",

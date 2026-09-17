@@ -219,6 +219,7 @@
       "details": "Details",
       "romaneio": "Packing list",
       "containers": "Containers",
+      "operational": "Operational",
       "documents": "Documents",
       "invoice": "Invoice",
       "reports": "Reports",
@@ -291,6 +292,10 @@
     "colStatus": "Status",
     "colPhotos": "Photos",
     "colActions": "Actions",
+    "photosButton": "Photos",
+    "sealActionButton": "Seal",
+    "photosModalTitle": "Photos — {identifier}",
+    "sealModalTitle": "Seal — {identifier}",
     "form": {
       "container": "Container",
       "tara": "Tare",
@@ -328,7 +333,6 @@
       "actionIdentified": "Stuff specific bale",
       "actionQuantity": "Stuff by quantity",
       "actionBatch": "Batch stuffing",
-      "actionViewCargo": "View stuffed cargo",
       "identifiedTitle": "Stuff specific bale — {identifier}",
       "quantityTitle": "Stuff by quantity — {identifier}",
       "batchTitle": "Batch stuffing — {identifier}",
@@ -362,7 +366,6 @@
       }
     },
     "destuffing": {
-      "toggle": "View all stuffed cargo units",
       "title": "Stuffed cargo units of the operation",
       "empty": "No stuffed cargo units in this operation.",
       "colContainer": "Origin container"
@@ -387,6 +390,12 @@
       }
     },
     "searchPlaceholder": "Search by container identifier..."
+  },
+  "operational": {
+    "subtabs": {
+      "stuffing": "Stuffing",
+      "destuffing": "Destuffing"
+    }
   },
   "documents": {
     "new": "New document",

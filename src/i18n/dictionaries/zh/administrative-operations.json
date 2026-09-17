@@ -219,6 +219,7 @@
       "details": "详情",
       "romaneio": "装箱单",
       "containers": "集装箱",
+      "operational": "作业操作",
       "documents": "文件",
       "invoice": "发票",
       "reports": "报告",
@@ -291,6 +292,10 @@
     "colStatus": "状态",
     "colPhotos": "照片",
     "colActions": "操作",
+    "photosButton": "照片",
+    "sealActionButton": "封条",
+    "photosModalTitle": "照片 — {identifier}",
+    "sealModalTitle": "封条 — {identifier}",
     "form": {
       "container": "集装箱",
       "tara": "皮重",
@@ -328,7 +333,6 @@
       "actionIdentified": "装箱指定包件",
       "actionQuantity": "按数量装箱",
       "actionBatch": "批量装箱",
-      "actionViewCargo": "查看已装箱包件",
       "identifiedTitle": "装箱指定包件 — {identifier}",
       "quantityTitle": "按数量装箱 — {identifier}",
       "batchTitle": "批量装箱 — {identifier}",
@@ -362,7 +366,6 @@
       }
     },
     "destuffing": {
-      "toggle": "查看所有已装箱的包件",
       "title": "该操作的已装箱包件",
       "empty": "该操作没有已装箱的包件。",
       "colContainer": "所在集装箱"
@@ -387,6 +390,12 @@
       }
     },
     "searchPlaceholder": "按集装箱识别码搜索..."
+  },
+  "operational": {
+    "subtabs": {
+      "stuffing": "装箱",
+      "destuffing": "拆箱"
+    }
   },
   "documents": {
     "new": "新建文件",

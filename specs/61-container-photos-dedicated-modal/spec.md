@@ -2,8 +2,7 @@
 
 - **ID:** SPEC-61
 - **Nome:** container-photos-dedicated-modal
-- **Status:** DRAFT — decisões fechadas com o usuário (2026-09-16). Falta
-  só `APROVAR SPEC-61` para implementar.
+- **Status:** IMPLEMENTED (2026-09-16)
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/components/operations/tabs/Containers.tsx`.
 
@@ -103,3 +102,28 @@ fotos. Podem ser implementadas em qualquer ordem entre si, mas ambas
 tocam `Containers.tsx` — se implementadas em sequência, a segunda deve
 conferir se o merge da primeira já mudou a lista de botões da linha antes
 de posicionar o botão novo.
+
+## 9. Implementation Notes (2026-09-16)
+
+Implementada na mesma sessão que SPEC-60 (que já removia os 4 botões de
+carga da linha) — os 2 botões novos (`bi-camera`/`bi-shield-lock`) entraram
+no lugar deles diretamente, sem passo intermediário.
+
+- Novo estado `photosFor`/`sealFor` (`ContainerOperationDTO | null`) em
+  `Containers.tsx`, mesmo padrão dos demais modais da tela.
+- Dois `Modal` novos (fotos com `size="lg"`, lacre sem `size`, mesmo
+  tamanho que o `AddSealModal` já usava) — cada um só com
+  `Modal.Header`/`Modal.Body` (o componente existente,
+  `ContainerPhotos`/`ContainerSeal`, sem alteração) /`Modal.Footer` com um
+  único botão "Fechar" (`crud.recordModal.close`) — nenhum dos dois tem
+  formulário próprio no nível do modal (o formulário de upload/lacrar já
+  vive dentro de `ContainerPhotos`/`ContainerSeal`/`AddSealModal`).
+- Modal de editar (`editing`) voltou a ser só o formulário de tara — as
+  duas chamadas de `<ContainerSeal>`/`<ContainerPhotos>` que ficavam
+  empilhadas abaixo do `Form` foram removidas de lá.
+- i18n: `containers.photosButton`/`sealActionButton` (tooltip dos botões)
+  e `containers.photosModalTitle`/`sealModalTitle` (título com
+  `{identifier}`), novas nos 4 idiomas. Nenhuma chave de
+  `ContainerPhotos`/`ContainerSeal`/`AddSealModal` mudou.
+- Validação: `bun run check` e `bun run lint` sem erro novo. Não testado
+  em navegador contra o Core (sem instância local rodando na sessão).
