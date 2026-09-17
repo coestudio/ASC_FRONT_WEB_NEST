@@ -329,18 +329,12 @@
       "error": "No fue posible completar la acción. Inténtelo de nuevo."
     },
     "stuffing": {
-      "actionIdentified": "Estibar fardo específico",
-      "actionQuantity": "Estibar por cantidad",
-      "actionBatch": "Estibar en lote",
-      "identifiedTitle": "Estibar fardo específico — {identifier}",
-      "quantityTitle": "Estibar por cantidad — {identifier}",
-      "batchTitle": "Estibar en lote — {identifier}",
-      "batchEmpty": "No se encontró ningún fardo para esta factura.",
+      "quantityTitle": "Estibar por cantidad",
+      "batchTitle": "Estibar en contenedor",
       "batchSelected": "{count} fardo(s) seleccionado(s).",
       "submit": "Estibar",
       "form": {
         "invoice": "Factura",
-        "romaneio": "Fardo del romaneo",
         "quantity": "Cantidad",
         "lote": "Lote"
       },
@@ -358,11 +352,14 @@
       "cancelReason": "Motivo de la cancelación",
       "cancelConfirm": "Confirmar cancelación",
       "toast": {
-        "identifiedSuccess": "Fardo estibado con éxito.",
         "quantitySuccess": "Estiba completada con éxito.",
         "batchSuccess": "Fardos estibados con éxito.",
         "canceled": "Fardo cancelado con éxito."
-      }
+      },
+      "batchButton": "Estibar en contenedor",
+      "quantityButton": "Estibar por cantidad",
+      "batchSummary": "{count} fardo(s) de {nfCount} factura(s) diferente(s) serán estibados.",
+      "batchMissingInvoice": "La factura {notaFiscal} todavía no tiene una Invoice creada. Créela en la pestaña Factura antes de continuar."
     },
     "destuffing": {
       "title": "Fardos estibados de la operación",
@@ -395,6 +392,11 @@
     "subtabs": {
       "stuffing": "Estiba",
       "destuffing": "Desestiba"
+    },
+    "stuffing": {
+      "title": "Fardos disponibles para estibar",
+      "description": "Fardos de esta operación que todavía no fueron estibados.",
+      "empty": "Ningún fardo disponible para estibar."
     }
   },
   "documents": {

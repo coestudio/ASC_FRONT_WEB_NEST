@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Nav, Spinner, Tab, Table } from "react-bootstrap";
+import { Badge, Button, Card, Form, Nav, Spinner, Tab, Table } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
@@ -12,35 +12,40 @@ import {
   getGetApiOperationOperationIdCargoQueryKey,
   getGetApiOperationOperationIdCargoQueryOptions,
   usePostApiOperationOperationIdCargoIdCancel,
-  usePostApiOperationOperationIdCargoStuffIdentified,
   usePostApiOperationOperationIdCargoStuffIdentifiedBatch,
   usePostApiOperationOperationIdCargoStuffQuantity,
 } from "@/api/generated/endpoints/cargo-unit/cargo-unit";
 import {
   PostApiOperationOperationIdCargoIdCancelBody,
-  PostApiOperationOperationIdCargoStuffIdentifiedBody,
   PostApiOperationOperationIdCargoStuffQuantityBody,
 } from "@/api/generated/zod/cargo-unit/cargo-unit.zod";
 import { getApiOperationOperationIdInvoice } from "@/api/generated/endpoints/invoice/invoice";
-import { getApiOperationOperationIdRomaneio } from "@/api/generated/endpoints/romaneio/romaneio";
-import { getGetApiOperationOperationIdContainerQueryOptions } from "@/api/generated/endpoints/operation-container/operation-container";
-import type { CargoUnitDTO, ContainerOperationDTO } from "@/api/generated/model";
+import {
+  getGetApiOperationOperationIdRomaneioQueryKey,
+  getGetApiOperationOperationIdRomaneioQueryOptions,
+} from "@/api/generated/endpoints/romaneio/romaneio";
+import {
+  getApiOperationOperationIdContainer,
+  getGetApiOperationOperationIdContainerQueryOptions,
+} from "@/api/generated/endpoints/operation-container/operation-container";
+import type { CargoUnitDTO, RomaneioDTO } from "@/api/generated/model";
 import { resolveCargoUnitStatusLabel } from "@/api/generated/static/cargoUnitStatusOptions";
-import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
+import {
+  CrudListPage,
+  type CrudColumn,
+  type CrudSelection,
+} from "@/components/crud/crud-list-page";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { InputNumber, InputText, InputTextArea, SelectAsync } from "@/layouts/Form/Fields/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
-import { ContainerSearchInput } from "@/components/operations/tabs/Containers";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-type StuffIdentifiedFormValues = z.infer<
-  typeof PostApiOperationOperationIdCargoStuffIdentifiedBody
->;
 type StuffQuantityFormValues = z.infer<typeof PostApiOperationOperationIdCargoStuffQuantityBody>;
 type CancelCargoFormValues = z.infer<typeof PostApiOperationOperationIdCargoIdCancelBody>;
+type ContainerPickFormValues = { containerOperationId: string };
 
 /**
  * Aba "Operacional" (SPEC-60) — duas sub-abas, Estufagem e Desestufagem,
@@ -82,275 +87,180 @@ export function Operational({ operationId }: { operationId: string }) {
 }
 
 /**
- * Sub-aba Estufagem — lista de containers da operação (mesma busca/
- * paginação que já existia em `Containers.tsx`) com os 3 modos de
- * estufagem por linha (identificado/quantidade/lote). Vincular/editar/
- * desvincular/fotos/lacre continuam só na aba Containers.
+ * Sub-aba Estufagem (SPEC-73) — listagem de fardos ainda não estufados,
+ * mesma infraestrutura do Romaneio (`CrudListPage`/`CrudSelection`,
+ * SPEC-53): busca, paginação e seleção múltipla por checkbox. Duas ações:
+ * "Estufar em container" (multi-seleção → escolhe 1 container → resolve
+ * NF→Invoice de cada fardo → `stuff/identified-batch` numa chamada só,
+ * já que o endpoint aceita itens de Notas Fiscais diferentes na mesma
+ * leva) e "Estufagem por quantidade" (Modo B, independente de seleção).
+ * O antigo Modo A (estufar 1 fardo específico por vez, por linha de
+ * container) saiu — selecionar 1 fardo só e usar "Estufar em container"
+ * cobre o mesmo caso (D1 da SPEC-73).
  */
 function StuffingTab({ operationId }: { operationId: string }) {
   const t = useT();
-  const locale = useLocale();
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [stuffIdentifiedFor, setStuffIdentifiedFor] = useState<ContainerOperationDTO | null>(null);
-  const [stuffQuantityFor, setStuffQuantityFor] = useState<ContainerOperationDTO | null>(null);
-  const [stuffBatchFor, setStuffBatchFor] = useState<ContainerOperationDTO | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchOpen, setBatchOpen] = useState(false);
+  const [quantityOpen, setQuantityOpen] = useState(false);
 
-  const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
+  const listQueryOptions = getGetApiOperationOperationIdRomaneioQueryOptions(operationId, {
     Search: search || undefined,
+    IsStuffed: false,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
   });
-  const query = useSsrSafeQuery(listQueryOptions);
+  // Mesma queryKey/params do `CrudListPage` abaixo — React Query dedupe numa
+  // única busca. Precisamos do `data` aqui fora pra acumular os itens já
+  // vistos (`itemsByIdRef`): a seleção (só ids) pode atravessar páginas, e
+  // o modal de batch precisa do `notaFiscal`/`lote` completos dos fardos
+  // marcados, não só do id.
+  const listQuery = useSsrSafeQuery(listQueryOptions);
+  const itemsByIdRef = useRef<Record<string, RomaneioDTO>>({});
+  useEffect(() => {
+    (listQuery.data?.items ?? []).forEach((item) => {
+      itemsByIdRef.current[item.id] = item;
+    });
+  }, [listQuery.data]);
 
-  // Estufagem não muda o vínculo container↔operação em si (só cria/cancela
-  // `CargoUnit`) — só a lista de cargas precisa invalidar.
-  const invalidateCargo = () =>
+  const invalidateList = () =>
     queryClient.invalidateQueries({
-      queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
+      queryKey: getGetApiOperationOperationIdRomaneioQueryKey(operationId),
     });
 
-  const items = query.data?.items ?? [];
-  const total = Number(query.data?.total ?? 0);
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const toggleSelected = (id: string) =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const selection: CrudSelection<RomaneioDTO> = {
+    selectedIds,
+    onToggle: toggleSelected,
+    onToggleAll: (ids, checked) => {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        ids.forEach((id) => (checked ? next.add(id) : next.delete(id)));
+        return next;
+      });
+    },
+    // D2 da SPEC-73: sem checagem defensiva de "NF sem Invoice" aqui —
+    // é garantia do Core, não do front. Nenhuma linha fica desabilitada.
+  };
+
+  const columns: CrudColumn<RomaneioDTO>[] = [
+    {
+      key: "itemIdentifier",
+      headerKey: "administrative-operations.romaneio.colItemIdentifier",
+      render: (r) => r.itemIdentifier,
+    },
+    {
+      key: "itemCode",
+      headerKey: "administrative-operations.romaneio.colItemCode",
+      render: (r) => r.itemCode,
+    },
+    {
+      key: "notaFiscal",
+      headerKey: "administrative-operations.romaneio.colNotaFiscal",
+      render: (r) => r.notaFiscal ?? "—",
+    },
+    {
+      key: "lote",
+      headerKey: "administrative-operations.romaneio.colLote",
+      render: (r) => r.lote,
+    },
+    {
+      key: "peso",
+      headerKey: "administrative-operations.romaneio.colPeso",
+      align: "end",
+      render: (r) => (r.peso != null ? String(r.peso) : "—"),
+    },
+  ];
+
+  const selectedItems = Array.from(selectedIds)
+    .map((id) => itemsByIdRef.current[id])
+    .filter((item): item is RomaneioDTO => item != null);
 
   return (
     <div>
-      <div className="mb-3" style={{ minWidth: 240, maxWidth: 360 }}>
-        <ContainerSearchInput
-          value={search}
-          onChange={(value) => {
-            setSearch(value);
-            setPage(1);
-          }}
-        />
-      </div>
-
-      {query.isLoading ? (
-        <LoadingState variant="inline" />
-      ) : query.isError ? (
-        <div className="alert alert-danger d-flex align-items-center justify-content-between gap-3">
-          <span>{t("administrative-operations.containers.loadError")}</span>
-          <button
-            type="button"
-            className="btn btn-outline-danger btn-sm"
-            onClick={() => query.refetch()}
-          >
-            {t("administrative-operations.shell.retry")}
-          </button>
+      {selectedIds.size > 0 ? (
+        <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
+          <span className="fw-semibold">
+            {t("administrative-operations.containers.stuffing.batchSelected", {
+              count: selectedIds.size,
+            })}
+          </span>
+          <Button variant="primary" size="sm" onClick={() => setBatchOpen(true)}>
+            <i className="bi bi-box-seam me-1" aria-hidden />
+            {t("administrative-operations.containers.stuffing.batchButton")}
+          </Button>
         </div>
-      ) : items.length === 0 ? (
-        <div className="alert alert-secondary">
-          {t("administrative-operations.containers.empty")}
-        </div>
-      ) : (
-        <div className="table-responsive">
-          <Table hover className="align-middle mb-0">
-            <thead>
-              <tr>
-                <th>{t("administrative-operations.containers.colIdentifier")}</th>
-                <th>{t("administrative-operations.containers.colStatus")}</th>
-                <th>{t("administrative-operations.containers.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.container.identifier}</td>
-                  <td>
-                    <Badge bg="secondary">
-                      {resolveContainerOperationStatusLabel(item.status, locale)}
-                    </Badge>
-                  </td>
-                  <td>
-                    <div className="d-flex gap-2 flex-wrap">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.stuffing.actionIdentified")}
-                        onClick={() => setStuffIdentifiedFor(item)}
-                      >
-                        <i className="bi bi-box-seam" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.stuffing.actionQuantity")}
-                        onClick={() => setStuffQuantityFor(item)}
-                      >
-                        <i className="bi bi-stack" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.stuffing.actionBatch")}
-                        onClick={() => setStuffBatchFor(item)}
-                      >
-                        <i className="bi bi-collection" aria-hidden />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}
-
-      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
-
-      {stuffIdentifiedFor ? (
-        <StuffIdentifiedModal
-          operationId={operationId}
-          containerLink={stuffIdentifiedFor}
-          onClose={() => setStuffIdentifiedFor(null)}
-          onStuffed={invalidateCargo}
-        />
       ) : null}
 
-      {stuffQuantityFor ? (
-        <StuffQuantityModal
-          operationId={operationId}
-          containerLink={stuffQuantityFor}
-          onClose={() => setStuffQuantityFor(null)}
-          onStuffed={invalidateCargo}
-        />
-      ) : null}
+      <CrudListPage
+        titleKey="administrative-operations.operational.stuffing.title"
+        descriptionKey="administrative-operations.operational.stuffing.description"
+        headerActions={
+          <Button variant="outline-primary" size="sm" onClick={() => setQuantityOpen(true)}>
+            <i className="bi bi-stack me-1" aria-hidden />
+            {t("administrative-operations.containers.stuffing.quantityButton")}
+          </Button>
+        }
+        queryOptions={listQueryOptions}
+        columns={columns}
+        selection={selection}
+        renderCard={(r) => (
+          <Card>
+            <Card.Body>
+              <Card.Title className="h6 mb-0">{r.itemIdentifier}</Card.Title>
+              <Card.Subtitle className="text-body-secondary small mt-1">
+                {r.itemCode} · {r.lote}
+              </Card.Subtitle>
+            </Card.Body>
+          </Card>
+        )}
+        getItemKey={(r) => r.id}
+        search={search}
+        onSearchChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
+        page={page}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+        emptyMessageKey="administrative-operations.operational.stuffing.empty"
+      />
 
-      {stuffBatchFor ? (
+      {batchOpen ? (
         <StuffBatchModal
           operationId={operationId}
-          containerLink={stuffBatchFor}
-          onClose={() => setStuffBatchFor(null)}
-          onStuffed={invalidateCargo}
+          items={selectedItems}
+          onClose={() => setBatchOpen(false)}
+          onStuffed={() => {
+            invalidateList();
+            setSelectedIds(new Set());
+            setBatchOpen(false);
+          }}
+        />
+      ) : null}
+
+      {quantityOpen ? (
+        <StuffQuantityModal
+          operationId={operationId}
+          onClose={() => setQuantityOpen(false)}
+          onStuffed={() => {
+            invalidateList();
+            setQuantityOpen(false);
+          }}
         />
       ) : null}
     </div>
-  );
-}
-
-/**
- * Modo A da estufagem (SPEC-07-11 §3.1) — cria uma `CargoUnit` identificada
- * a partir de um fardo específico do romaneio (`romaneioId`) mais a Invoice
- * explícita (`invoiceId`, D2 fechada: o Core não resolve a Invoice
- * implicitamente a partir do `NotaFiscal` da linha). `containerOperationId`
- * vem implícito da linha clicada, não é campo do formulário.
- */
-function StuffIdentifiedModal({
-  operationId,
-  containerLink,
-  onClose,
-  onStuffed,
-}: {
-  operationId: string;
-  containerLink: ContainerOperationDTO;
-  onClose: () => void;
-  onStuffed: () => void;
-}) {
-  const t = useT();
-  const mutation = usePostApiOperationOperationIdCargoStuffIdentified();
-
-  const methods = useForm<StuffIdentifiedFormValues>({
-    resolver: zodResolver(PostApiOperationOperationIdCargoStuffIdentifiedBody),
-    defaultValues: {
-      containerOperationId: containerLink.id,
-      romaneioId: "",
-      invoiceId: "",
-      lote: "",
-    },
-  });
-
-  // Mapa auxiliar `romaneioId → lote` populado a cada busca do `SelectAsync`
-  // abaixo — o Core agora exige `lote` no payload (SPEC-25 do Core/SPEC-46
-  // aqui), e o valor já está disponível na própria linha do romaneio
-  // escolhida, sem precisar de nova consulta.
-  const romaneioLoteByIdRef = useRef<Record<string, string>>({});
-
-  const fetchInvoiceOptions = (search: string) =>
-    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) =>
-      res.items.map((invoice) => ({ value: invoice.id, label: invoice.number ?? invoice.id })),
-    );
-
-  const fetchRomaneioOptions = (search: string) =>
-    getApiOperationOperationIdRomaneio(operationId, { Search: search, Limit: 20 }).then((res) => {
-      res.items.forEach((romaneio) => {
-        romaneioLoteByIdRef.current[romaneio.id] = romaneio.lote ?? "";
-      });
-      return res.items.map((romaneio) => ({
-        value: romaneio.id,
-        label: `${romaneio.lote} · NF ${romaneio.notaFiscal ?? "—"} · ${romaneio.itemIdentifier}`,
-      }));
-    });
-
-  const romaneioId = methods.watch("romaneioId");
-
-  // Preenche `lote` sozinho assim que o operador escolhe a linha do
-  // romaneio (recomendação da SPEC-46 §4/`[NEEDS_DECISION-1]`, opção 1) —
-  // campo fica desabilitado abaixo, é confirmação visual, não digitação.
-  useEffect(() => {
-    if (!romaneioId) return;
-    const lote = romaneioLoteByIdRef.current[romaneioId];
-    if (lote != null) methods.setValue("lote", lote);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [romaneioId]);
-
-  const handleSubmit: SubmitHandler<StuffIdentifiedFormValues> = async (values) => {
-    try {
-      const result = await mutation.mutateAsync({ operationId, data: values });
-      toast.success(t("administrative-operations.containers.stuffing.toast.identifiedSuccess"));
-      (result.warnings ?? []).forEach((warning) => toast.warning(warning));
-      onStuffed();
-      onClose();
-    } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
-    }
-  };
-
-  return (
-    <Modal show onHide={onClose} centered>
-      <Modal.Header>
-        <Modal.Title className="h5 mb-0">
-          {t("administrative-operations.containers.stuffing.identifiedTitle", {
-            identifier: containerLink.container.identifier,
-          })}
-        </Modal.Title>
-      </Modal.Header>
-      <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
-        <Modal.Body>
-          <SelectAsync<StuffIdentifiedFormValues>
-            methods={methods}
-            fieldName="invoiceId"
-            label={t("administrative-operations.containers.stuffing.form.invoice")}
-            fetchOptions={fetchInvoiceOptions}
-          />
-          <SelectAsync<StuffIdentifiedFormValues>
-            methods={methods}
-            fieldName="romaneioId"
-            label={t("administrative-operations.containers.stuffing.form.romaneio")}
-            fetchOptions={fetchRomaneioOptions}
-          />
-          <InputText<StuffIdentifiedFormValues>
-            methods={methods}
-            fieldName="lote"
-            label={t("administrative-operations.containers.stuffing.form.lote")}
-            disabled
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-primary" onClick={onClose}>
-            {t("crud.recordModal.cancel")}
-          </Button>
-          <Button type="submit" variant="primary" disabled={methods.formState.isSubmitting}>
-            {methods.formState.isSubmitting ? (
-              <Spinner size="sm" animation="border" className="me-2" />
-            ) : null}
-            {t("administrative-operations.containers.stuffing.submit")}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
   );
 }
 
@@ -363,15 +273,17 @@ function StuffIdentifiedModal({
  * `romaneioId` preenchido — a tela lista esses fardos (CA9). Quando a
  * Invoice é `Manual`, os itens vêm com `romaneioId: null` — a tela mostra só
  * o contador e o peso médio, sem prometer rastreabilidade individual.
+ *
+ * SPEC-73: `containerOperationId` deixou de vir implícito de uma linha de
+ * container clicada — agora é campo do próprio formulário (`SelectAsync`),
+ * já que esta tela não parte mais de uma listagem de containers.
  */
 function StuffQuantityModal({
   operationId,
-  containerLink,
   onClose,
   onStuffed,
 }: {
   operationId: string;
-  containerLink: ContainerOperationDTO;
   onClose: () => void;
   onStuffed: () => void;
 }) {
@@ -382,12 +294,17 @@ function StuffQuantityModal({
   const methods = useForm<StuffQuantityFormValues>({
     resolver: zodResolver(PostApiOperationOperationIdCargoStuffQuantityBody),
     defaultValues: {
-      containerOperationId: containerLink.id,
+      containerOperationId: "",
       invoiceId: "",
       quantity: 1,
       lote: "",
     },
   });
+
+  const fetchContainerOptions = (search: string) =>
+    getApiOperationOperationIdContainer(operationId, { Search: search, Limit: 20 }).then((res) =>
+      res.items.map((c) => ({ value: c.id, label: c.container.identifier })),
+    );
 
   const fetchInvoiceOptions = (search: string) =>
     getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) =>
@@ -425,9 +342,7 @@ function StuffQuantityModal({
     <Modal show onHide={handleClose} centered>
       <Modal.Header>
         <Modal.Title className="h5 mb-0">
-          {t("administrative-operations.containers.stuffing.quantityTitle", {
-            identifier: containerLink.container.identifier,
-          })}
+          {t("administrative-operations.containers.stuffing.quantityTitle")}
         </Modal.Title>
       </Modal.Header>
 
@@ -467,6 +382,12 @@ function StuffQuantityModal({
           <Modal.Body>
             <SelectAsync<StuffQuantityFormValues>
               methods={methods}
+              fieldName="containerOperationId"
+              label={t("administrative-operations.containers.form.container")}
+              fetchOptions={fetchContainerOptions}
+            />
+            <SelectAsync<StuffQuantityFormValues>
+              methods={methods}
               fieldName="invoiceId"
               label={t("administrative-operations.containers.stuffing.form.invoice")}
               fetchOptions={fetchInvoiceOptions}
@@ -500,111 +421,83 @@ function StuffQuantityModal({
 }
 
 /**
- * Estufagem em lote por checkbox (SPEC-42, `stuff/identified-batch`) — o
- * operador escolhe uma única Invoice (o Core valida cada linha contra o
- * `Number` dela, `EnsureRomaneioMatchesInvoice`) e marca N linhas de
- * romaneio numa lista com checkbox (mesmo padrão visual de
- * `ImportRomaneioModal` em `Romaneio.tsx`). `Lote` de cada item é derivado
- * automaticamente da própria linha (mesmo `romaneioLoteByIdRef` de
- * `StuffIdentifiedModal`/SPEC-46) — não pedimos pro operador digitar de
- * novo algo que a tela já sabe. Chamada é atômica (tudo ou nada, sem UX de
- * sucesso parcial) — erro cai no mesmo catch genérico de toast já usado no
- * resto do arquivo.
+ * Estufagem em lote a partir da seleção múltipla da listagem de fardos
+ * (SPEC-73, substitui o antigo `StuffBatchModal` por Invoice/SPEC-42) — o
+ * operador só escolhe o container; cada fardo selecionado já carrega sua
+ * própria NF/lote (`items`, resolvidos pelo pai via `itemsByIdRef`).
+ * `stuff/identified-batch` aceita itens de Notas Fiscais diferentes na
+ * mesma chamada (SPEC-31 do Core) — a tela resolve NF→Invoice buscando as
+ * Invoices da operação por número antes de montar o payload; se alguma NF
+ * não tiver Invoice correspondente, nada é enviado (D2 da SPEC-73: isso é
+ * tratado como exceção, não como uma checagem preventiva de UI).
  */
 function StuffBatchModal({
   operationId,
-  containerLink,
+  items,
   onClose,
   onStuffed,
 }: {
   operationId: string;
-  containerLink: ContainerOperationDTO;
+  items: RomaneioDTO[];
   onClose: () => void;
   onStuffed: () => void;
 }) {
   const t = useT();
   const mutation = usePostApiOperationOperationIdCargoStuffIdentifiedBatch();
-
-  const invoiceForm = useForm<{ invoiceId: string }>({ defaultValues: { invoiceId: "" } });
-  const invoiceId = invoiceForm.watch("invoiceId");
-
-  const [romaneioOptions, setRomaneioOptions] = useState<
-    { id: string; lote: string; notaFiscal: string | null; itemIdentifier: string }[]
-  >([]);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [loadingRomaneios, setLoadingRomaneios] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Não existe filtro `InvoiceId` no endpoint de Romaneio (só `Search`,
-  // livre) — usamos o `Number` da Invoice escolhida (guardado aqui a cada
-  // resposta do `SelectAsync`, mesma técnica do `romaneioLoteByIdRef`) como
-  // termo de busca, já que o Core casa `Search` contra `NotaFiscal` (entre
-  // outros campos) em `RomaneioController.GetAll`.
-  const invoiceNumberByIdRef = useRef<Record<string, string>>({});
+  const methods = useForm<ContainerPickFormValues>({
+    defaultValues: { containerOperationId: "" },
+  });
+  const containerOperationId = methods.watch("containerOperationId");
 
-  const fetchInvoiceOptions = (search: string) =>
-    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) => {
-      res.items.forEach((invoice) => {
-        invoiceNumberByIdRef.current[invoice.id] = invoice.number ?? "";
-      });
-      return res.items.map((invoice) => ({
-        value: invoice.id,
-        label: invoice.number ?? invoice.id,
-      }));
-    });
+  const fetchContainerOptions = (search: string) =>
+    getApiOperationOperationIdContainer(operationId, { Search: search, Limit: 20 }).then((res) =>
+      res.items.map((c) => ({ value: c.id, label: c.container.identifier })),
+    );
 
-  useEffect(() => {
-    setSelected(new Set());
-    if (!invoiceId) {
-      setRomaneioOptions([]);
-      return;
-    }
-    const invoiceNumber = invoiceNumberByIdRef.current[invoiceId] ?? "";
-    setLoadingRomaneios(true);
-    getApiOperationOperationIdRomaneio(operationId, { Search: invoiceNumber, Limit: 100 })
-      .then((res) => {
-        setRomaneioOptions(
-          res.items.map((romaneio) => ({
-            id: romaneio.id,
-            lote: romaneio.lote ?? "",
-            notaFiscal: romaneio.notaFiscal ?? null,
-            itemIdentifier: romaneio.itemIdentifier,
-          })),
-        );
-      })
-      .finally(() => setLoadingRomaneios(false));
-  }, [invoiceId, operationId]);
+  const distinctNfCount = new Set(items.map((item) => item.notaFiscal ?? "")).size;
 
-  const toggleSelected = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const handleSubmit = async () => {
-    if (!invoiceId || selected.size === 0) return;
+  const handleSubmit: SubmitHandler<ContainerPickFormValues> = async (values) => {
     setSubmitting(true);
     try {
+      const uniqueNfs = Array.from(
+        new Set(items.map((item) => item.notaFiscal).filter((nf): nf is string => !!nf)),
+      );
+      const invoiceIdByNf: Record<string, string> = {};
+      await Promise.all(
+        uniqueNfs.map((nf) =>
+          getApiOperationOperationIdInvoice(operationId, { Search: nf, Limit: 20 }).then((res) => {
+            const match = res.items.find((invoice) => invoice.number === nf);
+            if (match) invoiceIdByNf[nf] = match.id;
+          }),
+        ),
+      );
+
+      const missing = items.find((item) => !item.notaFiscal || !invoiceIdByNf[item.notaFiscal]);
+      if (missing) {
+        toast.error(
+          t("administrative-operations.containers.stuffing.batchMissingInvoice", {
+            notaFiscal: missing.notaFiscal ?? "—",
+          }),
+        );
+        return;
+      }
+
       const result = await mutation.mutateAsync({
         operationId,
         data: {
-          containerOperationId: containerLink.id,
-          items: romaneioOptions
-            .filter((romaneio) => selected.has(romaneio.id))
-            .map((romaneio) => ({
-              romaneioId: romaneio.id,
-              invoiceId,
-              lote: romaneio.lote,
-            })),
+          containerOperationId: values.containerOperationId,
+          items: items.map((item) => ({
+            romaneioId: item.id,
+            invoiceId: invoiceIdByNf[item.notaFiscal!],
+            lote: item.lote,
+          })),
         },
       });
       toast.success(t("administrative-operations.containers.stuffing.toast.batchSuccess"));
       (result.warnings ?? []).forEach((warning) => toast.warning(warning));
       onStuffed();
-      onClose();
     } catch {
       toast.error(t("administrative-operations.containers.toast.error"));
     } finally {
@@ -613,68 +506,37 @@ function StuffBatchModal({
   };
 
   return (
-    <Modal show onHide={onClose} centered size="lg">
+    <Modal show onHide={onClose} centered>
       <Modal.Header>
         <Modal.Title className="h5 mb-0">
-          {t("administrative-operations.containers.stuffing.batchTitle", {
-            identifier: containerLink.container.identifier,
-          })}
+          {t("administrative-operations.containers.stuffing.batchTitle")}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <SelectAsync<{ invoiceId: string }>
-          methods={invoiceForm}
-          fieldName="invoiceId"
-          label={t("administrative-operations.containers.stuffing.form.invoice")}
-          fetchOptions={fetchInvoiceOptions}
-        />
-
-        {loadingRomaneios ? (
-          <LoadingState variant="inline" />
-        ) : invoiceId && romaneioOptions.length === 0 ? (
-          <div className="alert alert-secondary">
-            {t("administrative-operations.containers.stuffing.batchEmpty")}
-          </div>
-        ) : romaneioOptions.length > 0 ? (
-          <>
-            <div className="text-body-secondary small mb-2">
-              {t("administrative-operations.containers.stuffing.batchSelected", {
-                count: selected.size,
-              })}
-            </div>
-            <div className="list-group" style={{ maxHeight: 320, overflowY: "auto" }}>
-              {romaneioOptions.map((romaneio) => (
-                <label
-                  key={romaneio.id}
-                  className="list-group-item d-flex align-items-center gap-2"
-                >
-                  <Form.Check
-                    type="checkbox"
-                    checked={selected.has(romaneio.id)}
-                    onChange={() => toggleSelected(romaneio.id)}
-                  />
-                  <span>
-                    {romaneio.lote} · NF {romaneio.notaFiscal ?? "—"} · {romaneio.itemIdentifier}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </>
-        ) : null}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="outline-primary" onClick={onClose}>
-          {t("crud.recordModal.cancel")}
-        </Button>
-        <Button
-          variant="primary"
-          disabled={submitting || selected.size === 0}
-          onClick={handleSubmit}
-        >
-          {submitting ? <Spinner size="sm" animation="border" className="me-2" /> : null}
-          {t("administrative-operations.containers.stuffing.submit")}
-        </Button>
-      </Modal.Footer>
+      <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
+        <Modal.Body>
+          <p className="text-body-secondary">
+            {t("administrative-operations.containers.stuffing.batchSummary", {
+              count: items.length,
+              nfCount: distinctNfCount,
+            })}
+          </p>
+          <SelectAsync<ContainerPickFormValues>
+            methods={methods}
+            fieldName="containerOperationId"
+            label={t("administrative-operations.containers.form.container")}
+            fetchOptions={fetchContainerOptions}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline-primary" onClick={onClose}>
+            {t("crud.recordModal.cancel")}
+          </Button>
+          <Button type="submit" variant="primary" disabled={!containerOperationId || submitting}>
+            {submitting ? <Spinner size="sm" animation="border" className="me-2" /> : null}
+            {t("administrative-operations.containers.stuffing.batchButton")}
+          </Button>
+        </Modal.Footer>
+      </Form>
     </Modal>
   );
 }

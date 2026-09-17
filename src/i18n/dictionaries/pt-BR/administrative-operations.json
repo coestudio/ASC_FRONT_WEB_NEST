@@ -329,18 +329,12 @@
       "error": "Não foi possível concluir a ação. Tente novamente."
     },
     "stuffing": {
-      "actionIdentified": "Estufar fardo específico",
-      "actionQuantity": "Estufar por quantidade",
-      "actionBatch": "Estufar em lote",
-      "identifiedTitle": "Estufar fardo específico — {identifier}",
-      "quantityTitle": "Estufar por quantidade — {identifier}",
-      "batchTitle": "Estufar em lote — {identifier}",
-      "batchEmpty": "Nenhum fardo encontrado para esta nota fiscal.",
+      "quantityTitle": "Estufagem por quantidade",
+      "batchTitle": "Estufar em container",
       "batchSelected": "{count} fardo(s) selecionado(s).",
       "submit": "Estufar",
       "form": {
         "invoice": "Nota fiscal",
-        "romaneio": "Fardo do romaneio",
         "quantity": "Quantidade",
         "lote": "Lote"
       },
@@ -358,11 +352,14 @@
       "cancelReason": "Motivo do cancelamento",
       "cancelConfirm": "Confirmar cancelamento",
       "toast": {
-        "identifiedSuccess": "Fardo estufado com sucesso.",
         "quantitySuccess": "Estufagem concluída com sucesso.",
         "batchSuccess": "Fardos estufados com sucesso.",
         "canceled": "Fardo cancelado com sucesso."
-      }
+      },
+      "batchButton": "Estufar em container",
+      "quantityButton": "Estufagem por quantidade",
+      "batchSummary": "{count} fardo(s) de {nfCount} nota(s) fiscal(is) diferente(s) serão estufados.",
+      "batchMissingInvoice": "Nota fiscal {notaFiscal} não tem uma Invoice cadastrada. Crie a Invoice na aba Nota Fiscal antes de continuar."
     },
     "destuffing": {
       "title": "Fardos estufados da operação",
@@ -395,6 +392,11 @@
     "subtabs": {
       "stuffing": "Estufagem",
       "destuffing": "Desestufagem"
+    },
+    "stuffing": {
+      "title": "Fardos disponíveis para estufagem",
+      "description": "Fardos desta operação que ainda não foram estufados.",
+      "empty": "Nenhum fardo disponível para estufagem."
     }
   },
   "documents": {

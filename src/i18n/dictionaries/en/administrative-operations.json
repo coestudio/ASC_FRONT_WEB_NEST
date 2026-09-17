@@ -329,18 +329,12 @@
       "error": "Could not complete the action. Please try again."
     },
     "stuffing": {
-      "actionIdentified": "Stuff specific bale",
-      "actionQuantity": "Stuff by quantity",
-      "actionBatch": "Batch stuffing",
-      "identifiedTitle": "Stuff specific bale — {identifier}",
-      "quantityTitle": "Stuff by quantity — {identifier}",
-      "batchTitle": "Batch stuffing — {identifier}",
-      "batchEmpty": "No bale found for this invoice.",
+      "quantityTitle": "Stuff by quantity",
+      "batchTitle": "Stuff into container",
       "batchSelected": "{count} bale(s) selected.",
       "submit": "Stuff",
       "form": {
         "invoice": "Invoice",
-        "romaneio": "Bale (romaneio)",
         "quantity": "Quantity",
         "lote": "Batch"
       },
@@ -358,11 +352,14 @@
       "cancelReason": "Cancellation reason",
       "cancelConfirm": "Confirm cancellation",
       "toast": {
-        "identifiedSuccess": "Bale stuffed successfully.",
         "quantitySuccess": "Stuffing completed successfully.",
         "batchSuccess": "Bales stuffed successfully.",
         "canceled": "Cargo unit canceled successfully."
-      }
+      },
+      "batchButton": "Stuff into container",
+      "quantityButton": "Stuff by quantity",
+      "batchSummary": "{count} bale(s) from {nfCount} different invoice(s) will be stuffed.",
+      "batchMissingInvoice": "Invoice {notaFiscal} has not been created yet. Create it in the Invoice tab before continuing."
     },
     "destuffing": {
       "title": "Stuffed cargo units of the operation",
@@ -395,6 +392,11 @@
     "subtabs": {
       "stuffing": "Stuffing",
       "destuffing": "Destuffing"
+    },
+    "stuffing": {
+      "title": "Bales available for stuffing",
+      "description": "Bales in this operation that have not been stuffed yet.",
+      "empty": "No bales available for stuffing."
     }
   },
   "documents": {
