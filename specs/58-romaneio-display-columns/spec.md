@@ -2,14 +2,12 @@
 
 - **ID:** SPEC-58
 - **Nome:** romaneio-display-columns
-- **Status:** DRAFT — sem `[NEEDS_DECISION]` de escopo (confirmado pelo
-  usuário: as colunas pedidas **somam** às já existentes, não substituem
-  `Fardo`/`Código`).
+- **Status:** IMPLEMENTED (2026-09-17)
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/components/operations/tabs/Romaneio.tsx`,
   `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`.
-- **Depende de:** `specs/53-romaneio-bulk-select-actions` (`DRAFT`) — ver
-  §2. Implementar **depois** de SPEC-53 (ordem pedida pelo usuário).
+- **Depende de:** `specs/53-romaneio-bulk-select-actions` — já
+  `IMPLEMENTED` (confirmado antes desta implementação).
 
 ---
 
@@ -145,3 +143,23 @@ ordem proposta como aprovada só por estar escrita aqui.
   ordem de implementação for invertida por qualquer motivo, esta SPEC
   precisa ser revisada antes de codar (colunas/posições podem já ter sido
   adicionadas de forma diferente).
+
+## 11. Implementation Notes (2026-09-17)
+
+- SPEC-53 já estava `IMPLEMENTED` ao aprovar esta SPEC — ordem final de
+  `columns` usada foi exatamente a proposta em §7: `Fardo | Código |
+  Nota Fiscal | Instrução | Lote | Pilha | Peso Tara | Peso | Peso
+  Bruto | Contrato | Estufado | Ações` (aprovada pelo usuário junto com
+  `APROVAR SPEC-58`).
+- `pesoTara`/`pesoBruto` são `number | string` no `RomaneioDTO` (mesmo
+  tipo de `peso`) — mesmo padrão de renderização (`!= null ? String(...)
+  : "—"`).
+- `instruction`/`pilha`/`contrato` são texto livre — usado `r.campo ||
+  "—"` (cobre `undefined`/`null`/string vazia igual).
+- Chaves i18n novas inseridas na posição correspondente dentro de
+  `romaneio.*` nos 4 locales (`colInstruction`, `colPilha`,
+  `colPesoTara`, `colPesoBruto`, `colContrato`).
+- `tsc --noEmit` limpo; `bun run lint` sem erro novo (baseline de 63
+  avisos). Não verificado visualmente em navegador nesta sessão — R1
+  (scroll horizontal com mais colunas) fica como achado a confirmar
+  depois.

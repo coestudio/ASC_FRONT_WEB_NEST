@@ -272,16 +272,43 @@ export function Romaneio({ operationId }: { operationId: string }) {
       render: (r) => r.notaFiscal ?? "—",
     },
     {
+      key: "instruction",
+      headerKey: "administrative-operations.romaneio.colInstruction",
+      render: (r) => r.instruction || "—",
+    },
+    {
       key: "lote",
       headerKey: "administrative-operations.romaneio.colLote",
       sortKey: "lote",
       render: (r) => r.lote,
     },
     {
+      key: "pilha",
+      headerKey: "administrative-operations.romaneio.colPilha",
+      render: (r) => r.pilha || "—",
+    },
+    {
+      key: "pesoTara",
+      headerKey: "administrative-operations.romaneio.colPesoTara",
+      align: "end",
+      render: (r) => (r.pesoTara != null ? String(r.pesoTara) : "—"),
+    },
+    {
       key: "peso",
       headerKey: "administrative-operations.romaneio.colPeso",
       align: "end",
       render: (r) => (r.peso != null ? String(r.peso) : "—"),
+    },
+    {
+      key: "pesoBruto",
+      headerKey: "administrative-operations.romaneio.colPesoBruto",
+      align: "end",
+      render: (r) => (r.pesoBruto != null ? String(r.pesoBruto) : "—"),
+    },
+    {
+      key: "contrato",
+      headerKey: "administrative-operations.romaneio.colContrato",
+      render: (r) => r.contrato || "—",
     },
     {
       key: "isStuffed",
