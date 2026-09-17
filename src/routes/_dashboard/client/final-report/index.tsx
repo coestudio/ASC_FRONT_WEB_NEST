@@ -4,6 +4,7 @@ import { Badge, Table } from "react-bootstrap";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import styles from "./final-report.module.css";
 
 export const Route = createFileRoute("/_dashboard/client/final-report/")({
   head: () => ({ meta: [{ title: "Relatório Final — ASC" }] }),
@@ -56,32 +57,34 @@ function FinalReportPage() {
       description={t("client.finalReport.description")}
     >
       <MockDataBanner className="mb-3" />
-      <Table responsive hover className="align-middle mb-0">
-        <thead>
-          <tr>
-            <th>{t("client.finalReport.colOperation")}</th>
-            <th>{t("client.finalReport.colProduct")}</th>
-            <th>{t("client.finalReport.colIssuedAt")}</th>
-            <th>{t("client.finalReport.colStatus")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {MOCK_REPORTS.map((report) => (
-            <tr key={report.id}>
-              <td>{report.operation}</td>
-              <td>{report.product}</td>
-              <td>{new Date(report.issuedAt).toLocaleDateString(locale)}</td>
-              <td>
-                <Badge pill bg={report.status === "Emitido" ? "success" : "secondary"}>
-                  {report.status === "Emitido"
-                    ? t("client.finalReport.statusIssued")
-                    : t("client.finalReport.statusPending")}
-                </Badge>
-              </td>
+      <div className={styles.tableCard}>
+        <Table responsive hover className="align-middle mb-0">
+          <thead>
+            <tr>
+              <th>{t("client.finalReport.colOperation")}</th>
+              <th>{t("client.finalReport.colProduct")}</th>
+              <th>{t("client.finalReport.colIssuedAt")}</th>
+              <th>{t("client.finalReport.colStatus")}</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {MOCK_REPORTS.map((report) => (
+              <tr key={report.id}>
+                <td>{report.operation}</td>
+                <td>{report.product}</td>
+                <td>{new Date(report.issuedAt).toLocaleDateString(locale)}</td>
+                <td>
+                  <Badge pill bg={report.status === "Emitido" ? "success" : "secondary"}>
+                    {report.status === "Emitido"
+                      ? t("client.finalReport.statusIssued")
+                      : t("client.finalReport.statusPending")}
+                  </Badge>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     </PageLayout>
   );
 }

@@ -1,0 +1,11 @@
+/* Wrapper de tabela (SPEC-62) — mesmo bloco de
+   operations-list.module.css/crud-list-page.module.css, duplicado aqui de
+   propósito pelo mesmo motivo já documentado nesses módulos: evita
+   importar CSS Module privado de outro componente. */
+.tableCard {
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  box-shadow: var(--shadow-soft);
+}
