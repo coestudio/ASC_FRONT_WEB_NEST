@@ -203,27 +203,6 @@ function StuffingTab({ operationId }: { operationId: string }) {
 
   return (
     <div>
-      {/* Sempre visível (pedido do usuário): antes só aparecia com algo
-          selecionado, virando uma caixa grande "pipocando" acima da
-          listagem — agora é uma linha leve, sempre no mesmo lugar, com o
-          botão desabilitado até haver seleção. */}
-      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
-        <span className="text-body-secondary small">
-          {t("administrative-operations.containers.stuffing.batchSelected", {
-            count: selectedIds.size,
-          })}
-        </span>
-        <Button
-          variant="primary"
-          size="sm"
-          disabled={selectedIds.size === 0}
-          onClick={() => setBatchOpen(true)}
-        >
-          <i className="bi bi-box-seam me-1" aria-hidden />
-          {t("administrative-operations.containers.stuffing.batchButton")}
-        </Button>
-      </div>
-
       <CrudListPage
         titleKey="administrative-operations.operational.stuffing.title"
         descriptionKey="administrative-operations.operational.stuffing.description"
@@ -236,6 +215,28 @@ function StuffingTab({ operationId }: { operationId: string }) {
         queryOptions={listQueryOptions}
         columns={columns}
         fillHeight
+        // Pedido do usuário (SPEC-76): abaixo da busca, acima da
+        // listagem — não junto do título/ações do cabeçalho. Sempre
+        // visível (não só quando há seleção), botão desabilitado até
+        // marcar algo.
+        belowSearch={
+          <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+            <span className="text-body-secondary small">
+              {t("administrative-operations.containers.stuffing.batchSelected", {
+                count: selectedIds.size,
+              })}
+            </span>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={selectedIds.size === 0}
+              onClick={() => setBatchOpen(true)}
+            >
+              <i className="bi bi-box-seam me-1" aria-hidden />
+              {t("administrative-operations.containers.stuffing.batchButton")}
+            </Button>
+          </div>
+        }
         selection={selection}
         sort={sort}
         onSortChange={setSort}

@@ -159,7 +159,7 @@ export type CrudListPageProps<
    * `true` faz a área da tabela (linhas) preencher exatamente o espaço
    * vertical restante até o fim da viewport, com scroll interno
    * (`overflow-y: auto`) e cabeçalho de coluna fixo (`position: sticky`)
-   * — pedido do usuário na aba Estufagem, SPEC-75/76. A altura é medida
+   * — pedido do usuário na aba Estufagem, SPEC-75. A altura é medida
    * via `getBoundingClientRect`/`ResizeObserver` (não um valor fixo em
    * px) — tudo que vem antes (título, busca, toolbar) e depois
    * (paginação) da tabela ocupa só o espaço que precisa; a tabela cobre
@@ -169,6 +169,13 @@ export type CrudListPageProps<
    * sem scroll próprio, cabeçalho não fixo.
    */
   fillHeight?: boolean;
+  /**
+   * Slot opcional renderizado abaixo da linha de busca/toggle/criar e
+   * acima da listagem (tabela/cards) — ex.: toolbar de ação em massa da
+   * Estufagem (SPEC-73/76), que precisa ficar colada na listagem, não
+   * junto do título. Ausente, nenhuma mudança de layout.
+   */
+  belowSearch?: ReactNode;
   /** Seleção em massa (checkbox por linha + "selecionar tudo") — SPEC-53. */
   selection?: CrudSelection<T>;
   /** Valor cru do `Sort` atual (ex. `"-notaFiscal"`) — usado junto com
@@ -243,7 +250,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
     selectableItems.length > 0 &&
     selectableItems.every((item) => selection.selectedIds.has(getItemKey(item)));
 
-  // SPEC-75/76: mede a posição real do card (via `getBoundingClientRect`,
+  // SPEC-75: mede a posição real do card (via `getBoundingClientRect`,
   // não um número fixo) — tudo que renderiza antes dele (título, busca,
   // toolbar de seleção de quem chama) já empurrou `top` pra baixo
   // naturalmente, e a altura da paginação (que pode nem existir, com 1
@@ -443,6 +450,7 @@ export function CrudListPage<
   filters,
   spreadsheetVariant,
   fillHeight,
+  belowSearch,
   headerActions,
   selection,
   sort,
@@ -492,6 +500,8 @@ export function CrudListPage<
           </Button>
         ) : null}
       </div>
+
+      {belowSearch}
 
       {mounted ? (
         <CrudListPageBody
