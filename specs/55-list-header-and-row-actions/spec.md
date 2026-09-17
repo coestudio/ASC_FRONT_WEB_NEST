@@ -2,7 +2,10 @@
 
 - **ID:** SPEC-55
 - **Nome:** list-header-and-row-actions
-- **Status:** IMPLEMENTED
+- **Status:** WAITING_APPROVAL — reaberta em 2026-09-16 (pedido do
+  usuário, ver §15). Escopo original (§1-§14) já `IMPLEMENTED` e
+  inalterado; §15 é adição, sem `[NEEDS_DECISION]` (ambas decisões de
+  design já confirmadas pelo usuário).
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — continuação de
   investigação anterior, decisões do usuário já tomadas, ver §5)
 - **Área:** `src/components/crud/crud-list-page.tsx`,
@@ -248,6 +251,79 @@ reescrito em `CrudRowActions`). Nenhum endpoint novo, nenhuma query nova.
 ## 14. Dependências
 
 Nenhuma — independente de SPEC-56 e SPEC-57.
+
+## 15. Reabertura (2026-09-16) — largura min-content + destaque no toggle
+
+Pedido do usuário sobre a coluna de ações, na visão de tabela (não afeta
+a visão de card, se existir uma — a `CrudColumn.align`/largura só se
+aplica a `<th>`/`<td>` da `<table>`):
+
+1. A coluna de ações deve ter largura `min-content` (encolhe pro
+   conteúdo, não ocupa espaço sobrando de coluna flexível).
+2. O botão toggle (`⋮`, `bi-three-dots-vertical`) ganha cor de destaque —
+   decisão do usuário: variante `primary` (token `--bs-primary`, cor
+   primária da brand ativa), no lugar do atual `btn-outline-secondary`.
+   Só o toggle muda de cor — célula/coluna continuam com o fundo neutro
+   de sempre (usuário escolheu "só o botão", não o fundo da coluna).
+
+### 15.1 Escopo
+
+- `CrudColumn<T>` (`crud-list-page.tsx`) ganha campo opcional
+  `width?: string` (CSS válido, ex. `"1%"`/`"min-content"`), aplicado
+  como `style={{ width: col.width }}` no `<th>` (cabeçalho basta —
+  largura de coluna de `<table>` é definida pela célula do `<thead>`,
+  `<td>` segue a mesma coluna automaticamente). Prop opcional, aditiva —
+  colunas sem `width` continuam sem mudança.
+- Nos 8 consumidores com `CrudColumn` (`Romaneio.tsx` + as 7 rotas de
+  §2.2), a coluna `{ key: "actions", ... }` ganha `width: "min-content"`
+  além do `align: "end"` já existente (RF5 original).
+- Em `operations-list.tsx` (tabela própria, sem `CrudColumn` — mesmo caso
+  de §3.5/RF6 original), o `<th>` da coluna de ações ganha
+  `style={{ width: "min-content" }}` equivalente.
+- `crud-row-actions.tsx`: `Dropdown.Toggle` troca a classe
+  `btn-outline-secondary` por `btn-primary` (Bootstrap já resolve o token
+  `--bs-primary` da brand ativa via `data-brand` — sem cor hard-coded,
+  conforme `AGENTS.md` "Identidade visual"). Resto do toggle (tamanho,
+  `styles.toggle`, remoção da seta `::after`) inalterado.
+
+### 15.2 Fora do escopo
+
+- Fundo da célula/coluna (`<th>`/`<td>`) — usuário confirmou que o
+  destaque é só no botão, não na coluna inteira.
+- Visão de card (se `CrudListPage` tiver uma — checar na implementação;
+  se existir e mostrar `CrudRowActions`, o toggle herda a nova cor
+  automaticamente por ser o mesmo componente, sem trabalho extra; largura
+  `min-content` não se aplica a card, só a `<table>`).
+- Qualquer outra coluna além de "ações" ganhar `width` — só a coluna de
+  ações está em escopo aqui.
+
+### 15.3 Requisitos funcionais
+
+- **RF7** — `CrudColumn.width?: string` aplicado ao `<th>` correspondente
+  em toda tela que passar a prop; colunas sem `width` sem mudança.
+- **RF8** — Coluna de ações, nas 9 telas de §2.2, tem largura
+  `min-content` (não estica com o resto da tabela).
+- **RF9** — Toggle de `CrudRowActions` usa `btn-primary` (cor primária da
+  brand ativa) no lugar de `btn-outline-secondary`.
+
+### 15.4 Critérios de aceitação
+
+| # | Critério |
+| --- | --- |
+| CA8 | Coluna de ações, nas 9 telas de §2.2, visualmente mais estreita que antes — largura do conteúdo (`min-content`), não de coluna flexível. |
+| CA9 | Outras colunas das mesmas telas continuam com a largura/comportamento de antes (mudança isolada à coluna de ações). |
+| CA10 | Toggle (`⋮`) aparece com a cor primária da brand ativa (verificar nas 3 brands via `data-brand`, ao menos 1 modo claro/escuro). |
+| CA11 | `bun run check` + `bun run lint` sem regressão. |
+
+### 15.5 Riscos
+
+- **R4** — `width: "min-content"` em `<th>` de `<table>` sem
+  `table-layout: fixed` pode não encolher em todos os browsers/casos
+  (comportamento de `min-content` em `<table>` varia mais que em flex/
+  grid) — validar visualmente nas telas de §2.2; se não encolher o
+  suficiente, alternativa é `width: "1%"` (truque clássico de tabela HTML
+  pra coluna "do tamanho do conteúdo"), decisão de implementação se
+  `min-content` puro não bastar.
 
 ## Implementation Notes
 
