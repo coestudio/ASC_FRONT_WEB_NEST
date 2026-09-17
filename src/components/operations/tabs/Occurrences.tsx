@@ -93,7 +93,7 @@ export function Occurrences({ operationId }: { operationId: string }) {
       invalidateList();
       setCreateOpen(false);
     } catch {
-      toast.error(t("administrative-operations.occurrences.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -116,7 +116,7 @@ export function Occurrences({ operationId }: { operationId: string }) {
       invalidateList();
       setEditing(null);
     } catch {
-      toast.error(t("administrative-operations.occurrences.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 

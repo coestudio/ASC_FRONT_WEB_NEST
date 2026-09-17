@@ -209,7 +209,7 @@ function InvoiceListing({ operationId }: { operationId: string }) {
       invalidateList();
       setCreateModalOpen(false);
     } catch {
-      toast.error(t("administrative-operations.invoice.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -221,7 +221,7 @@ function InvoiceListing({ operationId }: { operationId: string }) {
       invalidateList();
       setConfirmTarget(null);
     } catch {
-      toast.error(t("administrative-operations.invoice.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -233,7 +233,7 @@ function InvoiceListing({ operationId }: { operationId: string }) {
       invalidateList();
       setCancelTarget(null);
     } catch {
-      toast.error(t("administrative-operations.invoice.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 

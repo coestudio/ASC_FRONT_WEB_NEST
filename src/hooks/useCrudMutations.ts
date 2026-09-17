@@ -8,14 +8,19 @@ import { useT } from "@/lib/ui-prefs";
 /**
  * Chaves de tradução usadas pelos toasts de `useCrudMutations`. `created`/
  * `updated`/`deleted` são opcionais (omitir = não mostra toast de sucesso
- * nesse passo, caso a tela não tenha aquele fluxo); `error` é obrigatório —
- * é o texto genérico que já aparecia no `catch` de cada tela.
+ * nesse passo, caso a tela não tenha aquele fluxo). `error` não é mais usado
+ * (SPEC-89) — o interceptor global do axios (`src/api/mutator.ts`) já mostra
+ * o toast de erro de qualquer `mutateAsync` que falhe, então o catch daqui
+ * não precisa (e não deve) mostrar um segundo toast genérico. Mantido como
+ * opcional só pra não quebrar os `messages` já montados pelas telas
+ * consumidoras (chave sobra sem uso).
  */
 export type CrudMutationMessages = {
   created?: TranslationKey;
   updated?: TranslationKey;
   deleted?: TranslationKey;
-  error: TranslationKey;
+  /** @deprecated Não é mais usado (SPEC-89) — interceptor global já notifica o erro. */
+  error?: TranslationKey;
 };
 
 export type UseCrudMutationsConfig<TValues, TRecord, TDeleteRecord = TRecord> = {
@@ -74,7 +79,7 @@ export function useCrudMutations<TValues, TRecord, TDeleteRecord = TRecord>({
       invalidate();
       return true;
     } catch {
-      toast.error(t(messages.error));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
       return false;
     } finally {
       setIsSubmitting(false);
@@ -89,7 +94,7 @@ export function useCrudMutations<TValues, TRecord, TDeleteRecord = TRecord>({
       if (messages.deleted) toast.success(t(messages.deleted));
       invalidate();
     } catch {
-      toast.error(t(messages.error));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setIsDeleting(false);
     }

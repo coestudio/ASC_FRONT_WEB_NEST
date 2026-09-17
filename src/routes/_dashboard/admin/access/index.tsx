@@ -297,7 +297,7 @@ function AdminAccessPageContent() {
       invalidateList();
       setModal(null);
     } catch {
-      toast.error(t("access.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -324,7 +324,7 @@ function AdminAccessPageContent() {
       }
       invalidateList();
     } catch {
-      toast.error(t("access.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setPending(null);
     }

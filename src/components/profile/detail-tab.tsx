@@ -113,7 +113,7 @@ export function DetailTab({
       toast.success(t("shell.profileModal.saved"));
       onSaved?.();
     } catch {
-      toast.error(t("shell.profileModal.saveError"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   });
 

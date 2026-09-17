@@ -458,7 +458,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       invalidateList();
       setModal(null);
     } catch {
-      toast.error(t("administrative-operations.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -470,7 +470,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       invalidateList();
       setModal(null);
     } catch {
-      toast.error(t("administrative-operations.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 

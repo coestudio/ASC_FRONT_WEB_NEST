@@ -178,7 +178,7 @@ export function Romaneio({ operationId }: { operationId: string }) {
       setSelectedIds(new Set());
       invalidateList();
     } catch {
-      toast.error(t("administrative-operations.romaneio.bulkActions.toastError"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setBulkDeleteOpen(false);
     }
@@ -372,7 +372,8 @@ export function Romaneio({ operationId }: { operationId: string }) {
 
       toast.success(t("administrative-operations.romaneio.export.toast.success"));
     } catch {
-      toast.error(t("administrative-operations.romaneio.export.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro da chamada HTTP —
+      // nada a fazer aqui (manipulação de DOM depois do GET raramente lança)
     } finally {
       setExporting(false);
     }
@@ -598,7 +599,7 @@ function RomaneioBulkEditModal({
       onApplied();
       onClose();
     } catch {
-      toast.error(t("administrative-operations.romaneio.bulkActions.toastError"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   });
 
@@ -698,7 +699,7 @@ function ImportRomaneioModal({
         ),
       );
     } catch {
-      toast.error(t("administrative-operations.romaneio.import.toast.analyzeError"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   });
 
@@ -765,8 +766,13 @@ function ImportRomaneioModal({
       }
       onApplied();
       onClose();
-    } catch {
-      toast.error(t("administrative-operations.romaneio.import.toast.applyError"));
+    } catch (err) {
+      // `payload` vem de `.parse()` (síncrono, local) antes do `mutateAsync` (HTTP) —
+      // só mostra o toast aqui se o erro for de validação Zod local; erro vindo do
+      // `mutateAsync` já foi notificado pelo interceptor global (mutator.ts).
+      if (err instanceof z.ZodError) {
+        toast.error(t("administrative-operations.romaneio.import.toast.applyError"));
+      }
     }
   };
 

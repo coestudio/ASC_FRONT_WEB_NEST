@@ -85,7 +85,7 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
       queryClient.invalidateQueries({ queryKey: getGetApiOperationIdQueryKey(operation.id) });
       setEditOpen(false);
     } catch {
-      toast.error(t("administrative-operations.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 

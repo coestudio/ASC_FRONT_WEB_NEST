@@ -344,7 +344,7 @@ function StuffQuantityModal({
       setResult(response.cargoUnits ?? []);
       onStuffed();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -524,7 +524,7 @@ function StuffBatchModal({
       (result.warnings ?? []).forEach((warning) => toast.warning(warning));
       onStuffed();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setSubmitting(false);
     }
@@ -597,7 +597,7 @@ function CancelCargoUnitModal({
       onCanceled();
       onClose();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 

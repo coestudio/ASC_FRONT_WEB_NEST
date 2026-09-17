@@ -130,7 +130,7 @@ export function Documents({ operationId }: { operationId: string }) {
       invalidateList();
       setCreateModalOpen(false);
     } catch {
-      toast.error(t("administrative-operations.documents.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -157,7 +157,7 @@ export function Documents({ operationId }: { operationId: string }) {
       invalidateList();
       setEditing(null);
     } catch {
-      toast.error(t("administrative-operations.documents.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 

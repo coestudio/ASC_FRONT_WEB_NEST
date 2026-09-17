@@ -183,7 +183,7 @@ export function Containers({ operationId }: { operationId: string }) {
       toast.success(t("administrative-operations.containers.seal.toast.unsealed"));
       invalidateList();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setUnsealFor(null);
     }
@@ -211,7 +211,7 @@ export function Containers({ operationId }: { operationId: string }) {
       invalidateList();
       setLinkModalOpen(false);
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -236,7 +236,7 @@ export function Containers({ operationId }: { operationId: string }) {
       invalidateList();
       setEditing(null);
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -247,7 +247,7 @@ export function Containers({ operationId }: { operationId: string }) {
       toast.success(t("administrative-operations.containers.toast.unlinked"));
       invalidateList();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setPendingDelete(null);
     }
@@ -567,7 +567,7 @@ function AddSealModal({
       toast.success(t("administrative-operations.containers.seal.toast.sealed"));
       onSealed();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -682,7 +682,7 @@ function ContainerPhotos({
       invalidateDetail();
       onChanged();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -693,7 +693,7 @@ function ContainerPhotos({
       invalidateDetail();
       onChanged();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 

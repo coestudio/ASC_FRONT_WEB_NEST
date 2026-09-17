@@ -158,7 +158,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
       toast.success(t("administrative-operations.responsible.toast.unlinked"));
       invalidateList();
     } catch {
-      toast.error(t("administrative-operations.responsible.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
