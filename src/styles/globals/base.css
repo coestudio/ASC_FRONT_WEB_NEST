@@ -188,7 +188,7 @@ a {
   --bs-btn-active-color: var(--on-brand, #fff);
 }
 
-/* SPEC-64 — mesmo bug de raiz do bloco acima: `.nav-pills` do
+/* SPEC-68 — mesmo bug de raiz do bloco acima: `.nav-pills` do
    bootstrap.min.css pré-compilado fixa `--bs-nav-pills-link-active-bg`
    em `#0d6efd` (azul padrão do Bootstrap) em vez de ler `--bs-primary`,
    então o pill ativo (ex.: sub-abas de Nota Fiscal) nunca seguia a marca

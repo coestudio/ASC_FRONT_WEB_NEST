@@ -1,6 +1,6 @@
-# SPEC-63 — Consistência nas listagens/tabelas restantes do projeto
+# SPEC-67 — Consistência nas listagens/tabelas restantes do projeto
 
-- **ID:** SPEC-63
+- **ID:** SPEC-67
 - **Nome:** remaining-tables-consistency
 - **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — continuação do pente
@@ -10,7 +10,7 @@
   opções apresentadas — ver §13)
 - **Área:** `src/components/operations/tabs/{Containers,Invoice}.tsx`,
   `src/routes/_dashboard/_internal/operational/operations/$id/index.tsx`
-- **Depende de:** SPEC-58/SPEC-59 (`.soft-card`/`CrudRowActions` já
+- **Depende de:** SPEC-62/SPEC-63 (`.soft-card`/`CrudRowActions` já
   `IMPLEMENTED` nesta mesma branch — este SPEC só estende o mesmo padrão
   pras telas que ficaram de fora do primeiro pente fino).
 
@@ -22,7 +22,7 @@ Fechar o inventário de listagens/tabelas do projeto que ainda não seguem o
 padrão já unificado (`.soft-card` como moldura + `CrudRowActions` como
 dropdown kebab de ações de linha, já usado em `operations-list.tsx`,
 `CrudListPage` e seus 9 consumidores, e agora também em `Documents.tsx`/
-`Occurrences.tsx` via SPEC-58/59).
+`Occurrences.tsx` via SPEC-62/59).
 
 ## 2. Contexto (inventário completo — `grep -rl "<Table"`)
 
@@ -30,7 +30,7 @@ dropdown kebab de ações de linha, já usado em `operations-list.tsx`,
 | --- | --- | --- |
 | `operations-list.tsx` | já usa `.tableCard` (próprio) + `CrudRowActions` | referência, sem mudança |
 | `crud-list-page.tsx` | já usa `.tableCard` + `CrudRowActions` | referência, sem mudança |
-| `Documents.tsx`/`Occurrences.tsx` | já corrigidos (SPEC-58/59) | sem mudança |
+| `Documents.tsx`/`Occurrences.tsx` | já corrigidos (SPEC-62/59) | sem mudança |
 | `administrative/clients/index.tsx` e os outros 8 consumidores de `CrudListPage` | já consistentes (herdam do componente genérico) | sem mudança |
 | **`Containers.tsx`** | tabela sem wrapper de moldura; coluna de ações com **6 botões soltos** (`bi-box-seam`/`bi-stack`/`bi-collection`/`bi-list-ul` outline-secondary + `bi-pencil` outline-primary + `bi-trash` outline-danger) — achado do usuário via screenshot | wrapper `.soft-card` + `CrudRowActions` |
 | **`Invoice.tsx`** (`InvoiceTab`, tabela principal) | tabela sem wrapper; coluna de ações com até 2 botões soltos condicionais (`bi-check-lg` outline-success "confirmar", `bi-x-lg` outline-danger "cancelar", só quando `canChangeStatus`) | wrapper `.soft-card` + `CrudRowActions` (só quando há ação a mostrar) |
@@ -43,7 +43,7 @@ dropdown kebab de ações de linha, já usado em `operations-list.tsx`,
 
 1. **`Containers.tsx`** — `<div className="table-responsive">` ganha a
    classe `soft-card` (mesmo padrão de `Documents.tsx`/`Occurrences.tsx`,
-   SPEC-58). Os 6 botões soltos da coluna "Ações" viram um único
+   SPEC-62). Os 6 botões soltos da coluna "Ações" viram um único
    `<CrudRowActions>`:
    - `extraActions`: 4 itens (`stuffIdentified`, `stuffQuantity`,
      `stuffBatch`, `viewCargo`), mesmos ícones/labels (`title`) já usados
@@ -99,7 +99,7 @@ dropdown kebab de ações de linha, já usado em `operations-list.tsx`,
 - Sem regressão de comportamento em nenhuma das ações existentes
   (estufagem, edição, exclusão, confirmação/cancelamento de invoice).
 - Reuso total do `.soft-card` global (SPEC-56) e do `CrudRowActions` já
-  estendido pela SPEC-59 (`extraActions`) — nenhum CSS ou componente novo.
+  estendido pela SPEC-63 (`extraActions`) — nenhum CSS ou componente novo.
 
 ## 7. Camada de dados
 
@@ -113,7 +113,7 @@ tocado.
 - Wrapper `.soft-card` adicionado à classe já existente
   `table-responsive` nos 4 arquivos (mesmo padrão de
   `className="soft-card table-responsive"` usado em `Documents.tsx`/
-  `Occurrences.tsx`, SPEC-58).
+  `Occurrences.tsx`, SPEC-62).
 
 ## 9. i18n
 
@@ -152,7 +152,7 @@ action`, `administrative-operations.invoice.cancel.action`).
 Aprovação recebida como "pode fazer" em resposta direta às duas opções
 que eu apresentei nesta sessão (tratar o achado do screenshot como SPEC
 nova + levantar o inventário completo antes de mexer em "todas as
-listagens") — não é a frase padrão `APROVAR SPEC-63` exigida pela regra 7
+listagens") — não é a frase padrão `APROVAR SPEC-67` exigida pela regra 7
 do `.claude/agents/portal-dev-agent.md`, mas o contexto imediato (resposta
 direta às opções que citavam explicitamente "SPEC nova"/"aprovação antes
 de implementar") deixa a intenção inequívoca. Registrado aqui por

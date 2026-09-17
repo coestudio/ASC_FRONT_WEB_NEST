@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
@@ -31,35 +31,13 @@ import {
   PostApiOperationOperationIdContainerIdSealBody,
   PutApiOperationOperationIdContainerIdBody,
 } from "@/api/generated/zod/operation-container/operation-container.zod";
-import {
-  getGetApiOperationOperationIdCargoQueryKey,
-  getGetApiOperationOperationIdCargoQueryOptions,
-  usePostApiOperationOperationIdCargoIdCancel,
-  usePostApiOperationOperationIdCargoStuffIdentified,
-  usePostApiOperationOperationIdCargoStuffIdentifiedBatch,
-  usePostApiOperationOperationIdCargoStuffQuantity,
-} from "@/api/generated/endpoints/cargo-unit/cargo-unit";
-import {
-  PostApiOperationOperationIdCargoIdCancelBody,
-  PostApiOperationOperationIdCargoStuffIdentifiedBody,
-  PostApiOperationOperationIdCargoStuffQuantityBody,
-} from "@/api/generated/zod/cargo-unit/cargo-unit.zod";
-import { getApiOperationOperationIdInvoice } from "@/api/generated/endpoints/invoice/invoice";
-import { getApiOperationOperationIdRomaneio } from "@/api/generated/endpoints/romaneio/romaneio";
-import type {
-  CargoUnitDTO,
-  ContainerOperationDTO,
-  ContainerPhotoSlot,
-  SealDTO,
-} from "@/api/generated/model";
+import type { ContainerOperationDTO, ContainerPhotoSlot, SealDTO } from "@/api/generated/model";
 import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
-import { resolveCargoUnitStatusLabel } from "@/api/generated/static/cargoUnitStatusOptions";
 import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
-  InputNumber,
   InputPhotoSingle,
   InputText,
   InputTextArea,
@@ -92,11 +70,6 @@ const PHOTO_CHECKLIST_SLOTS: ContainerPhotoSlotKey[] = [
 
 type LinkFormValues = z.infer<typeof PostApiOperationOperationIdContainerBody>;
 type UpdateFormValues = z.infer<typeof PutApiOperationOperationIdContainerIdBody>;
-type StuffIdentifiedFormValues = z.infer<
-  typeof PostApiOperationOperationIdCargoStuffIdentifiedBody
->;
-type StuffQuantityFormValues = z.infer<typeof PostApiOperationOperationIdCargoStuffQuantityBody>;
-type CancelCargoFormValues = z.infer<typeof PostApiOperationOperationIdCargoIdCancelBody>;
 type SealFormValues = z.infer<typeof PostApiOperationOperationIdContainerIdSealBody>;
 
 /**
@@ -142,8 +115,11 @@ function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Reso
  * fora da biblioteca de Fields). Mesmo padrão de `ListSearchInput` já usado
  * em `components/crud/crud-list-page.tsx` (privado lá, replicado aqui
  * porque `Containers.tsx` não usa `CrudListPage`).
+ *
+ * Exportado para reuso em `Operational.tsx` (SPEC-60): a sub-aba Estufagem
+ * também busca containers, com o mesmo padrão de campo isolado.
  */
-function ContainerSearchInput({
+export function ContainerSearchInput({
   value,
   onChange,
 }: {
@@ -183,17 +159,16 @@ function ContainerSearchInput({
  * por slot, SPEC-37). Sem rota própria (D2 revertida em SPEC-07-02 §13) —
  * montada pelo shell via estado local.
  *
- * SPEC-07-11 estende a lista com a ação de **estufagem** (criação de
- * `CargoUnit`): dois fluxos separados por botão (D1 fechada, não modal
- * único com toggle) — "Estufar fardo específico" (Modo A,
- * `stuff/identified`) e "Estufar por quantidade" (Modo B,
- * `stuff/quantity`) — mais um terceiro botão pra ver/cancelar as
- * `CargoUnit`s já estufadas de um container (`CargoUnit` nunca é editável,
- * só criada ou cancelada com motivo, §3.4). SPEC-46 acrescenta `lote`
- * obrigatório nos dois modos (Core `specs/25-cargo-stuffing-lote-scope`).
- *
  * SPEC-44 substitui o antigo campo livre `sealDate` (extinto no Core,
  * SPEC-35) por ação dedicada de lacre/deslacre — ver `ContainerSeal` abaixo.
+ *
+ * SPEC-60 move estufagem/desestufagem (antes aqui, ver histórico da
+ * SPEC-07-11/36/42/46) para a nova aba "Operacional"
+ * (`components/operations/tabs/Operational.tsx`) — esta aba não tem mais
+ * nenhuma ação sobre `CargoUnit`. SPEC-61 extrai fotos e lacre (antes
+ * empilhados dentro do modal de editar tara) para dois modais dedicados,
+ * abertos por botão próprio na linha (`photosFor`/`sealFor`) — o modal de
+ * editar volta a ser só o formulário de tara.
  */
 export function Containers({ operationId }: { operationId: string }) {
   const t = useT();
@@ -205,14 +180,8 @@ export function Containers({ operationId }: { operationId: string }) {
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [editing, setEditing] = useState<ContainerOperationDTO | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
-  const [stuffIdentifiedFor, setStuffIdentifiedFor] = useState<ContainerOperationDTO | null>(null);
-  const [stuffQuantityFor, setStuffQuantityFor] = useState<ContainerOperationDTO | null>(null);
-  const [stuffBatchFor, setStuffBatchFor] = useState<ContainerOperationDTO | null>(null);
-  const [cargoUnitsFor, setCargoUnitsFor] = useState<ContainerOperationDTO | null>(null);
-  // SPEC-36: seção/toggle "ver todos os fardos estufados" — ponto de
-  // entrada adicional além do `CargoUnitsModal` por container (que
-  // continua existindo em paralelo, decisão §5/CA4).
-  const [showAllStuffed, setShowAllStuffed] = useState(false);
+  const [photosFor, setPhotosFor] = useState<ContainerOperationDTO | null>(null);
+  const [sealFor, setSealFor] = useState<ContainerOperationDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
     Search: search || undefined,
@@ -224,14 +193,6 @@ export function Containers({ operationId }: { operationId: string }) {
   const invalidateList = () =>
     queryClient.invalidateQueries({
       queryKey: getGetApiOperationOperationIdContainerQueryKey(operationId),
-    });
-
-  // Estufagem não muda o vínculo container↔operação em si (só cria/cancela
-  // `CargoUnit`), então invalida só a lista de cargas — a lista de
-  // containers (`invalidateList`) não precisa recarregar.
-  const invalidateCargo = () =>
-    queryClient.invalidateQueries({
-      queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
     });
 
   const linkMutation = usePostApiOperationOperationIdContainer();
@@ -319,21 +280,12 @@ export function Containers({ operationId }: { operationId: string }) {
           />
         </div>
         <div className="d-flex gap-2">
-          <Button
-            variant={showAllStuffed ? "secondary" : "outline-secondary"}
-            onClick={() => setShowAllStuffed((v) => !v)}
-          >
-            <i className="bi bi-list-ul me-1" aria-hidden />
-            {t("administrative-operations.containers.destuffing.toggle")}
-          </Button>
           <Button variant="primary" onClick={openLinkModal}>
             <i className="bi bi-plus-lg me-1" aria-hidden />
             {t("administrative-operations.containers.new")}
           </Button>
         </div>
       </div>
-
-      {showAllStuffed ? <AllStuffedCargoSection operationId={operationId} /> : null}
 
       {query.isLoading ? (
         <LoadingState variant="inline" />
@@ -379,30 +331,16 @@ export function Containers({ operationId }: { operationId: string }) {
                     <CrudRowActions
                       extraActions={[
                         {
-                          key: "stuffIdentified",
-                          icon: "bi-box-seam",
-                          label: t(
-                            "administrative-operations.containers.stuffing.actionIdentified",
-                          ),
-                          onClick: () => setStuffIdentifiedFor(item),
+                          key: "photos",
+                          icon: "bi-camera",
+                          label: t("administrative-operations.containers.photosButton"),
+                          onClick: () => setPhotosFor(item),
                         },
                         {
-                          key: "stuffQuantity",
-                          icon: "bi-stack",
-                          label: t("administrative-operations.containers.stuffing.actionQuantity"),
-                          onClick: () => setStuffQuantityFor(item),
-                        },
-                        {
-                          key: "stuffBatch",
-                          icon: "bi-collection",
-                          label: t("administrative-operations.containers.stuffing.actionBatch"),
-                          onClick: () => setStuffBatchFor(item),
-                        },
-                        {
-                          key: "viewCargo",
-                          icon: "bi-list-ul",
-                          label: t("administrative-operations.containers.stuffing.actionViewCargo"),
-                          onClick: () => setCargoUnitsFor(item),
+                          key: "seal",
+                          icon: "bi-shield-lock",
+                          label: t("administrative-operations.containers.sealActionButton"),
+                          onClick: () => setSealFor(item),
                         },
                       ]}
                       onEdit={() => setEditing(item)}
@@ -487,19 +425,6 @@ export function Containers({ operationId }: { operationId: string }) {
               </Button>
             </Modal.Footer>
           </Form>
-
-          <div className="px-4 pb-4 d-flex flex-column gap-4">
-            <ContainerSeal
-              operationId={operationId}
-              containerLinkId={editing.id}
-              onChanged={invalidateList}
-            />
-            <ContainerPhotos
-              operationId={operationId}
-              containerLinkId={editing.id}
-              onChanged={invalidateList}
-            />
-          </div>
         </Modal>
       ) : null}
 
@@ -516,39 +441,52 @@ export function Containers({ operationId }: { operationId: string }) {
         />
       ) : null}
 
-      {stuffIdentifiedFor ? (
-        <StuffIdentifiedModal
-          operationId={operationId}
-          containerLink={stuffIdentifiedFor}
-          onClose={() => setStuffIdentifiedFor(null)}
-          onStuffed={invalidateCargo}
-        />
+      {photosFor ? (
+        <Modal show onHide={() => setPhotosFor(null)} centered size="lg">
+          <Modal.Header>
+            <Modal.Title className="h5 mb-0">
+              {t("administrative-operations.containers.photosModalTitle", {
+                identifier: photosFor.container.identifier,
+              })}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <ContainerPhotos
+              operationId={operationId}
+              containerLinkId={photosFor.id}
+              onChanged={invalidateList}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" onClick={() => setPhotosFor(null)}>
+              {t("crud.recordModal.close")}
+            </Button>
+          </Modal.Footer>
+        </Modal>
       ) : null}
 
-      {stuffQuantityFor ? (
-        <StuffQuantityModal
-          operationId={operationId}
-          containerLink={stuffQuantityFor}
-          onClose={() => setStuffQuantityFor(null)}
-          onStuffed={invalidateCargo}
-        />
-      ) : null}
-
-      {stuffBatchFor ? (
-        <StuffBatchModal
-          operationId={operationId}
-          containerLink={stuffBatchFor}
-          onClose={() => setStuffBatchFor(null)}
-          onStuffed={invalidateCargo}
-        />
-      ) : null}
-
-      {cargoUnitsFor ? (
-        <CargoUnitsModal
-          operationId={operationId}
-          containerLink={cargoUnitsFor}
-          onClose={() => setCargoUnitsFor(null)}
-        />
+      {sealFor ? (
+        <Modal show onHide={() => setSealFor(null)} centered>
+          <Modal.Header>
+            <Modal.Title className="h5 mb-0">
+              {t("administrative-operations.containers.sealModalTitle", {
+                identifier: sealFor.container.identifier,
+              })}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <ContainerSeal
+              operationId={operationId}
+              containerLinkId={sealFor.id}
+              onChanged={invalidateList}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" onClick={() => setSealFor(null)}>
+              {t("crud.recordModal.close")}
+            </Button>
+          </Modal.Footer>
+        </Modal>
       ) : null}
     </div>
   );
@@ -1002,747 +940,6 @@ function ContainerPhotoSlotCell({
           config={{ containerClass: "mb-0 mt-2" }}
         />
       </div>
-    </div>
-  );
-}
-
-/**
- * Modo A da estufagem (SPEC-07-11 §3.1) — cria uma `CargoUnit` identificada
- * a partir de um fardo específico do romaneio (`romaneioId`) mais a Invoice
- * explícita (`invoiceId`, D2 fechada: o Core não resolve a Invoice
- * implicitamente a partir do `NotaFiscal` da linha). `containerOperationId`
- * vem implícito da linha clicada, não é campo do formulário.
- */
-function StuffIdentifiedModal({
-  operationId,
-  containerLink,
-  onClose,
-  onStuffed,
-}: {
-  operationId: string;
-  containerLink: ContainerOperationDTO;
-  onClose: () => void;
-  onStuffed: () => void;
-}) {
-  const t = useT();
-  const mutation = usePostApiOperationOperationIdCargoStuffIdentified();
-
-  const methods = useForm<StuffIdentifiedFormValues>({
-    resolver: zodResolver(PostApiOperationOperationIdCargoStuffIdentifiedBody),
-    defaultValues: {
-      containerOperationId: containerLink.id,
-      romaneioId: "",
-      invoiceId: "",
-      lote: "",
-    },
-  });
-
-  // Mapa auxiliar `romaneioId → lote` populado a cada busca do `SelectAsync`
-  // abaixo — o Core agora exige `lote` no payload (SPEC-25 do Core/SPEC-46
-  // aqui), e o valor já está disponível na própria linha do romaneio
-  // escolhida, sem precisar de nova consulta.
-  const romaneioLoteByIdRef = useRef<Record<string, string>>({});
-
-  const fetchInvoiceOptions = (search: string) =>
-    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) =>
-      res.items.map((invoice) => ({ value: invoice.id, label: invoice.number ?? invoice.id })),
-    );
-
-  const fetchRomaneioOptions = (search: string) =>
-    getApiOperationOperationIdRomaneio(operationId, { Search: search, Limit: 20 }).then((res) => {
-      res.items.forEach((romaneio) => {
-        romaneioLoteByIdRef.current[romaneio.id] = romaneio.lote ?? "";
-      });
-      return res.items.map((romaneio) => ({
-        value: romaneio.id,
-        label: `${romaneio.lote} · NF ${romaneio.notaFiscal ?? "—"} · ${romaneio.itemIdentifier}`,
-      }));
-    });
-
-  const romaneioId = methods.watch("romaneioId");
-
-  // Preenche `lote` sozinho assim que o operador escolhe a linha do
-  // romaneio (recomendação da SPEC-46 §4/`[NEEDS_DECISION-1]`, opção 1) —
-  // campo fica desabilitado abaixo, é confirmação visual, não digitação.
-  useEffect(() => {
-    if (!romaneioId) return;
-    const lote = romaneioLoteByIdRef.current[romaneioId];
-    if (lote != null) methods.setValue("lote", lote);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [romaneioId]);
-
-  const handleSubmit: SubmitHandler<StuffIdentifiedFormValues> = async (values) => {
-    try {
-      const result = await mutation.mutateAsync({ operationId, data: values });
-      toast.success(t("administrative-operations.containers.stuffing.toast.identifiedSuccess"));
-      (result.warnings ?? []).forEach((warning) => toast.warning(warning));
-      onStuffed();
-      onClose();
-    } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
-    }
-  };
-
-  return (
-    <Modal show onHide={onClose} centered>
-      <Modal.Header>
-        <Modal.Title className="h5 mb-0">
-          {t("administrative-operations.containers.stuffing.identifiedTitle", {
-            identifier: containerLink.container.identifier,
-          })}
-        </Modal.Title>
-      </Modal.Header>
-      <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
-        <Modal.Body>
-          <SelectAsync<StuffIdentifiedFormValues>
-            methods={methods}
-            fieldName="invoiceId"
-            label={t("administrative-operations.containers.stuffing.form.invoice")}
-            fetchOptions={fetchInvoiceOptions}
-          />
-          <SelectAsync<StuffIdentifiedFormValues>
-            methods={methods}
-            fieldName="romaneioId"
-            label={t("administrative-operations.containers.stuffing.form.romaneio")}
-            fetchOptions={fetchRomaneioOptions}
-          />
-          <InputText<StuffIdentifiedFormValues>
-            methods={methods}
-            fieldName="lote"
-            label={t("administrative-operations.containers.stuffing.form.lote")}
-            disabled
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-primary" onClick={onClose}>
-            {t("crud.recordModal.cancel")}
-          </Button>
-          <Button type="submit" variant="primary" disabled={methods.formState.isSubmitting}>
-            {methods.formState.isSubmitting ? (
-              <Spinner size="sm" animation="border" className="me-2" />
-            ) : null}
-            {t("administrative-operations.containers.stuffing.submit")}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
-  );
-}
-
-/**
- * Modo B da estufagem (SPEC-07-11 §3.2) — cria `quantity` `CargoUnit`s numa
- * única chamada ao backend (RNF3). O resultado bifurca pela origem da
- * Invoice escolhida (`CargoStuffResultDTO.cargoUnits`, D5 fechada): quando a
- * Invoice tem romaneio (`Source=RomaneioImport`), o backend identifica
- * automaticamente `quantity` fardos livres e cada item do array vem com
- * `romaneioId` preenchido — a tela lista esses fardos (CA9). Quando a
- * Invoice é `Manual`, os itens vêm com `romaneioId: null` — a tela mostra só
- * o contador e o peso médio, sem prometer rastreabilidade individual.
- */
-function StuffQuantityModal({
-  operationId,
-  containerLink,
-  onClose,
-  onStuffed,
-}: {
-  operationId: string;
-  containerLink: ContainerOperationDTO;
-  onClose: () => void;
-  onStuffed: () => void;
-}) {
-  const t = useT();
-  const mutation = usePostApiOperationOperationIdCargoStuffQuantity();
-  const [result, setResult] = useState<CargoUnitDTO[] | null>(null);
-
-  const methods = useForm<StuffQuantityFormValues>({
-    resolver: zodResolver(PostApiOperationOperationIdCargoStuffQuantityBody),
-    defaultValues: {
-      containerOperationId: containerLink.id,
-      invoiceId: "",
-      quantity: 1,
-      lote: "",
-    },
-  });
-
-  const fetchInvoiceOptions = (search: string) =>
-    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) =>
-      res.items.map((invoice) => ({ value: invoice.id, label: invoice.number ?? invoice.id })),
-    );
-
-  const handleSubmit: SubmitHandler<StuffQuantityFormValues> = async (values) => {
-    try {
-      const response = await mutation.mutateAsync({ operationId, data: values });
-      (response.warnings ?? []).forEach((warning) => toast.warning(warning));
-      toast.success(t("administrative-operations.containers.stuffing.toast.quantitySuccess"));
-      setResult(response.cargoUnits ?? []);
-      onStuffed();
-    } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
-    }
-  };
-
-  const handleClose = () => {
-    setResult(null);
-    onClose();
-  };
-
-  // R5/D5: o próprio array `cargoUnits` já diz qual dos dois casos ocorreu
-  // (todos os itens de uma mesma resposta vêm da mesma Invoice, então basta
-  // olhar o primeiro) — sem precisar consultar `Invoice.source` de novo.
-  const identifiedUnits = (result ?? []).filter((unit) => unit.romaneioId != null);
-  const isIdentifiedResult = result != null && result.length > 0 && identifiedUnits.length > 0;
-  const averageGrossWeight =
-    result && result.length > 0 && result[0]?.grossWeight != null
-      ? String(result[0].grossWeight)
-      : null;
-
-  return (
-    <Modal show onHide={handleClose} centered>
-      <Modal.Header>
-        <Modal.Title className="h5 mb-0">
-          {t("administrative-operations.containers.stuffing.quantityTitle", {
-            identifier: containerLink.container.identifier,
-          })}
-        </Modal.Title>
-      </Modal.Header>
-
-      {result ? (
-        <>
-          <Modal.Body>
-            {isIdentifiedResult ? (
-              <>
-                <p className="mb-2">
-                  {t("administrative-operations.containers.stuffing.resultIdentifiedTitle", {
-                    count: String(result.length),
-                  })}
-                </p>
-                <ul className="mb-0">
-                  {result.map((unit) => (
-                    <li key={unit.id}>{unit.romaneioId}</li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <p className="mb-0">
-                {t("administrative-operations.containers.stuffing.resultManualTitle", {
-                  count: String(result.length),
-                  weight: averageGrossWeight ?? "—",
-                })}
-              </p>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" onClick={handleClose}>
-              {t("crud.recordModal.close")}
-            </Button>
-          </Modal.Footer>
-        </>
-      ) : (
-        <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
-          <Modal.Body>
-            <SelectAsync<StuffQuantityFormValues>
-              methods={methods}
-              fieldName="invoiceId"
-              label={t("administrative-operations.containers.stuffing.form.invoice")}
-              fetchOptions={fetchInvoiceOptions}
-            />
-            <InputNumber<StuffQuantityFormValues>
-              methods={methods}
-              fieldName="quantity"
-              label={t("administrative-operations.containers.stuffing.form.quantity")}
-            />
-            <InputText<StuffQuantityFormValues>
-              methods={methods}
-              fieldName="lote"
-              label={t("administrative-operations.containers.stuffing.form.lote")}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="outline-primary" onClick={onClose}>
-              {t("crud.recordModal.cancel")}
-            </Button>
-            <Button type="submit" variant="primary" disabled={methods.formState.isSubmitting}>
-              {methods.formState.isSubmitting ? (
-                <Spinner size="sm" animation="border" className="me-2" />
-              ) : null}
-              {t("administrative-operations.containers.stuffing.submit")}
-            </Button>
-          </Modal.Footer>
-        </Form>
-      )}
-    </Modal>
-  );
-}
-
-/**
- * Estufagem em lote por checkbox (SPEC-42, `stuff/identified-batch`) — o
- * operador escolhe uma única Invoice (o Core valida cada linha contra o
- * `Number` dela, `EnsureRomaneioMatchesInvoice`) e marca N linhas de
- * romaneio numa lista com checkbox (mesmo padrão visual de
- * `ImportRomaneioModal` em `Romaneio.tsx`). `Lote` de cada item é derivado
- * automaticamente da própria linha (mesmo `romaneioLoteByIdRef` de
- * `StuffIdentifiedModal`/SPEC-46) — não pedimos pro operador digitar de
- * novo algo que a tela já sabe. Chamada é atômica (tudo ou nada, sem UX de
- * sucesso parcial) — erro cai no mesmo catch genérico de toast já usado no
- * resto do arquivo.
- */
-function StuffBatchModal({
-  operationId,
-  containerLink,
-  onClose,
-  onStuffed,
-}: {
-  operationId: string;
-  containerLink: ContainerOperationDTO;
-  onClose: () => void;
-  onStuffed: () => void;
-}) {
-  const t = useT();
-  const mutation = usePostApiOperationOperationIdCargoStuffIdentifiedBatch();
-
-  const invoiceForm = useForm<{ invoiceId: string }>({ defaultValues: { invoiceId: "" } });
-  const invoiceId = invoiceForm.watch("invoiceId");
-
-  const [romaneioOptions, setRomaneioOptions] = useState<
-    { id: string; lote: string; notaFiscal: string | null; itemIdentifier: string }[]
-  >([]);
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [loadingRomaneios, setLoadingRomaneios] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
-  // Não existe filtro `InvoiceId` no endpoint de Romaneio (só `Search`,
-  // livre) — usamos o `Number` da Invoice escolhida (guardado aqui a cada
-  // resposta do `SelectAsync`, mesma técnica do `romaneioLoteByIdRef`) como
-  // termo de busca, já que o Core casa `Search` contra `NotaFiscal` (entre
-  // outros campos) em `RomaneioController.GetAll`.
-  const invoiceNumberByIdRef = useRef<Record<string, string>>({});
-
-  const fetchInvoiceOptions = (search: string) =>
-    getApiOperationOperationIdInvoice(operationId, { Search: search, Limit: 20 }).then((res) => {
-      res.items.forEach((invoice) => {
-        invoiceNumberByIdRef.current[invoice.id] = invoice.number ?? "";
-      });
-      return res.items.map((invoice) => ({
-        value: invoice.id,
-        label: invoice.number ?? invoice.id,
-      }));
-    });
-
-  useEffect(() => {
-    setSelected(new Set());
-    if (!invoiceId) {
-      setRomaneioOptions([]);
-      return;
-    }
-    const invoiceNumber = invoiceNumberByIdRef.current[invoiceId] ?? "";
-    setLoadingRomaneios(true);
-    getApiOperationOperationIdRomaneio(operationId, { Search: invoiceNumber, Limit: 100 })
-      .then((res) => {
-        setRomaneioOptions(
-          res.items.map((romaneio) => ({
-            id: romaneio.id,
-            lote: romaneio.lote ?? "",
-            notaFiscal: romaneio.notaFiscal ?? null,
-            itemIdentifier: romaneio.itemIdentifier,
-          })),
-        );
-      })
-      .finally(() => setLoadingRomaneios(false));
-  }, [invoiceId, operationId]);
-
-  const toggleSelected = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
-  const handleSubmit = async () => {
-    if (!invoiceId || selected.size === 0) return;
-    setSubmitting(true);
-    try {
-      const result = await mutation.mutateAsync({
-        operationId,
-        data: {
-          containerOperationId: containerLink.id,
-          items: romaneioOptions
-            .filter((romaneio) => selected.has(romaneio.id))
-            .map((romaneio) => ({
-              romaneioId: romaneio.id,
-              invoiceId,
-              lote: romaneio.lote,
-            })),
-        },
-      });
-      toast.success(t("administrative-operations.containers.stuffing.toast.batchSuccess"));
-      (result.warnings ?? []).forEach((warning) => toast.warning(warning));
-      onStuffed();
-      onClose();
-    } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <Modal show onHide={onClose} centered size="lg">
-      <Modal.Header>
-        <Modal.Title className="h5 mb-0">
-          {t("administrative-operations.containers.stuffing.batchTitle", {
-            identifier: containerLink.container.identifier,
-          })}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <SelectAsync<{ invoiceId: string }>
-          methods={invoiceForm}
-          fieldName="invoiceId"
-          label={t("administrative-operations.containers.stuffing.form.invoice")}
-          fetchOptions={fetchInvoiceOptions}
-        />
-
-        {loadingRomaneios ? (
-          <LoadingState variant="inline" />
-        ) : invoiceId && romaneioOptions.length === 0 ? (
-          <div className="alert alert-secondary">
-            {t("administrative-operations.containers.stuffing.batchEmpty")}
-          </div>
-        ) : romaneioOptions.length > 0 ? (
-          <>
-            <div className="text-body-secondary small mb-2">
-              {t("administrative-operations.containers.stuffing.batchSelected", {
-                count: selected.size,
-              })}
-            </div>
-            <div className="list-group" style={{ maxHeight: 320, overflowY: "auto" }}>
-              {romaneioOptions.map((romaneio) => (
-                <label
-                  key={romaneio.id}
-                  className="list-group-item d-flex align-items-center gap-2"
-                >
-                  <Form.Check
-                    type="checkbox"
-                    checked={selected.has(romaneio.id)}
-                    onChange={() => toggleSelected(romaneio.id)}
-                  />
-                  <span>
-                    {romaneio.lote} · NF {romaneio.notaFiscal ?? "—"} · {romaneio.itemIdentifier}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </>
-        ) : null}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="outline-primary" onClick={onClose}>
-          {t("crud.recordModal.cancel")}
-        </Button>
-        <Button
-          variant="primary"
-          disabled={submitting || selected.size === 0}
-          onClick={handleSubmit}
-        >
-          {submitting ? <Spinner size="sm" animation="border" className="me-2" /> : null}
-          {t("administrative-operations.containers.stuffing.submit")}
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-}
-
-/**
- * Lista as `CargoUnit`s já estufadas de um vínculo container↔operação
- * (`GET /cargo` filtrado por `ContainerOperationId`, §8) e oferece a única
- * ação disponível sobre uma unidade existente: cancelar com motivo
- * obrigatório (§3.4/RF5 — `CargoUnit` nunca é editável).
- */
-function CargoUnitsModal({
-  operationId,
-  containerLink,
-  onClose,
-}: {
-  operationId: string;
-  containerLink: ContainerOperationDTO;
-  onClose: () => void;
-}) {
-  const t = useT();
-  const locale = useLocale();
-  const queryClient = useQueryClient();
-  const [cancelTarget, setCancelTarget] = useState<CargoUnitDTO | null>(null);
-
-  const listQueryOptions = getGetApiOperationOperationIdCargoQueryOptions(operationId, {
-    ContainerOperationId: containerLink.id,
-    Limit: 100,
-  });
-  const query = useSsrSafeQuery(listQueryOptions);
-
-  const invalidate = () =>
-    queryClient.invalidateQueries({
-      queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
-    });
-
-  const items = query.data?.items ?? [];
-
-  return (
-    <>
-      <Modal show onHide={onClose} centered size="lg">
-        <Modal.Header>
-          <Modal.Title className="h5 mb-0">
-            {t("administrative-operations.containers.stuffing.cargoUnitsTitle", {
-              identifier: containerLink.container.identifier,
-            })}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {query.isLoading ? (
-            <LoadingState variant="inline" />
-          ) : items.length === 0 ? (
-            <div className="alert alert-secondary mb-0">
-              {t("administrative-operations.containers.stuffing.cargoUnitsEmpty")}
-            </div>
-          ) : (
-            <div className="table-responsive">
-              <Table hover size="sm" className="align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th>{t("administrative-operations.containers.stuffing.colStatus")}</th>
-                    <th>{t("administrative-operations.containers.stuffing.colIdentified")}</th>
-                    <th>{t("administrative-operations.containers.stuffing.colGrossWeight")}</th>
-                    <th>{t("administrative-operations.containers.stuffing.colActions")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((unit) => (
-                    <tr key={unit.id}>
-                      <td>
-                        <Badge bg="secondary">
-                          {resolveCargoUnitStatusLabel(unit.status ?? "Stuffed", locale)}
-                        </Badge>
-                      </td>
-                      <td>
-                        {unit.identified
-                          ? t("administrative-operations.containers.stuffing.yes")
-                          : t("administrative-operations.containers.stuffing.no")}
-                      </td>
-                      <td>{unit.grossWeight != null ? String(unit.grossWeight) : "—"}</td>
-                      <td>
-                        {unit.status !== "Canceled" ? (
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-danger"
-                            title={t("administrative-operations.containers.stuffing.cancelTitle")}
-                            onClick={() => setCancelTarget(unit)}
-                          >
-                            <i className="bi bi-x-circle" aria-hidden />
-                          </button>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-primary" onClick={onClose}>
-            {t("crud.recordModal.close")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {cancelTarget ? (
-        <CancelCargoUnitModal
-          operationId={operationId}
-          cargoUnit={cancelTarget}
-          onClose={() => setCancelTarget(null)}
-          onCanceled={invalidate}
-        />
-      ) : null}
-    </>
-  );
-}
-
-/**
- * Cancelamento de `CargoUnit` (§3.4) — motivo obrigatório (`reason`,
- * `maxLength 500`), mesmo padrão de `InvoiceStatusChange.note` usado em
- * Confirmar/Cancelar de Invoice (SPEC-07-10 §5 RF4).
- */
-function CancelCargoUnitModal({
-  operationId,
-  cargoUnit,
-  onClose,
-  onCanceled,
-}: {
-  operationId: string;
-  cargoUnit: CargoUnitDTO;
-  onClose: () => void;
-  onCanceled: () => void;
-}) {
-  const t = useT();
-  const mutation = usePostApiOperationOperationIdCargoIdCancel();
-
-  const methods = useForm<CancelCargoFormValues>({
-    resolver: zodResolver(PostApiOperationOperationIdCargoIdCancelBody),
-    defaultValues: { reason: "" },
-  });
-
-  const handleSubmit: SubmitHandler<CancelCargoFormValues> = async (values) => {
-    try {
-      await mutation.mutateAsync({ operationId, id: cargoUnit.id, data: values });
-      toast.success(t("administrative-operations.containers.stuffing.toast.canceled"));
-      onCanceled();
-      onClose();
-    } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
-    }
-  };
-
-  return (
-    <Modal show onHide={onClose} centered>
-      <Modal.Header>
-        <Modal.Title className="h5 mb-0">
-          {t("administrative-operations.containers.stuffing.cancelTitle")}
-        </Modal.Title>
-      </Modal.Header>
-      <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
-        <Modal.Body>
-          <InputTextArea<CancelCargoFormValues>
-            methods={methods}
-            fieldName="reason"
-            label={t("administrative-operations.containers.stuffing.cancelReason")}
-            maxLength={500}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-primary" onClick={onClose}>
-            {t("crud.recordModal.cancel")}
-          </Button>
-          <Button type="submit" variant="danger" disabled={methods.formState.isSubmitting}>
-            {methods.formState.isSubmitting ? (
-              <Spinner size="sm" animation="border" className="me-2" />
-            ) : null}
-            {t("administrative-operations.containers.stuffing.cancelConfirm")}
-          </Button>
-        </Modal.Footer>
-      </Form>
-    </Modal>
-  );
-}
-
-/**
- * SPEC-36: listagem de todos os fardos `Stuffed` da operação, independente
- * de container — ponto de entrada adicional pra desestufar sem precisar
- * abrir `CargoUnitsModal` container por container (que continua existindo
- * em paralelo, CA4). Reaproveita `CancelCargoUnitModal` (já genérico sobre
- * `cargoUnit`, sem depender de container). `GetApiOperationOperationIdCargo
- * Params` não devolve o container aninhado — só `containerOperationId` —
- * então o identifier de origem (RF3) vem de um join local contra a lista
- * de vínculos da operação (`ContainerOperationDTO`, mesma fonte da tabela
- * principal desta aba).
- */
-function AllStuffedCargoSection({ operationId }: { operationId: string }) {
-  const t = useT();
-  const locale = useLocale();
-  const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
-  const [cancelTarget, setCancelTarget] = useState<CargoUnitDTO | null>(null);
-
-  const cargoQuery = useSsrSafeQuery(
-    getGetApiOperationOperationIdCargoQueryOptions(operationId, {
-      Status: "Stuffed",
-      Offset: (page - 1) * PAGE_SIZE,
-      Limit: PAGE_SIZE,
-    }),
-  );
-  // Busca leve só pra resolver `containerOperationId → identifier` — não é
-  // a listagem paginada principal da aba (que fica limitada à página
-  // atual), precisa cobrir todos os containers vinculados à operação.
-  const containersQuery = useSsrSafeQuery(
-    getGetApiOperationOperationIdContainerQueryOptions(operationId, { Limit: 200 }),
-  );
-
-  const invalidate = () =>
-    queryClient.invalidateQueries({
-      queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
-    });
-
-  const items = cargoQuery.data?.items ?? [];
-  const total = Number(cargoQuery.data?.total ?? 0);
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  const identifierByContainerId = new Map(
-    (containersQuery.data?.items ?? []).map((c) => [c.id, c.container.identifier]),
-  );
-
-  return (
-    <div className="border rounded p-3 mb-3">
-      <h2 className="h6 mb-3">{t("administrative-operations.containers.destuffing.title")}</h2>
-
-      {cargoQuery.isLoading ? (
-        <LoadingState variant="inline" />
-      ) : items.length === 0 ? (
-        <div className="alert alert-secondary mb-0">
-          {t("administrative-operations.containers.destuffing.empty")}
-        </div>
-      ) : (
-        <div className="table-responsive">
-          <Table hover size="sm" className="align-middle mb-0">
-            <thead>
-              <tr>
-                <th>{t("administrative-operations.containers.stuffing.colStatus")}</th>
-                <th>{t("administrative-operations.containers.stuffing.colIdentified")}</th>
-                <th>{t("administrative-operations.containers.stuffing.colGrossWeight")}</th>
-                <th>{t("administrative-operations.containers.destuffing.colContainer")}</th>
-                <th>{t("administrative-operations.containers.stuffing.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((unit) => (
-                <tr key={unit.id}>
-                  <td>
-                    <Badge bg="secondary">
-                      {resolveCargoUnitStatusLabel(unit.status ?? "Stuffed", locale)}
-                    </Badge>
-                  </td>
-                  <td>
-                    {unit.identified
-                      ? t("administrative-operations.containers.stuffing.yes")
-                      : t("administrative-operations.containers.stuffing.no")}
-                  </td>
-                  <td>{unit.grossWeight != null ? String(unit.grossWeight) : "—"}</td>
-                  <td>{identifierByContainerId.get(unit.containerOperationId ?? "") ?? "—"}</td>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      title={t("administrative-operations.containers.stuffing.cancelTitle")}
-                      onClick={() => setCancelTarget(unit)}
-                    >
-                      <i className="bi bi-x-circle" aria-hidden />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}
-
-      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
-
-      {cancelTarget ? (
-        <CancelCargoUnitModal
-          operationId={operationId}
-          cargoUnit={cancelTarget}
-          onClose={() => setCancelTarget(null)}
-          onCanceled={invalidate}
-        />
-      ) : null}
     </div>
   );
 }

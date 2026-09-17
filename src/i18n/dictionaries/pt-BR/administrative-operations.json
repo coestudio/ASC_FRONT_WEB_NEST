@@ -219,6 +219,7 @@
       "details": "Detalhes",
       "romaneio": "Romaneio",
       "containers": "Containers",
+      "operational": "Operacional",
       "documents": "Documentos",
       "invoice": "Nota Fiscal",
       "reports": "Relatórios",
@@ -291,6 +292,10 @@
     "colStatus": "Status",
     "colPhotos": "Fotos",
     "colActions": "Ações",
+    "photosButton": "Fotos",
+    "sealActionButton": "Lacre",
+    "photosModalTitle": "Fotos — {identifier}",
+    "sealModalTitle": "Lacre — {identifier}",
     "form": {
       "container": "Container",
       "tara": "Tara",
@@ -328,7 +333,6 @@
       "actionIdentified": "Estufar fardo específico",
       "actionQuantity": "Estufar por quantidade",
       "actionBatch": "Estufar em lote",
-      "actionViewCargo": "Ver fardos estufados",
       "identifiedTitle": "Estufar fardo específico — {identifier}",
       "quantityTitle": "Estufar por quantidade — {identifier}",
       "batchTitle": "Estufar em lote — {identifier}",
@@ -362,7 +366,6 @@
       }
     },
     "destuffing": {
-      "toggle": "Ver todos os fardos estufados",
       "title": "Fardos estufados da operação",
       "empty": "Nenhum fardo estufado nesta operação.",
       "colContainer": "Container de origem"
@@ -387,6 +390,12 @@
       }
     },
     "searchPlaceholder": "Buscar por identificador do container..."
+  },
+  "operational": {
+    "subtabs": {
+      "stuffing": "Estufagem",
+      "destuffing": "Desestufagem"
+    }
   },
   "documents": {
     "new": "Novo documento",

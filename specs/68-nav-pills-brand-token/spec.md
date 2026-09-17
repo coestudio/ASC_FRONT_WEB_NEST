@@ -1,6 +1,6 @@
-# SPEC-64 — `Nav variant="pills"` ativo não segue o token de marca
+# SPEC-68 — `Nav variant="pills"` ativo não segue o token de marca
 
-- **ID:** SPEC-64
+- **ID:** SPEC-68
 - **Nome:** nav-pills-brand-token
 - **Status:** IMPLEMENTED
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — achado do usuário:

@@ -91,7 +91,7 @@ function useOperationEnrichment(id: string) {
 }
 
 /**
- * Nunca mostra o Guid cru de `clientId`/`productId` (SPEC-60) — enquanto o
+ * Nunca mostra o Guid cru de `clientId`/`productId` (SPEC-64) — enquanto o
  * enriquecimento carrega, um spinner discreto; se falhou ou resolveu sem
  * nome, um traço.
  */
