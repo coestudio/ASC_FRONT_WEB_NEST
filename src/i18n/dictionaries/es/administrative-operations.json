@@ -293,7 +293,6 @@
     "colPhotos": "Fotos",
     "colActions": "Acciones",
     "photosButton": "Fotos",
-    "sealActionButton": "Precinto",
     "photosModalTitle": "Fotos — {identifier}",
     "sealModalTitle": "Precinto — {identifier}",
     "form": {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Button, Spinner } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 import {
@@ -98,32 +98,31 @@ export function Reports({ operationId }: { operationId: string }) {
       </p>
       <div className="d-flex flex-column gap-3">
         {REPORTS.map((report) => (
-          <Card key={report.kind}>
-            <Card.Body className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-              <div className="d-flex align-items-center gap-3">
-                <i className={`bi ${report.icon} fs-2 text-body-secondary`} aria-hidden />
-                <div>
-                  <Card.Title className="mb-1 h6">{t(report.nameKey)}</Card.Title>
-                  <Card.Text className="text-body-secondary mb-0 small">
-                    {t(report.descriptionKey)}
-                  </Card.Text>
-                </div>
+          <div
+            key={report.kind}
+            className="soft-card p-3 d-flex justify-content-between align-items-center flex-wrap gap-2"
+          >
+            <div className="d-flex align-items-center gap-3">
+              <i className={`bi ${report.icon} fs-2 text-body-secondary`} aria-hidden />
+              <div>
+                <div className="mb-1 h6">{t(report.nameKey)}</div>
+                <p className="text-body-secondary mb-0 small">{t(report.descriptionKey)}</p>
               </div>
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => handleGenerate(report)}
-                disabled={generating !== null}
-              >
-                {generating === report.kind ? (
-                  <Spinner size="sm" animation="border" className="me-1" />
-                ) : (
-                  <i className="bi bi-download me-1" aria-hidden />
-                )}
-                {t("administrative-operations.reports.generate")}
-              </Button>
-            </Card.Body>
-          </Card>
+            </div>
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={() => handleGenerate(report)}
+              disabled={generating !== null}
+            >
+              {generating === report.kind ? (
+                <Spinner size="sm" animation="border" className="me-1" />
+              ) : (
+                <i className="bi bi-download me-1" aria-hidden />
+              )}
+              {t("administrative-operations.reports.generate")}
+            </Button>
+          </div>
         ))}
       </div>
     </div>

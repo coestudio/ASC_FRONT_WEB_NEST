@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Badge, Button, Col, Form, Row } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
@@ -279,10 +279,9 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
           {pageItems.map((item) => {
             const name = item.user.profile.fullName || item.user.userName;
             return (
-              <Card
+              <div
                 key={item.id}
-                body
-                className="d-flex flex-row flex-wrap align-items-center gap-3"
+                className="soft-card p-3 d-flex flex-row flex-wrap align-items-center gap-3"
               >
                 <div
                   className="rounded-circle bg-primary-subtle text-primary-emphasis d-flex align-items-center justify-content-center fw-semibold flex-shrink-0"
@@ -318,7 +317,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
                   <i className="bi bi-x-lg me-1" aria-hidden />
                   {t("administrative-operations.responsible.unlink")}
                 </Button>
-              </Card>
+              </div>
             );
           })}
 

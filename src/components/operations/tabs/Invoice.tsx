@@ -28,6 +28,7 @@ import type {
 } from "@/api/generated/model";
 import { resolveInvoiceSourceLabel } from "@/api/generated/static/invoiceSourceOptions";
 import { resolveInvoiceStatusLabel } from "@/api/generated/static/invoiceStatusOptions";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { LoadingState } from "@/components/ui/loading-state";
 import { FilePreviewModal } from "@/components/ui/file-preview-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
@@ -265,7 +266,7 @@ function InvoiceListing({ operationId }: { operationId: string }) {
       ) : items.length === 0 ? (
         <div className="alert alert-secondary">{t("administrative-operations.invoice.empty")}</div>
       ) : (
-        <div className="table-responsive">
+        <div className="soft-card table-responsive">
           <Table hover className="align-middle mb-0">
             <thead>
               <tr>
@@ -341,26 +342,22 @@ function InvoiceListing({ operationId }: { operationId: string }) {
                     </td>
                     <td>
                       {canChangeStatus ? (
-                        <div className="d-flex gap-1">
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-success"
-                            onClick={() => setConfirmTarget(item)}
-                            title={t("administrative-operations.invoice.confirm.action")}
-                            aria-label={t("administrative-operations.invoice.confirm.action")}
-                          >
-                            <i className="bi bi-check-lg" aria-hidden />
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => setCancelTarget(item)}
-                            title={t("administrative-operations.invoice.cancel.action")}
-                            aria-label={t("administrative-operations.invoice.cancel.action")}
-                          >
-                            <i className="bi bi-x-lg" aria-hidden />
-                          </button>
-                        </div>
+                        <CrudRowActions
+                          extraActions={[
+                            {
+                              key: "confirm",
+                              icon: "bi-check-lg",
+                              label: t("administrative-operations.invoice.confirm.action"),
+                              onClick: () => setConfirmTarget(item),
+                            },
+                            {
+                              key: "cancel",
+                              icon: "bi-x-lg",
+                              label: t("administrative-operations.invoice.cancel.action"),
+                              onClick: () => setCancelTarget(item),
+                            },
+                          ]}
+                        />
                       ) : (
                         "—"
                       )}
@@ -640,7 +637,7 @@ function InvoiceComparisonTab({ operationId }: { operationId: string }) {
   }
 
   return (
-    <div className="table-responsive">
+    <div className="soft-card table-responsive">
       <Table hover className="align-middle mb-0">
         <thead>
           <tr>
@@ -735,7 +732,7 @@ function InvoiceLoteComparisonTab({ operationId }: { operationId: string }) {
   }
 
   return (
-    <div className="table-responsive">
+    <div className="soft-card table-responsive">
       <Table hover className="align-middle mb-0">
         <thead>
           <tr>

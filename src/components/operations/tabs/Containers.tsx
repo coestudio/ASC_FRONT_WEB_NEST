@@ -34,6 +34,7 @@ import {
 import type { ContainerOperationDTO, ContainerPhotoSlot, SealDTO } from "@/api/generated/model";
 import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
 import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
@@ -311,7 +312,7 @@ export function Containers({ operationId }: { operationId: string }) {
           {t("administrative-operations.containers.empty")}
         </div>
       ) : (
-        <div className="table-responsive">
+        <div className="soft-card table-responsive">
           <Table hover size="sm" className="align-middle mb-0">
             <thead>
               <tr>
@@ -334,47 +335,29 @@ export function Containers({ operationId }: { operationId: string }) {
                   </td>
                   <td>{item.photos?.length ?? 0}</td>
                   <td>
-                    <div className="d-flex gap-2 flex-wrap">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.photosButton")}
-                        onClick={() => setPhotosFor(item)}
-                      >
-                        <i className="bi bi-camera" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t(
-                          item.status === "Sealed"
-                            ? "administrative-operations.containers.seal.unsealButton"
-                            : "administrative-operations.containers.seal.sealButton",
-                        )}
-                        onClick={() =>
-                          item.status === "Sealed" ? setSealFor(item) : setAddSealFor(item)
-                        }
-                      >
-                        <i
-                          className={`bi ${item.status === "Sealed" ? "bi-shield-lock" : "bi-shield"}`}
-                          aria-hidden
-                        />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setEditing(item)}
-                      >
-                        <i className="bi bi-pencil" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => setPendingDelete(item)}
-                      >
-                        <i className="bi bi-trash" aria-hidden />
-                      </button>
-                    </div>
+                    <CrudRowActions
+                      extraActions={[
+                        {
+                          key: "photos",
+                          icon: "bi-camera",
+                          label: t("administrative-operations.containers.photosButton"),
+                          onClick: () => setPhotosFor(item),
+                        },
+                        {
+                          key: "seal",
+                          icon: item.status === "Sealed" ? "bi-shield-lock" : "bi-shield",
+                          label: t(
+                            item.status === "Sealed"
+                              ? "administrative-operations.containers.seal.unsealButton"
+                              : "administrative-operations.containers.seal.sealButton",
+                          ),
+                          onClick: () =>
+                            item.status === "Sealed" ? setSealFor(item) : setAddSealFor(item),
+                        },
+                      ]}
+                      onEdit={() => setEditing(item)}
+                      onDelete={() => setPendingDelete(item)}
+                    />
                   </td>
                 </tr>
               ))}

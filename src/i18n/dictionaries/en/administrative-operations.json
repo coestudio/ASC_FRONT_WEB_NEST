@@ -293,7 +293,6 @@
     "colPhotos": "Photos",
     "colActions": "Actions",
     "photosButton": "Photos",
-    "sealActionButton": "Seal",
     "photosModalTitle": "Photos — {identifier}",
     "sealModalTitle": "Seal — {identifier}",
     "form": {

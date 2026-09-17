@@ -17,6 +17,7 @@ import type { OperationOccurrenceDTO } from "@/api/generated/model";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { ListPagination } from "@/components/ui/list-pagination";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { InputPhotoMulti, InputText, InputTextArea } from "@/layouts/Form/Fields/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import {
@@ -147,7 +148,7 @@ export function Occurrences({ operationId }: { operationId: string }) {
           {t("administrative-operations.occurrences.empty")}
         </div>
       ) : (
-        <div className="table-responsive">
+        <div className="soft-card table-responsive">
           <Table hover className="align-middle mb-0">
             <thead>
               <tr>
@@ -168,13 +169,7 @@ export function Occurrences({ operationId }: { operationId: string }) {
                   <td>{item.photos?.length ?? 0}</td>
                   <td>{new Date(item.createdAt).toLocaleString(locale)}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={() => setEditing(item)}
-                    >
-                      <i className="bi bi-pencil" aria-hidden />
-                    </button>
+                    <CrudRowActions onEdit={() => setEditing(item)} />
                   </td>
                 </tr>
               ))}

@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Col, Row, Table } from "react-bootstrap";
+import { Badge, Button, Card, Col, Row, Spinner, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -79,13 +79,34 @@ function formatDate(value: string | null | undefined, locale: Locale): string {
  * falha de um item pontual não derruba os demais, a linha cai de volta pro id.
  */
 function useOperationEnrichment(id: string) {
-  const { data } = useSsrSafeQuery(getGetApiOperationIdQueryOptions(id));
+  const { data, isLoading, isError } = useSsrSafeQuery(getGetApiOperationIdQueryOptions(id));
   return {
     clientName: data?.client?.fullName,
     productName: data?.product?.name,
     vesselName: data?.vessel?.name,
     detail: data,
+    isLoading,
+    isError,
   };
+}
+
+/**
+ * Nunca mostra o Guid cru de `clientId`/`productId` (SPEC-66) — enquanto o
+ * enriquecimento carrega, um spinner discreto; se falhou ou resolveu sem
+ * nome, um traço.
+ */
+function EnrichedName({
+  value,
+  isLoading,
+  isError,
+}: {
+  value: string | undefined;
+  isLoading: boolean;
+  isError: boolean;
+}) {
+  if (isLoading) return <Spinner animation="border" size="sm" />;
+  if (isError || !value) return <>—</>;
+  return <>{value}</>;
 }
 
 type OperationFiltersValues = {
@@ -660,13 +681,17 @@ function OperationRow({
   renderStatus: (operation: OperationDTO) => ReactNode;
   renderActions: (operation: OperationDTO) => ReactNode;
 }) {
-  const { clientName, productName } = useOperationEnrichment(operation.id);
+  const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
 
   return (
     <tr>
       <td className="font-monospace">Nº {operation.number}</td>
-      <td className="fw-semibold">{clientName ?? operation.clientId}</td>
-      <td className="text-body-secondary">{productName ?? operation.productId}</td>
+      <td className="fw-semibold">
+        <EnrichedName value={clientName} isLoading={isLoading} isError={isError} />
+      </td>
+      <td className="text-body-secondary">
+        <EnrichedName value={productName} isLoading={isLoading} isError={isError} />
+      </td>
       <td className="text-body-secondary">{operation.booking || "—"}</td>
       <td>{resolveOperationTypeLabel(operation.opType, locale)}</td>
       <td>{resolveOperationServiceLabel(operation.opService, locale)}</td>
@@ -690,7 +715,7 @@ function OperationCard({
   renderStatus: (operation: OperationDTO) => ReactNode;
 }) {
   const t = useT();
-  const { clientName, productName } = useOperationEnrichment(operation.id);
+  const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
 
   return (
     <div className="col-12 col-sm-6 col-lg-4">
@@ -700,9 +725,11 @@ function OperationCard({
             <span className="small text-body-secondary font-monospace">Nº {operation.number}</span>
             {renderStatus(operation)}
           </div>
-          <Card.Title className="h6 mb-1">{clientName ?? operation.clientId}</Card.Title>
+          <Card.Title className="h6 mb-1">
+            <EnrichedName value={clientName} isLoading={isLoading} isError={isError} />
+          </Card.Title>
           <Card.Subtitle className="text-body-secondary small mb-2">
-            {productName ?? operation.productId}
+            <EnrichedName value={productName} isLoading={isLoading} isError={isError} />
           </Card.Subtitle>
           <div className="d-flex gap-2 small text-body-secondary">
             <span>{resolveOperationTypeLabel(operation.opType, locale)}</span>
