@@ -64,3 +64,15 @@
   padding-top: 0.4rem;
   padding-bottom: 0.4rem;
 }
+
+/* `fillHeight` (SPEC-75/76) — cabeçalho de coluna fixo enquanto as linhas
+   rolam por dentro de `.tableCard` (que vira o próprio contêiner de
+   scroll nesse modo). Opt-in via classe (só quando `fillHeight` é usado)
+   — sem isso, `position: sticky` aqui grudaria no scroll de `.content`
+   (o container da página inteira) pras demais listagens, que não têm
+   scroll próprio. */
+.crudTableStickyHead thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}

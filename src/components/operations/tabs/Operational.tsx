@@ -228,7 +228,7 @@ function StuffingTab({ operationId }: { operationId: string }) {
         }
         queryOptions={listQueryOptions}
         columns={columns}
-        maxBodyHeight={480}
+        fillHeight
         selection={selection}
         sort={sort}
         onSortChange={setSort}

@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Form, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
@@ -156,13 +156,19 @@ export type CrudListPageProps<
    */
   headerActions?: ReactNode;
   /**
-   * Altura máxima da área da tabela (linhas) — define, ativa scroll
-   * vertical interno (`overflow-y: auto`), com cabeçalho/toolbar de busca
-   * e paginação fixos fora da área rolável (pedido do usuário na aba
-   * Estufagem, SPEC-75). Ausente (padrão), mantém o comportamento atual:
-   * tabela cresce livre, sem scroll próprio.
+   * `true` faz a área da tabela (linhas) preencher exatamente o espaço
+   * vertical restante até o fim da viewport, com scroll interno
+   * (`overflow-y: auto`) e cabeçalho de coluna fixo (`position: sticky`)
+   * — pedido do usuário na aba Estufagem, SPEC-75/76. A altura é medida
+   * via `getBoundingClientRect`/`ResizeObserver` (não um valor fixo em
+   * px) — tudo que vem antes (título, busca, toolbar) e depois
+   * (paginação) da tabela ocupa só o espaço que precisa; a tabela cobre
+   * o resto, mesmo com poucos itens (o fundo do card preenche a sobra,
+   * deixando visualmente claro que não há mais itens abaixo). Ausente
+   * (padrão), nenhuma mudança de comportamento — tabela cresce livre,
+   * sem scroll próprio, cabeçalho não fixo.
    */
-  maxBodyHeight?: number | string;
+  fillHeight?: boolean;
   /** Seleção em massa (checkbox por linha + "selecionar tudo") — SPEC-53. */
   selection?: CrudSelection<T>;
   /** Valor cru do `Sort` atual (ex. `"-notaFiscal"`) — usado junto com
@@ -181,6 +187,14 @@ export type CrudListPageProps<
  * pode ignorar `enabled` e buscar mesmo assim; a defesa real é o dado nunca
  * existir na árvore, ver SPEC-10).
  */
+/** Espaço reservado embaixo da área preenchida — mesmo valor do padding
+ * inferior de `.content` (AppShell, 1.5rem) pra manter o respiro visual
+ * já usado no resto do app. */
+const FILL_BOTTOM_GAP_PX = 24;
+/** Nunca deixa a tabela menor que isso, mesmo em viewports muito baixas
+ * (ex. mobile com teclado aberto) — evita uma altura negativa/inútil. */
+const FILL_MIN_HEIGHT_PX = 160;
+
 function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   queryOptions,
   columns,
@@ -192,7 +206,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   emptyMessageKey,
   viewMode,
   spreadsheetVariant,
-  maxBodyHeight,
+  fillHeight,
   selection,
   sort,
   onSortChange,
@@ -207,7 +221,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   | "onPageChange"
   | "emptyMessageKey"
   | "spreadsheetVariant"
-  | "maxBodyHeight"
+  | "fillHeight"
   | "selection"
   | "sort"
   | "onSortChange"
@@ -229,6 +243,47 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
     selectableItems.length > 0 &&
     selectableItems.every((item) => selection.selectedIds.has(getItemKey(item)));
 
+  // SPEC-75/76: mede a posição real do card (via `getBoundingClientRect`,
+  // não um número fixo) — tudo que renderiza antes dele (título, busca,
+  // toolbar de seleção de quem chama) já empurrou `top` pra baixo
+  // naturalmente, e a altura da paginação (que pode nem existir, com 1
+  // página só) é medida do jeito que ela realmente ocupa. O resultado é a
+  // altura exata que sobra até o fim da viewport, sem estimar nada.
+  const fillCardRef = useRef<HTMLDivElement>(null);
+  const fillPaginationRef = useRef<HTMLDivElement>(null);
+  const [fillBodyHeight, setFillBodyHeight] = useState<number>();
+
+  useLayoutEffect(() => {
+    if (!fillHeight) return undefined;
+
+    let lastHeight: number | undefined;
+    const recompute = () => {
+      const cardTop = fillCardRef.current?.getBoundingClientRect().top;
+      if (cardTop == null) return;
+      const paginationHeight = fillPaginationRef.current?.getBoundingClientRect().height ?? 0;
+      const next = Math.max(
+        FILL_MIN_HEIGHT_PX,
+        window.innerHeight - cardTop - paginationHeight - FILL_BOTTOM_GAP_PX,
+      );
+      if (next !== lastHeight) {
+        lastHeight = next;
+        setFillBodyHeight(next);
+      }
+    };
+
+    recompute();
+    window.addEventListener("resize", recompute);
+    // Pega mudança de layout que não é resize de janela (ex.: toolbar de
+    // seleção aparecendo acima desta lista, no componente que chama).
+    const resizeObserver = new ResizeObserver(recompute);
+    resizeObserver.observe(document.body);
+
+    return () => {
+      window.removeEventListener("resize", recompute);
+      resizeObserver.disconnect();
+    };
+  }, [fillHeight, items.length, isLoading, isError]);
+
   return (
     <>
       {isLoading ? (
@@ -247,8 +302,9 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
         </div>
       ) : (
         <div
+          ref={fillCardRef}
           className={styles.tableCard}
-          style={maxBodyHeight ? { maxHeight: maxBodyHeight, overflowY: "auto" } : undefined}
+          style={fillHeight ? { height: fillBodyHeight, overflowY: "auto" } : undefined}
         >
           <Table
             responsive
@@ -257,7 +313,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
             size={spreadsheetVariant ? "sm" : undefined}
             className={`align-middle mb-0 ${styles.crudTable} ${
               spreadsheetVariant ? styles.crudTableSpreadsheet : ""
-            }`}
+            } ${fillHeight ? styles.crudTableStickyHead : ""}`}
           >
             <thead>
               <tr>
@@ -341,7 +397,9 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
         </div>
       )}
 
-      <ListPagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
+      <div ref={fillPaginationRef}>
+        <ListPagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
+      </div>
     </>
   );
 }
@@ -377,7 +435,7 @@ export function CrudListPage<
   isMock,
   filters,
   spreadsheetVariant,
-  maxBodyHeight,
+  fillHeight,
   headerActions,
   selection,
   sort,
@@ -440,7 +498,7 @@ export function CrudListPage<
           emptyMessageKey={emptyMessageKey}
           viewMode={viewMode}
           spreadsheetVariant={spreadsheetVariant}
-          maxBodyHeight={maxBodyHeight}
+          fillHeight={fillHeight}
           selection={selection}
           sort={sort}
           onSortChange={onSortChange}
