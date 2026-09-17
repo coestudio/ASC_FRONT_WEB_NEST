@@ -87,44 +87,6 @@ export function Operational({ operationId }: { operationId: string }) {
 }
 
 /**
- * Filtro dedicado de texto (NF/Lote — SPEC-74) — mesmo padrão de campo
- * isolado de `ContainerSearchInput`/`ListSearchInput` (regra 10 do
- * AGENTS.md: nenhum input cru fora de `layouts/Form/Fields`), genérico
- * o bastante pra servir os dois filtros sem duplicar o componente.
- */
-function StuffingFilterInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}) {
-  const methods = useForm<{ value: string }>({ defaultValues: { value } });
-  const watched = methods.watch("value");
-
-  useEffect(() => {
-    if (watched !== value) onChange(watched);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watched]);
-
-  useEffect(() => {
-    if (value !== methods.getValues("value")) methods.setValue("value", value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-
-  return (
-    <InputText
-      methods={methods}
-      fieldName="value"
-      placeholder={placeholder}
-      config={{ containerClass: "mb-0" }}
-    />
-  );
-}
-
-/**
  * Sub-aba Estufagem (SPEC-73) — listagem de fardos ainda não estufados,
  * mesma infraestrutura do Romaneio (`CrudListPage`/`CrudSelection`,
  * SPEC-53): busca, paginação e seleção múltipla por checkbox. Duas ações:
@@ -141,9 +103,11 @@ function StuffingTab({ operationId }: { operationId: string }) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
+  // SPEC-74 §revisão: só a busca livre (já cobre Fardo/Código/NF/Lote via
+  // OR no Core) — filtros dedicados de NF/Lote chegaram a ser
+  // implementados, mas o usuário decidiu matá-los (dropdown de Lote não
+  // tem fonte de dados viável, e a busca livre já resolve o caso comum).
   const [search, setSearch] = useState("");
-  const [notaFiscalFilter, setNotaFiscalFilter] = useState("");
-  const [loteFilter, setLoteFilter] = useState("");
   // SPEC-74: ordenação clicável (mesmo mecanismo de `Romaneio.tsx`,
   // SPEC-53) — o Core já expõe as 5 chaves em `RomaneioViewModel.Query.
   // Sortable`, sem mudança de contrato aqui.
@@ -154,8 +118,6 @@ function StuffingTab({ operationId }: { operationId: string }) {
 
   const listQueryOptions = getGetApiOperationOperationIdRomaneioQueryOptions(operationId, {
     Search: search || undefined,
-    NotaFiscal: notaFiscalFilter || undefined,
-    Lote: loteFilter || undefined,
     IsStuffed: false,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
@@ -269,26 +231,6 @@ function StuffingTab({ operationId }: { operationId: string }) {
         selection={selection}
         sort={sort}
         onSortChange={setSort}
-        filters={
-          <>
-            <StuffingFilterInput
-              value={notaFiscalFilter}
-              onChange={(value) => {
-                setNotaFiscalFilter(value);
-                setPage(1);
-              }}
-              placeholder={t("administrative-operations.romaneio.colNotaFiscal")}
-            />
-            <StuffingFilterInput
-              value={loteFilter}
-              onChange={(value) => {
-                setLoteFilter(value);
-                setPage(1);
-              }}
-              placeholder={t("administrative-operations.romaneio.colLote")}
-            />
-          </>
-        }
         renderCard={(r) => (
           <Card>
             <Card.Body>
