@@ -149,3 +149,63 @@ nesta mesma SPEC (não virou SPEC nova):
 **CA5** — Tabela larga dentro de `.docx` ou `.sheet` rola horizontalmente
 dentro do próprio conteúdo, sem alargar o modal — PASS (código; mesma
 ressalva de não ter sido clicado num browser real).
+
+### 8.2 Ajuste adicional (2026-09-17) — "moldura" de página (print do usuário)
+
+Usuário voltou com print mostrando `.docx`/`.xlsx` já carregando/visíveis
+(RF1/RF2 da §8 confirmados funcionando de fato), mas achou "o visual não
+está interessante" — feedback qualitativo, sem lista de defeitos
+pontuais. **Limitação desta rodada:** a imagem anexada
+(`[Image #16]`) não chegou como arquivo acessível a este agente (sem
+path de disco, sem bytes) — não foi possível inspecionar o print
+específico. Segui em frente com uma leitura de causa raiz plausível e
+comum pro sintoma descrito ("visual sem graça"): o HTML convertido
+(`mammoth`/SheetJS) ficava solto dentro do modal, sem nenhuma "moldura"
+que o diferenciasse de texto cru — mesmo com hierarquia de heading/borda
+de tabela já certas desde a §8, faltava identidade visual de "isto é um
+documento/planilha dentro de um preview", não só HTML estilizado.
+
+**Mudanças:**
+
+- Novo wrapper `.previewCard` (`file-preview-modal.module.css`) em volta
+  do conteúdo de `.docx`/`.sheet`: fundo `--bs-tertiary-bg`, borda,
+  cantos arredondados — cria um "cartão" que separa visualmente o
+  preview do resto do modal.
+- Novo cabeçalho `.previewCardHeader` dentro do cartão: ícone
+  (`iconForExtension`, já existia, reaproveitado — `bi-file-earmark-word`/
+  `bi-file-earmark-spreadsheet`) colorido via `--bs-primary`
+  (`.previewCardIconDocx`) / `--bs-success` (`.previewCardIconSheet`) +
+  rótulo textual novo (`filePreview.kind.docx`/`filePreview.kind.sheet`,
+  4 locales) — dá uma identidade rápida de "isto é um Word"/"isto é uma
+  planilha" antes mesmo de ler o conteúdo.
+- `.docx`: fundo `--bs-body-bg` (contraste com o `--bs-tertiary-bg` do
+  cartão ao redor, efeito "página dentro de uma bandeja"), `max-width:
+  46rem` centralizado (linha de leitura confortável em vez de esticar a
+  largura toda do modal `size="lg"`), `padding: 1.5rem`.
+- `.sheet`: fundo `--bs-body-bg`, `padding`, `max-height: 60vh` +
+  `overflow-y: auto` (rolagem própria da planilha dentro do cartão, sem
+  depender só do scroll do modal inteiro), cabeçalho da tabela (primeira
+  linha) `position: sticky; top: 0` (fica visível rolando planilhas
+  longas), hover de linha (`--bs-secondary-bg`), fonte da tabela reduzida
+  pra `0.875rem` (mais dados visíveis por vez, mais "com cara de
+  planilha").
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/filePreview.json` — nova chave
+  `kind.docx`/`kind.sheet`.
+
+**Comandos executados:**
+- `bun run check` — VERIFIED, sem erros.
+- `bun run lint` — VERIFIED, 0 erros / 63 warnings (baseline
+  pré-existente, sem regressão nos arquivos tocados; formatação ajustada
+  com `bunx prettier --write` antes de fechar).
+- `grep -n "#" file-preview-modal.module.css` — VERIFIED, sem match (só
+  tokens `--bs-*`, CA3 mantido).
+
+**Limitação conhecida:** como no §8 original, não validado visualmente
+num browser real contra o arquivo do print do usuário — recomenda-se
+reabrir o mesmo `.docx`/`.xlsx` e comparar. Se o resultado ainda não for
+"interessante" o suficiente na visão do usuário, preciso de um retorno
+mais específico (o que exatamente incomoda: tamanho de fonte? cor?
+espaçamento? falta de algo como paginação/rodapé simulado?) — feedback
+qualitativo tipo "não está interessante" sem a imagem legível não dá pra
+convergir sozinho pra além de uma correção de causa-raiz plausível como
+esta.

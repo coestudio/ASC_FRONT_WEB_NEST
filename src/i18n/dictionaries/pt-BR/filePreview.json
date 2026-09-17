@@ -1,6 +1,10 @@
 {
   "titleFallback": "Arquivo",
   "error": "Não foi possível carregar o conteúdo deste arquivo.",
+  "kind": {
+    "docx": "Documento Word",
+    "sheet": "Planilha"
+  },
   "unavailable": {
     "message": "Não há pré-visualização disponível para este tipo de arquivo.",
     "noUrl": "Este arquivo não está disponível.",

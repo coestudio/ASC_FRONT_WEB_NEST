@@ -142,8 +142,19 @@ function DocxPreview({ file }: { file: FilePreviewFile }) {
 
   if (failed) return <UnavailableFallback file={file} message={t("filePreview.error")} />;
   if (html === null) return <LoadingState variant="inline" />;
-  // Conteúdo vem do parsing local de `mammoth`, não é HTML arbitrário de terceiro.
-  return <div className={styles.docx} dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <div className={styles.previewCard}>
+      <div className={styles.previewCardHeader}>
+        <i
+          className={`bi ${iconForExtension(extensionOf(file))} ${styles.previewCardIconDocx}`}
+          aria-hidden
+        />
+        <span className="fw-semibold text-body-secondary">{t("filePreview.kind.docx")}</span>
+      </div>
+      {/* Conteúdo vem do parsing local de `mammoth`, não é HTML arbitrário de terceiro. */}
+      <div className={styles.docx} dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
 }
 
 function SheetPreview({ file }: { file: FilePreviewFile }) {
@@ -180,11 +191,20 @@ function SheetPreview({ file }: { file: FilePreviewFile }) {
   if (failed) return <UnavailableFallback file={file} message={t("filePreview.error")} />;
   if (html === null) return <LoadingState variant="inline" />;
   return (
-    // Conteúdo vem do parsing local de `xlsx`/SheetJS, não é HTML arbitrário de terceiro.
-    <div
-      className={`${styles.sheet} table-responsive`}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className={styles.previewCard}>
+      <div className={styles.previewCardHeader}>
+        <i
+          className={`bi ${iconForExtension(extensionOf(file))} ${styles.previewCardIconSheet}`}
+          aria-hidden
+        />
+        <span className="fw-semibold text-body-secondary">{t("filePreview.kind.sheet")}</span>
+      </div>
+      {/* Conteúdo vem do parsing local de `xlsx`/SheetJS, não é HTML arbitrário de terceiro. */}
+      <div
+        className={`${styles.sheet} table-responsive`}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
   );
 }
 

@@ -3,6 +3,41 @@
    borda). Estiliza via :global() nas tags que a lib gera dentro do
    container escopado — cores só por token --bs-*, nunca hex fixo. */
 
+/* 8.2 (2026-09-17) — "moldura" de página: sem isso o HTML convertido
+   fica largado dentro do modal, sem nenhuma referência visual de que é
+   um documento/planilha (queixa do usuário: "visual não está
+   interessante"). Card com fundo levemente destacado do corpo do modal,
+   borda e cabeçalho com ícone/rótulo do tipo de arquivo — mesmo ícone já
+   usado no fallback "sem preview" (`iconForExtension`), só que aqui
+   dentro do preview que já funciona. */
+.previewCard {
+  background-color: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  overflow: hidden;
+}
+
+.previewCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background-color: var(--bs-secondary-bg);
+  font-size: 0.875rem;
+}
+
+/* Ícone com leve identidade de cor por tipo — via classe utilitária do
+   Bootstrap (`text-primary`/`text-success`, tokens `--bs-primary`/
+   `--bs-success` já resolvidos por brand×modo), não hex fixo. */
+.previewCardIconDocx {
+  color: var(--bs-primary);
+}
+
+.previewCardIconSheet {
+  color: var(--bs-success);
+}
+
 .docx :global(h1) {
   font-size: 1.5rem;
   font-weight: 600;
@@ -50,6 +85,13 @@
 
 .docx {
   overflow-wrap: break-word;
+  /* área de leitura "tipo página" — fundo do corpo (contraste com o
+     `.previewCard` ao redor), largura confortável de leitura, respiro
+     nas bordas. */
+  background-color: var(--bs-body-bg);
+  max-width: 46rem;
+  margin-inline: auto;
+  padding: 1.5rem;
 }
 
 .docx :global(table) {
@@ -67,15 +109,23 @@
   padding: 0.375rem 0.5rem;
 }
 
+.sheet {
+  background-color: var(--bs-body-bg);
+  padding: 0.75rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
 .sheet :global(table) {
   border-collapse: collapse;
   width: 100%;
+  font-size: 0.875rem;
 }
 
 .sheet :global(table td),
 .sheet :global(table th) {
   border: 1px solid var(--bs-border-color);
-  padding: 0.375rem 0.5rem;
+  padding: 0.375rem 0.625rem;
   white-space: nowrap;
 }
 
@@ -83,8 +133,17 @@
   font-weight: 600;
   background-color: var(--bs-tertiary-bg);
   border-bottom: 2px solid var(--bs-border-color);
+  /* cabeçalho fixo ao rolar verticalmente — SheetJS não gera <thead>,
+     então o alvo é a primeira linha (mesma ressalva já documentada). */
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .sheet :global(table tr:not(:first-child):nth-child(even)) {
   background-color: var(--bs-tertiary-bg);
+}
+
+.sheet :global(table tr:not(:first-child):hover) {
+  background-color: var(--bs-secondary-bg);
 }
