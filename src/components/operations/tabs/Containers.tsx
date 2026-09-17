@@ -55,6 +55,7 @@ import type {
 import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
 import { resolveCargoUnitStatusLabel } from "@/api/generated/static/cargoUnitStatusOptions";
 import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
@@ -352,7 +353,7 @@ export function Containers({ operationId }: { operationId: string }) {
           {t("administrative-operations.containers.empty")}
         </div>
       ) : (
-        <div className="table-responsive">
+        <div className="soft-card table-responsive">
           <Table hover className="align-middle mb-0">
             <thead>
               <tr>
@@ -375,54 +376,38 @@ export function Containers({ operationId }: { operationId: string }) {
                   </td>
                   <td>{item.photos?.length ?? 0}</td>
                   <td>
-                    <div className="d-flex gap-2 flex-wrap">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.stuffing.actionIdentified")}
-                        onClick={() => setStuffIdentifiedFor(item)}
-                      >
-                        <i className="bi bi-box-seam" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.stuffing.actionQuantity")}
-                        onClick={() => setStuffQuantityFor(item)}
-                      >
-                        <i className="bi bi-stack" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.stuffing.actionBatch")}
-                        onClick={() => setStuffBatchFor(item)}
-                      >
-                        <i className="bi bi-collection" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.stuffing.actionViewCargo")}
-                        onClick={() => setCargoUnitsFor(item)}
-                      >
-                        <i className="bi bi-list-ul" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setEditing(item)}
-                      >
-                        <i className="bi bi-pencil" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => setPendingDelete(item)}
-                      >
-                        <i className="bi bi-trash" aria-hidden />
-                      </button>
-                    </div>
+                    <CrudRowActions
+                      extraActions={[
+                        {
+                          key: "stuffIdentified",
+                          icon: "bi-box-seam",
+                          label: t(
+                            "administrative-operations.containers.stuffing.actionIdentified",
+                          ),
+                          onClick: () => setStuffIdentifiedFor(item),
+                        },
+                        {
+                          key: "stuffQuantity",
+                          icon: "bi-stack",
+                          label: t("administrative-operations.containers.stuffing.actionQuantity"),
+                          onClick: () => setStuffQuantityFor(item),
+                        },
+                        {
+                          key: "stuffBatch",
+                          icon: "bi-collection",
+                          label: t("administrative-operations.containers.stuffing.actionBatch"),
+                          onClick: () => setStuffBatchFor(item),
+                        },
+                        {
+                          key: "viewCargo",
+                          icon: "bi-list-ul",
+                          label: t("administrative-operations.containers.stuffing.actionViewCargo"),
+                          onClick: () => setCargoUnitsFor(item),
+                        },
+                      ]}
+                      onEdit={() => setEditing(item)}
+                      onDelete={() => setPendingDelete(item)}
+                    />
                   </td>
                 </tr>
               ))}
