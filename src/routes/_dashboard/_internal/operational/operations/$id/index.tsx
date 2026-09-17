@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Badge, Button, Nav, Table } from "react-bootstrap";
+import { Badge, Button, Col, Nav, Row, Table } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
@@ -186,36 +186,50 @@ function OperationalOperationDetailPage() {
 
       <section>
         {section === "details" ? (
-          <div className="row g-3">
-            <div className="col-6 col-md-4">
-              <div className="small text-body-secondary">
-                {t("operational.detail.fields.client")}
-              </div>
-              <div className="fw-semibold">{operation.client}</div>
-            </div>
-            <div className="col-6 col-md-4">
-              <div className="small text-body-secondary">
-                {t("operational.detail.fields.product")}
-              </div>
-              <div className="fw-semibold">{operation.product}</div>
-            </div>
-            <div className="col-6 col-md-4">
-              <div className="small text-body-secondary">
-                {t("operational.detail.fields.status")}
-              </div>
-              <div className="fw-semibold">
-                {t(`operational.detail.status.${operation.statusKey}`)}
-              </div>
-            </div>
-            <div className="col-6 col-md-4">
-              <div className="small text-body-secondary">{t("operational.detail.fields.type")}</div>
-              <div className="fw-semibold">{t(`operational.detail.type.${operation.typeKey}`)}</div>
-            </div>
-            <div className="col-6 col-md-4">
-              <div className="small text-body-secondary">{t("operational.detail.fields.mode")}</div>
-              <div className="fw-semibold">{t(`operational.detail.mode.${operation.modeKey}`)}</div>
-            </div>
-          </div>
+          <section className="soft-card p-4">
+            <h2 className="h6 text-body-secondary text-uppercase mb-3 d-flex align-items-center gap-2">
+              <i className="bi bi-info-circle" aria-hidden />
+              {t("operational.detail.sections.details.label")}
+            </h2>
+            <Row className="g-3">
+              <Col md={4}>
+                <div className="small text-body-secondary">
+                  {t("operational.detail.fields.client")}
+                </div>
+                <div className="fw-semibold">{operation.client}</div>
+              </Col>
+              <Col md={4}>
+                <div className="small text-body-secondary">
+                  {t("operational.detail.fields.product")}
+                </div>
+                <div className="fw-semibold">{operation.product}</div>
+              </Col>
+              <Col md={4}>
+                <div className="small text-body-secondary">
+                  {t("operational.detail.fields.status")}
+                </div>
+                <div className="fw-semibold">
+                  {t(`operational.detail.status.${operation.statusKey}`)}
+                </div>
+              </Col>
+              <Col md={4}>
+                <div className="small text-body-secondary">
+                  {t("operational.detail.fields.type")}
+                </div>
+                <div className="fw-semibold">
+                  {t(`operational.detail.type.${operation.typeKey}`)}
+                </div>
+              </Col>
+              <Col md={4}>
+                <div className="small text-body-secondary">
+                  {t("operational.detail.fields.mode")}
+                </div>
+                <div className="fw-semibold">
+                  {t(`operational.detail.mode.${operation.modeKey}`)}
+                </div>
+              </Col>
+            </Row>
+          </section>
         ) : section === "containers" ? (
           operation.containers.length === 0 ? (
             <div className="alert alert-secondary mb-0">
