@@ -203,19 +203,26 @@ function StuffingTab({ operationId }: { operationId: string }) {
 
   return (
     <div>
-      {selectedIds.size > 0 ? (
-        <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
-          <span className="fw-semibold">
-            {t("administrative-operations.containers.stuffing.batchSelected", {
-              count: selectedIds.size,
-            })}
-          </span>
-          <Button variant="primary" size="sm" onClick={() => setBatchOpen(true)}>
-            <i className="bi bi-box-seam me-1" aria-hidden />
-            {t("administrative-operations.containers.stuffing.batchButton")}
-          </Button>
-        </div>
-      ) : null}
+      {/* Sempre visível (pedido do usuário): antes só aparecia com algo
+          selecionado, virando uma caixa grande "pipocando" acima da
+          listagem — agora é uma linha leve, sempre no mesmo lugar, com o
+          botão desabilitado até haver seleção. */}
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <span className="text-body-secondary small">
+          {t("administrative-operations.containers.stuffing.batchSelected", {
+            count: selectedIds.size,
+          })}
+        </span>
+        <Button
+          variant="primary"
+          size="sm"
+          disabled={selectedIds.size === 0}
+          onClick={() => setBatchOpen(true)}
+        >
+          <i className="bi bi-box-seam me-1" aria-hidden />
+          {t("administrative-operations.containers.stuffing.batchButton")}
+        </Button>
+      </div>
 
       <CrudListPage
         titleKey="administrative-operations.operational.stuffing.title"
