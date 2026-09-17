@@ -43,8 +43,9 @@ import {
 } from "@/components/operations/operation-edit-fields";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { ListPagination } from "@/components/ui/list-pagination";
-import { InputText, Select, SelectAsync } from "@/layouts/Form/Fields/Index";
+import { Select, SelectAsync } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import type { Locale } from "@/i18n/config";
 import { useResponsiveViewMode } from "@/lib/view-mode";
 import { useLocale, useT } from "@/lib/ui-prefs";
@@ -114,44 +115,6 @@ type OperationFiltersValues = {
   status: string;
   clientId: string;
 };
-
-/**
- * Busca livre (`Search` do Core) — campo isolado (não faz parte de um
- * `useForm` maior, só filtra a lista), mesmo racional do `ListSearchInput`
- * de `crud-list-page.tsx` (regra 10 do AGENTS.md: `layouts/Form/Fields`,
- * nunca `<input>` cru).
- */
-function OperationsSearchInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}) {
-  const methods = useForm<{ search: string }>({ defaultValues: { search: value } });
-  const search = methods.watch("search");
-
-  useEffect(() => {
-    if (search !== value) onChange(search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
-
-  useEffect(() => {
-    if (value !== methods.getValues("search")) methods.setValue("search", value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-
-  return (
-    <InputText
-      methods={methods}
-      fieldName="search"
-      placeholder={placeholder}
-      config={{ containerClass: "mb-0" }}
-    />
-  );
-}
 
 /**
  * Barra de filtros (tipo/status/cliente, RF3 da SPEC-07-01) — `Select`/
@@ -546,7 +509,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
       <div className="d-flex align-items-center gap-2 mb-4 flex-wrap">
         <div style={{ minWidth: 220 }}>
-          <OperationsSearchInput
+          <FilterText
             value={search}
             onChange={(value) => {
               setSearch(value);

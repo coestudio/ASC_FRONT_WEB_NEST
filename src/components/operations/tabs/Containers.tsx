@@ -44,6 +44,7 @@ import {
   Select,
   SelectAsync,
 } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
@@ -106,48 +107,6 @@ function emptyStringsToNull<V>(value: V): V {
 function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>): Resolver<T> {
   const resolver = zodResolver(schema as never) as unknown as Resolver<T>;
   return (values, context, options) => resolver(emptyStringsToNull(values), context, options);
-}
-
-/**
- * SPEC-38: busca por texto na listagem de containers — campo isolado (não
- * faz parte de um `useForm` maior, só filtra a lista), mas ainda assim via
- * `layouts/Form/Fields/InputText` (regra 10 do AGENTS.md: nenhum input cru
- * fora da biblioteca de Fields). Mesmo padrão de `ListSearchInput` já usado
- * em `components/crud/crud-list-page.tsx` (privado lá, replicado aqui
- * porque `Containers.tsx` não usa `CrudListPage`).
- *
- * Exportado para reuso em `Operational.tsx` (SPEC-60): a sub-aba Estufagem
- * também busca containers, com o mesmo padrão de campo isolado.
- */
-export function ContainerSearchInput({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const t = useT();
-  const methods = useForm<{ search: string }>({ defaultValues: { search: value } });
-  const search = methods.watch("search");
-
-  useEffect(() => {
-    if (search !== value) onChange(search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
-
-  useEffect(() => {
-    if (value !== methods.getValues("search")) methods.setValue("search", value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-
-  return (
-    <InputText
-      methods={methods}
-      fieldName="search"
-      placeholder={t("administrative-operations.containers.searchPlaceholder")}
-      config={{ containerClass: "mb-0" }}
-    />
-  );
 }
 
 /**
@@ -299,12 +258,13 @@ export function Containers({ operationId }: { operationId: string }) {
     <div>
       <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
         <div style={{ minWidth: 240 }}>
-          <ContainerSearchInput
+          <FilterText
             value={search}
             onChange={(value) => {
               setSearch(value);
               setPage(1);
             }}
+            placeholder={t("administrative-operations.containers.searchPlaceholder")}
           />
         </div>
         <div className="d-flex gap-2">

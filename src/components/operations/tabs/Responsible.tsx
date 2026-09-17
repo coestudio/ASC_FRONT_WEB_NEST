@@ -22,7 +22,8 @@ import {
   internalRoleOptions,
   resolveInternalRoleLabel,
 } from "@/api/generated/static/internalRoleOptions";
-import { InputText, SelectAsync } from "@/layouts/Form/Fields/Index";
+import { SelectAsync } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { usePagination } from "@/hooks/usePagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -75,8 +76,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
   const [roleFilter, setRoleFilter] = useState<Set<RoleFilterKey>>(() => new Set());
   const [linkModalOpen, setLinkModalOpen] = useState(false);
 
-  const searchMethods = useForm<{ search: string }>({ defaultValues: { search: "" } });
-  const search = searchMethods.watch("search");
+  const [search, setSearch] = useState("");
 
   const query = useSsrSafeQuery(getGetApiOperationOperationIdResponsibleQueryOptions(operationId));
 
@@ -196,11 +196,10 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
     <div>
       <Row className="g-2 mb-3">
         <Col md={4}>
-          <InputText
-            methods={searchMethods}
-            fieldName="search"
+          <FilterText
+            value={search}
+            onChange={setSearch}
             placeholder={t("administrative-operations.responsible.searchPlaceholder")}
-            config={{ containerClass: "mb-0" }}
           />
         </Col>
         <Col md={5} className="d-flex align-items-center gap-2 flex-wrap">

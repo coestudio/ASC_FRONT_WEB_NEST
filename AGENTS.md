@@ -52,6 +52,10 @@ publicado — sem force-push/rebase/amend em branch já sincronizada).
     `layouts/Form`: campo de formulário é sempre `layouts/Form/Fields`;
     `components/ui` continua para blocos que não são input de form (botão,
     modal, banner). Ver `.github/instructions/components.instructions.md`.
+    **Filtro de listagem (busca/coluna) não é campo de formulário** — vem
+    de `layouts/Filters/**` (`FilterText`, SPEC-77), não de
+    `Form/Fields`: não tem rótulo visível nem validação, então não carrega
+    a linha reservada de mensagem de erro que todo `Form/Fields` tem.
 
 > **Não é Next.js.** O projeto foi migrado. Qualquer resquício de Next
 > (`next/*`, `next-auth`, `NEXT_PUBLIC_*`, `src/app/**`, Server Actions,
@@ -118,6 +122,10 @@ SPEC-08 por último — convergindo em `SPECS-LEGADO`).
   `Fields/Index.ts` pra lista completa e o tipo `LayoutField`). Hoje ainda
   não é usada por nenhuma rota (portada do `warren/Portal` sem consumidor
   ainda) — passa a ter consumidor real a partir da SPEC-02.
+  **`layouts/Filters/**`** (SPEC-77) — campo de filtro/busca de listagem
+  (`FilterText`): controlado direto, sem `react-hook-form`, sem label
+  visível, sem linha de erro — não é `Form/Fields` porque filtro não
+  valida nada.
 - `src/hooks/**` — `useUser`, `useCan` (guard de UI, não de rota).
 - `src/i18n/**` — 4 idiomas (`pt-BR` canônico, `en`, `es`, `zh`). Dicts
   particionados por namespace: `dictionaries/<locale>/<namespace>.json`

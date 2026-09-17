@@ -1,5 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { useForm } from "react-hook-form";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import type { UseQueryOptions } from "@tanstack/react-query";
@@ -10,48 +9,10 @@ import { useResponsiveViewMode, type ViewMode } from "@/lib/view-mode";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { ListPagination } from "@/components/ui/list-pagination";
-import { InputText } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import { useMounted } from "@/hooks/useMounted";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./crud-list-page.module.css";
-
-/**
- * Busca da lista — campo isolado (não faz parte de um `useForm` maior, só
- * filtra a lista) mas ainda assim é `layouts/Form/Fields/InputText` (regra
- * 10 do AGENTS.md: nenhum elemento de input cru fora da biblioteca de
- * Fields). `methods` é local só pra esse campo.
- */
-function ListSearchInput({
-  value,
-  onChange,
-  placeholder,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-}) {
-  const methods = useForm<{ search: string }>({ defaultValues: { search: value } });
-  const search = methods.watch("search");
-
-  useEffect(() => {
-    if (search !== value) onChange(search);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
-
-  useEffect(() => {
-    if (value !== methods.getValues("search")) methods.setValue("search", value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-
-  return (
-    <InputText
-      methods={methods}
-      fieldName="search"
-      placeholder={placeholder}
-      config={{ containerClass: "mb-0" }}
-    />
-  );
-}
 
 export type CrudColumn<T> = {
   key: string;
@@ -479,7 +440,7 @@ export function CrudListPage<
       <div className="d-flex align-items-center gap-2 mb-4 flex-wrap">
         {onSearchChange ? (
           <div className="flex-grow-1" style={{ minWidth: 220 }}>
-            <ListSearchInput
+            <FilterText
               value={search ?? ""}
               onChange={onSearchChange}
               placeholder={t("crud.list.searchPlaceholder")}
