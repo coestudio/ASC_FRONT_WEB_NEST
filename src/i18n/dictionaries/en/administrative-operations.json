@@ -293,7 +293,6 @@
     "colPhotos": "Photos",
     "colActions": "Actions",
     "photosButton": "Photos",
-    "sealActionButton": "Seal",
     "photosModalTitle": "Photos — {identifier}",
     "sealModalTitle": "Seal — {identifier}",
     "form": {
@@ -379,11 +378,15 @@
       "unsealButton": "Unseal",
       "confirmUnsealTitle": "Unseal container",
       "confirmUnsealMessage": "Remove the active seal from this container?",
+      "photoRequired": "Upload a photo of the seal before continuing.",
       "form": {
         "user": "Responsible for the seal",
         "name": "Seal type",
         "label": "Seal identification",
-        "description": "Description"
+        "description": "Description",
+        "photo": "Seal photo",
+        "date": "Seal date",
+        "time": "Seal time"
       },
       "toast": {
         "sealed": "Container sealed successfully.",

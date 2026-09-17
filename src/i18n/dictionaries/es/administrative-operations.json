@@ -293,7 +293,6 @@
     "colPhotos": "Fotos",
     "colActions": "Acciones",
     "photosButton": "Fotos",
-    "sealActionButton": "Precinto",
     "photosModalTitle": "Fotos — {identifier}",
     "sealModalTitle": "Precinto — {identifier}",
     "form": {
@@ -379,11 +378,15 @@
       "unsealButton": "Quitar precinto",
       "confirmUnsealTitle": "Quitar precinto del contenedor",
       "confirmUnsealMessage": "¿Quitar el precinto activo de este contenedor?",
+      "photoRequired": "Suba una foto del precinto antes de continuar.",
       "form": {
         "user": "Responsable del precinto",
         "name": "Tipo de precinto",
         "label": "Identificación del precinto",
-        "description": "Descripción"
+        "description": "Descripción",
+        "photo": "Foto del precinto",
+        "date": "Fecha del precinto",
+        "time": "Hora del precinto"
       },
       "toast": {
         "sealed": "Contenedor precintado con éxito.",

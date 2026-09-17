@@ -293,7 +293,6 @@
     "colPhotos": "Fotos",
     "colActions": "Ações",
     "photosButton": "Fotos",
-    "sealActionButton": "Lacre",
     "photosModalTitle": "Fotos — {identifier}",
     "sealModalTitle": "Lacre — {identifier}",
     "form": {
@@ -379,11 +378,15 @@
       "unsealButton": "Deslacrar",
       "confirmUnsealTitle": "Deslacrar container",
       "confirmUnsealMessage": "Remover o lacre ativo deste container?",
+      "photoRequired": "Envie uma foto do lacre antes de continuar.",
       "form": {
         "user": "Responsável pelo lacre",
         "name": "Tipo de lacre",
         "label": "Identificação do lacre",
-        "description": "Descrição"
+        "description": "Descrição",
+        "photo": "Foto do lacre",
+        "date": "Data do lacre",
+        "time": "Hora do lacre"
       },
       "toast": {
         "sealed": "Container lacrado com sucesso.",

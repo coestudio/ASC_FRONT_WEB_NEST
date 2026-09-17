@@ -2,12 +2,7 @@
 
 - **ID:** SPEC-62
 - **Nome:** container-seal-action-photo-datetime
-- **Status:** DRAFT — decisões próprias (§1-§3) já claras; **bloqueada por
-  `warren/Core/specs/45-container-seal-photo-datetime`** (`DRAFT`,
-  decisões fechadas em 2026-09-16: foto obrigatória, `POST .../seal` vira
-  multipart numa única chamada, `SealedAt` campo novo editável,
-  `RemoveSeal` inalterado). Não implementar antes da SPEC-45 do Core
-  estar `IMPLEMENTED` e `just map` rodar contra ela.
+- **Status:** IMPLEMENTED (2026-09-16)
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/components/operations/tabs/Containers.tsx`
   (`ContainerSeal`, `AddSealModal`, botão de lacre da linha).
@@ -82,8 +77,10 @@ inclusive pro fluxo de deslacrar.
   intermediário).
 - RF3: clique em "Deslacrar" mantém o comportamento atual (painel com
   lacre ativo + confirmação).
-- RF4: `AddSealModal` não submete sem foto (validação vem do schema
-  gerado, não escrita à mão).
+- RF4: `AddSealModal` não submete sem foto — checagem manual no
+  `handleSubmit` (ver §8: o schema gerado não marca `file` como
+  obrigatório, mesma limitação já existente no upload de foto de
+  container — `[FromForm]` escalar não expõe obrigatoriedade no OpenAPI).
 - RF5: data/hora vêm pré-preenchidas com o momento de abertura do modal,
   mas o operador pode alterar antes de enviar.
 
@@ -96,7 +93,47 @@ inclusive pro fluxo de deslacrar.
 
 ## 7. Dependência
 
-Bloqueada por `warren/Core/specs/45-container-seal-photo-datetime`
-(`DRAFT`, decisões fechadas). Ordem: Core SPEC-45 aprovada (`APROVAR
-SPEC-45`) → implementada → `just map` no NewPortal → então esta SPEC pode
-ser aprovada (`APROVAR SPEC-62`) e implementada.
+Dependia de `warren/Core/specs/45-container-seal-photo-datetime`
+(`IMPLEMENTED`) — `just map` rodado contra o Core local já com a SPEC-45.
+
+## 8. Implementation Notes (2026-09-16)
+
+- Botão da linha (`Containers.tsx`): `onClick` e ícone/tooltip agora
+  checam `item.status === "Sealed"` — sealed abre `sealFor` (painel
+  existente, `ContainerSeal`, inalterado); não-sealed abre novo estado
+  `addSealFor` → `AddSealModal` direto. Ícone: `bi-shield-lock`
+  (deslacrar) vs `bi-shield` (lacrar).
+- `AddSealModal` ganhou `InputPhotoSingle` (`fieldName="file"`) e dois
+  campos **fora** do payload tipado: um `useForm` local separado
+  (`dateTimeMethods`, mesmo padrão de `ContainerSearchInput`) com
+  `sealDate`/`sealTime`, pré-preenchidos via `nowAsDateAndTime()` no
+  mount do modal. `handleSubmit` combina os dois num único
+  `sealedAt = new Date(\`${sealDate}T${sealTime}:00\`).toISOString()`
+  antes de mandar pro backend — o payload tipado (`SealFormValues`,
+  inferido de `PostApiOperationOperationIdContainerIdSealBody`) só tem
+  `sealedAt` como string única, não os dois campos separados.
+- **Achado importante (não previsto no §3 original):** o schema Zod
+  gerado marca `file`/`userId`/`name`/`sealedAt` como `.optional()`,
+  mesmo sendo obrigatórios no Core — porque a rota usa parâmetros
+  `[FromForm]` escalares (não uma classe `[Required]`), e o gerador de
+  OpenAPI nativo do .NET não expõe obrigatoriedade de parâmetro de form
+  individual (mesma situação pré-existente no upload de foto de
+  container, `PostApiOperationOperationIdContainerIdPhotoBody`). Por
+  isso a checagem de foto obrigatória é manual (`if (!values.file)`,
+  toast com `seal.photoRequired`) — não dá pra confiar no schema/
+  resolver pra isso, ajuste em relação ao RF4 original.
+- Achado técnico no Core (fora do escopo desta SPEC, registrado aqui pra
+  rastreabilidade): a primeira tentativa em `Core/specs/45` usou
+  `[FromForm] SealViewModel.Create seal` (uma classe), que gerou schema
+  com nomes **PascalCase** (`UserId`, `File`...) — a política de
+  camelCase do `System.Text.Json` não se aplica a model binding de
+  formulário. Revertido pra parâmetros escalares (`[FromForm] Guid
+  userId, ...`), mesmo padrão de `AddPhotoAsync`, pra manter o contrato
+  em camelCase — `SealViewModel` foi removida do Core (ver
+  `Core/specs/45/spec.md` §7 e commit correspondente).
+- i18n: `seal.photoRequired`, `seal.form.photo`, `seal.form.date`,
+  `seal.form.time` — 4 idiomas.
+- Validação: `tsc --noEmit` e `bun run lint` sem erro/aviso novo. Fluxo
+  de ponta a ponta (criar lacre com foto+data+hora) **não testado em
+  navegador** nesta sessão — só validado que o contrato sobe corretamente
+  no Core local e que o front compila contra o client gerado.

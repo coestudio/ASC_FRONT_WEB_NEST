@@ -120,6 +120,7 @@ export const GetApiOperationOperationIdContainerResponse = zod.object({
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -202,6 +203,7 @@ export const PostApiOperationOperationIdContainerResponse = zod.object({
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -271,6 +273,7 @@ export const GetApiOperationOperationIdContainerIdResponse = zod.object({
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -347,6 +350,7 @@ export const PutApiOperationOperationIdContainerIdResponse = zod.object({
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -428,6 +432,7 @@ export const PostApiOperationOperationIdContainerIdPhotoResponse = zod.object({
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -498,6 +503,7 @@ export const DeleteApiOperationOperationIdContainerIdPhotoPhotoIdResponse = zod.
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -542,17 +548,13 @@ export const PostApiOperationOperationIdContainerIdSealParams = zod.object({
   "id": zod.uuid()
 })
 
-export const postApiOperationOperationIdContainerIdSealBodyLabelMax = 100;
-
-export const postApiOperationOperationIdContainerIdSealBodyDescriptionMax = 255;
-
-
-
 export const PostApiOperationOperationIdContainerIdSealBody = zod.object({
-  "userId": zod.uuid(),
-  "label": zod.string().max(postApiOperationOperationIdContainerIdSealBodyLabelMax).nullish(),
-  "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']),
-  "description": zod.string().max(postApiOperationOperationIdContainerIdSealBodyDescriptionMax).nullish()
+  "file": zod.instanceof(Blob).optional(),
+  "userId": zod.uuid().optional(),
+  "label": zod.string().optional(),
+  "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
+  "description": zod.string().optional(),
+  "sealedAt": zod.iso.datetime({"offset":true}).optional()
 })
 
 export const postApiOperationOperationIdContainerIdSealResponseTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
@@ -580,6 +582,7 @@ export const PostApiOperationOperationIdContainerIdSealResponse = zod.object({
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -650,6 +653,7 @@ export const DeleteApiOperationOperationIdContainerIdSealSealIdResponse = zod.ob
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
@@ -699,6 +703,7 @@ export const GetApiOperationOperationIdContainerIdSealCurrentResponse = zod.obje
   "name": zod.enum(['NONE', 'ASA', 'ASI', 'AMATEUR', 'EXTRA']).optional(),
   "description": zod.string().optional(),
   "userId": zod.uuid(),
+  "sealedAt": zod.iso.datetime({"offset":true}),
   "photo": zod.union([zod.null(),zod.object({
   "name": zod.string().optional(),
   "extension": zod.string().optional(),
