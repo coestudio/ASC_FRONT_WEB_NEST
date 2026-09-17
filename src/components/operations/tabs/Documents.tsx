@@ -178,7 +178,7 @@ export function Documents({ operationId }: { operationId: string }) {
           {t("administrative-operations.documents.empty")}
         </div>
       ) : (
-        <div className="table-responsive">
+        <div className="soft-card table-responsive">
           <Table hover className="align-middle mb-0">
             <thead>
               <tr>
