@@ -19,8 +19,13 @@ type ListPaginationProps = {
  * `Pagination.Item` por página (degrada com muitas páginas), renderiza
  * sempre 4 botões fixos + um indicador textual de posição — a navegação
  * manual por número é só rede de segurança, o foco esperado do usuário
- * final é a busca (SPEC-28 §2). Não renderiza nada com 1 página só ou
- * menos.
+ * final é a busca (SPEC-28 §2).
+ *
+ * Sempre renderiza, mesmo com 1 página só (decisão revista — antes escondia
+ * com `totalPages <= 1`; o usuário quer a paginação sempre visível em toda
+ * listagem do projeto, não condicionada à quantidade de itens). Os botões
+ * ficam desabilitados quando não há pra onde navegar (`isFirst`/`isLast`),
+ * o indicador de posição continua mostrando "1 de 1".
  */
 export function ListPagination({
   page,
@@ -29,8 +34,6 @@ export function ListPagination({
   className = "justify-content-center mt-3",
 }: ListPaginationProps) {
   const t = useT();
-
-  if (totalPages <= 1) return null;
 
   const isFirst = page <= 1;
   const isLast = page >= totalPages;
