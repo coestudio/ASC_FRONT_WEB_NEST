@@ -294,7 +294,6 @@
     "colActions": "Ações",
     "photosButton": "Fotos",
     "photosModalTitle": "Fotos — {identifier}",
-    "sealModalTitle": "Lacre — {identifier}",
     "form": {
       "container": "Container",
       "tara": "Tara",
@@ -371,9 +370,6 @@
       "colContainer": "Container de origem"
     },
     "seal": {
-      "title": "Lacre",
-      "activeBadge": "Lacrado",
-      "none": "Nenhum lacre ativo.",
       "sealButton": "Lacrar",
       "unsealButton": "Deslacrar",
       "confirmUnsealTitle": "Deslacrar container",

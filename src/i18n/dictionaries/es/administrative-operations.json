@@ -294,7 +294,6 @@
     "colActions": "Acciones",
     "photosButton": "Fotos",
     "photosModalTitle": "Fotos — {identifier}",
-    "sealModalTitle": "Precinto — {identifier}",
     "form": {
       "container": "Contenedor",
       "tara": "Tara",
@@ -371,9 +370,6 @@
       "colContainer": "Contenedor de origen"
     },
     "seal": {
-      "title": "Precinto",
-      "activeBadge": "Precintado",
-      "none": "Ningún precinto activo.",
       "sealButton": "Precintar",
       "unsealButton": "Quitar precinto",
       "confirmUnsealTitle": "Quitar precinto del contenedor",

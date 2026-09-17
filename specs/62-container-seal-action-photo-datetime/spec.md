@@ -45,8 +45,8 @@ inclusive pro fluxo de deslacrar.
      diretamente (novo estado `addSealFor`, mesmo padrão de
      `photosFor`/`sealFor`).
    - Se sealed → ícone/tooltip "Deslacrar" (`seal.unsealButton`), clique
-     mantém o comportamento atual: abre o modal com `ContainerSeal`
-     (mostra o lacre ativo + botão/confirmação de deslacrar).
+     abre **direto** um `ConfirmationModal` (sem painel intermediário —
+     decisão revista na reabertura de §9, ver histórico).
 2. `AddSealModal` ganha (schema vem do Zod gerado após `just map` contra
    a SPEC-45 do Core implementada — campo exato de data/hora, `IFormFile`
    vs `File`, a conferir contra o gerado na implementação):
@@ -75,8 +75,8 @@ inclusive pro fluxo de deslacrar.
   `item.status`, sem query adicional.
 - RF2: clique em "Lacrar" abre `AddSealModal` direto (sem o painel
   intermediário).
-- RF3: clique em "Deslacrar" mantém o comportamento atual (painel com
-  lacre ativo + confirmação).
+- RF3: clique em "Deslacrar" abre direto um `ConfirmationModal`, sem
+  painel intermediário (ver §9).
 - RF4: `AddSealModal` não submete sem foto — checagem manual no
   `handleSubmit` (ver §8: o schema gerado não marca `file` como
   obrigatório, mesma limitação já existente no upload de foto de
@@ -98,11 +98,23 @@ Dependia de `warren/Core/specs/45-container-seal-photo-datetime`
 
 ## 8. Implementation Notes (2026-09-16)
 
-- Botão da linha (`Containers.tsx`): `onClick` e ícone/tooltip agora
-  checam `item.status === "Sealed"` — sealed abre `sealFor` (painel
-  existente, `ContainerSeal`, inalterado); não-sealed abre novo estado
-  `addSealFor` → `AddSealModal` direto. Ícone: `bi-shield-lock`
-  (deslacrar) vs `bi-shield` (lacrar).
+- Botão da linha (`Containers.tsx`): `onClick` e ícone/tooltip checam
+  `item.status === "Sealed"` — não-sealed abre `addSealFor` →
+  `AddSealModal` direto. Ícone: `bi-shield-lock` (deslacrar) vs
+  `bi-shield` (lacrar).
+- **Reabertura (2026-09-16, mesmo dia):** pedido do usuário depois da
+  primeira entrega — "deslacrar" também não deve passar por painel
+  intermediário, só um `ConfirmationModal` direto (mesmo padrão de
+  `pendingDelete`). Removido o painel `ContainerSeal` (que mostrava
+  badge + nome do lacre + botão "Deslacrar" antes do confirm) e a query
+  dedicada `seal/current` que ele usava — o lacre ativo já vem no
+  próprio item da listagem (`item.seals?.find(s => s.status ===
+  "Active")`), sem precisar de mais uma chamada. Novo estado
+  `unsealFor` + `handleUnseal` direto no componente `Containers`
+  (usa `removeSealMutation` movido pra lá). `ContainerSeal` foi apagada
+  (ficou sem nenhum consumidor); chaves i18n órfãs removidas
+  (`seal.title`, `seal.activeBadge`, `seal.none`,
+  `containers.sealModalTitle`, 4 idiomas).
 - `AddSealModal` ganhou `InputPhotoSingle` (`fieldName="file"`) e dois
   campos **fora** do payload tipado: um `useForm` local separado
   (`dateTimeMethods`, mesmo padrão de `ContainerSearchInput`) com

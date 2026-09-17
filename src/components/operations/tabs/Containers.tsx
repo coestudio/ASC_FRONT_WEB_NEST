@@ -13,8 +13,6 @@ import { getApiContainer } from "@/api/generated/endpoints/container/container";
 import {
   getGetApiOperationOperationIdContainerIdQueryKey,
   getGetApiOperationOperationIdContainerIdQueryOptions,
-  getGetApiOperationOperationIdContainerIdSealCurrentQueryKey,
-  getGetApiOperationOperationIdContainerIdSealCurrentQueryOptions,
   getGetApiOperationOperationIdContainerQueryKey,
   getGetApiOperationOperationIdContainerQueryOptions,
   useDeleteApiOperationOperationIdContainerId,
@@ -31,7 +29,7 @@ import {
   PostApiOperationOperationIdContainerIdSealBody,
   PutApiOperationOperationIdContainerIdBody,
 } from "@/api/generated/zod/operation-container/operation-container.zod";
-import type { ContainerOperationDTO, ContainerPhotoSlot, SealDTO } from "@/api/generated/model";
+import type { ContainerOperationDTO, ContainerPhotoSlot } from "@/api/generated/model";
 import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
 import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
@@ -183,12 +181,13 @@ export function Containers({ operationId }: { operationId: string }) {
   const [editing, setEditing] = useState<ContainerOperationDTO | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
   const [photosFor, setPhotosFor] = useState<ContainerOperationDTO | null>(null);
-  const [sealFor, setSealFor] = useState<ContainerOperationDTO | null>(null);
   // SPEC-62: quando não há lacre ativo, o botão da linha abre o modal de
-  // criar lacre direto — sem passar pelo painel intermediário de
-  // `ContainerSeal` (que só faz sentido quando já existe lacre pra
-  // mostrar/deslacrar, ver `sealFor` acima).
+  // criar lacre direto. Quando já tem, pedido do usuário: direto pra um
+  // `ConfirmationModal` de deslacrar (sem painel intermediário) — o lacre
+  // ativo já vem no próprio item da listagem (`item.seals`), sem query
+  // extra.
   const [addSealFor, setAddSealFor] = useState<ContainerOperationDTO | null>(null);
+  const [unsealFor, setUnsealFor] = useState<ContainerOperationDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
     Search: search || undefined,
@@ -205,6 +204,28 @@ export function Containers({ operationId }: { operationId: string }) {
   const linkMutation = usePostApiOperationOperationIdContainer();
   const updateMutation = usePutApiOperationOperationIdContainerId();
   const deleteMutation = useDeleteApiOperationOperationIdContainerId();
+  const removeSealMutation = useDeleteApiOperationOperationIdContainerIdSealSealId();
+
+  const handleUnseal = async () => {
+    const activeSeal = unsealFor?.seals?.find((s) => s.status === "Active");
+    if (!unsealFor || !activeSeal) {
+      setUnsealFor(null);
+      return;
+    }
+    try {
+      await removeSealMutation.mutateAsync({
+        operationId,
+        id: unsealFor.id,
+        sealId: activeSeal.id,
+      });
+      toast.success(t("administrative-operations.containers.seal.toast.unsealed"));
+      invalidateList();
+    } catch {
+      toast.error(t("administrative-operations.containers.toast.error"));
+    } finally {
+      setUnsealFor(null);
+    }
+  };
 
   const fetchContainerOptions = (search: string) =>
     getApiContainer({ Search: search, Limit: 20 }).then((res) =>
@@ -352,7 +373,7 @@ export function Containers({ operationId }: { operationId: string }) {
                               : "administrative-operations.containers.seal.sealButton",
                           ),
                           onClick: () =>
-                            item.status === "Sealed" ? setSealFor(item) : setAddSealFor(item),
+                            item.status === "Sealed" ? setUnsealFor(item) : setAddSealFor(item),
                         },
                       ]}
                       onEdit={() => setEditing(item)}
@@ -477,28 +498,15 @@ export function Containers({ operationId }: { operationId: string }) {
         </Modal>
       ) : null}
 
-      {sealFor ? (
-        <Modal show onHide={() => setSealFor(null)} centered>
-          <Modal.Header>
-            <Modal.Title className="h5 mb-0">
-              {t("administrative-operations.containers.sealModalTitle", {
-                identifier: sealFor.container.identifier,
-              })}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <ContainerSeal
-              operationId={operationId}
-              containerLinkId={sealFor.id}
-              onChanged={invalidateList}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" onClick={() => setSealFor(null)}>
-              {t("crud.recordModal.close")}
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      {unsealFor ? (
+        <ConfirmationModal
+          show
+          title={t("administrative-operations.containers.seal.confirmUnsealTitle")}
+          message={t("administrative-operations.containers.seal.confirmUnsealMessage")}
+          variant="danger"
+          onConfirm={handleUnseal}
+          onCancel={() => setUnsealFor(null)}
+        />
       ) : null}
 
       {addSealFor ? (
@@ -510,131 +518,6 @@ export function Containers({ operationId }: { operationId: string }) {
             invalidateList();
             setAddSealFor(null);
           }}
-        />
-      ) : null}
-    </div>
-  );
-}
-
-/**
- * Lacre do container (SPEC-44) — substitui o antigo campo livre `sealDate`
- * (extinto no Core, SPEC-35) por ação dedicada: "Lacrar" (`AddSeal`) e
- * "Deslacrar" (`DELETE .../seal/{id}`, soft-delete no Core). O lacre ativo
- * atual vem sempre da consulta dedicada (`seal/current`, CA3 da SPEC-44) —
- * nunca inferido de uma lista. Sem lista de histórico (nice-to-have do §4
- * item 3 da SPEC-44): o Core não expõe hoje um endpoint de listagem de
- * lacres por container (só o lacre ativo), então não há dado pra montar
- * essa lista sem inventar um novo endpoint — fora do escopo desta
- * implementação, registrado como débito no spec.md.
- */
-function ContainerSeal({
-  operationId,
-  containerLinkId,
-  onChanged,
-}: {
-  operationId: string;
-  containerLinkId: string;
-  onChanged: () => void;
-}) {
-  const t = useT();
-  const locale = useLocale();
-  const queryClient = useQueryClient();
-  const [addSealOpen, setAddSealOpen] = useState(false);
-  const [confirmUnseal, setConfirmUnseal] = useState(false);
-
-  const currentSealQuery = useSsrSafeQuery(
-    getGetApiOperationOperationIdContainerIdSealCurrentQueryOptions(operationId, containerLinkId),
-  );
-  const removeSealMutation = useDeleteApiOperationOperationIdContainerIdSealSealId();
-
-  // Contrato do Core: 200 com corpo `null` quando não há lacre ativo — não é
-  // erro, é o estado "deslacrado" (SPEC-33/44). O tipo gerado não reflete a
-  // nulabilidade do corpo (limitação do Orval sobre `SealDTO?`), por isso o
-  // cast aqui.
-  const currentSeal = (currentSealQuery.data ?? null) as SealDTO | null;
-
-  const invalidateSeal = () => {
-    queryClient.invalidateQueries({
-      queryKey: getGetApiOperationOperationIdContainerIdSealCurrentQueryKey(
-        operationId,
-        containerLinkId,
-      ),
-    });
-    onChanged();
-  };
-
-  const handleUnseal = async () => {
-    if (!currentSeal) return;
-    try {
-      await removeSealMutation.mutateAsync({
-        operationId,
-        id: containerLinkId,
-        sealId: currentSeal.id,
-      });
-      toast.success(t("administrative-operations.containers.seal.toast.unsealed"));
-      invalidateSeal();
-    } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
-    } finally {
-      setConfirmUnseal(false);
-    }
-  };
-
-  return (
-    <div>
-      <h2 className="h6">{t("administrative-operations.containers.seal.title")}</h2>
-
-      {currentSealQuery.isLoading ? (
-        <LoadingState variant="inline" />
-      ) : currentSeal ? (
-        <div className="d-flex align-items-center flex-wrap gap-2 mb-2">
-          <Badge bg="success">{t("administrative-operations.containers.seal.activeBadge")}</Badge>
-          <span>
-            {currentSeal.name
-              ? sealNameOptions.find((opt) => opt.key === currentSeal.name)?.name[locale]
-              : null}
-            {currentSeal.label ? ` — ${currentSeal.label}` : ""}
-          </span>
-          <Button
-            size="sm"
-            variant="outline-danger"
-            onClick={() => setConfirmUnseal(true)}
-            disabled={removeSealMutation.isPending}
-          >
-            {t("administrative-operations.containers.seal.unsealButton")}
-          </Button>
-        </div>
-      ) : (
-        <div className="d-flex align-items-center flex-wrap gap-2 mb-2">
-          <span className="text-body-secondary">
-            {t("administrative-operations.containers.seal.none")}
-          </span>
-          <Button size="sm" variant="outline-primary" onClick={() => setAddSealOpen(true)}>
-            {t("administrative-operations.containers.seal.sealButton")}
-          </Button>
-        </div>
-      )}
-
-      {addSealOpen ? (
-        <AddSealModal
-          operationId={operationId}
-          containerLinkId={containerLinkId}
-          onClose={() => setAddSealOpen(false)}
-          onSealed={() => {
-            invalidateSeal();
-            setAddSealOpen(false);
-          }}
-        />
-      ) : null}
-
-      {confirmUnseal ? (
-        <ConfirmationModal
-          show
-          title={t("administrative-operations.containers.seal.confirmUnsealTitle")}
-          message={t("administrative-operations.containers.seal.confirmUnsealMessage")}
-          variant="danger"
-          onConfirm={handleUnseal}
-          onCancel={() => setConfirmUnseal(false)}
         />
       ) : null}
     </div>

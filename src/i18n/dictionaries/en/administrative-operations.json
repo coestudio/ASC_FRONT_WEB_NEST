@@ -294,7 +294,6 @@
     "colActions": "Actions",
     "photosButton": "Photos",
     "photosModalTitle": "Photos — {identifier}",
-    "sealModalTitle": "Seal — {identifier}",
     "form": {
       "container": "Container",
       "tara": "Tare",
@@ -371,9 +370,6 @@
       "colContainer": "Origin container"
     },
     "seal": {
-      "title": "Seal",
-      "activeBadge": "Sealed",
-      "none": "No active seal.",
       "sealButton": "Seal",
       "unsealButton": "Unseal",
       "confirmUnsealTitle": "Unseal container",
