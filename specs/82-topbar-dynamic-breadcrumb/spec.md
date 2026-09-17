@@ -2,9 +2,9 @@
 
 - **ID:** SPEC-82
 - **Nome:** topbar-dynamic-breadcrumb
-- **Status:** WAITING_APPROVAL — sem `[NEEDS_DECISION]` de direção (usuário
+- **Status:** IMPLEMENTED — sem `[NEEDS_DECISION]` pendente (usuário
   escolheu via pergunta de escopo, 2026-09-17: "Trocar por breadcrumb
-  dinâmico").
+  dinâmico"; R2 resolvido na implementação, ver §8).
 - **Autor:** claude (pedido do usuário, 2026-09-17 — screenshot de
   `admin/access` apontando redundância entre o rótulo fixo do topbar e o
   título/descrição da página logo abaixo)
@@ -95,4 +95,38 @@ por rota — mantém contexto útil no topbar sem repetir o título da página.
 - **R2** — Rotas de detalhe com parâmetro dinâmico (ex. `operations/$id`)
   podem não ter um "nome" natural pro segmento final — `[NEEDS_DECISION]`
   na implementação (usar label genérico da rota pai, ou omitir o último
-  segmento).
+  segmento). **Resolvido:** usar o label do item de nav pai (ver §8) — não
+  exige código novo, `getActiveItemTo` já resolve por prefixo mais longo.
+
+## 8. Notas de implementação
+
+- Duas funções novas em `AppShell/index.tsx`, ao lado de `isChildActive`/
+  `getActiveItemTo` já existentes: `getBreadcrumb(sections, pathname)`
+  devolve `{ section, item }` (ou `null`) reusando exatamente essas duas
+  funções — nenhuma lista de rótulos nova, só leitura da mesma `NavSection[]`
+  que a sidebar já usa (evita R1).
+- R2 resolvido de graça pela reutilização: `operations/$id` não tem item
+  próprio no menu, mas `getActiveItemTo` já escolhe o item da seção com o
+  `to` mais longo que ainda é prefixo do pathname (ex. "Operações",
+  `to: "/administrative/operations"`) — o breadcrumb mostra "Administrativo
+  / Operações" na tela de detalhe, sem código extra pro caso dinâmico.
+- `topbarTitle` (`<div>` no JSX de `AppShell`) passou a renderizar
+  `<span className="text-body-secondary">{seção}</span>` +
+  `<i className="bi bi-chevron-right ...">` + `<span
+  className="fw-semibold">{item}</span>` quando `breadcrumb` resolve, ou
+  `t("shell.topbarFallback")` (nova chave, mesmo texto antigo "Portal
+  interno", traduzido nos outros 3 idiomas) quando `getBreadcrumb` retorna
+  `null` — RF3. Nenhuma classe CSS nova: reusa `.topbarTitle` (ellipsis já
+  existente) + utilitários Bootstrap (`text-body-secondary`, `fw-semibold`),
+  conforme sugerido no escopo.
+- Chave `shell.topbarFallback` adicionada aos 4 dicionários (`common.json`
+  de `pt-BR`/`en`/`es`/`zh`).
+- `bun run check`: 0 erros. `bun run lint`: 0 erros, 63 warnings (baseline
+  pré-existente, sem regressão). `bun run build` (produção) concluído sem
+  erro.
+- CA1-CA3 (conteúdo visual exato, atualização reativa ao navegar,
+  truncamento mobile) não foram confirmados por screenshot — sem
+  ferramenta de captura visual disponível no ambiente desta implementação.
+  RF2 (reatividade) é garantida estruturalmente: `breadcrumb` é
+  recalculado a cada render a partir de `pathname` (`useLocation()`), a
+  mesma fonte reativa que já comanda o estado ativo da sidebar.

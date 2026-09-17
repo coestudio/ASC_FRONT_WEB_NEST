@@ -11,6 +11,7 @@
   "shell": {
     "openMenu": "打开菜单",
     "closeMenu": "关闭菜单",
+    "topbarFallback": "内部门户",
     "profile": "个人资料",
     "preferences": "偏好设置",
     "theme": "主题",

@@ -52,6 +52,28 @@ function getActiveItemTo(items: NavItem[], pathname: string): string | null {
   return best;
 }
 
+/**
+ * Breadcrumb do topbar (SPEC-82) — deriva a trilha "seção / item" da mesma
+ * estrutura de navegação que a sidebar já usa, em vez de manter uma segunda
+ * lista de rótulos por rota (R1 do spec.md). Reusa `isChildActive`/
+ * `getActiveItemTo` — inclusive pra rotas de detalhe com parâmetro (ex.
+ * `operations/$id`, R2 do spec.md): como esses itens não têm entrada própria
+ * no menu, o item da seção com o `to` mais específico que ainda é prefixo do
+ * pathname atual (ex. "Operações") já resolve como fallback natural, sem
+ * lógica extra. `null` (RF3) só acontece se a rota atual não estiver sob
+ * nenhuma seção visível ao usuário — a UI mostra um texto fixo nesse caso.
+ */
+function getBreadcrumb(
+  sections: NavSection[],
+  pathname: string,
+): { section: NavSection; item: NavItem | null } | null {
+  const section = sections.find((s) => isChildActive(s.items, pathname));
+  if (!section) return null;
+  const activeTo = getActiveItemTo(section.items, pathname);
+  const item = section.items.find((i) => i.to === activeTo) ?? null;
+  return { section, item };
+}
+
 function SidebarSection({
   section,
   pathname,
@@ -161,6 +183,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [expandedArea, setExpandedArea] = useState<string | null>(null);
 
   const sections = getNavSections(getUserAreas(user as PermissionUser | null));
+  const breadcrumb = getBreadcrumb(sections, pathname);
 
   // fecha o menu mobile ao navegar
   useEffect(() => {
@@ -221,7 +244,21 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             <i className="bi bi-list" />
           </button>
-          <div className={`${styles.topbarTitle} flex-grow-1`}>Portal interno</div>
+          <div className={`${styles.topbarTitle} flex-grow-1`}>
+            {breadcrumb ? (
+              <>
+                <span className="text-body-secondary">{t(breadcrumb.section.sectionLabelKey)}</span>
+                {breadcrumb.item ? (
+                  <>
+                    <i className="bi bi-chevron-right mx-1 text-body-secondary small" aria-hidden />
+                    <span className="fw-semibold">{t(breadcrumb.item.labelKey)}</span>
+                  </>
+                ) : null}
+              </>
+            ) : (
+              t("shell.topbarFallback")
+            )}
+          </div>
           <div className="d-flex align-items-center gap-2">
             <LanguageSwitcher />
             <ThemeToggle labels={themeLabels} />

@@ -11,6 +11,7 @@
   "shell": {
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
+    "topbarFallback": "Portal interno",
     "profile": "Perfil",
     "preferences": "Preferencias",
     "theme": "Tema",
