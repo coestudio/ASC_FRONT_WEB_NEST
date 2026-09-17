@@ -23,6 +23,32 @@ export type CrudRowActionsProps = {
  * expõe update de Collaborator). Assinatura pública (`CrudRowActionsProps`)
  * inalterada — nenhum dos 9 consumidores precisa mudar como chama o
  * componente.
+ *
+ * `popperConfig={{ strategy: "fixed" }}` (bug pós-SPEC-55): tanto
+ * `CrudListPage`/`operations-list.tsx` (`.tableCard`, `overflow: hidden`)
+ * quanto o wrapper `.table-responsive` do `<Table responsive>` do
+ * React-Bootstrap (`overflow-x: auto`, que contamina `overflow-y` pra
+ * `auto` por regra do CSS) recortam visualmente o menu em linhas perto do
+ * fim da tabela — o Popper.js calcula a posição certa, mas o navegador
+ * ainda clipa a pintura porque o menu (`position: absolute` por padrão)
+ * continua contido na caixa de overflow do ancestral. Trocar a estratégia
+ * do Popper pra `fixed` tira o menu do fluxo de clipping de overflow dos
+ * ancestrais (nenhum deles tem `transform`/`filter` que recriaria um
+ * containing block pro `fixed`, ver AppShell), sem precisar de portal nem
+ * mudar o `overflow` dos wrappers (que existe de propósito, pro scroll
+ * horizontal da tabela em telas estreitas).
+ *
+ * `renderOnMount` (bug pós-correção acima): com `strategy: "fixed"` e
+ * `Dropdown.Menu` desmontado enquanto fechado (padrão do react-bootstrap),
+ * o Popper só é *criado* no instante em que o menu é aberto pela primeira
+ * vez — nesse instante o elemento ainda não tem layout estável (o browser
+ * ainda não pintou o menu no DOM), então o primeiro cálculo de posição sai
+ * errado (menu aparece ancorado em `0,0`/topo da página). Fechar e abrir de
+ * novo funciona porque aí o Popper já existe e só recalcula a posição, que
+ * dessa vez está correta. `renderOnMount` mantém o `Dropdown.Menu` (oculto
+ * via CSS) sempre montado no DOM, então o Popper é instanciado e mede o
+ * layout real antes do primeiro clique — o mesmo padrão já usado em
+ * `UserMenu.tsx` pro mesmo bug.
  */
 export function CrudRowActions({
   onView,
@@ -40,7 +66,7 @@ export function CrudRowActions({
       <Dropdown.Toggle
         as="button"
         type="button"
-        className={`btn btn-sm btn-outline-secondary ${styles.toggle}`}
+        className={`btn btn-sm btn-soft ${styles.toggle}`}
         disabled={busy}
         aria-label={t("crud.list.rowActionsToggle")}
       >
@@ -50,7 +76,7 @@ export function CrudRowActions({
           <i className="bi bi-three-dots-vertical" aria-hidden />
         )}
       </Dropdown.Toggle>
-      <Dropdown.Menu>
+      <Dropdown.Menu popperConfig={{ strategy: "fixed" }} renderOnMount>
         {onView ? (
           <Dropdown.Item onClick={onView} disabled={disabled || viewLoading}>
             <i className="bi bi-eye me-2" aria-hidden />
