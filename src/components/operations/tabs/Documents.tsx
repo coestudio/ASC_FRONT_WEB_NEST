@@ -21,7 +21,7 @@ import {
   PostApiOperationOperationIdDocumentBody,
   PutApiOperationOperationIdDocumentIdBody,
 } from "@/api/generated/zod/document/document.zod";
-import type { DocumentDTO } from "@/api/generated/model";
+import type { DocumentDTO, DocumentType } from "@/api/generated/model";
 import {
   documentTypeOptions,
   resolveDocumentTypeLabel,
@@ -31,6 +31,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import styles from "./documents.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -82,11 +83,16 @@ export function Documents({ operationId }: { operationId: string }) {
   const queryClient = useQueryClient();
 
   const [page, setPage] = useState(1);
+  // SPEC-85 (3.3): filtro por Tipo de arquivo — busca por Título/nome de
+  // arquivo fica de fora (bloqueada por falta de parâmetro `Search` no
+  // Core, ver specs/85-operations-documents-tab-refinements §6).
+  const [typeFilter, setTypeFilter] = useState<DocumentType | "">("");
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editing, setEditing] = useState<DocumentDTO | null>(null);
   const [previewing, setPreviewing] = useState<DocumentDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdDocumentQueryOptions(operationId, {
+    Type: typeFilter || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
   });
@@ -154,7 +160,24 @@ export function Documents({ operationId }: { operationId: string }) {
 
   return (
     <div>
-      <div className="d-flex justify-content-end mb-3">
+      <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
+        <Form.Select
+          size="sm"
+          style={{ width: "auto" }}
+          aria-label={t("administrative-operations.documents.form.type")}
+          value={typeFilter}
+          onChange={(e) => {
+            setTypeFilter(e.target.value as DocumentType | "");
+            setPage(1);
+          }}
+        >
+          <option value="">{t("administrative-operations.documents.filterAllTypes")}</option>
+          {documentTypeOptions.map((opt) => (
+            <option key={opt.key} value={opt.key}>
+              {resolveDocumentTypeLabel(opt.key, locale)}
+            </option>
+          ))}
+        </Form.Select>
         <Button variant="primary" onClick={openCreateModal}>
           <i className="bi bi-plus-lg me-1" aria-hidden />
           {t("administrative-operations.documents.new")}
@@ -198,10 +221,8 @@ export function Documents({ operationId }: { operationId: string }) {
                     <Badge bg="secondary">{resolveDocumentTypeLabel(item.type, locale)}</Badge>
                   </td>
                   <td>
-                    {item.file.url ? (
-                      <a href={item.file.url} target="_blank" rel="noreferrer">
-                        {item.file.name || t("administrative-operations.documents.fileLink")}
-                      </a>
+                    {item.observation ? (
+                      <span className={styles.observationPreview}>{item.observation}</span>
                     ) : (
                       "—"
                     )}
