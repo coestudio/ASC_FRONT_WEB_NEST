@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
@@ -724,11 +724,12 @@ function ContainerPhotos({
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-between mb-2">
+      <div className="d-flex align-items-center justify-content-between mb-3">
         <h2 className="h6 mb-0">{t("administrative-operations.containers.photosTitle")}</h2>
         <Badge
           bg={missingCount === 0 ? "success" : "warning"}
           text={missingCount === 0 ? undefined : "dark"}
+          className="px-2 py-1"
         >
           {missingCount === 0
             ? t("administrative-operations.containers.photosChecklistComplete")
@@ -738,21 +739,22 @@ function ContainerPhotos({
         </Badge>
       </div>
 
-      <div className="d-flex flex-column gap-2 mb-3">
+      <Row className="g-3 mb-3">
         {PHOTO_CHECKLIST_SLOTS.map((slot) => (
-          <ContainerPhotoSlotCell
-            key={slot}
-            slot={slot}
-            photos={photosBySlot.get(slot) ?? []}
-            onUpload={handleUpload}
-            onRemove={handleDeletePhoto}
-            removing={deletePhotoMutation.isPending}
-          />
+          <Col key={slot} xs={12} md={6}>
+            <ContainerPhotoSlotCell
+              slot={slot}
+              photos={photosBySlot.get(slot) ?? []}
+              onUpload={handleUpload}
+              onRemove={handleDeletePhoto}
+              removing={deletePhotoMutation.isPending}
+            />
+          </Col>
         ))}
-      </div>
+      </Row>
 
-      <div className="mt-3">
-        <div className="small fw-semibold text-body-secondary mb-1">
+      <div className="soft-card p-3">
+        <div className="small fw-semibold text-body-secondary mb-2">
           {t("administrative-operations.containers.photosOther")}
         </div>
 
@@ -852,53 +854,53 @@ function ContainerPhotoSlotCell({
   }, [watchedFile]);
 
   return (
-    <div className="d-flex align-items-start gap-2 border rounded p-2">
-      <i
-        className={`bi ${hasPhoto ? "bi-check-circle-fill text-success" : "bi-exclamation-circle text-warning"} fs-5 mt-1`}
-        aria-hidden
-      />
-      <div className="flex-grow-1 min-w-0">
-        <div className="fw-semibold small">
-          {t(`administrative-operations.containers.photoSlots.${slot}` as TranslationKey)}
-        </div>
-
-        {hasPhoto ? (
-          <div className="d-flex flex-wrap gap-2 mt-1">
-            {photos.map((photo) => (
-              <div
-                key={photo.id}
-                className="position-relative rounded overflow-hidden border"
-                style={{ width: 64, height: 64 }}
-              >
-                <img
-                  src={photo.file.url}
-                  alt=""
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="sm"
-                  className="position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
-                  style={{ width: 18, height: 18, lineHeight: 1 }}
-                  aria-label={t("administrative-operations.containers.photosRemove")}
-                  disabled={removing}
-                  onClick={() => onRemove(photo.id)}
-                >
-                  <i className="bi bi-x" aria-hidden />
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : null}
-
-        <InputPhotoSingle<SlotUploadFormValues>
-          methods={methods}
-          fieldName="file"
-          label={t("administrative-operations.containers.photosAddToSlot")}
-          config={{ containerClass: "mb-0 mt-2" }}
+    <div className="soft-card p-3 h-100">
+      <div className="d-flex align-items-center gap-2 mb-2">
+        <i
+          className={`bi ${hasPhoto ? "bi-check-circle-fill text-success" : "bi-exclamation-circle text-warning"} fs-5`}
+          aria-hidden
         />
+        <span className="fw-semibold">
+          {t(`administrative-operations.containers.photoSlots.${slot}` as TranslationKey)}
+        </span>
       </div>
+
+      {hasPhoto ? (
+        <div className="d-flex flex-wrap gap-2 mb-2">
+          {photos.map((photo) => (
+            <div
+              key={photo.id}
+              className="position-relative rounded overflow-hidden border"
+              style={{ width: 72, height: 72 }}
+            >
+              <img
+                src={photo.file.url}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <Button
+                type="button"
+                variant="danger"
+                size="sm"
+                className="position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
+                style={{ width: 18, height: 18, lineHeight: 1 }}
+                aria-label={t("administrative-operations.containers.photosRemove")}
+                disabled={removing}
+                onClick={() => onRemove(photo.id)}
+              >
+                <i className="bi bi-x" aria-hidden />
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <InputPhotoSingle<SlotUploadFormValues>
+        methods={methods}
+        fieldName="file"
+        label={t("administrative-operations.containers.photosAddToSlot")}
+        config={{ containerClass: "mb-0" }}
+      />
     </div>
   );
 }
