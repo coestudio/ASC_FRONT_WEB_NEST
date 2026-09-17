@@ -22,10 +22,13 @@ processo formal: adiciona e risca como quiser.
   ~~Além disso, o modal de adicionar imagens do container precisa de um
   "checklist" das imagens necessárias.~~ → SPEC-37 (`IMPLEMENTED` —
   checklist dos 8 `ContainerPhotoSlot`, upload por slot)
-- [ ] Preview de `.doc`/`.xlsx` — já existe (`DocxPreview`/`SheetPreview`
+- [x] ~~Preview de `.doc`/`.xlsx` — já existe (`DocxPreview`/`SheetPreview`
   em `file-preview-modal.tsx`), revisar/melhorar (checar o que está
-  faltando/errado). **Ainda não virou SPEC** — falta descrever o problema
-  real (qual arquivo, o que aparece errado) antes de dar pra especificar.
+  faltando/errado).~~ → SPEC-49 (`IMPLEMENTED` — estilização de heading/
+  tabela §8, responsividade horizontal §8.1, "moldura" de cartão +
+  cabeçalho ícone/rótulo + leitura confortável §8.2, 2026-09-17 — ainda
+  sem confirmação visual do usuário contra o print mais recente, ver §8.2
+  "Limitação conhecida").
 - [x] ~~Tela de Acesso (`admin/access`): editar se é admin já existe
   (switch no form) — confirmar se está funcionando/se é isso que falta.~~
   Confirmado que já funciona (isAdmin editável desde SPEC-23).
@@ -114,25 +117,24 @@ processo formal: adiciona e risca como quiser.
   ficaram registrados no histórico do TODO, sem repro que descartasse
   um dos dois) — usuário preferiu bypassar o problema em vez de
   diagnosticar: pediu um botão de auto-vincular dedicado.
-  → `specs/54-responsible-self-link-button` (`DRAFT`, esperando
-  aprovação), Core `44-responsible-self-link` (`DRAFT`).
+  → `specs/54-responsible-self-link-button` (`IMPLEMENTED`), Core
+  `44-responsible-self-link` (`IMPLEMENTED`).
 
-- [ ] Aba Romaneio: usuário pediu (2026-09-16) seleção em massa
+- [x] ~~Aba Romaneio: usuário pediu (2026-09-16) seleção em massa
   (checkbox, excluir vários de uma vez, sem botão de exclusão
   individual), coluna+filtro de "Estufado" (linha estufada não pode ser
   editada nem excluída — nem selecionável), edição em massa de
-  NF/Lote, e ordenação clicável por NF/Lote.
-  → `specs/53-romaneio-bulk-select-actions` (`DRAFT`, esperando
-  aprovação), Core `43-romaneio-stuffed-status-bulk-actions` (`DRAFT`).
+  NF/Lote, e ordenação clicável por NF/Lote.~~
+  → `specs/53-romaneio-bulk-select-actions` (`IMPLEMENTED`), Core
+  `43-romaneio-stuffed-status-bulk-actions` (`IMPLEMENTED`).
 
-- [ ] Botão "X" pra fechar em todo modal, além do botão de rodapé —
+- [x] ~~Botão "X" pra fechar em todo modal, além do botão de rodapé —
   reverte decisão de design anterior (documentada em
-  `components/ui/modal.tsx`), a pedido do usuário.
-  → `specs/51-modal-close-button` (`DRAFT`, esperando aprovação).
+  `components/ui/modal.tsx`), a pedido do usuário.~~
+  → `specs/51-modal-close-button` (`IMPLEMENTED`).
 
-- [ ] Modal de Profile fecha sozinho ao salvar com sucesso (hoje só
-  mostra toast, fica aberto).
-  → `specs/52-profile-modal-close-on-save` (`DRAFT`, esperando
-  aprovação).
+- [x] ~~Modal de Profile fecha sozinho ao salvar com sucesso (hoje só
+  mostra toast, fica aberto).~~
+  → `specs/52-profile-modal-close-on-save` (`IMPLEMENTED`).
 
 ## Feito
