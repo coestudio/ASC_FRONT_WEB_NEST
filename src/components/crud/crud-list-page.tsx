@@ -155,6 +155,14 @@ export type CrudListPageProps<
    * o espaço, sem prop = nenhuma mudança de layout pras demais telas.
    */
   headerActions?: ReactNode;
+  /**
+   * Altura máxima da área da tabela (linhas) — define, ativa scroll
+   * vertical interno (`overflow-y: auto`), com cabeçalho/toolbar de busca
+   * e paginação fixos fora da área rolável (pedido do usuário na aba
+   * Estufagem, SPEC-75). Ausente (padrão), mantém o comportamento atual:
+   * tabela cresce livre, sem scroll próprio.
+   */
+  maxBodyHeight?: number | string;
   /** Seleção em massa (checkbox por linha + "selecionar tudo") — SPEC-53. */
   selection?: CrudSelection<T>;
   /** Valor cru do `Sort` atual (ex. `"-notaFiscal"`) — usado junto com
@@ -184,6 +192,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   emptyMessageKey,
   viewMode,
   spreadsheetVariant,
+  maxBodyHeight,
   selection,
   sort,
   onSortChange,
@@ -198,6 +207,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   | "onPageChange"
   | "emptyMessageKey"
   | "spreadsheetVariant"
+  | "maxBodyHeight"
   | "selection"
   | "sort"
   | "onSortChange"
@@ -236,7 +246,10 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
           ))}
         </div>
       ) : (
-        <div className={styles.tableCard}>
+        <div
+          className={styles.tableCard}
+          style={maxBodyHeight ? { maxHeight: maxBodyHeight, overflowY: "auto" } : undefined}
+        >
           <Table
             responsive
             hover
@@ -364,6 +377,7 @@ export function CrudListPage<
   isMock,
   filters,
   spreadsheetVariant,
+  maxBodyHeight,
   headerActions,
   selection,
   sort,
@@ -426,6 +440,7 @@ export function CrudListPage<
           emptyMessageKey={emptyMessageKey}
           viewMode={viewMode}
           spreadsheetVariant={spreadsheetVariant}
+          maxBodyHeight={maxBodyHeight}
           selection={selection}
           sort={sort}
           onSortChange={onSortChange}
