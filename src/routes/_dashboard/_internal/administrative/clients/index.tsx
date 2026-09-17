@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Card, Table } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -19,7 +19,6 @@ import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-rec
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { LoadingState } from "@/components/ui/loading-state";
-import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
@@ -100,75 +99,6 @@ function toFormValues(record?: ClientDetailDTO): ClientFormValues {
       country: record?.address?.country ?? "BR",
     },
   };
-}
-
-/**
- * Relatórios/histórico do cliente — array mockado local, nunca uma query.
- *
- * MOCK — sem endpoint no Core, ver specs/05-administrativo-clientes/spec.md
- * ("Relatórios operacionais" está classificado "Faltante/não comprovado" no
- * mapa de paridade Portal×Core). Geração real de relatório é fora de escopo
- * da SPEC-05 (§4).
- */
-type MockClientReport = {
-  id: string;
-  name: string;
-  type: string;
-  generatedAt: string;
-  status: "Concluído" | "Pendente";
-};
-
-function buildMockReports(client: ClientDetailDTO): MockClientReport[] {
-  return [
-    {
-      id: `${client.id}-mock-1`,
-      name: "Resumo de operações do trimestre",
-      type: "Operacional",
-      generatedAt: "2026-06-30",
-      status: "Concluído",
-    },
-    {
-      id: `${client.id}-mock-2`,
-      name: "Extrato de romaneios",
-      type: "Financeiro",
-      generatedAt: "2026-07-15",
-      status: "Pendente",
-    },
-  ];
-}
-
-/** Seção extra do modal `view` (§9 da SPEC-02) — dados cadastrais reais já vêm pelos `fields`; aqui só o bloco mock de relatórios/histórico. */
-function ClientReportsSection({ client }: { client: ClientDetailDTO }) {
-  const t = useT();
-  const locale = useLocale();
-  const reports = buildMockReports(client);
-
-  return (
-    <div className="mt-4 border-top pt-3">
-      <h2 className="h6">{t("administrative-clients.detail.reportsTitle")}</h2>
-      <MockDataBanner className="mb-3" />
-      <Table responsive size="sm" className="align-middle mb-0">
-        <thead>
-          <tr>
-            <th>{t("administrative-clients.detail.reportsColName")}</th>
-            <th>{t("administrative-clients.detail.reportsColType")}</th>
-            <th>{t("administrative-clients.detail.reportsColGeneratedAt")}</th>
-            <th>{t("administrative-clients.detail.reportsColStatus")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reports.map((report) => (
-            <tr key={report.id}>
-              <td>{report.name}</td>
-              <td>{report.type}</td>
-              <td>{new Date(report.generatedAt).toLocaleDateString(locale)}</td>
-              <td>{report.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
-  );
 }
 
 /**
@@ -436,11 +366,6 @@ function ClientsPageBody() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
-          extraContent={
-            modal.mode === "view" && modal.record ? (
-              <ClientReportsSection client={modal.record} />
-            ) : undefined
-          }
         />
       ) : null}
 
