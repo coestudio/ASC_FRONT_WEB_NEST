@@ -37,9 +37,11 @@ import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
+  InputDate,
   InputPhotoSingle,
   InputText,
   InputTextArea,
+  InputTime,
   Select,
   SelectAsync,
 } from "@/layouts/Form/Fields/Index";
@@ -181,6 +183,11 @@ export function Containers({ operationId }: { operationId: string }) {
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
   const [photosFor, setPhotosFor] = useState<ContainerOperationDTO | null>(null);
   const [sealFor, setSealFor] = useState<ContainerOperationDTO | null>(null);
+  // SPEC-62: quando não há lacre ativo, o botão da linha abre o modal de
+  // criar lacre direto — sem passar pelo painel intermediário de
+  // `ContainerSeal` (que só faz sentido quando já existe lacre pra
+  // mostrar/deslacrar, ver `sealFor` acima).
+  const [addSealFor, setAddSealFor] = useState<ContainerOperationDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
     Search: search || undefined,
@@ -339,10 +346,19 @@ export function Containers({ operationId }: { operationId: string }) {
                       <button
                         type="button"
                         className="btn btn-sm btn-outline-secondary"
-                        title={t("administrative-operations.containers.sealActionButton")}
-                        onClick={() => setSealFor(item)}
+                        title={t(
+                          item.status === "Sealed"
+                            ? "administrative-operations.containers.seal.unsealButton"
+                            : "administrative-operations.containers.seal.sealButton",
+                        )}
+                        onClick={() =>
+                          item.status === "Sealed" ? setSealFor(item) : setAddSealFor(item)
+                        }
                       >
-                        <i className="bi bi-shield-lock" aria-hidden />
+                        <i
+                          className={`bi ${item.status === "Sealed" ? "bi-shield-lock" : "bi-shield"}`}
+                          aria-hidden
+                        />
                       </button>
                       <button
                         type="button"
@@ -501,6 +517,18 @@ export function Containers({ operationId }: { operationId: string }) {
           </Modal.Footer>
         </Modal>
       ) : null}
+
+      {addSealFor ? (
+        <AddSealModal
+          operationId={operationId}
+          containerLinkId={addSealFor.id}
+          onClose={() => setAddSealFor(null)}
+          onSealed={() => {
+            invalidateList();
+            setAddSealFor(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
@@ -630,12 +658,34 @@ function ContainerSeal({
   );
 }
 
+/** Data/hora atual, já nos formatos que `InputDate`/`InputTime` esperam
+ * (`YYYY-MM-DD`/`HH:mm`) — pré-preenche o formulário de lacrar (SPEC-62). */
+function nowAsDateAndTime(): { sealDate: string; sealTime: string } {
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return {
+    sealDate: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+    sealTime: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+  };
+}
+
 /**
  * Formulário de "Lacrar" (SPEC-44 CA1) — `SealCreate` exige `userId`
  * explícito (quem lacrou fisicamente, não necessariamente quem está logado
  * no portal): mesma busca assíncrona de usuário já usada na aba
  * Responsáveis (`getApiUser`, `fetchUserOptions`). `name` vem do enum
  * `SealName` (snapshot estático); `label`/`description` são opcionais.
+ *
+ * SPEC-62 acrescenta foto obrigatória e data/hora do lacre (Core
+ * SPEC-45): a foto usa o mesmo campo `file` do payload tipado
+ * (`SealFormValues`), checada manualmente antes do submit — o schema
+ * gerado marca `file`/`sealedAt` como opcionais porque `[FromForm]`
+ * escalar não expõe obrigatoriedade no OpenAPI (mesma situação já
+ * existente no upload de foto de container). Data e hora **não** entram
+ * no payload tipado — são um formulário local separado
+ * (`dateTimeMethods`, mesmo padrão de campo isolado de
+ * `ContainerSearchInput`), combinados num único `sealedAt` (ISO com
+ * offset) só no submit.
  */
 function AddSealModal({
   operationId,
@@ -653,7 +703,11 @@ function AddSealModal({
 
   const methods = useForm<SealFormValues>({
     resolver: withEmptyStringsAsNull(PostApiOperationOperationIdContainerIdSealBody),
-    defaultValues: { userId: "", name: "NONE", label: "", description: "" },
+    defaultValues: { userId: "", name: "NONE", label: "", description: "", file: undefined },
+  });
+
+  const dateTimeMethods = useForm<{ sealDate: string; sealTime: string }>({
+    defaultValues: nowAsDateAndTime(),
   });
 
   const fetchUserOptions = (search: string) =>
@@ -665,8 +719,20 @@ function AddSealModal({
     );
 
   const handleSubmit: SubmitHandler<SealFormValues> = async (values) => {
+    if (!values.file) {
+      toast.error(t("administrative-operations.containers.seal.photoRequired"));
+      return;
+    }
+
+    const { sealDate, sealTime } = dateTimeMethods.getValues();
+    const sealedAt = new Date(`${sealDate}T${sealTime}:00`).toISOString();
+
     try {
-      await mutation.mutateAsync({ operationId, id: containerLinkId, data: values });
+      await mutation.mutateAsync({
+        operationId,
+        id: containerLinkId,
+        data: { ...values, sealedAt },
+      });
       toast.success(t("administrative-operations.containers.seal.toast.sealed"));
       onSealed();
     } catch {
@@ -706,6 +772,25 @@ function AddSealModal({
             label={t("administrative-operations.containers.seal.form.description")}
             maxLength={255}
           />
+          <InputPhotoSingle<SealFormValues>
+            methods={methods}
+            fieldName="file"
+            label={t("administrative-operations.containers.seal.form.photo")}
+          />
+          <div className="d-flex gap-2">
+            <InputDate
+              methods={dateTimeMethods}
+              fieldName="sealDate"
+              label={t("administrative-operations.containers.seal.form.date")}
+              config={{ containerClass: "mb-1 flex-fill" }}
+            />
+            <InputTime
+              methods={dateTimeMethods}
+              fieldName="sealTime"
+              label={t("administrative-operations.containers.seal.form.time")}
+              config={{ containerClass: "mb-1 flex-fill" }}
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-primary" onClick={onClose}>
