@@ -2,10 +2,13 @@
 
 - **ID:** SPEC-55
 - **Nome:** list-header-and-row-actions
-- **Status:** WAITING_APPROVAL — reaberta em 2026-09-16 (pedido do
-  usuário, ver §15). Escopo original (§1-§14) já `IMPLEMENTED` e
-  inalterado; §15 é adição, sem `[NEEDS_DECISION]` (ambas decisões de
-  design já confirmadas pelo usuário).
+- **Status:** §1-§14 `IMPLEMENTED` (inalterado — cabeçalho com
+  `headerActions`, `CrudRowActions` como dropdown). §15 (largura
+  `min-content` + toggle `btn-primary`) **SUPERSEDED** (2026-09-17,
+  usuário) — o pedido de remover a coluna de ações por completo
+  (`specs/79-click-to-reveal-row-actions`) torna §15 sem objeto: não faz
+  sentido afinar a largura/cor de uma coluna que deixa de existir. Ver
+  SPEC-79.
 - **Autor:** portal-dev-agent (rascunho, 2026-09-16 — continuação de
   investigação anterior, decisões do usuário já tomadas, ver §5)
 - **Área:** `src/components/crud/crud-list-page.tsx`,

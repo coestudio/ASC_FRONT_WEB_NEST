@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Spinner } from "react-bootstrap";
+import { Button, Col, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 import {
@@ -23,7 +23,7 @@ const REPORTS: {
 }[] = [
   {
     kind: "weight",
-    icon: "bi-file-earmark-excel",
+    icon: "bi-file-earmark-bar-graph",
     nameKey: "administrative-operations.reports.weight.name",
     descriptionKey: "administrative-operations.reports.weight.description",
     getUrl: (operationId) => getGetApiOperationOperationIdReportsWeightQueryKey(operationId)[0],
@@ -31,7 +31,7 @@ const REPORTS: {
   },
   {
     kind: "packingList",
-    icon: "bi-file-earmark-excel",
+    icon: "bi-file-earmark-spreadsheet",
     nameKey: "administrative-operations.reports.packingList.name",
     descriptionKey: "administrative-operations.reports.packingList.description",
     getUrl: (operationId) =>
@@ -40,7 +40,7 @@ const REPORTS: {
   },
   {
     kind: "photographic",
-    icon: "bi-file-earmark-word",
+    icon: "bi-file-earmark-image",
     nameKey: "administrative-operations.reports.photographic.name",
     descriptionKey: "administrative-operations.reports.photographic.description",
     getUrl: (operationId) =>
@@ -96,35 +96,35 @@ export function Reports({ operationId }: { operationId: string }) {
       <p className="text-body-secondary mb-3">
         {t("administrative-operations.reports.description")}
       </p>
-      <div className="d-flex flex-column gap-3">
+      <Row className="g-3">
         {REPORTS.map((report) => (
-          <div
-            key={report.kind}
-            className="soft-card p-3 d-flex justify-content-between align-items-center flex-wrap gap-2"
-          >
-            <div className="d-flex align-items-center gap-3">
-              <i className={`bi ${report.icon} fs-2 text-body-secondary`} aria-hidden />
-              <div>
-                <div className="mb-1 h6">{t(report.nameKey)}</div>
-                <p className="text-body-secondary mb-0 small">{t(report.descriptionKey)}</p>
+          <Col key={report.kind} xs={12} md={6} lg={4}>
+            <div className="soft-card p-3 d-flex flex-column gap-3 h-100">
+              <div className="d-flex align-items-center gap-3">
+                <i className={`bi ${report.icon} fs-2 text-body-secondary`} aria-hidden />
+                <div>
+                  <div className="mb-1 h6">{t(report.nameKey)}</div>
+                  <p className="text-body-secondary mb-0 small">{t(report.descriptionKey)}</p>
+                </div>
               </div>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={() => handleGenerate(report)}
+                disabled={generating !== null}
+                className="align-self-start mt-auto"
+              >
+                {generating === report.kind ? (
+                  <Spinner size="sm" animation="border" className="me-1" />
+                ) : (
+                  <i className="bi bi-download me-1" aria-hidden />
+                )}
+                {t("administrative-operations.reports.generate")}
+              </Button>
             </div>
-            <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={() => handleGenerate(report)}
-              disabled={generating !== null}
-            >
-              {generating === report.kind ? (
-                <Spinner size="sm" animation="border" className="me-1" />
-              ) : (
-                <i className="bi bi-download me-1" aria-hidden />
-              )}
-              {t("administrative-operations.reports.generate")}
-            </Button>
-          </div>
+          </Col>
         ))}
-      </div>
+      </Row>
     </div>
   );
 }

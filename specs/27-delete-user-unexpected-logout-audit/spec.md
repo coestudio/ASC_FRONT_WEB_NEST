@@ -2,13 +2,11 @@
 
 - **ID:** SPEC-27
 - **Nome:** delete-user-unexpected-logout-audit
-- **Status:** DEFERRED (2026-09-16, usuário) — Fase 1 (instrumentação de
-  diagnóstico) `IMPLEMENTED`. Usuário reportou que não está mais
-  reproduzindo o problema desde a Fase 1 — congelada sem fechar a causa
-  raiz (§6/§7 seguem sem resposta, `CA2`/`CA3` continuam `NOT VERIFIED`).
-  Fase 2 seguirá `BLOCKED`; retomar nesta mesma SPEC (não abrir nova) se o
-  sintoma voltar — a essa altura, reproduzir com DevTools/Network aberto
-  (§6) já captura o log de diagnóstico da Fase 1 junto.
+- **Status:** IMPLEMENTED (2026-09-17, confirmado pelo usuário — "SPEC-27
+  foi resolvida"). Fase 1 (instrumentação de diagnóstico) já estava
+  `IMPLEMENTED`; usuário não reproduz mais o sintoma e considera
+  encerrada, sem abrir Fase 2. Se o sintoma voltar, reabrir esta mesma
+  SPEC (não criar nova).
 - **Autor:** portal-dev-agent (rascunho)
 - **Área:** `src/routes/_dashboard/admin/access/index.tsx` (ação de
   excluir), `src/api/mutator.ts` (interceptor global de erro),

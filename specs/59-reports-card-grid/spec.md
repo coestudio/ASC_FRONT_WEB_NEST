@@ -2,8 +2,7 @@
 
 - **ID:** SPEC-59
 - **Nome:** reports-card-grid
-- **Status:** DRAFT — sem `[NEEDS_DECISION]` (layout e ícones já
-  decididos pelo usuário, ver §2/§3).
+- **Status:** IMPLEMENTED (2026-09-17)
 - **Autor:** claude (pedido do usuário, 2026-09-16)
 - **Área:** `src/components/operations/tabs/Reports.tsx`.
 - **Depende de:** nenhuma. Independente de SPEC-53/58 (aba diferente).
@@ -119,3 +118,18 @@ inalterados.
 
 Nenhum — mudança isolada a um arquivo, puramente visual (layout + string
 de ícone), sem tocar em lógica de geração/download.
+
+## 11. Implementation Notes (2026-09-17)
+
+- `Row`/`Col` (`g-3`, `xs={12} md={6} lg={4}`) substituindo o
+  `d-flex flex-column`. Cada `soft-card` interno virou `d-flex
+  flex-column gap-3 h-100` (era `justify-content-between` horizontal) —
+  necessário porque o card fica bem mais estreito num grid de 3 colunas
+  do que numa linha cheia; botão "Gerar" ganhou `mt-auto` pra ficar
+  colado embaixo mesmo quando a descrição de outro card no mesmo `Row`
+  empurra a altura (`h-100` no card + `mt-auto` no botão).
+- Ícones trocados conforme §3.2 (`bi-file-earmark-bar-graph`/
+  `-spreadsheet`/`-image`).
+- `tsc --noEmit` limpo; `bun run lint` sem erro novo (mesma baseline de
+  63 avisos pré-existentes). Não verificado visualmente em navegador
+  nesta sessão.
