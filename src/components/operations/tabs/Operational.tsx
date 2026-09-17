@@ -238,6 +238,11 @@ function StuffingTab({ operationId }: { operationId: string }) {
           </div>
         }
         selection={selection}
+        // Pedido do usuário: clicar em qualquer lugar da linha (não só no
+        // checkbox) já seleciona o fardo — mesmo padrão de toggle do
+        // checkbox, sem abrir modal/navegar (esta tela não tem visualização
+        // de detalhe por linha, só seleção pra estufagem em lote).
+        onRowSingleClick={(r) => toggleSelected(r.id)}
         sort={sort}
         onSortChange={setSort}
         renderCard={(r) => (
