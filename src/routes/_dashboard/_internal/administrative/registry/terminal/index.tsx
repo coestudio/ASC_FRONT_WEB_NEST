@@ -185,6 +185,7 @@ function TerminalPageBody() {
           rowActions={(r, ctl) => (
             <CrudRowActions
               show={ctl.show}
+              position={ctl.position}
               onToggle={ctl.onToggle}
               onView={() => setModal({ mode: "view", record: r })}
               onEdit={() => setModal({ mode: "edit", record: r })}

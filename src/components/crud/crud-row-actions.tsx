@@ -1,3 +1,5 @@
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { Dropdown, Spinner } from "react-bootstrap";
 import { useT } from "@/lib/ui-prefs";
 import styles from "./crud-row-actions.module.css";
@@ -38,52 +40,98 @@ export type CrudRowActionsProps = {
   /**
    * Modo controlado (SPEC-79) — quem chama decide quando o menu abre (ex.:
    * clique na linha/card da listagem, `CrudListPage.rowActions`), em vez do
-   * toggle interno `⋮`. Passar `show`/`onToggle` juntos ativa esse modo: o
-   * toggle visível some, vira só uma âncora mínima (`1px`) pro Popper.js
-   * calcular a posição do menu a partir de onde o item clicado está,
-   * "position: absolute" na prática (a estratégia `fixed` do Popper já usada
-   * abaixo resolve o clipping do jeito que sempre resolveu). Sem essas duas
-   * props, comportamento antigo (toggle `⋮` sempre visível) inalterado.
+   * toggle interno `⋮`. Passar `show`/`onToggle`/`position` juntos ativa esse
+   * modo: nenhum toggle é renderizado — o menu aparece direto na posição do
+   * clique (`position`, coordenadas de tela — `e.clientX`/`e.clientY`), via
+   * `createPortal` pro `document.body` (evita qualquer clipping de
+   * `overflow` de ancestral, sem precisar de truque de Popper `fixed`) e
+   * fecha ao clicar fora. Sem essas props, comportamento antigo (toggle `⋮`
+   * sempre visível, menu ancorado nele) inalterado.
    */
   show?: boolean;
   onToggle?: (show: boolean) => void;
+  position?: { x: number; y: number };
 };
+
+/** Espaço mínimo (px) entre o menu e a borda da viewport — evita o menu colar na borda. */
+const MENU_VIEWPORT_MARGIN_PX = 8;
+
+/**
+ * Menu flutuante do modo controlado (SPEC-79) — nasce ancorado no ponto do
+ * clique (`x`/`y`) e só depois de medido (`useLayoutEffect`) é reposicionado
+ * pra não vazar da viewport (o clique pode acontecer perto de qualquer
+ * borda). Fecha em clique fora (`mousedown` no documento, ignorando cliques
+ * dentro do próprio menu) e em `Escape`.
+ */
+function ControlledMenu({
+  x,
+  y,
+  onClose,
+  children,
+}: {
+  x: number;
+  y: number;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: y, left: x });
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const maxLeft = window.innerWidth - rect.width - MENU_VIEWPORT_MARGIN_PX;
+    const maxTop = window.innerHeight - rect.height - MENU_VIEWPORT_MARGIN_PX;
+    setPos({
+      left: Math.max(MENU_VIEWPORT_MARGIN_PX, Math.min(x, maxLeft)),
+      top: Math.max(MENU_VIEWPORT_MARGIN_PX, Math.min(y, maxTop)),
+    });
+  }, [x, y]);
+
+  useLayoutEffect(() => {
+    const handlePointerDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div
+      ref={ref}
+      className={`dropdown-menu show ${styles.controlledMenu}`}
+      style={{ position: "fixed", top: pos.top, left: pos.left }}
+      // Nenhum clique dentro do menu deve fechar a linha/card por baixo
+      // (mesma ideia do `stopPropagation` que o `CrudListPage` já fazia na
+      // célula/overlay antigos — agora desnecessário lá, feito aqui).
+      onClick={(e) => e.stopPropagation()}
+      onDoubleClick={(e) => e.stopPropagation()}
+    >
+      {children}
+    </div>,
+    document.body,
+  );
+}
 
 /**
  * Menu de ações de linha/card (`ver`/`editar`/`excluir`) — SPEC-18,
  * reescrito de trio de botões pra dropdown compacto na SPEC-55 (decisão do
- * usuário: menos espaço horizontal ocupado por linha da tabela). Cada item
- * só aparece se o callback correspondente for passado (mesmo padrão
- * condicional de antes, ex.: `collaborators` sem `onEdit` porque o Core não
+ * usuário: menos espaço horizontal ocupado por linha da tabela) e, no modo
+ * controlado, reescrito de novo na SPEC-79 pra menu flutuante ancorado no
+ * clique (não mais num toggle fixo `⋮` numa coluna/célula reservada — o
+ * pedido era remover esse espaço por completo, não só escondê-lo). Cada
+ * item só aparece se o callback correspondente for passado (mesmo padrão
+ * condicional de sempre, ex.: `collaborators` sem `onEdit` porque o Core não
  * expõe update de Collaborator). Assinatura pública (`CrudRowActionsProps`)
- * inalterada — nenhum dos 9 consumidores precisa mudar como chama o
- * componente.
- *
- * `popperConfig={{ strategy: "fixed" }}` (bug pós-SPEC-55): tanto
- * `CrudListPage`/`operations-list.tsx` (`.tableCard`, `overflow: hidden`)
- * quanto o wrapper `.table-responsive` do `<Table responsive>` do
- * React-Bootstrap (`overflow-x: auto`, que contamina `overflow-y` pra
- * `auto` por regra do CSS) recortam visualmente o menu em linhas perto do
- * fim da tabela — o Popper.js calcula a posição certa, mas o navegador
- * ainda clipa a pintura porque o menu (`position: absolute` por padrão)
- * continua contido na caixa de overflow do ancestral. Trocar a estratégia
- * do Popper pra `fixed` tira o menu do fluxo de clipping de overflow dos
- * ancestrais (nenhum deles tem `transform`/`filter` que recriaria um
- * containing block pro `fixed`, ver AppShell), sem precisar de portal nem
- * mudar o `overflow` dos wrappers (que existe de propósito, pro scroll
- * horizontal da tabela em telas estreitas).
- *
- * `renderOnMount` (bug pós-correção acima): com `strategy: "fixed"` e
- * `Dropdown.Menu` desmontado enquanto fechado (padrão do react-bootstrap),
- * o Popper só é *criado* no instante em que o menu é aberto pela primeira
- * vez — nesse instante o elemento ainda não tem layout estável (o browser
- * ainda não pintou o menu no DOM), então o primeiro cálculo de posição sai
- * errado (menu aparece ancorado em `0,0`/topo da página). Fechar e abrir de
- * novo funciona porque aí o Popper já existe e só recalcula a posição, que
- * dessa vez está correta. `renderOnMount` mantém o `Dropdown.Menu` (oculto
- * via CSS) sempre montado no DOM, então o Popper é instanciado e mede o
- * layout real antes do primeiro clique — o mesmo padrão já usado em
- * `UserMenu.tsx` pro mesmo bug.
+ * só ganhou props novas, nada mudou pra quem já chamava sem elas.
  */
 export function CrudRowActions({
   onView,
@@ -95,76 +143,75 @@ export function CrudRowActions({
   extraActions,
   show,
   onToggle,
+  position,
 }: CrudRowActionsProps) {
   const t = useT();
   const busy = disabled || viewLoading || editLoading;
   const controlled = onToggle != null;
 
-  return (
-    <Dropdown
-      align="end"
-      show={controlled ? show : undefined}
-      onToggle={controlled ? (nextShow) => onToggle?.(nextShow) : undefined}
-    >
-      {controlled ? (
-        // Âncora invisível (1px) — só existe pro Popper ter uma posição de
-        // referência; quem abre/fecha é o `show`/`onToggle` controlado por
-        // fora (clique na linha/card), não um clique nela mesma.
-        // `bsPrefix` custom evita a classe `dropdown-toggle` (e sua seta
-        // `::after` do Bootstrap) cair num elemento de 1px.
-        <Dropdown.Toggle
-          as="span"
-          bsPrefix="crud-row-actions-anchor"
-          className={styles.controlledAnchor}
-        />
-      ) : (
-        <Dropdown.Toggle
-          as="button"
-          type="button"
-          className={`btn btn-sm btn-soft ${styles.toggle}`}
-          disabled={busy}
-          aria-label={t("crud.list.rowActionsToggle")}
+  const items = (
+    <>
+      {onView ? (
+        <Dropdown.Item onClick={onView} disabled={disabled || viewLoading}>
+          <i className="bi bi-eye me-2" aria-hidden />
+          {t("crud.list.rowActionsView")}
+        </Dropdown.Item>
+      ) : null}
+      {extraActions?.map((action) => (
+        <Dropdown.Item
+          key={action.key}
+          onClick={action.onClick}
+          href={action.href}
+          download={action.download}
+          target={action.target}
+          rel={action.rel}
+          disabled={disabled || action.disabled}
         >
-          {viewLoading || editLoading ? (
-            <Spinner size="sm" animation="border" />
-          ) : (
-            <i className="bi bi-three-dots-vertical" aria-hidden />
-          )}
-        </Dropdown.Toggle>
-      )}
+          <i className={`bi ${action.icon} me-2`} aria-hidden />
+          {action.label}
+        </Dropdown.Item>
+      ))}
+      {onEdit ? (
+        <Dropdown.Item onClick={onEdit} disabled={disabled || editLoading}>
+          <i className="bi bi-pencil me-2" aria-hidden />
+          {t("crud.list.rowActionsEdit")}
+        </Dropdown.Item>
+      ) : null}
+      {onDelete ? (
+        <Dropdown.Item onClick={onDelete} disabled={disabled} className="text-danger">
+          <i className="bi bi-trash me-2" aria-hidden />
+          {t("crud.list.rowActionsDelete")}
+        </Dropdown.Item>
+      ) : null}
+    </>
+  );
+
+  if (controlled) {
+    if (!show || !position) return null;
+    return (
+      <ControlledMenu x={position.x} y={position.y} onClose={() => onToggle?.(false)}>
+        {items}
+      </ControlledMenu>
+    );
+  }
+
+  return (
+    <Dropdown align="end">
+      <Dropdown.Toggle
+        as="button"
+        type="button"
+        className={`btn btn-sm btn-soft ${styles.toggle}`}
+        disabled={busy}
+        aria-label={t("crud.list.rowActionsToggle")}
+      >
+        {viewLoading || editLoading ? (
+          <Spinner size="sm" animation="border" />
+        ) : (
+          <i className="bi bi-three-dots-vertical" aria-hidden />
+        )}
+      </Dropdown.Toggle>
       <Dropdown.Menu popperConfig={{ strategy: "fixed" }} renderOnMount>
-        {onView ? (
-          <Dropdown.Item onClick={onView} disabled={disabled || viewLoading}>
-            <i className="bi bi-eye me-2" aria-hidden />
-            {t("crud.list.rowActionsView")}
-          </Dropdown.Item>
-        ) : null}
-        {extraActions?.map((action) => (
-          <Dropdown.Item
-            key={action.key}
-            onClick={action.onClick}
-            href={action.href}
-            download={action.download}
-            target={action.target}
-            rel={action.rel}
-            disabled={disabled || action.disabled}
-          >
-            <i className={`bi ${action.icon} me-2`} aria-hidden />
-            {action.label}
-          </Dropdown.Item>
-        ))}
-        {onEdit ? (
-          <Dropdown.Item onClick={onEdit} disabled={disabled || editLoading}>
-            <i className="bi bi-pencil me-2" aria-hidden />
-            {t("crud.list.rowActionsEdit")}
-          </Dropdown.Item>
-        ) : null}
-        {onDelete ? (
-          <Dropdown.Item onClick={onDelete} disabled={disabled} className="text-danger">
-            <i className="bi bi-trash me-2" aria-hidden />
-            {t("crud.list.rowActionsDelete")}
-          </Dropdown.Item>
-        ) : null}
+        {items}
       </Dropdown.Menu>
     </Dropdown>
   );

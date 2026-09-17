@@ -227,31 +227,41 @@ touch.
 ## 10. Implementation Notes (2026-09-17)
 
 - **Mecanismo central** (`crud-list-page.tsx`): novas props opcionais
-  `rowActions?: (item, ctl: { show, onToggle }) => ReactNode` e
-  `onRowOpen?: (item) => void`. `CrudListPageBody` ganhou um estado
-  `activeId` (só um item ativo por vez) — clique em `<tr>`/card faz
-  `setActiveId(id)`; duplo-clique chama `onRowOpen` e limpa `activeId`.
-  Sem `rowActions`, nenhuma célula/coluna extra é renderizada (aditivo,
-  outros consumidores do `CrudListPage` inalterados).
-- **Tabela:** a antiga `<td>` de ações virou uma célula final `width: 0,
-  padding: 0` (só existe quando `rowActions` é passado), com
-  `onClick`/`onDoubleClick` com `stopPropagation` (clicar no menu não
-  reabre/reflete na linha). `<thead>` ganhou uma `<th>` espelho (mesma
-  largura zero) pra manter a contagem de colunas igual — sem isso o
-  `<thead>` ficava com uma coluna a menos que o `<tbody>`.
-- **Card:** `renderCard(item)` envolto num `div` `position: relative`
-  com o clique/duplo-clique; o menu fica num `div` `position: absolute;
-  top: 0.5rem; right: 0.5rem` por cima do card (mesma ideia da célula
-  zero-width da tabela, adaptada pro grid).
-- **`CrudRowActions`** ganhou modo controlado (`show`/`onToggle`): usa
-  `<Dropdown show={show} onToggle={...}>` e troca o toggle `⋮` visível
-  por uma âncora invisível de `1px` (`bsPrefix` customizado tira a seta
-  `::after` do Bootstrap) — só existe pro Popper.js medir uma posição de
-  referência; quem abre é o clique na linha/card, não a âncora em si. A
-  estratégia `strategy: "fixed"` do Popper (já existente, resolvia o
-  clipping do `.table-responsive`/`.tableCard`) continua funcionando sem
-  mudança — é o que faz o menu se comportar como "position: absolute"
-  ancorado no item clicado, mesmo dentro de containers com `overflow`.
+  `rowActions?: (item, ctl: { show, position, onToggle }) => ReactNode` e
+  `onRowOpen?: (item) => void`. `CrudListPageBody` guarda `activeId` (só
+  um item ativo por vez) + `clickPos` (`{x, y}` do `clientX`/`clientY`
+  do clique). Sem `rowActions`, nada muda pros demais consumidores.
+- **Revisão pós-implementação (2026-09-17, pedido do usuário):** a
+  primeira versão desta SPEC usava uma célula/coluna "invisível"
+  (`width: 0, padding: 0`) como âncora do menu, ancorada num ponto fixo
+  da linha/card. O usuário reportou dois problemas depois de ver o
+  resultado: (1) o espaço da antiga coluna de ações continuava sendo
+  reservado (tabelas com `table-layout: auto` distribuem espaço sobrando
+  pra última coluna, mesmo com `width: 0` — o `width` é só uma
+  sugestão nesse modo, não uma trava); (2) o pedido real era o menu
+  nascer na posição do mouse no clique, não num ponto fixo da linha.
+  Correção: **nenhuma célula/coluna extra é renderizada** — nem na
+  tabela (sem `<td>`/`<th>` a mais, largura volta a ser exatamente a de
+  antes de existir `rowActions`) nem no card (sem overlay
+  `position: absolute` fixo). `CrudListPageBody` renderiza `rowActions`
+  **uma única vez** (não por linha), fora da tabela/grid, só quando há
+  um item ativo — chamando com o item encontrado por `getItemKey` e a
+  posição do clique guardada em `clickPos`.
+- **Tabela/card:** `<tr>`/o wrapper do card só têm `onClick`
+  (`setActiveId` + `setClickPos`) e `onDoubleClick` (`onRowOpen`) — sem
+  nenhuma célula/`div` extra. Destaque visual do item ativo via
+  `table-active` (Bootstrap, linha) e uma classe `.cardActive` nova
+  (contorno com `--brand-primary`, card não tem equivalente pronto do
+  Bootstrap).
+- **`CrudRowActions`** ganhou modo controlado (`show`/`position`/
+  `onToggle`): em vez de um `Dropdown` ancorado num toggle, renderiza um
+  menu flutuante via `createPortal` pro `document.body`
+  (`position: fixed`, coordenadas de `position`), com clamp de viewport
+  (`useLayoutEffect` mede o menu já renderizado e reposiciona se vazar
+  da borda) e fecha em clique fora (`mousedown` no documento) ou
+  `Escape`. Sem `show`/`onToggle`, comportamento antigo (toggle `⋮`
+  sempre visível, `Dropdown` de sempre) inalterado — nenhuma das abas de
+  Operação (fora do escopo) foi afetada por essa reescrita.
 - **`CrudRecordModal`** ganhou `onDelete?: () => void` (RF6-8) — botão
   "Excluir" (`btn-outline-danger`, `me-auto`) só quando `onDelete` está
   presente e `mode !== "create"`. Cada consumidor passa
@@ -261,10 +271,12 @@ touch.
 - **8 telas migradas:** `clients`, `harbor`, `terminal`, `product`,
   `container`, `vessel`, `collaborators` (rotas administrativas) +
   `operations-list.tsx` (lista de Operações, tabela própria — não usa
-  `CrudListPage`, então o mesmo mecanismo de `activeId`/célula
-  zero-width/âncora foi replicado manualmente em `OperationRow`/
-  `OperationCard`). Em todas, a antiga `CrudColumn`/`<td>` de "actions"
-  foi removida e a coluna virou `rowActions`.
+  `CrudListPage`, então o mesmo mecanismo de `activeId`/`clickPos`/menu
+  único renderizado fora da tabela foi replicado manualmente:
+  `OperationRow`/`OperationCard` só têm `onClick`/`onDoubleClick`, e o
+  `CrudRowActions` ativo é montado uma vez em `OperationsList`). Em
+  todas, a antiga `CrudColumn`/`<td>` de "actions" foi removida e a
+  coluna virou `rowActions`.
   - **Achado corrigido:** `collaborators` tem sim `onDelete` disponível
     (o comentário original da SPEC-55 dizia que não tinha — só não tem
     `onEdit`, porque o Core não expõe update de `Collaborator`, R3 da

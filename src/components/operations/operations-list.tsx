@@ -301,11 +301,12 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: OperationDetailDTO } | null>(
     null,
   );
-  // Clique seleciona/revela o menu de ações daquele item; duplo-clique abre
-  // direto (SPEC-79) — mesmo mecanismo do `CrudListPage.rowActions`, mas
-  // implementado aqui à mão porque esta tela não usa o componente genérico
-  // (tabela própria, SPEC-07-01 §9).
+  // Clique seleciona/revela o menu de ações daquele item, na posição exata
+  // do clique; duplo-clique abre direto (SPEC-79, reaberta — mesmo
+  // mecanismo do `CrudListPage.rowActions`, implementado aqui à mão porque
+  // esta tela não usa o componente genérico, tabela própria, SPEC-07-01 §9).
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
   // Requisição de detalhe (`GET /api/operation/{id}`) em andamento — só
   // depois dela resolver é que o modal `edit`/`view` abre (mesmo padrão de
   // `administrative/clients/index.tsx`, `detailRequest`).
@@ -493,21 +494,17 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     navigate({ to: "/administrative/operations/$id", params: { id } });
   };
 
-  const renderRowActions = (
-    operation: OperationDTO,
-    ctl: { show: boolean; onToggle: (show: boolean) => void },
-  ) => {
-    const isLoadingDetail = detailRequest?.id === operation.id;
-    return (
-      <CrudRowActions
-        show={ctl.show}
-        onToggle={ctl.onToggle}
-        onView={() => viewOperation(operation.id)}
-        onEdit={!readOnly ? () => setDetailRequest({ id: operation.id, mode: "edit" }) : undefined}
-        viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
-        editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
-      />
-    );
+  // Só um item ativo por vez — o menu em si é renderizado uma única vez,
+  // fora da tabela/grid (ver `activeOperation` abaixo), na posição exata do
+  // clique (SPEC-79 reaberta).
+  const activeOperation = items.find((operation) => operation.id === activeId) ?? null;
+  const closeRowActions = () => {
+    setActiveId(null);
+    setClickPos(null);
+  };
+  const selectRowActions = (id: string, e: { clientX: number; clientY: number }) => {
+    setActiveId(id);
+    setClickPos({ x: e.clientX, y: e.clientY });
   };
 
   return (
@@ -568,12 +565,13 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
               key={operation.id}
               operation={operation}
               locale={locale}
-              onOpen={() => viewOperation(operation.id)}
+              onOpen={() => {
+                closeRowActions();
+                viewOperation(operation.id);
+              }}
               renderStatus={renderStatus}
-              renderActions={renderRowActions}
-              show={activeId === operation.id}
-              onToggle={(show) => setActiveId(show ? operation.id : null)}
-              onSelect={() => setActiveId(operation.id)}
+              active={activeId === operation.id}
+              onSelect={(e) => selectRowActions(operation.id, e)}
             />
           ))}
         </div>
@@ -590,10 +588,6 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
                 <th>{t("administrative-operations.colService")}</th>
                 <th>{t("administrative-operations.colStatus")}</th>
                 <th>{t("administrative-operations.colOpDate")}</th>
-                {/* Célula invisível (largura 0) — espelha a de `<tbody>`,
-                    mantendo a contagem de colunas igual (SPEC-79, remove a
-                    antiga coluna de ações fixa). */}
-                <th style={{ width: 0, padding: 0 }} />
               </tr>
             </thead>
             <tbody>
@@ -603,11 +597,12 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
                   operation={operation}
                   locale={locale}
                   renderStatus={renderStatus}
-                  renderActions={renderRowActions}
                   active={activeId === operation.id}
-                  onSelect={() => setActiveId(operation.id)}
-                  onToggle={(show) => setActiveId(show ? operation.id : null)}
-                  onOpen={() => viewOperation(operation.id)}
+                  onSelect={(e) => selectRowActions(operation.id, e)}
+                  onOpen={() => {
+                    closeRowActions();
+                    viewOperation(operation.id);
+                  }}
                 />
               ))}
             </tbody>
@@ -616,6 +611,29 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       )}
 
       <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+
+      {activeOperation && clickPos
+        ? (() => {
+            const isLoadingDetail = detailRequest?.id === activeOperation.id;
+            return (
+              <CrudRowActions
+                show
+                position={clickPos}
+                onToggle={(show) => {
+                  if (!show) closeRowActions();
+                }}
+                onView={() => viewOperation(activeOperation.id)}
+                onEdit={
+                  !readOnly
+                    ? () => setDetailRequest({ id: activeOperation.id, mode: "edit" })
+                    : undefined
+                }
+                viewLoading={isLoadingDetail && detailRequest?.mode === "view"}
+                editLoading={isLoadingDetail && detailRequest?.mode === "edit"}
+              />
+            );
+          })()
+        : null}
 
       {modal?.mode === "create" ? (
         <CrudRecordModal<OperationCreateValues>
@@ -655,35 +673,36 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
 /**
  * Linha da tabela — busca o detalhe (enriquecimento) uma vez, reusa pras 3
- * colunas de nome. Clique seleciona/revela `renderActions` (célula invisível
- * no fim da linha); duplo-clique abre direto (`onOpen`) — SPEC-79.
+ * colunas de nome. Clique seleciona o item (o menu em si é um único
+ * `CrudRowActions` renderizado fora da tabela, na posição do clique — ver
+ * `activeOperation` em `OperationsList`); duplo-clique abre direto
+ * (`onOpen`) — SPEC-79 (reaberta: sem coluna/célula reservada nem menu
+ * ancorado num ponto fixo da linha).
  */
 function OperationRow({
   operation,
   locale,
   renderStatus,
-  renderActions,
   active,
   onSelect,
-  onToggle,
   onOpen,
 }: {
   operation: OperationDTO;
   locale: Locale;
   renderStatus: (operation: OperationDTO) => ReactNode;
-  renderActions: (
-    operation: OperationDTO,
-    ctl: { show: boolean; onToggle: (show: boolean) => void },
-  ) => ReactNode;
   active: boolean;
-  onSelect: () => void;
-  onToggle: (show: boolean) => void;
+  onSelect: (e: { clientX: number; clientY: number }) => void;
   onOpen: () => void;
 }) {
   const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
 
   return (
-    <tr onClick={onSelect} onDoubleClick={onOpen} style={{ cursor: "pointer" }}>
+    <tr
+      onClick={onSelect}
+      onDoubleClick={onOpen}
+      className={active ? "table-active" : undefined}
+      style={{ cursor: "pointer" }}
+    >
       <td className="font-monospace">Nº {operation.number}</td>
       <td className="fw-semibold">
         <EnrichedName value={clientName} isLoading={isLoading} isError={isError} />
@@ -696,44 +715,30 @@ function OperationRow({
       <td>{resolveOperationServiceLabel(operation.opService, locale)}</td>
       <td>{renderStatus(operation)}</td>
       <td className="text-body-secondary">{formatDate(operation.opDate, locale)}</td>
-      <td
-        style={{ width: 0, padding: 0 }}
-        onClick={(e) => e.stopPropagation()}
-        onDoubleClick={(e) => e.stopPropagation()}
-      >
-        {renderActions(operation, { show: active, onToggle })}
-      </td>
     </tr>
   );
 }
 
 /**
  * Card (modo `cards` do `ViewToggle`) — mesmo enriquecimento da linha da
- * tabela. Clique seleciona/revela o menu de ações (âncora no canto superior
- * direito); duplo-clique abre direto (`onOpen`) — SPEC-79 (antes, um clique
- * já navegava; agora é preciso duplo-clique ou "Ver" no menu).
+ * tabela. Clique seleciona o item; duplo-clique abre direto (`onOpen`) —
+ * SPEC-79 (antes, um clique já navegava; agora é preciso duplo-clique ou
+ * "Ver" no menu que aparece na posição do clique).
  */
 function OperationCard({
   operation,
   locale,
   onOpen,
   renderStatus,
-  renderActions,
-  show,
-  onToggle,
+  active,
   onSelect,
 }: {
   operation: OperationDTO;
   locale: Locale;
   onOpen: () => void;
   renderStatus: (operation: OperationDTO) => ReactNode;
-  renderActions: (
-    operation: OperationDTO,
-    ctl: { show: boolean; onToggle: (show: boolean) => void },
-  ) => ReactNode;
-  show: boolean;
-  onToggle: (show: boolean) => void;
-  onSelect: () => void;
+  active: boolean;
+  onSelect: (e: { clientX: number; clientY: number }) => void;
 }) {
   const t = useT();
   const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
@@ -741,7 +746,8 @@ function OperationCard({
   return (
     <div className="col-12 col-sm-6 col-lg-4">
       <div
-        style={{ position: "relative", cursor: "pointer" }}
+        className={active ? styles.cardActive : undefined}
+        style={{ cursor: "pointer" }}
         onClick={onSelect}
         onDoubleClick={onOpen}
       >
@@ -771,13 +777,6 @@ function OperationCard({
             ) : null}
           </Card.Body>
         </Card>
-        <div
-          style={{ position: "absolute", top: "0.5rem", right: "0.5rem" }}
-          onClick={(e) => e.stopPropagation()}
-          onDoubleClick={(e) => e.stopPropagation()}
-        >
-          {renderActions(operation, { show, onToggle })}
-        </div>
       </div>
     </div>
   );

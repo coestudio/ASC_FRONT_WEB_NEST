@@ -151,6 +151,7 @@ function ContainerPage() {
           rowActions={(c, ctl) => (
             <CrudRowActions
               show={ctl.show}
+              position={ctl.position}
               onToggle={ctl.onToggle}
               onView={() => setModal({ mode: "view", record: c })}
               onEdit={() => setModal({ mode: "edit", record: c })}

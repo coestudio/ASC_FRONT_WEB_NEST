@@ -261,6 +261,7 @@ function CollaboratorsPageBody() {
             // Collaborator (R3 da SPEC-09). Só ver e excluir.
             <CrudRowActions
               show={ctl.show}
+              position={ctl.position}
               onToggle={ctl.onToggle}
               onView={() => setModal({ mode: "view", record: c })}
               onDelete={() => setPendingDelete(c)}

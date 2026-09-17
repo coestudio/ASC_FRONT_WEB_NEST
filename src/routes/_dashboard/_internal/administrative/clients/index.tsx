@@ -327,6 +327,7 @@ function ClientsPageBody() {
             return (
               <CrudRowActions
                 show={ctl.show}
+                position={ctl.position}
                 onToggle={ctl.onToggle}
                 onView={() => setDetailRequest({ id: c.id, mode: "view" })}
                 onEdit={() => setDetailRequest({ id: c.id, mode: "edit" })}

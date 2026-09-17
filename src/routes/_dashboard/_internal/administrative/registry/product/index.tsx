@@ -122,6 +122,7 @@ function ProductPage() {
           rowActions={(p, ctl) => (
             <CrudRowActions
               show={ctl.show}
+              position={ctl.position}
               onToggle={ctl.onToggle}
               onView={() => setModal({ mode: "view", record: p })}
               onEdit={() => setModal({ mode: "edit", record: p })}

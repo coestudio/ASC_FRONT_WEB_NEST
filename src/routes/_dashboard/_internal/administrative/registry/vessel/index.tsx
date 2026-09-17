@@ -122,6 +122,7 @@ function VesselPage() {
           rowActions={(v, ctl) => (
             <CrudRowActions
               show={ctl.show}
+              position={ctl.position}
               onToggle={ctl.onToggle}
               onView={() => setModal({ mode: "view", record: v })}
               onEdit={() => setModal({ mode: "edit", record: v })}

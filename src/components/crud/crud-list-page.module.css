@@ -76,3 +76,13 @@
   top: 0;
   z-index: 1;
 }
+
+/* Destaque do card selecionado (SPEC-79, clique revela o menu de ações) —
+   mesmo tratamento visual do `table-active` do Bootstrap na tabela, só que
+   como card não tem uma classe equivalente pronta, aplica um contorno com
+   o token de brand. */
+.cardActive {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--bs-border-radius-sm);
+}

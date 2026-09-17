@@ -19,12 +19,12 @@
   display: none;
 }
 
-/* Âncora do modo controlado (SPEC-79) — invisível, só pro Popper medir uma
-   posição de referência (`getBoundingClientRect`); quem abre o menu é o
-   clique na linha/card, controlado por fora (`show`/`onToggle`), não esta
-   âncora em si. */
-.controlledAnchor {
-  display: inline-block;
-  width: 1px;
-  height: 1px;
+/* Menu flutuante do modo controlado (SPEC-79) — portalado pro
+   `document.body`, `position: fixed` calculado em JS (coordenadas do
+   clique, com clamp de viewport). `z-index` alto o bastante pra ficar
+   acima de qualquer `Modal`/conteúdo da página (não usa `--bs-zindex-
+   dropdown` porque, fora do fluxo normal de um `Dropdown` ancorado, o
+   valor padrão do Bootstrap não é garantido acima de tudo aqui). */
+.controlledMenu {
+  z-index: 1080;
 }
