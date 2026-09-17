@@ -265,6 +265,7 @@
     "byUser": "由 {user}",
     "emptyState": "暂无记录的事件。",
     "loadError": "无法加载该作业的日志。",
+    "filterAllEntityTypes": "所有类型",
     "actions": {
       "RomaneioImported": "装箱单已导入",
       "InvoiceCreated": "发票已创建",

@@ -265,6 +265,7 @@
     "byUser": "por {user}",
     "emptyState": "No hay eventos registrados.",
     "loadError": "No fue posible cargar el registro de la operación.",
+    "filterAllEntityTypes": "Todos los tipos",
     "actions": {
       "RomaneioImported": "Romaneo importado",
       "InvoiceCreated": "Factura creada",

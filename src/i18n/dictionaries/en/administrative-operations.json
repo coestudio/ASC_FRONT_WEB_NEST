@@ -265,6 +265,7 @@
     "byUser": "by {user}",
     "emptyState": "No events recorded.",
     "loadError": "Could not load the operation log.",
+    "filterAllEntityTypes": "All types",
     "actions": {
       "RomaneioImported": "Packing list imported",
       "InvoiceCreated": "Invoice created",

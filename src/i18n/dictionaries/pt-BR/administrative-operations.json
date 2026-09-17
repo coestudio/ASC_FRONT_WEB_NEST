@@ -265,6 +265,7 @@
     "byUser": "por {user}",
     "emptyState": "Nenhum evento registrado.",
     "loadError": "Não foi possível carregar o log da operação.",
+    "filterAllEntityTypes": "Todos os tipos",
     "actions": {
       "RomaneioImported": "Romaneio importado",
       "InvoiceCreated": "Nota fiscal criada",
