@@ -188,6 +188,16 @@ a {
   --bs-btn-active-color: var(--on-brand, #fff);
 }
 
+/* SPEC-64 — mesmo bug de raiz do bloco acima: `.nav-pills` do
+   bootstrap.min.css pré-compilado fixa `--bs-nav-pills-link-active-bg`
+   em `#0d6efd` (azul padrão do Bootstrap) em vez de ler `--bs-primary`,
+   então o pill ativo (ex.: sub-abas de Nota Fiscal) nunca seguia a marca
+   ativa. Reforça aqui com o mesmo token já usado em `.btn-primary`. */
+.nav-pills {
+  --bs-nav-pills-link-active-bg: var(--bs-primary);
+  --bs-nav-pills-link-active-color: var(--on-brand, #fff);
+}
+
 /* SPEC-56 — `.soft-card`/`.btn-soft` eram usadas em 3 lugares do código
    (view-toggle.tsx, Log.tsx, administrative/operations/$id) mas nunca
    tinham sido definidas em nenhum CSS do projeto: renderizavam sem borda,
