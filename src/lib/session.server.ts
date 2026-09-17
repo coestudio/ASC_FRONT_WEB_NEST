@@ -55,6 +55,11 @@ export function isExpired(expiresAt: string | null | undefined): boolean {
 
 /** Sessão válida (existe e não expirou) ou `null`. */
 export async function readServerSession(): Promise<SessionData | null> {
+  // `useSession` é utilitário server-only do TanStack Start (lê/escreve
+  // cookie selado), não um hook React de verdade — o nome `useXxx` é só
+  // convenção da lib, sem depender de render/componente. Falso positivo
+  // do eslint-plugin-react-hooks, que não distingue a origem.
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const session = await useSession<SessionData>(SESSION_CONFIG);
   const data = session.data;
   if (!data?.accessToken || !data.expiresAt || isExpired(data.expiresAt)) {
@@ -64,11 +69,13 @@ export async function readServerSession(): Promise<SessionData | null> {
 }
 
 export async function writeServerSession(data: SessionData): Promise<void> {
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- ver readServerSession acima
   const session = await useSession<SessionData>(SESSION_CONFIG);
   await session.update(data);
 }
 
 export async function clearServerSession(): Promise<void> {
+  // eslint-disable-next-line react-hooks/rules-of-hooks -- ver readServerSession acima
   const session = await useSession<SessionData>(SESSION_CONFIG);
   await session.clear();
 }
