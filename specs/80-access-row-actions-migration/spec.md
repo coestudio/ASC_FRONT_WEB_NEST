@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-80
 - **Nome:** access-row-actions-migration
-- **Status:** WAITING_APPROVAL — sem `[NEEDS_DECISION]`.
+- **Status:** IMPLEMENTED — sem `[NEEDS_DECISION]`.
 - **Autor:** claude (pedido do usuário, 2026-09-17)
 - **Área:** `src/routes/_dashboard/admin/access/index.tsx`,
   `src/routes/_dashboard/admin/access/index.module.css`.
@@ -120,3 +120,32 @@ suficiente pros 4 tipos).
 
 - **R1** — Ordem dos itens no menu muda ligeiramente (ver item 2 do
   escopo) — mudança visual esperada, não um bug.
+
+## 7. Notas de implementação
+
+- `RowActions` (função local) apagada; a coluna `{ key: "actions", ... }`
+  saiu de `columns` e o bloco `<div className="mt-2"><RowActions .../></div>`
+  saiu de `renderCard`.
+- `CrudListPage` ganhou `rowActions`/`onRowOpen`, exatamente o formato do
+  escopo: `CrudRowActions` com `onView`/`onEdit`/`onDelete` +
+  `extraActions` (`toggleActive`, `resetPassword`) — ordem final no menu:
+  Ver, Ativar/Desativar, Resetar senha, Editar, Excluir (contrato fixo do
+  componente, conforme já observado no item 2 do escopo).
+- Tooltip do "resetar senha" sem e-mail virou só `disabled` (sem `title`),
+  conforme item 3 do escopo — `CrudRowExtraAction` não tem campo de
+  tooltip.
+- `styles.actionBtn`/`actionBtnNeutral`/`actionBtnSuccess`/`actionBtnDanger`
+  removidos de `index.module.css` (órfãos, único uso era o `RowActions`
+  apagado).
+- Import de `TranslationKey` também removido (só existia pra tipar o `t`
+  recebido por `RowActions`).
+- `bun run check`: 0 erros. `bun run lint`: 0 erros, 63 warnings (baseline
+  pré-existente, sem regressão). `bun run build` (produção) concluído sem
+  erro.
+- CA2/CA3 (clique revela menu na posição do clique, duplo-clique abre
+  view) não foram confirmados por screenshot — sem ferramenta de captura
+  visual disponível no ambiente desta implementação; é o mesmo mecanismo
+  controlado (`show`/`position`/`onToggle` de `CrudRowActions`,
+  `onRowOpen` de `CrudListPage`) já em produção nas 8 telas da SPEC-79 e
+  em `administrative/clients`, sem alteração nesses componentes
+  compartilhados.

@@ -19,6 +19,7 @@ import { PostApiUserBody } from "@/api/generated/zod/user/user.zod";
 import { UserType, type InternalRole, type UserDTO } from "@/api/generated/model";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
@@ -27,7 +28,6 @@ import { userListQueryOptions, userRolesQueryOptions } from "@/lib/queries/user"
 import { fetchUserListFn, fetchUserRolesFn } from "@/lib/user-fns";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
-import type { TranslationKey } from "@/i18n/translate";
 import { resolveInternalRoleLabel } from "@/api/generated/static/internalRoleOptions";
 import styles from "./index.module.css";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -80,66 +80,6 @@ type PendingAction = {
 // Filtro admin/não-admin — 3 estados (SPEC-32 RF2): "all" não manda
 // `IsAdmin` no parâmetro do Core, os outros dois mandam `true`/`false`.
 type IsAdminFilter = "all" | "admin" | "nonAdmin";
-
-/**
- * Ações da linha/card — pílulas circulares coloridas (verde pra editar e
- * redefinir senha, vermelho pra excluir, neutro pro resto), referência de
- * design: print da tela de Acesso (SPEC-11 escopo expandido). Compartilhada
- * entre a tabela e o card do `CrudListPage` pra não duplicar o markup.
- */
-function RowActions({
-  user: u,
-  setModal,
-  setPending,
-  t,
-}: {
-  user: UserDTO;
-  setModal: (v: { mode: CrudRecordMode; user?: UserDTO } | null) => void;
-  setPending: (v: PendingAction | null) => void;
-  t: (key: TranslationKey) => string;
-}) {
-  return (
-    <div className="d-flex gap-1 flex-wrap">
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
-        onClick={() => setModal({ mode: "view", user: u })}
-      >
-        <i className="bi bi-eye" aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
-        onClick={() => setModal({ mode: "edit", user: u })}
-      >
-        <i className="bi bi-pencil" aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnNeutral}`}
-        onClick={() => setPending({ kind: u.isActive ? "deactivate" : "activate", user: u })}
-      >
-        <i className={`bi ${u.isActive ? "bi-slash-circle" : "bi-check-circle"}`} aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnSuccess}`}
-        disabled={!u.profile.email}
-        title={!u.profile.email ? t("access.actions.noEmailTooltip") : undefined}
-        onClick={() => setPending({ kind: "resetPassword", user: u })}
-      >
-        <i className="bi bi-key" aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-        onClick={() => setPending({ kind: "delete", user: u })}
-      >
-        <i className="bi bi-trash" aria-hidden />
-      </button>
-    </div>
-  );
-}
 
 function toFormValues(user?: UserDTO): UserFormValues {
   return {
@@ -295,11 +235,6 @@ function AdminAccessPageContent() {
       headerKey: "access.colCreatedAt",
       render: (u) => new Date(u.createdAt).toLocaleDateString(locale),
     },
-    {
-      key: "actions",
-      headerKey: "access.colActions",
-      render: (u) => <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />,
-    },
   ];
 
   const handleSubmit = async (values: UserFormValues) => {
@@ -426,13 +361,37 @@ function AdminAccessPageContent() {
                 <Badge pill bg="info">
                   {t(u.type === UserType.Internal ? "access.internal" : "access.external")}
                 </Badge>
-                <div className="mt-2">
-                  <RowActions user={u} setModal={setModal} setPending={setPending} t={t} />
-                </div>
               </Card.Body>
             </Card>
           )}
           getItemKey={(u) => u.id}
+          rowActions={(u, ctl) => (
+            <CrudRowActions
+              show={ctl.show}
+              position={ctl.position}
+              onToggle={ctl.onToggle}
+              onView={() => setModal({ mode: "view", user: u })}
+              onEdit={() => setModal({ mode: "edit", user: u })}
+              onDelete={() => setPending({ kind: "delete", user: u })}
+              extraActions={[
+                {
+                  key: "toggleActive",
+                  icon: u.isActive ? "bi-slash-circle" : "bi-check-circle",
+                  label: t(u.isActive ? "access.actions.deactivate" : "access.actions.activate"),
+                  onClick: () =>
+                    setPending({ kind: u.isActive ? "deactivate" : "activate", user: u }),
+                },
+                {
+                  key: "resetPassword",
+                  icon: "bi-key",
+                  label: t("access.actions.resetPassword"),
+                  disabled: !u.profile.email,
+                  onClick: () => setPending({ kind: "resetPassword", user: u }),
+                },
+              ]}
+            />
+          )}
+          onRowOpen={(u) => setModal({ mode: "view", user: u })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
