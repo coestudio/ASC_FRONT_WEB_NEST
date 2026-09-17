@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Col, Form, Row } from "react-bootstrap";
+import { Badge, Button, Form } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
@@ -194,15 +194,18 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
 
   return (
     <div>
-      <Row className="g-2 mb-3">
-        <Col md={4}>
-          <FilterText
-            value={search}
-            onChange={setSearch}
-            placeholder={t("administrative-operations.responsible.searchPlaceholder")}
-          />
-        </Col>
-        <Col md={5} className="d-flex align-items-center gap-2 flex-wrap">
+      {/* SPEC-87: cabeçalho reorganizado em 2 linhas lógicas (busca+filtro /
+          ações) em vez de 3 colunas apertadas — evita quebra feia em
+          viewport estreito, sem mudar nenhuma regra de negócio. */}
+      <div className="d-flex flex-column gap-2 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2">
+          <div className="flex-grow-1" style={{ minWidth: 220 }}>
+            <FilterText
+              value={search}
+              onChange={setSearch}
+              placeholder={t("administrative-operations.responsible.searchPlaceholder")}
+            />
+          </div>
           <div
             className="btn-group flex-wrap"
             role="group"
@@ -235,8 +238,8 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
               {t("administrative-operations.responsible.filter.clear")}
             </Button>
           ) : null}
-        </Col>
-        <Col md={3} className="d-flex justify-content-end align-items-center gap-2">
+        </div>
+        <div className="d-flex flex-wrap align-items-center gap-2 ms-md-auto">
           <Button
             variant="outline-primary"
             size="sm"
@@ -257,8 +260,8 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             <i className="bi bi-link-45deg me-1" aria-hidden />
             {t("administrative-operations.responsible.link")}
           </Button>
-        </Col>
-      </Row>
+        </div>
+      </div>
 
       {query.isLoading ? (
         <LoadingState variant="inline" />
@@ -280,7 +283,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
             return (
               <div
                 key={item.id}
-                className="soft-card p-3 d-flex flex-row flex-wrap align-items-center gap-3"
+                className="soft-card p-3 d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3"
               >
                 <div
                   className="rounded-circle bg-primary-subtle text-primary-emphasis d-flex align-items-center justify-content-center fw-semibold flex-shrink-0"
@@ -288,21 +291,30 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
                 >
                   {initials(name)}
                 </div>
-                <div className="flex-grow-1 min-w-0">
-                  <div className="fw-semibold text-truncate">{name}</div>
-                  <div className="d-flex flex-wrap gap-1 my-1">
-                    <Badge bg="secondary">
+                <div className="flex-grow-1 min-w-0 w-100">
+                  <div className="d-flex flex-wrap align-items-center gap-2">
+                    <span className="fw-semibold text-truncate">{name}</span>
+                    {/* SPEC-87: tipo (Interno/Externo) vira rótulo discreto,
+                        separado visualmente dos badges de papel abaixo —
+                        antes competia com eles como Badge bg="secondary". */}
+                    <span className="small text-body-secondary">
                       {t(
                         `administrative-operations.responsible.roles.${item.user.type}` as TranslationKey,
                       )}
-                    </Badge>
-                    {item.user.roles.map((role) => (
-                      <Badge key={role} bg="info" text="dark">
-                        {t(`administrative-operations.responsible.roles.${role}` as TranslationKey)}
-                      </Badge>
-                    ))}
+                    </span>
                   </div>
-                  <div className="small text-body-secondary text-truncate">
+                  {item.user.roles.length > 0 ? (
+                    <div className="d-flex flex-wrap gap-1 mt-1">
+                      {item.user.roles.map((role) => (
+                        <Badge key={role} bg="info" text="dark">
+                          {t(
+                            `administrative-operations.responsible.roles.${role}` as TranslationKey,
+                          )}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : null}
+                  <div className="small text-body-secondary text-truncate mt-1">
                     {item.user.profile.email}
                     {item.user.profile.phone ? ` · ${item.user.profile.phone}` : ""}
                   </div>
@@ -310,6 +322,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
                 <Button
                   size="sm"
                   variant="outline-danger"
+                  className="w-100 w-md-auto align-self-stretch align-self-md-center flex-shrink-0"
                   disabled={unlinkMutation.isPending}
                   onClick={() => handleUnlink(item)}
                 >
