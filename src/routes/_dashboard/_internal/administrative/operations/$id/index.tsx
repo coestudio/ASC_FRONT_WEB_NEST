@@ -35,6 +35,7 @@ import { Containers } from "@/components/operations/tabs/Containers";
 import { Documents } from "@/components/operations/tabs/Documents";
 import { Invoice } from "@/components/operations/tabs/Invoice";
 import { Occurrences } from "@/components/operations/tabs/Occurrences";
+import styles from "./index.module.css";
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/operations/$id/")({
   head: () => ({ meta: [{ title: "Operação — ASC" }] }),
@@ -228,7 +229,7 @@ function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
   }, [status]);
 
   return (
-    <section className="soft-card mb-4">
+    <section className={`soft-card mb-4 ${styles.header}`}>
       <div className="d-flex flex-wrap align-items-end justify-content-between gap-3">
         <div>
           <div className="text-body-secondary small">

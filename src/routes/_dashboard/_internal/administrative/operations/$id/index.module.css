@@ -1,0 +1,7 @@
+/* Cabeçalho da operação (`OperationHeader`) — o `.soft-card` global (base.css)
+   não define padding próprio (cada consumidor decide, ver `Log.tsx` com
+   `p-3`); aqui o espaçamento pedido foi 20px, convertido pra rem com a
+   base de 16px do projeto (Bootstrap root font-size): 20 / 16 = 1.25rem. */
+.header {
+  padding: 1.25rem;
+}

@@ -29,15 +29,30 @@ function formatDate(value: string | null | undefined, locale: Locale): string {
 }
 
 /**
- * Linha rótulo/valor — mesmo padrão de `OperationSummary`
- * (`operations-list.tsx`), extraído aqui só pra esta aba (dado real,
- * `OperationDetailDTO`).
+ * Linha rótulo/valor — rótulo pequeno/discreto acima, valor em destaque
+ * abaixo (mesmo padrão já usado no mock de `operational/operations/$id`),
+ * em vez do "**Rótulo:** valor" inline anterior: com várias colunas lado a
+ * lado o par bold+dois-pontos ficava difícil de escanear rápido; rótulo e
+ * valor em linhas separadas dá mais hierarquia visual sem gastar mais
+ * espaço vertical que o gap (`g-3`) já reservava.
  */
 function DetailField({ label, value, md = 4 }: { label: string; value: string; md?: number }) {
   return (
     <Col md={md}>
-      <strong>{label}:</strong> {value || "—"}
+      <div className="small text-body-secondary">{label}</div>
+      <div className="fw-semibold">{value || "—"}</div>
     </Col>
+  );
+}
+
+/** Título de seção com ícone — mesma ideia das abas do shell (ícone + texto),
+ * pra dar um ponto de referência visual rápido em cada bloco da aba. */
+function SectionTitle({ icon, children }: { icon: string; children: string }) {
+  return (
+    <h2 className="h6 text-body-secondary text-uppercase mb-3 d-flex align-items-center gap-2">
+      <i className={`bi ${icon}`} aria-hidden />
+      {children}
+    </h2>
   );
 }
 
@@ -83,10 +98,10 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </Button>
       </div>
 
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-person">
           {t("administrative-operations.details.clientSection")}
-        </h2>
+        </SectionTitle>
         <Row className="g-3">
           <DetailField
             label={t("administrative-operations.form.client")}
@@ -111,10 +126,10 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </Row>
       </section>
 
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-box-seam">
           {t("administrative-operations.details.productSection")}
-        </h2>
+        </SectionTitle>
         <Row className="g-3">
           <DetailField
             label={t("administrative-operations.form.product")}
@@ -139,10 +154,10 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </Row>
       </section>
 
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-calendar3">
           {t("administrative-operations.details.datesSection")}
-        </h2>
+        </SectionTitle>
         <Row className="g-3">
           <DetailField
             label={t("administrative-operations.form.nameDate")}
@@ -167,10 +182,10 @@ export function OperationDetailsTab({ operation }: { operation: OperationDetailD
         </Row>
       </section>
 
-      <section>
-        <h2 className="h6 text-body-secondary text-uppercase mb-3">
+      <section className="soft-card p-4">
+        <SectionTitle icon="bi-chat-left-text">
           {t("administrative-operations.form.observation")}
-        </h2>
+        </SectionTitle>
         <p className="mb-0">{operation.observation || "—"}</p>
       </section>
 
