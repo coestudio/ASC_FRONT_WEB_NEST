@@ -211,12 +211,14 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
     selectableItems.length > 0 &&
     selectableItems.every((item) => selection.selectedIds.has(getItemKey(item)));
 
-  // SPEC-75: mede a posição real do card (via `getBoundingClientRect`,
-  // não um número fixo) — tudo que renderiza antes dele (título, busca,
-  // toolbar de seleção de quem chama) já empurrou `top` pra baixo
-  // naturalmente, e a altura da paginação (que pode nem existir, com 1
-  // página só) é medida do jeito que ela realmente ocupa. O resultado é a
-  // altura exata que sobra até o fim da viewport, sem estimar nada.
+  // SPEC-75/78: mede a posição real da área de listagem (via
+  // `getBoundingClientRect`, não um número fixo) — tudo que renderiza
+  // antes dela (título, busca, toolbar de seleção de quem chama) já
+  // empurrou `top` pra baixo naturalmente, e a altura da paginação (que
+  // pode nem existir, com 1 página só) é medida do jeito que ela
+  // realmente ocupa. O resultado é a altura exata que sobra até o fim da
+  // viewport, sem estimar nada. `fillCardRef` é reaproveitado nas duas
+  // visões (tabela/cards, SPEC-78) — só uma existe no DOM por vez.
   const fillCardRef = useRef<HTMLDivElement>(null);
   const fillPaginationRef = useRef<HTMLDivElement>(null);
   const [fillBodyHeight, setFillBodyHeight] = useState<number>();
@@ -250,7 +252,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
       window.removeEventListener("resize", recompute);
       resizeObserver.disconnect();
     };
-  }, [fillHeight, items.length, isLoading, isError]);
+  }, [fillHeight, items.length, isLoading, isError, viewMode]);
 
   return (
     <>
@@ -261,12 +263,17 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
       ) : items.length === 0 ? (
         <div className="alert alert-secondary">{t(emptyMessageKey ?? "crud.list.empty")}</div>
       ) : viewMode === "cards" ? (
-        <div className="row g-3">
-          {items.map((item) => (
-            <div className="col-12 col-sm-6 col-lg-4" key={getItemKey(item)}>
-              {renderCard(item)}
-            </div>
-          ))}
+        <div
+          ref={fillCardRef}
+          style={fillHeight ? { height: fillBodyHeight, overflowY: "auto" } : undefined}
+        >
+          <div className="row g-3">
+            {items.map((item) => (
+              <div className="col-12 col-sm-6 col-lg-4" key={getItemKey(item)}>
+                {renderCard(item)}
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <div
