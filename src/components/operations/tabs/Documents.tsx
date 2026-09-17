@@ -6,6 +6,7 @@ import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { FilePreviewModal } from "@/components/ui/file-preview-modal";
+import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { toast } from "react-toastify";
 import type { ZodType } from "zod";
 import { z } from "zod";
@@ -207,40 +208,27 @@ export function Documents({ operationId }: { operationId: string }) {
                   </td>
                   <td>{new Date(item.createdAt).toLocaleDateString(locale)}</td>
                   <td>
-                    <div className="d-flex gap-1">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setPreviewing(item)}
-                        title={t("administrative-operations.documents.preview")}
-                        aria-label={t("administrative-operations.documents.preview")}
-                      >
-                        <i className="bi bi-eye" aria-hidden />
-                      </button>
-                      {/* `download` só força o nome de arquivo quando o link
-                          é mesma origem — em storage externo (S3/blob) o
-                          browser ainda assim baixa em vez de navegar, contanto
-                          que o servidor não force Content-Disposition:inline;
-                          `target="_blank"` cobre o caso de acabar abrindo. */}
-                      <a
-                        className={`btn btn-sm btn-outline-primary${item.file.url ? "" : " disabled"}`}
-                        href={item.file.url}
-                        download={item.file.name}
-                        target="_blank"
-                        rel="noreferrer"
-                        title={t("administrative-operations.documents.download")}
-                        aria-disabled={!item.file.url}
-                      >
-                        <i className="bi bi-download" aria-hidden />
-                      </a>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => setEditing(item)}
-                      >
-                        <i className="bi bi-pencil" aria-hidden />
-                      </button>
-                    </div>
+                    {/* `download` só força o nome de arquivo quando o link é
+                        mesma origem — em storage externo (S3/blob) o browser
+                        ainda assim baixa em vez de navegar, contanto que o
+                        servidor não force Content-Disposition:inline;
+                        `target="_blank"` cobre o caso de acabar abrindo. */}
+                    <CrudRowActions
+                      onView={() => setPreviewing(item)}
+                      extraActions={[
+                        {
+                          key: "download",
+                          icon: "bi-download",
+                          label: t("administrative-operations.documents.download"),
+                          href: item.file.url ?? undefined,
+                          download: item.file.name ?? undefined,
+                          target: "_blank",
+                          rel: "noreferrer",
+                          disabled: !item.file.url,
+                        },
+                      ]}
+                      onEdit={() => setEditing(item)}
+                    />
                   </td>
                 </tr>
               ))}

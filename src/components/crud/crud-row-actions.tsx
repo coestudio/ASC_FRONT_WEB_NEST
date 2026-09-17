@@ -2,6 +2,27 @@ import { Dropdown, Spinner } from "react-bootstrap";
 import { useT } from "@/lib/ui-prefs";
 import styles from "./crud-row-actions.module.css";
 
+/**
+ * Ação extra genérica (SPEC-59) — cobre casos que não são só "ver"/"editar"/
+ * "excluir" (ex.: download de arquivo com atributo nativo `href`/`download`
+ * do `<a>`, sem precisar de `onClick` + blob). Renderizada entre "Ver" e
+ * "Editar" no menu. Quando `href` está presente, o `Dropdown.Item`
+ * (react-bootstrap, componente `Anchor` por padrão) recebe `href`/
+ * `download`/`target`/`rel` diretamente — mesmo comportamento nativo do
+ * `<a>` que existia solto antes desta SPEC.
+ */
+export type CrudRowExtraAction = {
+  key: string;
+  icon: string;
+  label: string;
+  onClick?: () => void;
+  href?: string;
+  download?: string;
+  target?: string;
+  rel?: string;
+  disabled?: boolean;
+};
+
 export type CrudRowActionsProps = {
   onView?: () => void;
   onEdit?: () => void;
@@ -12,6 +33,8 @@ export type CrudRowActionsProps = {
   editLoading?: boolean;
   /** Desabilita o toggle inteiro (ex.: enquanto outra ação da linha está em curso). */
   disabled?: boolean;
+  /** Ações adicionais (ex.: download) renderizadas entre "Ver" e "Editar" (SPEC-59). */
+  extraActions?: CrudRowExtraAction[];
 };
 
 /**
@@ -57,6 +80,7 @@ export function CrudRowActions({
   viewLoading,
   editLoading,
   disabled,
+  extraActions,
 }: CrudRowActionsProps) {
   const t = useT();
   const busy = disabled || viewLoading || editLoading;
@@ -83,6 +107,20 @@ export function CrudRowActions({
             {t("crud.list.rowActionsView")}
           </Dropdown.Item>
         ) : null}
+        {extraActions?.map((action) => (
+          <Dropdown.Item
+            key={action.key}
+            onClick={action.onClick}
+            href={action.href}
+            download={action.download}
+            target={action.target}
+            rel={action.rel}
+            disabled={disabled || action.disabled}
+          >
+            <i className={`bi ${action.icon} me-2`} aria-hidden />
+            {action.label}
+          </Dropdown.Item>
+        ))}
         {onEdit ? (
           <Dropdown.Item onClick={onEdit} disabled={disabled || editLoading}>
             <i className="bi bi-pencil me-2" aria-hidden />
