@@ -155,6 +155,19 @@ export type CrudListPageProps<
    * `rowActions`, esta prop não tem efeito (linha/card não fica clicável).
    */
   onRowOpen?: (item: T) => void;
+  /**
+   * Clique simples na linha (fora de checkbox/botão) — pedido do usuário na
+   * aba Romaneio (2026-09-17): seleciona o item sem precisar acertar o
+   * checkbox. Independente de `rowActions`/`selection`; opcional e aditivo
+   * — sem ela, nenhuma mudança de comportamento nas demais listagens.
+   */
+  onRowSingleClick?: (item: T) => void;
+  /**
+   * Duplo-clique na linha (fora de checkbox/botão) — mesmo pedido, abre
+   * edição do item direto. Independente de `rowActions`/`onRowOpen`;
+   * opcional e aditivo.
+   */
+  onRowDoubleClick?: (item: T) => void;
 };
 
 /**
@@ -192,6 +205,8 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   onSortChange,
   rowActions,
   onRowOpen,
+  onRowSingleClick,
+  onRowDoubleClick,
 }: Pick<
   CrudListPageProps<T, TQueryData, TError>,
   | "queryOptions"
@@ -209,6 +224,8 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   | "onSortChange"
   | "rowActions"
   | "onRowOpen"
+  | "onRowSingleClick"
+  | "onRowDoubleClick"
 > & { viewMode: ViewMode }) {
   const t = useT();
   const query = useSsrSafeQuery(queryOptions);
@@ -408,7 +425,15 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                             setActiveId(id);
                             setClickPos({ x: e.clientX, y: e.clientY });
                           }
-                        : undefined
+                        : onRowSingleClick
+                          ? (e) => {
+                              // Ignora clique em checkbox/botão dentro da linha —
+                              // esses já têm o próprio handler (ex. toggle do
+                              // checkbox de seleção, ícone de ação).
+                              if ((e.target as HTMLElement).closest("button, a, input, label")) return;
+                              onRowSingleClick(item);
+                            }
+                          : undefined
                     }
                     onDoubleClick={
                       rowActions
@@ -416,10 +441,19 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                             onRowOpen?.(item);
                             setActiveId(null);
                           }
-                        : undefined
+                        : onRowDoubleClick
+                          ? (e) => {
+                              if ((e.target as HTMLElement).closest("button, a, input, label")) return;
+                              onRowDoubleClick(item);
+                            }
+                          : undefined
                     }
                     className={rowActions && activeId === id ? "table-active" : undefined}
-                    style={rowActions ? { cursor: "pointer" } : undefined}
+                    style={
+                      rowActions || onRowSingleClick || onRowDoubleClick
+                        ? { cursor: "pointer" }
+                        : undefined
+                    }
                   >
                     {selection ? (
                       <td>
@@ -504,6 +538,8 @@ export function CrudListPage<
   onSortChange,
   rowActions,
   onRowOpen,
+  onRowSingleClick,
+  onRowDoubleClick,
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
@@ -570,6 +606,8 @@ export function CrudListPage<
           onSortChange={onSortChange}
           rowActions={rowActions}
           onRowOpen={onRowOpen}
+          onRowSingleClick={onRowSingleClick}
+          onRowDoubleClick={onRowDoubleClick}
         />
       ) : (
         <LoadingState variant="inline" />

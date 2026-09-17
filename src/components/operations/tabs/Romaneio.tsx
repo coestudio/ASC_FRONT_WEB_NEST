@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm, type FieldValues, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Form, Row, Spinner } from "react-bootstrap";
+import { Button, Card, Form, Row, Spinner } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
 import { z, type ZodType } from "zod";
@@ -39,7 +39,6 @@ import {
   type CrudSelection,
 } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
-import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { InputFileSingle, InputText } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
@@ -313,26 +312,20 @@ export function Romaneio({ operationId }: { operationId: string }) {
     {
       key: "isStuffed",
       headerKey: "administrative-operations.romaneio.colIsStuffed",
+      align: "center",
       render: (r) => (
-        <Badge bg={r.isStuffed ? "success" : "secondary"}>
-          {t(
+        <i
+          className={`bi ${r.isStuffed ? "bi-check-circle-fill text-success" : "bi-x-circle text-body-secondary"}`}
+          title={t(
             r.isStuffed
               ? "administrative-operations.romaneio.isStuffedYes"
               : "administrative-operations.romaneio.isStuffedNo",
           )}
-        </Badge>
-      ),
-    },
-    {
-      key: "actions",
-      headerKey: "administrative-operations.romaneio.colActions",
-      align: "end",
-      render: (r) => (
-        // RF2 (§3.4): sem exclusão individual (removida — vira só em massa);
-        // edição desabilitada em linha já estufada (regra de negócio §2).
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: r })}
-          onEdit={r.isStuffed ? undefined : () => setModal({ mode: "edit", record: r })}
+          aria-label={t(
+            r.isStuffed
+              ? "administrative-operations.romaneio.isStuffedYes"
+              : "administrative-operations.romaneio.isStuffedNo",
+          )}
         />
       ),
     },
@@ -429,6 +422,12 @@ export function Romaneio({ operationId }: { operationId: string }) {
         columns={columns}
         spreadsheetVariant
         selection={selection}
+        onRowSingleClick={(r) => {
+          if (!selection.isDisabled?.(r)) selection.onToggle(r.id);
+        }}
+        onRowDoubleClick={(r) => {
+          if (!r.isStuffed) setModal({ mode: "edit", record: r });
+        }}
         sort={sort}
         onSortChange={setSort}
         renderCard={(r) => (
