@@ -122,3 +122,23 @@ posição estranha no meio da página.
   medindo na tela de verdade. Se o resultado não bater (ex. calculo
   errado numa combinação de zoom/DPI incomum), é ajuste no
   `crud-list-page.tsx`, não redesenho.
+
+## 7. Correção (2026-09-17, mesmo dia) — cabeçalho ainda rolava
+
+Usuário confirmou visualmente: o `<thead>` continuava rolando junto com
+as linhas, apesar do `position: sticky`. Causa: `<Table responsive>`
+(react-bootstrap) injeta um `div.table-responsive` (`overflow-x: auto`)
+entre `.tableCard` e o `<thead>`. `position: sticky` gruda no
+**ancestral rolável mais próximo** — como esse `div` intermediário já
+conta como "rolável" (tem `overflow-x` diferente de `visible`, mesmo só
+no eixo horizontal), ele vira a referência do sticky em vez de
+`.tableCard` (que é quem realmente rola na vertical), quebrando o
+efeito.
+
+**Correção:** `responsive={!fillHeight}` — em modo `fillHeight`, o
+`<Table>` não ganha mais o wrapper `.table-responsive`; `.tableCard`
+passa a ser o único ancestral rolável, e o sticky gruda nele
+corretamente. Sem `fillHeight`, nada muda (`responsive` continua
+`true` como sempre foi). Scroll horizontal em modo `fillHeight` fica
+sem tratamento dedicado (aceitável — usuário já tinha descartado scroll
+horizontal como requisito pra esta tela).

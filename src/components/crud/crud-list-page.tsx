@@ -307,7 +307,14 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
           style={fillHeight ? { height: fillBodyHeight, overflowY: "auto" } : undefined}
         >
           <Table
-            responsive
+            // `responsive` (Bootstrap) injeta um `div.table-responsive` com
+            // `overflow-x: auto` entre este card e o `<thead>` — o
+            // `position: sticky` gruda no ancestral rolável *mais próximo*,
+            // e esse `div` conta como um mesmo só rolando no eixo
+            // horizontal, quebrando o cabeçalho fixo. Em `fillHeight`, quem
+            // rola é o próprio `.tableCard` (`ref={fillCardRef}` acima) —
+            // sem o wrapper extra, o sticky gruda nele corretamente.
+            responsive={!fillHeight}
             hover
             bordered={spreadsheetVariant}
             size={spreadsheetVariant ? "sm" : undefined}
