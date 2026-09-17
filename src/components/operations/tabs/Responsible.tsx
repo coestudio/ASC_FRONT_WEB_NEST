@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
+import styles from "./responsible.module.css";
 
 import {
   getApiOperationOperationIdResponsibleEligibleUsers,
@@ -322,7 +323,7 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
                 <Button
                   size="sm"
                   variant="outline-danger"
-                  className="w-100 w-md-auto align-self-stretch align-self-md-center flex-shrink-0"
+                  className={`${styles.unlinkButton} align-self-stretch align-self-md-center flex-shrink-0`}
                   disabled={unlinkMutation.isPending}
                   onClick={() => handleUnlink(item)}
                 >
