@@ -305,7 +305,7 @@ export function Containers({ operationId }: { operationId: string }) {
         </div>
       ) : (
         <div className="table-responsive">
-          <Table hover className="align-middle mb-0">
+          <Table hover size="sm" className="align-middle mb-0">
             <thead>
               <tr>
                 <th>{t("administrative-operations.containers.colIdentifier")}</th>
@@ -759,7 +759,7 @@ function ContainerPhotos({
       queryKey: getGetApiOperationOperationIdContainerIdQueryKey(operationId, containerLinkId),
     });
 
-  const handleUpload = async (slot: ContainerPhotoSlotKey, file: File) => {
+  const handleUpload = async (slot: ContainerPhotoSlot, file: File) => {
     try {
       await uploadMutation.mutateAsync({ operationId, id: containerLinkId, data: { file, slot } });
       toast.success(t("administrative-operations.containers.toast.photoUploaded"));
@@ -835,12 +835,13 @@ function ContainerPhotos({
         ))}
       </div>
 
-      {otherPhotos.length > 0 ? (
-        <div className="mt-3">
-          <div className="small fw-semibold text-body-secondary mb-1">
-            {t("administrative-operations.containers.photosOther")}
-          </div>
-          <div className="d-flex flex-wrap gap-2">
+      <div className="mt-3">
+        <div className="small fw-semibold text-body-secondary mb-1">
+          {t("administrative-operations.containers.photosOther")}
+        </div>
+
+        {otherPhotos.length > 0 ? (
+          <div className="d-flex flex-wrap gap-2 mb-2">
             {otherPhotos.map((photo) => (
               <div
                 key={photo.id}
@@ -866,13 +867,42 @@ function ContainerPhotos({
               </div>
             ))}
           </div>
-        </div>
-      ) : null}
+        ) : null}
+
+        <AddOtherPhotoControl onUpload={(file) => handleUpload("None", file)} />
+      </div>
     </div>
   );
 }
 
 type SlotUploadFormValues = { file: File | null };
+
+/**
+ * SPEC-63: controle de upload sempre visível (não só quando já existem
+ * fotos legadas fora do checklist) — mesmo padrão auto-submit de
+ * `ContainerPhotoSlotCell`, mas sem checklist/ícone de obrigatoriedade
+ * (foto avulsa nunca é obrigatória).
+ */
+function AddOtherPhotoControl({ onUpload }: { onUpload: (file: File) => Promise<void> }) {
+  const t = useT();
+  const methods = useForm<SlotUploadFormValues>({ defaultValues: { file: null } });
+  const watchedFile = methods.watch("file");
+
+  useEffect(() => {
+    if (!watchedFile) return;
+    onUpload(watchedFile).finally(() => methods.setValue("file", null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedFile]);
+
+  return (
+    <InputPhotoSingle<SlotUploadFormValues>
+      methods={methods}
+      fieldName="file"
+      label={t("administrative-operations.containers.photosAddOther")}
+      config={{ containerClass: "mb-0" }}
+    />
+  );
+}
 
 /**
  * Uma célula do checklist (SPEC-37) — mostra as fotos já anexadas a este

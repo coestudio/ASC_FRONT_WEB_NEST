@@ -305,6 +305,7 @@
     "photosAddToSlot": "Add photo",
     "photosRemove": "Remove photo",
     "photosOther": "Other photos",
+    "photosAddOther": "Add photo",
     "photosChecklistComplete": "Checklist complete",
     "photosChecklistMissing": "{count} photos missing",
     "photoSlots": {
