@@ -35,11 +35,14 @@ import {
   type CrudColumn,
   type CrudSelection,
 } from "@/components/crud/crud-list-page";
+import { SortableTh } from "@/components/crud/sortable-th";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { InputNumber, InputText, InputTextArea, SelectAsync } from "@/layouts/Form/Fields/Index";
+import { FilterText } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import tableCardStyles from "@/components/crud/table-card.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -654,13 +657,20 @@ function DestuffingTab({ operationId }: { operationId: string }) {
   const locale = useLocale();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
+  // SPEC-93: mesmo padrão de busca/ordenação já usado nas demais tabelas
+  // cruas (Documents/Occurrences) — o Core já expõe `Search`/`Sort` em
+  // `GetApiOperationOperationIdCargoParams`, só não era usado aqui.
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [cancelTarget, setCancelTarget] = useState<CargoUnitDTO | null>(null);
 
   const cargoQuery = useSsrSafeQuery(
     getGetApiOperationOperationIdCargoQueryOptions(operationId, {
       Status: "Stuffed",
+      Search: search || undefined,
       Offset: (page - 1) * PAGE_SIZE,
       Limit: PAGE_SIZE,
+      Sort: sort,
     }),
   );
   // Busca leve só pra resolver `containerOperationId → identifier` — não é
@@ -686,6 +696,28 @@ function DestuffingTab({ operationId }: { operationId: string }) {
 
   return (
     <div>
+      {/* SPEC-93: cabeçalho de seção com título/descrição, mesmo padrão
+          visual de `CrudListPage.titleKey`/`descriptionKey`, montado à mão
+          aqui porque esta sub-aba não usa `CrudListPage` (leitura + ação de
+          cancelar por linha, não CRUD paginado clássico). */}
+      <div className="mb-3">
+        <h2 className="h6 mb-0">{t("administrative-operations.containers.destuffing.title")}</h2>
+        <p className="text-body-secondary small mb-0">
+          {t("administrative-operations.operational.destuffing.description")}
+        </p>
+      </div>
+
+      <div className="mb-3" style={{ maxWidth: 320 }}>
+        <FilterText
+          value={search}
+          onChange={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
+          placeholder={t("administrative-operations.operational.destuffing.searchPlaceholder")}
+        />
+      </div>
+
       {cargoQuery.isLoading ? (
         <LoadingState variant="inline" />
       ) : items.length === 0 ? (
@@ -693,46 +725,52 @@ function DestuffingTab({ operationId }: { operationId: string }) {
           {t("administrative-operations.containers.destuffing.empty")}
         </div>
       ) : (
-        <div className="table-responsive">
-          <Table hover size="sm" className="align-middle mb-0">
-            <thead>
-              <tr>
-                <th>{t("administrative-operations.containers.stuffing.colStatus")}</th>
-                <th>{t("administrative-operations.containers.stuffing.colIdentified")}</th>
-                <th>{t("administrative-operations.containers.stuffing.colGrossWeight")}</th>
-                <th>{t("administrative-operations.containers.destuffing.colContainer")}</th>
-                <th>{t("administrative-operations.containers.stuffing.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((unit) => (
-                <tr key={unit.id}>
-                  <td>
-                    <Badge bg="secondary">
-                      {resolveCargoUnitStatusLabel(unit.status ?? "Stuffed", locale)}
-                    </Badge>
-                  </td>
-                  <td>
-                    {unit.identified
-                      ? t("administrative-operations.containers.stuffing.yes")
-                      : t("administrative-operations.containers.stuffing.no")}
-                  </td>
-                  <td>{unit.grossWeight != null ? String(unit.grossWeight) : "—"}</td>
-                  <td>{identifierByContainerId.get(unit.containerOperationId ?? "") ?? "—"}</td>
-                  <td>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      title={t("administrative-operations.containers.stuffing.cancelTitle")}
-                      onClick={() => setCancelTarget(unit)}
-                    >
-                      <i className="bi bi-x-circle" aria-hidden />
-                    </button>
-                  </td>
+        <div className={tableCardStyles.tableCard}>
+          <div className="table-responsive">
+            <Table hover size="sm" className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+              <thead>
+                <tr>
+                  <SortableTh sortKey="status" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.containers.stuffing.colStatus")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.containers.stuffing.colIdentified")}</th>
+                  <th>{t("administrative-operations.containers.stuffing.colGrossWeight")}</th>
+                  <SortableTh sortKey="containerOperationId" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.containers.destuffing.colContainer")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.containers.stuffing.colActions")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {items.map((unit) => (
+                  <tr key={unit.id}>
+                    <td>
+                      <Badge bg="secondary">
+                        {resolveCargoUnitStatusLabel(unit.status ?? "Stuffed", locale)}
+                      </Badge>
+                    </td>
+                    <td>
+                      {unit.identified
+                        ? t("administrative-operations.containers.stuffing.yes")
+                        : t("administrative-operations.containers.stuffing.no")}
+                    </td>
+                    <td>{unit.grossWeight != null ? String(unit.grossWeight) : "—"}</td>
+                    <td>{identifierByContainerId.get(unit.containerOperationId ?? "") ?? "—"}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        title={t("administrative-operations.containers.stuffing.cancelTitle")}
+                        onClick={() => setCancelTarget(unit)}
+                      >
+                        <i className="bi bi-x-circle" aria-hidden />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </div>
       )}
 

@@ -405,6 +405,10 @@
       "title": "可装箱的包件",
       "description": "该作业中尚未装箱的包件。",
       "empty": "没有可装箱的包件。"
+    },
+    "destuffing": {
+      "description": "该作业中已装箱的包件，可选择拆箱。",
+      "searchPlaceholder": "按标识、发票或批次搜索..."
     }
   },
   "documents": {

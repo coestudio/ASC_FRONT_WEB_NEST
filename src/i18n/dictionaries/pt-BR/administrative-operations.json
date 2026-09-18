@@ -405,6 +405,10 @@
       "title": "Fardos disponíveis para estufagem",
       "description": "Fardos desta operação que ainda não foram estufados.",
       "empty": "Nenhum fardo disponível para estufagem."
+    },
+    "destuffing": {
+      "description": "Fardos desta operação já estufados, com opção de desestufar.",
+      "searchPlaceholder": "Buscar por identificação, NF ou lote..."
     }
   },
   "documents": {

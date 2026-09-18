@@ -405,6 +405,10 @@
       "title": "Bales available for stuffing",
       "description": "Bales in this operation that have not been stuffed yet.",
       "empty": "No bales available for stuffing."
+    },
+    "destuffing": {
+      "description": "Bales in this operation that are already stuffed, with the option to destuff.",
+      "searchPlaceholder": "Search by identifier, invoice or lot..."
     }
   },
   "documents": {

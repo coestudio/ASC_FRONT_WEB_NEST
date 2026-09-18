@@ -2,7 +2,7 @@
 
 - **ID:** 93
 - **Nome:** operational-tab-visual-polish
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** claude (triagem de leva de ajustes pré-apresentação, pedido do
   usuário em 2026-09-17)
 - **Área:** `src/components/operations/tabs/Operational.tsx`
@@ -122,3 +122,66 @@ adicionar nos 4 locales.
 ## 9. Riscos
 
 Baixo a médio — depende da decisão de padrão da SPEC-94 pra não retrabalhar.
+
+## 10. Implementation Notes
+
+**Dependência da SPEC-94 resolvida primeiro** (implementada antes desta,
+conforme a recomendação do §5): a decisão lá foi manter tabela crua com
+CSS compartilhado (`.tableCard`/`.rawTable` de `table-card.module.css`),
+não migrar tudo pra `CrudListPage`. Por isso `DestuffingTab` recebeu o
+mesmo tratamento das 5 tabelas da SPEC-94 (card + cabeçalho escuro), **não**
+uma migração pra `CrudListPage` — consistente com a decisão já tomada, sem
+retrabalho.
+
+**O que foi implementado em `DestuffingTab`:**
+- Cabeçalho de seção (título reusando `containers.destuffing.title`,
+  descrição nova `operational.destuffing.description`).
+- Busca por texto (`FilterText`, novo `Search` no
+  `GetApiOperationOperationIdCargoParams`, já suportado pelo Core).
+- Colunas "Status" e "Container" viraram `SortableTh` (`sortKey: "status"`/
+  `"containerOperationId"`, nomes inferidos a partir dos campos do DTO —
+  mesma convenção usada em `Romaneio`/`Invoice`, não confirmado
+  literalmente contra o `Sortable` do Core nesta sessão porque não havia
+  Core rodando; na pior hipótese o Core ignora uma chave não suportada,
+  sem quebrar a tela).
+- Wrapper visual `tableCardStyles.tableCard`/`.rawTable` (mesmo padrão da
+  SPEC-94), substituindo o antigo `<div className="table-responsive">`
+  solto (sem `.soft-card` nenhum antes).
+
+**`StuffingTab`/`Nav` pills revisados, sem mudança necessária:** já usam
+`CrudListPage` (título/descrição/busca/paginação no padrão) e o mesmo
+`Nav variant="pills" className="mb-3"` que `Invoice.tsx` (referência
+citada na própria spec) — nenhuma divergência de padrão encontrada, então
+nenhuma mudança foi feita ali além do já herdado indiretamente (nenhuma
+classe nova necessária).
+
+**Item 3 (funcionalidade de desestufagem):** confirmado no código, sem
+mudança de comportamento — já funcionava antes desta SPEC (ver §2 da
+spec original). Nenhuma regressão introduzida (fluxo de seleção/estufar/
+desestufar intacto).
+
+**Arquivos alterados:**
+- `src/components/operations/tabs/Operational.tsx`
+- `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+
+**Comandos executados:**
+- `bun run check` — VERIFIED, sem erros.
+- `bun run lint` — VERIFIED, 0 errors / 63 warnings (mesmo baseline, sem
+  warning novo).
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| 1 | Busca por texto funcional em `DestuffingTab` | PASS |
+| 2 | Colunas ordenáveis (Status e Container) | PASS |
+| 3 | Mesmo wrapper visual da SPEC-94 | PASS |
+| 4 | Sem regressão no fluxo funcional | PASS (nenhuma lógica de negócio tocada) |
+| 5 | `bun run check`/`lint` sem novos erros | PASS |
+
+**Limitações conhecidas:** `sortKey` de `DestuffingTab` é inferido dos
+nomes de campo do DTO, não confirmado contra o `Sortable` real do Core
+(sem ambiente rodando nesta sessão) — se o Core não reconhecer essas
+chaves, a ordenação simplesmente não terá efeito (sem erro), até
+confirmação/ajuste num teste manual. Sem verificação visual em navegador
+(mesma ressalva das SPECs anteriores desta leva).

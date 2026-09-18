@@ -405,6 +405,10 @@
       "title": "Fardos disponibles para estibar",
       "description": "Fardos de esta operación que todavía no fueron estibados.",
       "empty": "Ningún fardo disponible para estibar."
+    },
+    "destuffing": {
+      "description": "Fardos de esta operación ya estibados, con opción de desestibar.",
+      "searchPlaceholder": "Buscar por identificador, factura o lote..."
     }
   },
   "documents": {
