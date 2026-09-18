@@ -1,9 +1,82 @@
-/* Cabeçalho da operação (`OperationHeader`) — o `.soft-card` global (base.css)
-   não define padding próprio (cada consumidor decide, ver `Log.tsx` com
-   `p-3`); espaçamento original era 20px (1.25rem), mas com o layout de
-   1 linha só (SPEC-98) o cabeçalho ficou baixo o bastante pra não precisar
-   de tanto respiro vertical — reduzido pra 12px (0.75rem = 12 / 16, base de
-   16px do projeto). */
+/* Cabeçalho da operação (`OperationHeader`) — card com barra de acento na
+   cor primária da brand, eyebrow em caixa-alta, título de destaque e chips
+   "soft" (fundo translúcido + ícone) em vez de badges sólidos. Cores só via
+   tokens `--bs-*` (regra de tema). */
 .header {
-  padding: 0.75rem;
+  position: relative;
+  padding: 1.25rem 1.5rem 1.25rem 1.75rem;
+  overflow: hidden;
+  background-image: linear-gradient(100deg, rgba(var(--bs-primary-rgb), 0.08) 0%, transparent 55%);
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--bs-primary);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bs-primary);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--bs-secondary-color);
+  background: var(--bs-tertiary-bg);
+  border: 1px solid var(--bs-border-color);
+}
+
+.chip i {
+  font-size: 0.85em;
+}
+
+/* Status: 1 Rascunho, 2 Em andamento, 3 Finalizada, 9 Pausada, 10 Cancelada */
+.status1 {
+  --chip-rgb: var(--bs-secondary-rgb);
+}
+.status2 {
+  --chip-rgb: var(--bs-primary-rgb);
+}
+.status3 {
+  --chip-rgb: var(--bs-success-rgb);
+}
+.status9 {
+  --chip-rgb: var(--bs-warning-rgb);
+}
+.status10 {
+  --chip-rgb: var(--bs-danger-rgb);
+}
+
+.status1,
+.status2,
+.status3,
+.status9,
+.status10 {
+  color: rgb(var(--chip-rgb));
+  background: rgba(var(--chip-rgb), 0.14);
+  border-color: rgba(var(--chip-rgb), 0.4);
+}
+
+.statusBox {
+  min-width: 240px;
 }

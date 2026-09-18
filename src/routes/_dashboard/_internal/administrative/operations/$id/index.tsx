@@ -237,22 +237,29 @@ function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
   return (
     <section className={`soft-card mb-4 ${styles.header}`}>
       <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
-        <div className="d-flex flex-wrap align-items-center gap-2">
-          <span className="text-body-secondary small">
+        <div className="d-flex flex-column gap-2 min-w-0">
+          <span className={styles.eyebrow}>
             {t("administrative-operations.shell.eyebrow", { number: String(operation.number) })}
           </span>
-          <h1 className="h5 fw-semibold mb-0">{operation.client.fullName}</h1>
-          <span className="badge text-bg-secondary">
-            {resolveOperationTypeLabel(operation.opType, locale)}
-          </span>
-          <span className="badge text-bg-secondary">
-            {resolveOperationServiceLabel(operation.opService, locale)}
-          </span>
-          <span className="badge text-bg-primary">
-            {resolveOperationStatusLabel(operation.status, locale)}
-          </span>
+          <h1 className={styles.title}>{operation.client.fullName}</h1>
+          <div className="d-flex flex-wrap align-items-center gap-2">
+            <span className={styles.chip}>
+              <i
+                className={`bi ${operation.opType === "Stuffing" ? "bi-box-arrow-in-down" : "bi-truck"}`}
+              />
+              {resolveOperationTypeLabel(operation.opType, locale)}
+            </span>
+            <span className={styles.chip}>
+              <i className="bi bi-box-seam" />
+              {resolveOperationServiceLabel(operation.opService, locale)}
+            </span>
+            <span className={`${styles.chip} ${styles[`status${operation.status}`]}`}>
+              <i className="bi bi-circle-fill" />
+              {resolveOperationStatusLabel(operation.status, locale)}
+            </span>
+          </div>
         </div>
-        <div style={{ minWidth: 220 }}>
+        <div className={styles.statusBox}>
           <Select<StatusFormValues>
             methods={methods}
             fieldName="status"

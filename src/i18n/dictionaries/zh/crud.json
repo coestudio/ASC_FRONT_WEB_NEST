@@ -10,7 +10,9 @@
     "rowActionsEdit": "编辑",
     "rowActionsDelete": "删除",
     "selectAll": "全选",
-    "selectRow": "选择行"
+    "selectRow": "选择行",
+    "expandCell": "展开内容",
+    "collapseCell": "收起内容"
   },
   "recordModal": {
     "cancel": "取消",

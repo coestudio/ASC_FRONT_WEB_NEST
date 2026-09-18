@@ -10,7 +10,9 @@
     "rowActionsEdit": "Edit",
     "rowActionsDelete": "Delete",
     "selectAll": "Select all",
-    "selectRow": "Select row"
+    "selectRow": "Select row",
+    "expandCell": "Expand content",
+    "collapseCell": "Collapse content"
   },
   "recordModal": {
     "cancel": "Cancel",

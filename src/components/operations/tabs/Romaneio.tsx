@@ -47,6 +47,7 @@ import type { TranslationKey } from "@/i18n/translate";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import bulkBar from "@/components/crud/bulk-bar.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -410,8 +411,9 @@ export function Romaneio({ operationId }: { operationId: string }) {
         // (mesma posição que `Operational.tsx` já usa) — sempre visível,
         // botões desabilitados (não escondidos) sem seleção.
         belowSearch={
-          <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
-            <span className="fw-semibold">
+          <div className={bulkBar.bar}>
+            <span className={`${bulkBar.count} ${selectedIds.size > 0 ? bulkBar.countActive : ""}`}>
+              <i className="bi bi-check2-square" aria-hidden />
               {t("administrative-operations.romaneio.bulkActions.selectedCount", {
                 count: String(selectedIds.size),
               })}
