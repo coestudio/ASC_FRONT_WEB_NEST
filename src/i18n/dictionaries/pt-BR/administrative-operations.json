@@ -265,6 +265,7 @@
     "byUser": "por {user}",
     "emptyState": "Nenhum evento registrado.",
     "loadError": "Não foi possível carregar o log da operação.",
+    "filterAllEntityTypes": "Todos os tipos",
     "actions": {
       "RomaneioImported": "Romaneio importado",
       "InvoiceCreated": "Nota fiscal criada",
@@ -356,10 +357,11 @@
       "cancelTitle": "Cancelar fardo",
       "cancelReason": "Motivo do cancelamento",
       "cancelConfirm": "Confirmar cancelamento",
+      "destuffSelected": "Desestufar selecionados",
       "toast": {
         "quantitySuccess": "Estufagem concluída com sucesso.",
         "batchSuccess": "Fardos estufados com sucesso.",
-        "canceled": "Fardo cancelado com sucesso."
+        "canceled": "Fardo(s) cancelado(s) com sucesso."
       },
       "batchButton": "Estufar em container",
       "quantityButton": "Estufagem por quantidade",
@@ -374,8 +376,10 @@
     "seal": {
       "sealButton": "Lacrar",
       "unsealButton": "Deslacrar",
+      "manageButton": "Lacres do container",
+      "listEmpty": "Nenhum lacre registrado ainda.",
       "confirmUnsealTitle": "Deslacrar container",
-      "confirmUnsealMessage": "Remover o lacre ativo deste container?",
+      "confirmUnsealMessage": "Remover este lacre?",
       "photoRequired": "Envie uma foto do lacre antes de continuar.",
       "form": {
         "user": "Responsável pelo lacre",
@@ -402,6 +406,12 @@
       "title": "Fardos disponíveis para estufagem",
       "description": "Fardos desta operação que ainda não foram estufados.",
       "empty": "Nenhum fardo disponível para estufagem."
+    },
+    "destuffing": {
+      "title": "Fardos estufados da operação",
+      "description": "Fardos desta operação já estufados, com opção de desestufar.",
+      "searchPlaceholder": "Buscar por identificação, NF ou lote...",
+      "empty": "Nenhum fardo estufado nesta operação."
     }
   },
   "documents": {

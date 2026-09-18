@@ -265,6 +265,7 @@
     "byUser": "by {user}",
     "emptyState": "No events recorded.",
     "loadError": "Could not load the operation log.",
+    "filterAllEntityTypes": "All types",
     "actions": {
       "RomaneioImported": "Packing list imported",
       "InvoiceCreated": "Invoice created",
@@ -356,10 +357,11 @@
       "cancelTitle": "Cancel cargo unit",
       "cancelReason": "Cancellation reason",
       "cancelConfirm": "Confirm cancellation",
+      "destuffSelected": "Destuff selected",
       "toast": {
         "quantitySuccess": "Stuffing completed successfully.",
         "batchSuccess": "Bales stuffed successfully.",
-        "canceled": "Cargo unit canceled successfully."
+        "canceled": "Cargo unit(s) canceled successfully."
       },
       "batchButton": "Stuff into container",
       "quantityButton": "Stuff by quantity",
@@ -374,8 +376,10 @@
     "seal": {
       "sealButton": "Seal",
       "unsealButton": "Unseal",
+      "manageButton": "Container seals",
+      "listEmpty": "No seal registered yet.",
       "confirmUnsealTitle": "Unseal container",
-      "confirmUnsealMessage": "Remove the active seal from this container?",
+      "confirmUnsealMessage": "Remove this seal?",
       "photoRequired": "Upload a photo of the seal before continuing.",
       "form": {
         "user": "Responsible for the seal",
@@ -402,6 +406,12 @@
       "title": "Bales available for stuffing",
       "description": "Bales in this operation that have not been stuffed yet.",
       "empty": "No bales available for stuffing."
+    },
+    "destuffing": {
+      "title": "Bales stuffed in the operation",
+      "description": "Bales in this operation that are already stuffed, with the option to destuff.",
+      "searchPlaceholder": "Search by identifier, invoice or lot...",
+      "empty": "No bales stuffed in this operation."
     }
   },
   "documents": {

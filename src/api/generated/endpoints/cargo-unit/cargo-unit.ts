@@ -27,6 +27,7 @@ import type {
   CargoPhotoDTO,
   CargoStuffResultDTO,
   CargoUnitCancel,
+  CargoUnitCancelBatch,
   CargoUnitDTO,
   CargoUnitStuffByQuantity,
   CargoUnitStuffIdentified,
@@ -583,6 +584,68 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getPostApiOperationOperationIdCargoIdCancelMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdCargoCancelBatch = (
+    operationId: string,
+    cargoUnitCancelBatch: CargoUnitCancelBatch,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<CargoUnitDTO[]>(
+      {url: `/api/operation/${operationId}/cargo/cancel-batch`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: cargoUnitCancelBatch, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdCargoCancelBatchMutationKey = () => ['postApiOperationOperationIdCargoCancelBatch'] as const;
+
+export const getPostApiOperationOperationIdCargoCancelBatchMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdCargoCancelBatch>>, TError,PostApiOperationOperationIdCargoCancelBatchMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdCargoCancelBatch>>, TError,PostApiOperationOperationIdCargoCancelBatchMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdCargoCancelBatchMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdCargoCancelBatch>>, PostApiOperationOperationIdCargoCancelBatchMutationVariables> = (props) => {
+          const {operationId,data} = props ?? {};
+
+          return  postApiOperationOperationIdCargoCancelBatch(operationId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdCargoCancelBatchMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdCargoCancelBatch>>>
+    export type PostApiOperationOperationIdCargoCancelBatchMutationBody = CargoUnitCancelBatch
+    export type PostApiOperationOperationIdCargoCancelBatchMutationError = void
+    export type PostApiOperationOperationIdCargoCancelBatchMutationVariables = {operationId: string;data: CargoUnitCancelBatch}
+
+    export const usePostApiOperationOperationIdCargoCancelBatch = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdCargoCancelBatch>>, TError,PostApiOperationOperationIdCargoCancelBatchMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdCargoCancelBatch>>,
+        TError,
+        PostApiOperationOperationIdCargoCancelBatchMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdCargoCancelBatchMutationOptions(options), queryClient);
     }
     export const getApiOperationOperationIdCargoIdPhotos = (
     operationId: string,

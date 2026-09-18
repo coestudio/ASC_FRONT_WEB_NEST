@@ -85,7 +85,8 @@ export function Reports({ operationId }: { operationId: string }) {
 
       toast.success(t("administrative-operations.reports.toast.success", { name }));
     } catch {
-      toast.error(t("administrative-operations.reports.toast.error", { name }));
+      // interceptor global (mutator.ts) já mostra o toast de erro da chamada HTTP —
+      // nada a fazer aqui (manipulação de DOM depois do GET raramente lança)
     } finally {
       setGenerating(null);
     }

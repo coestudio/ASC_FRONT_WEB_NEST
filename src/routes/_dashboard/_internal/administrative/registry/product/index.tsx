@@ -134,6 +134,7 @@ function ProductPage() {
             />
           )}
           onRowOpen={(p) => setModal({ mode: "view", record: p })}
+          onRowEdit={(p) => setModal({ mode: "edit", record: p })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);

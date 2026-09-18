@@ -1,0 +1,16 @@
+/* Bug: `w-100 w-md-auto` (Responsible.tsx, SPEC-87) usava `w-md-auto`,
+   classe que não existe no Bootstrap padrão — utilitário `width` não é
+   responsivo por padrão nessa build (só `align-self`/`flex`/`d-*` têm
+   variante por breakpoint). Resultado: `w-100` ficava sempre ativo, mesmo
+   em desktop (`flex-md-row`), estourando o card. Breakpoint `md` (768px)
+   replicado aqui manualmente pra dar a mesma largura 100%→auto que o resto
+   do card já tem via `flex-md-row`/`align-self-md-center`. */
+.unlinkButton {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .unlinkButton {
+    width: auto;
+  }
+}

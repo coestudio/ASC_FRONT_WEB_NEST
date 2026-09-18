@@ -19,6 +19,7 @@ export * from './cargoPhotoDTO.ts';
 export * from './cargoPhotoSlot.ts';
 export * from './cargoStuffResultDTO.ts';
 export * from './cargoUnitCancel.ts';
+export * from './cargoUnitCancelBatch.ts';
 export * from './cargoUnitDTO.ts';
 export * from './cargoUnitStatus.ts';
 export * from './cargoUnitStuffByQuantity.ts';

@@ -1,6 +1,10 @@
 {
   "titleFallback": "文件",
   "error": "无法加载该文件的内容。",
+  "kind": {
+    "docx": "Word 文档",
+    "sheet": "电子表格"
+  },
   "unavailable": {
     "message": "此文件类型暂不支持预览。",
     "noUrl": "该文件不可用。",

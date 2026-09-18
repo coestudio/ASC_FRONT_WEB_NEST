@@ -305,10 +305,11 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: OperationDetailDTO } | null>(
     null,
   );
-  // Clique seleciona/revela o menu de ações daquele item, na posição exata
-  // do clique; duplo-clique abre direto (SPEC-79, reaberta — mesmo
-  // mecanismo do `CrudListPage.rowActions`, implementado aqui à mão porque
-  // esta tela não usa o componente genérico, tabela própria, SPEC-07-01 §9).
+  // SPEC-96: clique (1x) abre a view direto; duplo-clique abre a edição
+  // direto; botão direito revela o menu de ações daquele item, na posição
+  // exata do clique — mesmo mecanismo do `CrudListPage.rowActions`,
+  // implementado aqui à mão porque esta tela não usa o componente genérico,
+  // tabela própria, SPEC-07-01 §9.
   const [activeId, setActiveId] = useState<string | null>(null);
   const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
   // Requisição de detalhe (`GET /api/operation/{id}`) em andamento — só
@@ -458,7 +459,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       invalidateList();
       setModal(null);
     } catch {
-      toast.error(t("administrative-operations.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -470,7 +471,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
       invalidateList();
       setModal(null);
     } catch {
-      toast.error(t("administrative-operations.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -500,15 +501,22 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
   // Só um item ativo por vez — o menu em si é renderizado uma única vez,
   // fora da tabela/grid (ver `activeOperation` abaixo), na posição exata do
-  // clique (SPEC-79 reaberta).
+  // botão direito (SPEC-96).
   const activeOperation = items.find((operation) => operation.id === activeId) ?? null;
   const closeRowActions = () => {
     setActiveId(null);
     setClickPos(null);
   };
-  const selectRowActions = (id: string, e: { clientX: number; clientY: number }) => {
+  const openRowActions = (id: string, e: { clientX: number; clientY: number }) => {
     setActiveId(id);
     setClickPos({ x: e.clientX, y: e.clientY });
+  };
+  // Duplo-clique abre edição direto (SPEC-96) — mesmo destino/condição que
+  // `onEdit` do menu de ações abaixo: sem edição disponível no modo
+  // `readOnly` (SPEC-08), duplo-clique não faz nada.
+  const editOperation = (id: string) => {
+    if (readOnly) return;
+    setDetailRequest({ id, mode: "edit" });
   };
 
   return (
@@ -573,9 +581,13 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
                 closeRowActions();
                 viewOperation(operation.id);
               }}
+              onEdit={() => {
+                closeRowActions();
+                editOperation(operation.id);
+              }}
               renderStatus={renderStatus}
               active={activeId === operation.id}
-              onSelect={(e) => selectRowActions(operation.id, e)}
+              onContextMenu={(e) => openRowActions(operation.id, e)}
             />
           ))}
         </div>
@@ -610,10 +622,14 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
                   locale={locale}
                   renderStatus={renderStatus}
                   active={activeId === operation.id}
-                  onSelect={(e) => selectRowActions(operation.id, e)}
+                  onContextMenu={(e) => openRowActions(operation.id, e)}
                   onOpen={() => {
                     closeRowActions();
                     viewOperation(operation.id);
+                  }}
+                  onEdit={() => {
+                    closeRowActions();
+                    editOperation(operation.id);
                   }}
                 />
               ))}
@@ -685,33 +701,38 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
 /**
  * Linha da tabela — busca o detalhe (enriquecimento) uma vez, reusa pras 3
- * colunas de nome. Clique seleciona o item (o menu em si é um único
- * `CrudRowActions` renderizado fora da tabela, na posição do clique — ver
- * `activeOperation` em `OperationsList`); duplo-clique abre direto
- * (`onOpen`) — SPEC-79 (reaberta: sem coluna/célula reservada nem menu
- * ancorado num ponto fixo da linha).
+ * colunas de nome. Clique (1x) abre a view direto (`onOpen`); duplo-clique
+ * abre a edição direto (`onEdit`); botão direito revela o menu de ações (o
+ * `CrudRowActions` em si é renderizado uma única vez fora da tabela, na
+ * posição do clique — ver `activeOperation` em `OperationsList`) — SPEC-96.
  */
 function OperationRow({
   operation,
   locale,
   renderStatus,
   active,
-  onSelect,
+  onContextMenu,
   onOpen,
+  onEdit,
 }: {
   operation: OperationDTO;
   locale: Locale;
   renderStatus: (operation: OperationDTO) => ReactNode;
   active: boolean;
-  onSelect: (e: { clientX: number; clientY: number }) => void;
+  onContextMenu: (e: { clientX: number; clientY: number }) => void;
   onOpen: () => void;
+  onEdit: () => void;
 }) {
   const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
 
   return (
     <tr
-      onClick={onSelect}
-      onDoubleClick={onOpen}
+      onClick={onOpen}
+      onDoubleClick={onEdit}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        onContextMenu(e);
+      }}
       className={active ? "table-active" : undefined}
       style={{ cursor: "pointer" }}
     >
@@ -733,24 +754,26 @@ function OperationRow({
 
 /**
  * Card (modo `cards` do `ViewToggle`) — mesmo enriquecimento da linha da
- * tabela. Clique seleciona o item; duplo-clique abre direto (`onOpen`) —
- * SPEC-79 (antes, um clique já navegava; agora é preciso duplo-clique ou
- * "Ver" no menu que aparece na posição do clique).
+ * tabela. Clique (1x) abre a view direto; duplo-clique abre a edição
+ * direto; botão direito revela o menu de ações na posição do clique —
+ * SPEC-96.
  */
 function OperationCard({
   operation,
   locale,
   onOpen,
+  onEdit,
   renderStatus,
   active,
-  onSelect,
+  onContextMenu,
 }: {
   operation: OperationDTO;
   locale: Locale;
   onOpen: () => void;
+  onEdit: () => void;
   renderStatus: (operation: OperationDTO) => ReactNode;
   active: boolean;
-  onSelect: (e: { clientX: number; clientY: number }) => void;
+  onContextMenu: (e: { clientX: number; clientY: number }) => void;
 }) {
   const t = useT();
   const { clientName, productName, isLoading, isError } = useOperationEnrichment(operation.id);
@@ -760,8 +783,12 @@ function OperationCard({
       <div
         className={active ? styles.cardActive : undefined}
         style={{ cursor: "pointer" }}
-        onClick={onSelect}
-        onDoubleClick={onOpen}
+        onClick={onOpen}
+        onDoubleClick={onEdit}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          onContextMenu(e);
+        }}
       >
         <Card>
           <Card.Body>

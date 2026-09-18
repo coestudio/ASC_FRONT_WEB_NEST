@@ -182,6 +182,43 @@ export const PostApiOperationOperationIdCargoIdCancelResponse = zod.object({
   "updatedAt": zod.iso.datetime({"offset":true})
 })
 
+export const PostApiOperationOperationIdCargoCancelBatchParams = zod.object({
+  "operationId": zod.uuid()
+})
+
+
+export const postApiOperationOperationIdCargoCancelBatchBodyReasonMax = 500;
+
+
+
+export const PostApiOperationOperationIdCargoCancelBatchBody = zod.object({
+  "ids": zod.array(zod.uuid()).min(1),
+  "reason": zod.string().max(postApiOperationOperationIdCargoCancelBatchBodyReasonMax)
+})
+
+export const postApiOperationOperationIdCargoCancelBatchResponseNetWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdCargoCancelBatchResponseTareRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdCargoCancelBatchResponseGrossWeightRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const PostApiOperationOperationIdCargoCancelBatchResponseItem = zod.object({
+  "operationId": zod.uuid().optional(),
+  "containerOperationId": zod.uuid().optional(),
+  "romaneioId": zod.uuid().nullish(),
+  "invoiceId": zod.uuid().optional(),
+  "observation": zod.string().optional(),
+  "status": zod.enum(['Stuffed', 'Canceled']).optional(),
+  "identified": zod.boolean().optional(),
+  "netWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoCancelBatchResponseNetWeightRegExpTwo)]).nullish(),
+  "tare": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoCancelBatchResponseTareRegExpTwo)]).nullish(),
+  "grossWeight": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdCargoCancelBatchResponseGrossWeightRegExpTwo)]).nullish(),
+  "lote": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+export const PostApiOperationOperationIdCargoCancelBatchResponse = zod.array(PostApiOperationOperationIdCargoCancelBatchResponseItem)
+
 export const GetApiOperationOperationIdCargoIdPhotosParams = zod.object({
   "operationId": zod.uuid(),
   "id": zod.uuid()

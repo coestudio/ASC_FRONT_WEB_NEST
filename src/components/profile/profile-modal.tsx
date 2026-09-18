@@ -76,8 +76,8 @@ export function ProfileModal({ show, onClose }: { show: boolean; onClose: () => 
       avatarForm.setValue("avatarFile", null);
       toast.success(t("shell.profileModal.avatarSaved"));
     } catch {
+      // interceptor global (mutator.ts) já mostra o toast de erro — só reseta o campo
       avatarForm.setValue("avatarFile", null);
-      toast.error(t("shell.profileModal.saveError"));
     }
   };
 

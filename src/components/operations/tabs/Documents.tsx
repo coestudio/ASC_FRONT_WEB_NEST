@@ -34,6 +34,7 @@ import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 import styles from "./documents.module.css";
+import tableCardStyles from "@/components/crud/table-card.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -130,7 +131,7 @@ export function Documents({ operationId }: { operationId: string }) {
       invalidateList();
       setCreateModalOpen(false);
     } catch {
-      toast.error(t("administrative-operations.documents.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -157,7 +158,7 @@ export function Documents({ operationId }: { operationId: string }) {
       invalidateList();
       setEditing(null);
     } catch {
-      toast.error(t("administrative-operations.documents.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -221,65 +222,77 @@ export function Documents({ operationId }: { operationId: string }) {
           {t("administrative-operations.documents.empty")}
         </div>
       ) : (
-        <div className="soft-card table-responsive">
-          <Table hover className="align-middle mb-0">
-            <thead>
-              <tr>
-                <SortableTh sortKey="title" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.documents.colTitle")}
-                </SortableTh>
-                <SortableTh sortKey="type" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.documents.colType")}
-                </SortableTh>
-                <th>{t("administrative-operations.documents.colFile")}</th>
-                <SortableTh sortKey="createdOn" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.documents.colCreatedAt")}
-                </SortableTh>
-                <th>{t("administrative-operations.documents.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.title || "—"}</td>
-                  <td>
-                    <Badge bg="secondary">{resolveDocumentTypeLabel(item.type, locale)}</Badge>
-                  </td>
-                  <td>
-                    {item.observation ? (
-                      <span className={styles.observationPreview}>{item.observation}</span>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td>{new Date(item.createdAt).toLocaleDateString(locale)}</td>
-                  <td>
-                    {/* `download` só força o nome de arquivo quando o link é
+        <div className={tableCardStyles.tableCard}>
+          <div className="table-responsive">
+            <Table hover className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+              <thead>
+                <tr>
+                  <SortableTh sortKey="title" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.documents.colTitle")}
+                  </SortableTh>
+                  <SortableTh sortKey="type" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.documents.colType")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.documents.colFile")}</th>
+                  <SortableTh sortKey="createdOn" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.documents.colCreatedAt")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.documents.colActions")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.title || "—"}</td>
+                    <td>
+                      <Badge bg="secondary">{resolveDocumentTypeLabel(item.type, locale)}</Badge>
+                    </td>
+                    <td>
+                      {item.observation ? (
+                        <span className={styles.observationPreview}>{item.observation}</span>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>{new Date(item.createdAt).toLocaleDateString(locale)}</td>
+                    <td>
+                      {/* `download` só força o nome de arquivo quando o link é
                         mesma origem — em storage externo (S3/blob) o browser
                         ainda assim baixa em vez de navegar, contanto que o
                         servidor não force Content-Disposition:inline;
                         `target="_blank"` cobre o caso de acabar abrindo. */}
-                    <CrudRowActions
-                      onView={() => setPreviewing(item)}
-                      extraActions={[
-                        {
-                          key: "download",
-                          icon: "bi-download",
-                          label: t("administrative-operations.documents.download"),
-                          href: item.file.url ?? undefined,
-                          download: item.file.name ?? undefined,
-                          target: "_blank",
-                          rel: "noreferrer",
-                          disabled: !item.file.url,
-                        },
-                      ]}
-                      onEdit={() => setEditing(item)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+                      <div className="d-flex align-items-center gap-1">
+                        {/* Botão de download sempre visível (SPEC-91, item 1
+                            do usuário) — fora do menu `⋮`, ao lado dele.
+                            Local a esta tela (decisão §5 da SPEC: opção 1,
+                            sem mudar a assinatura pública de
+                            `CrudRowActions`, usado em 9+ telas). */}
+                        <a
+                          className={`btn btn-sm btn-soft ${!item.file.url ? "disabled" : ""}`}
+                          href={item.file.url ?? undefined}
+                          download={item.file.name ?? undefined}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-disabled={!item.file.url}
+                          title={t("administrative-operations.documents.download")}
+                          aria-label={t("administrative-operations.documents.download")}
+                          onClick={(e) => {
+                            if (!item.file.url) e.preventDefault();
+                          }}
+                        >
+                          <i className="bi bi-download" aria-hidden />
+                        </a>
+                        <CrudRowActions
+                          onView={() => setPreviewing(item)}
+                          onEdit={() => setEditing(item)}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </div>
       )}
 

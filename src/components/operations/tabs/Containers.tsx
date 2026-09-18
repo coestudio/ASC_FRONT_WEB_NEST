@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm, type FieldValues, type Resolver, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form, Spinner, Table } from "react-bootstrap";
+import { Badge, Button, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
@@ -31,17 +31,16 @@ import {
 } from "@/api/generated/zod/operation-container/operation-container.zod";
 import type { ContainerOperationDTO, ContainerPhotoSlot } from "@/api/generated/model";
 import { resolveContainerOperationStatusLabel } from "@/api/generated/static/containerOperationStatusOptions";
-import { sealNameOptions } from "@/api/generated/static/sealNameOptions";
+import { resolveSealStatusLabel } from "@/api/generated/static/sealStatusOptions";
+import { resolveSealNameLabel, sealNameOptions } from "@/api/generated/static/sealNameOptions";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { SortableTh } from "@/components/crud/sortable-th";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
-  InputDate,
   InputPhotoSingle,
   InputText,
   InputTextArea,
-  InputTime,
   Select,
   SelectAsync,
 } from "@/layouts/Form/Fields/Index";
@@ -50,6 +49,7 @@ import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import tableCardStyles from "@/components/crud/table-card.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -142,13 +142,12 @@ export function Containers({ operationId }: { operationId: string }) {
   const [editing, setEditing] = useState<ContainerOperationDTO | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerOperationDTO | null>(null);
   const [photosFor, setPhotosFor] = useState<ContainerOperationDTO | null>(null);
-  // SPEC-62: quando não há lacre ativo, o botão da linha abre o modal de
-  // criar lacre direto. Quando já tem, pedido do usuário: direto pra um
-  // `ConfirmationModal` de deslacrar (sem painel intermediário) — o lacre
-  // ativo já vem no próprio item da listagem (`item.seals`), sem query
-  // extra.
-  const [addSealFor, setAddSealFor] = useState<ContainerOperationDTO | null>(null);
-  const [unsealFor, setUnsealFor] = useState<ContainerOperationDTO | null>(null);
+  // SPEC-92: gestão de múltiplos lacres — o Core já modela `seals` como
+  // lista (cada um com seu próprio `id`/`status`), então a ação da linha
+  // abre um modal de gestão (lista completa, ativos e removidos) em vez do
+  // antigo gate binário "lacrar OU deslacrar o único lacre `Active`"
+  // (`AddSealModal`/deslacre viram ações *dentro* desse modal).
+  const [sealsFor, setSealsFor] = useState<ContainerOperationDTO | null>(null);
 
   const listQueryOptions = getGetApiOperationOperationIdContainerQueryOptions(operationId, {
     Search: search || undefined,
@@ -166,28 +165,6 @@ export function Containers({ operationId }: { operationId: string }) {
   const linkMutation = usePostApiOperationOperationIdContainer();
   const updateMutation = usePutApiOperationOperationIdContainerId();
   const deleteMutation = useDeleteApiOperationOperationIdContainerId();
-  const removeSealMutation = useDeleteApiOperationOperationIdContainerIdSealSealId();
-
-  const handleUnseal = async () => {
-    const activeSeal = unsealFor?.seals?.find((s) => s.status === "Active");
-    if (!unsealFor || !activeSeal) {
-      setUnsealFor(null);
-      return;
-    }
-    try {
-      await removeSealMutation.mutateAsync({
-        operationId,
-        id: unsealFor.id,
-        sealId: activeSeal.id,
-      });
-      toast.success(t("administrative-operations.containers.seal.toast.unsealed"));
-      invalidateList();
-    } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
-    } finally {
-      setUnsealFor(null);
-    }
-  };
 
   const fetchContainerOptions = (search: string) =>
     getApiContainer({ Search: search, Limit: 20 }).then((res) =>
@@ -211,7 +188,7 @@ export function Containers({ operationId }: { operationId: string }) {
       invalidateList();
       setLinkModalOpen(false);
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -236,7 +213,7 @@ export function Containers({ operationId }: { operationId: string }) {
       invalidateList();
       setEditing(null);
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -247,7 +224,7 @@ export function Containers({ operationId }: { operationId: string }) {
       toast.success(t("administrative-operations.containers.toast.unlinked"));
       invalidateList();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setPendingDelete(null);
     }
@@ -296,59 +273,59 @@ export function Containers({ operationId }: { operationId: string }) {
           {t("administrative-operations.containers.empty")}
         </div>
       ) : (
-        <div className="soft-card table-responsive">
-          <Table hover size="sm" className="align-middle mb-0">
-            <thead>
-              <tr>
-                <SortableTh sortKey="identifier" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.containers.colIdentifier")}
-                </SortableTh>
-                <th>{t("administrative-operations.containers.colTara")}</th>
-                <th>{t("administrative-operations.containers.colStatus")}</th>
-                <th>{t("administrative-operations.containers.colPhotos")}</th>
-                <th>{t("administrative-operations.containers.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.container.identifier}</td>
-                  <td>{item.tara != null ? String(item.tara) : "—"}</td>
-                  <td>
-                    <Badge bg="secondary">
-                      {resolveContainerOperationStatusLabel(item.status, locale)}
-                    </Badge>
-                  </td>
-                  <td>{item.photos?.length ?? 0}</td>
-                  <td>
-                    <CrudRowActions
-                      extraActions={[
-                        {
-                          key: "photos",
-                          icon: "bi-camera",
-                          label: t("administrative-operations.containers.photosButton"),
-                          onClick: () => setPhotosFor(item),
-                        },
-                        {
-                          key: "seal",
-                          icon: item.status === "Sealed" ? "bi-shield-lock" : "bi-shield",
-                          label: t(
-                            item.status === "Sealed"
-                              ? "administrative-operations.containers.seal.unsealButton"
-                              : "administrative-operations.containers.seal.sealButton",
-                          ),
-                          onClick: () =>
-                            item.status === "Sealed" ? setUnsealFor(item) : setAddSealFor(item),
-                        },
-                      ]}
-                      onEdit={() => setEditing(item)}
-                      onDelete={() => setPendingDelete(item)}
-                    />
-                  </td>
+        <div className={tableCardStyles.tableCard}>
+          <div className="table-responsive">
+            <Table hover size="sm" className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+              <thead>
+                <tr>
+                  <SortableTh sortKey="identifier" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.containers.colIdentifier")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.containers.colTara")}</th>
+                  <th>{t("administrative-operations.containers.colStatus")}</th>
+                  <th>{t("administrative-operations.containers.colPhotos")}</th>
+                  <th>{t("administrative-operations.containers.colActions")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.container.identifier}</td>
+                    <td>{item.tara != null ? String(item.tara) : "—"}</td>
+                    <td>
+                      <Badge bg="secondary">
+                        {resolveContainerOperationStatusLabel(item.status, locale)}
+                      </Badge>
+                    </td>
+                    <td>{item.photos?.length ?? 0}</td>
+                    <td>
+                      <CrudRowActions
+                        extraActions={[
+                          {
+                            key: "photos",
+                            icon: "bi-camera",
+                            label: t("administrative-operations.containers.photosButton"),
+                            onClick: () => setPhotosFor(item),
+                          },
+                          {
+                            // SPEC-92: ação única "Lacres" abre a gestão
+                            // completa (lista + adicionar/remover), em vez do
+                            // antigo gate binário lacrar/deslacrar.
+                            key: "seals",
+                            icon: "bi-shield",
+                            label: t("administrative-operations.containers.seal.manageButton"),
+                            onClick: () => setSealsFor(item),
+                          },
+                        ]}
+                        onEdit={() => setEditing(item)}
+                        onDelete={() => setPendingDelete(item)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </div>
       )}
 
@@ -463,41 +440,30 @@ export function Containers({ operationId }: { operationId: string }) {
         </Modal>
       ) : null}
 
-      {unsealFor ? (
-        <ConfirmationModal
-          show
-          title={t("administrative-operations.containers.seal.confirmUnsealTitle")}
-          message={t("administrative-operations.containers.seal.confirmUnsealMessage")}
-          variant="danger"
-          onConfirm={handleUnseal}
-          onCancel={() => setUnsealFor(null)}
-        />
-      ) : null}
-
-      {addSealFor ? (
-        <AddSealModal
-          operationId={operationId}
-          containerLinkId={addSealFor.id}
-          onClose={() => setAddSealFor(null)}
-          onSealed={() => {
-            invalidateList();
-            setAddSealFor(null);
-          }}
-        />
+      {sealsFor ? (
+        <Modal show onHide={() => setSealsFor(null)} centered size="lg">
+          <Modal.Header>
+            <Modal.Title className="h5 mb-0">
+              {t("administrative-operations.containers.seal.manageButton")} —{" "}
+              {sealsFor.container.identifier}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <ContainerSeals
+              operationId={operationId}
+              containerLinkId={sealsFor.id}
+              onChanged={invalidateList}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary" onClick={() => setSealsFor(null)}>
+              {t("crud.recordModal.close")}
+            </Button>
+          </Modal.Footer>
+        </Modal>
       ) : null}
     </div>
   );
-}
-
-/** Data/hora atual, já nos formatos que `InputDate`/`InputTime` esperam
- * (`YYYY-MM-DD`/`HH:mm`) — pré-preenche o formulário de lacrar (SPEC-62). */
-function nowAsDateAndTime(): { sealDate: string; sealTime: string } {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return {
-    sealDate: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-    sealTime: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
-  };
 }
 
 /**
@@ -507,16 +473,14 @@ function nowAsDateAndTime(): { sealDate: string; sealTime: string } {
  * Responsáveis (`getApiUser`, `fetchUserOptions`). `name` vem do enum
  * `SealName` (snapshot estático); `label`/`description` são opcionais.
  *
- * SPEC-62 acrescenta foto obrigatória e data/hora do lacre (Core
- * SPEC-45): a foto usa o mesmo campo `file` do payload tipado
- * (`SealFormValues`), checada manualmente antes do submit — o schema
- * gerado marca `file`/`sealedAt` como opcionais porque `[FromForm]`
- * escalar não expõe obrigatoriedade no OpenAPI (mesma situação já
- * existente no upload de foto de container). Data e hora **não** entram
- * no payload tipado — são um formulário local separado
- * (`dateTimeMethods`, mesmo padrão de campo isolado de
- * `ContainerSearchInput`), combinados num único `sealedAt` (ISO com
- * offset) só no submit.
+ * O Core removeu `file`/`sealedAt` do payload de criação de lacre (que
+ * antes era `[FromForm]`, com `PostApiOperationOperationIdContainerIdSealBody`)
+ * — a ação de lacrar agora é só JSON (`SealCreate`) e não recebe mais foto
+ * nem data/hora manuais nesta chamada. Os campos de foto e data/hora que a
+ * SPEC-62 tinha acrescentado aqui não têm mais contrato de API que os
+ * aceite; a captura da foto do lacre continua disponível pelo checklist de
+ * fotos do container (slot `Sealed`, ver `ContainerPhotoSlot`/
+ * `PHOTO_CHECKLIST_SLOTS`), fora deste modal.
  */
 function AddSealModal({
   operationId,
@@ -534,11 +498,7 @@ function AddSealModal({
 
   const methods = useForm<SealFormValues>({
     resolver: withEmptyStringsAsNull(PostApiOperationOperationIdContainerIdSealBody),
-    defaultValues: { userId: "", name: "NONE", label: "", description: "", file: undefined },
-  });
-
-  const dateTimeMethods = useForm<{ sealDate: string; sealTime: string }>({
-    defaultValues: nowAsDateAndTime(),
+    defaultValues: { userId: "", name: "NONE", label: "", description: "" },
   });
 
   const fetchUserOptions = (search: string) =>
@@ -550,24 +510,16 @@ function AddSealModal({
     );
 
   const handleSubmit: SubmitHandler<SealFormValues> = async (values) => {
-    if (!values.file) {
-      toast.error(t("administrative-operations.containers.seal.photoRequired"));
-      return;
-    }
-
-    const { sealDate, sealTime } = dateTimeMethods.getValues();
-    const sealedAt = new Date(`${sealDate}T${sealTime}:00`).toISOString();
-
     try {
       await mutation.mutateAsync({
         operationId,
         id: containerLinkId,
-        data: { ...values, sealedAt },
+        data: values,
       });
       toast.success(t("administrative-operations.containers.seal.toast.sealed"));
       onSealed();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -603,25 +555,6 @@ function AddSealModal({
             label={t("administrative-operations.containers.seal.form.description")}
             maxLength={255}
           />
-          <InputPhotoSingle<SealFormValues>
-            methods={methods}
-            fieldName="file"
-            label={t("administrative-operations.containers.seal.form.photo")}
-          />
-          <div className="d-flex gap-2">
-            <InputDate
-              methods={dateTimeMethods}
-              fieldName="sealDate"
-              label={t("administrative-operations.containers.seal.form.date")}
-              config={{ containerClass: "mb-1 flex-fill" }}
-            />
-            <InputTime
-              methods={dateTimeMethods}
-              fieldName="sealTime"
-              label={t("administrative-operations.containers.seal.form.time")}
-              config={{ containerClass: "mb-1 flex-fill" }}
-            />
-          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-primary" onClick={onClose}>
@@ -636,6 +569,151 @@ function AddSealModal({
         </Modal.Footer>
       </Form>
     </Modal>
+  );
+}
+
+/**
+ * Lista de lacres do vínculo container↔operação (SPEC-92) — mesmo padrão de
+ * `ContainerPhotos` (busca própria via `operation-container/{id}` gerado,
+ * pra sempre mostrar o estado atual mesmo com o modal já aberto): lista
+ * todos os lacres (ativos e removidos, mais recente primeiro), com "Remover"
+ * inline em cada lacre `Active` e um botão "Adicionar lacre" que reusa o
+ * `AddSealModal` já existente (SPEC-44/62) — nada impede criar um novo lacre
+ * mesmo com um `Active` já existente, já que o Core modela `seals` como
+ * lista, não como campo único.
+ */
+function ContainerSeals({
+  operationId,
+  containerLinkId,
+  onChanged,
+}: {
+  operationId: string;
+  containerLinkId: string;
+  onChanged: () => void;
+}) {
+  const t = useT();
+  const locale = useLocale();
+  const queryClient = useQueryClient();
+  const detailQuery = useSsrSafeQuery(
+    getGetApiOperationOperationIdContainerIdQueryOptions(operationId, containerLinkId),
+  );
+  const removeSealMutation = useDeleteApiOperationOperationIdContainerIdSealSealId();
+  const [addSealOpen, setAddSealOpen] = useState(false);
+  const [removeTarget, setRemoveTarget] = useState<{ id: string } | null>(null);
+
+  const invalidateDetail = () =>
+    queryClient.invalidateQueries({
+      queryKey: getGetApiOperationOperationIdContainerIdQueryKey(operationId, containerLinkId),
+    });
+
+  const handleRemove = async () => {
+    if (!removeTarget) return;
+    try {
+      await removeSealMutation.mutateAsync({
+        operationId,
+        id: containerLinkId,
+        sealId: removeTarget.id,
+      });
+      toast.success(t("administrative-operations.containers.seal.toast.unsealed"));
+      invalidateDetail();
+      onChanged();
+    } catch {
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
+    } finally {
+      setRemoveTarget(null);
+    }
+  };
+
+  // Mais recente primeiro — `createdAt` sempre presente (DTO obrigatório).
+  const seals = [...(detailQuery.data?.seals ?? [])].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  return (
+    <div>
+      {detailQuery.isLoading ? (
+        <LoadingState variant="inline" />
+      ) : seals.length === 0 ? (
+        <div className="alert alert-secondary">
+          {t("administrative-operations.containers.seal.listEmpty")}
+        </div>
+      ) : (
+        <div className="list-group mb-3">
+          {seals.map((seal) => (
+            <div
+              key={seal.id}
+              className="list-group-item d-flex align-items-center justify-content-between gap-2"
+            >
+              <div className="d-flex align-items-center gap-2">
+                {seal.photo?.url ? (
+                  <img
+                    src={seal.photo.url}
+                    alt=""
+                    className="rounded border"
+                    style={{ width: 40, height: 40, objectFit: "cover" }}
+                  />
+                ) : null}
+                <div>
+                  <div className="fw-semibold">
+                    {seal.label || (seal.name ? resolveSealNameLabel(seal.name, locale) : "—")}
+                  </div>
+                  <div className="text-body-secondary small">
+                    {/* `SealDTO` não tem mais `sealedAt` (Core removeu, ver
+                    diff do `just map`) — `createdAt` é sempre presente e
+                    passa a ser a data/hora exibida do lacre. */}
+                    {new Date(seal.createdAt).toLocaleString(locale)}
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <Badge bg={seal.status === "Active" ? "success" : "secondary"}>
+                  {resolveSealStatusLabel(seal.status, locale)}
+                </Badge>
+                {seal.status === "Active" ? (
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() => setRemoveTarget({ id: seal.id })}
+                  >
+                    <i className="bi bi-x-lg me-1" aria-hidden />
+                    {t("administrative-operations.containers.seal.unsealButton")}
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Button variant="outline-primary" size="sm" onClick={() => setAddSealOpen(true)}>
+        <i className="bi bi-plus-lg me-1" aria-hidden />
+        {t("administrative-operations.containers.seal.sealButton")}
+      </Button>
+
+      {removeTarget ? (
+        <ConfirmationModal
+          show
+          title={t("administrative-operations.containers.seal.confirmUnsealTitle")}
+          message={t("administrative-operations.containers.seal.confirmUnsealMessage")}
+          variant="danger"
+          onConfirm={handleRemove}
+          onCancel={() => setRemoveTarget(null)}
+        />
+      ) : null}
+
+      {addSealOpen ? (
+        <AddSealModal
+          operationId={operationId}
+          containerLinkId={containerLinkId}
+          onClose={() => setAddSealOpen(false)}
+          onSealed={() => {
+            invalidateDetail();
+            onChanged();
+            setAddSealOpen(false);
+          }}
+        />
+      ) : null}
+    </div>
   );
 }
 
@@ -682,7 +760,7 @@ function ContainerPhotos({
       invalidateDetail();
       onChanged();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -693,7 +771,7 @@ function ContainerPhotos({
       invalidateDetail();
       onChanged();
     } catch {
-      toast.error(t("administrative-operations.containers.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   };
 
@@ -724,11 +802,12 @@ function ContainerPhotos({
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-between mb-2">
+      <div className="d-flex align-items-center justify-content-between mb-3">
         <h2 className="h6 mb-0">{t("administrative-operations.containers.photosTitle")}</h2>
         <Badge
           bg={missingCount === 0 ? "success" : "warning"}
           text={missingCount === 0 ? undefined : "dark"}
+          className="px-2 py-1"
         >
           {missingCount === 0
             ? t("administrative-operations.containers.photosChecklistComplete")
@@ -738,21 +817,22 @@ function ContainerPhotos({
         </Badge>
       </div>
 
-      <div className="d-flex flex-column gap-2 mb-3">
+      <Row className="g-3 mb-3">
         {PHOTO_CHECKLIST_SLOTS.map((slot) => (
-          <ContainerPhotoSlotCell
-            key={slot}
-            slot={slot}
-            photos={photosBySlot.get(slot) ?? []}
-            onUpload={handleUpload}
-            onRemove={handleDeletePhoto}
-            removing={deletePhotoMutation.isPending}
-          />
+          <Col key={slot} xs={12} md={6}>
+            <ContainerPhotoSlotCell
+              slot={slot}
+              photos={photosBySlot.get(slot) ?? []}
+              onUpload={handleUpload}
+              onRemove={handleDeletePhoto}
+              removing={deletePhotoMutation.isPending}
+            />
+          </Col>
         ))}
-      </div>
+      </Row>
 
-      <div className="mt-3">
-        <div className="small fw-semibold text-body-secondary mb-1">
+      <div className="soft-card p-3">
+        <div className="small fw-semibold text-body-secondary mb-2">
           {t("administrative-operations.containers.photosOther")}
         </div>
 
@@ -852,53 +932,53 @@ function ContainerPhotoSlotCell({
   }, [watchedFile]);
 
   return (
-    <div className="d-flex align-items-start gap-2 border rounded p-2">
-      <i
-        className={`bi ${hasPhoto ? "bi-check-circle-fill text-success" : "bi-exclamation-circle text-warning"} fs-5 mt-1`}
-        aria-hidden
-      />
-      <div className="flex-grow-1 min-w-0">
-        <div className="fw-semibold small">
-          {t(`administrative-operations.containers.photoSlots.${slot}` as TranslationKey)}
-        </div>
-
-        {hasPhoto ? (
-          <div className="d-flex flex-wrap gap-2 mt-1">
-            {photos.map((photo) => (
-              <div
-                key={photo.id}
-                className="position-relative rounded overflow-hidden border"
-                style={{ width: 64, height: 64 }}
-              >
-                <img
-                  src={photo.file.url}
-                  alt=""
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="sm"
-                  className="position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
-                  style={{ width: 18, height: 18, lineHeight: 1 }}
-                  aria-label={t("administrative-operations.containers.photosRemove")}
-                  disabled={removing}
-                  onClick={() => onRemove(photo.id)}
-                >
-                  <i className="bi bi-x" aria-hidden />
-                </Button>
-              </div>
-            ))}
-          </div>
-        ) : null}
-
-        <InputPhotoSingle<SlotUploadFormValues>
-          methods={methods}
-          fieldName="file"
-          label={t("administrative-operations.containers.photosAddToSlot")}
-          config={{ containerClass: "mb-0 mt-2" }}
+    <div className="soft-card p-3 h-100">
+      <div className="d-flex align-items-center gap-2 mb-2">
+        <i
+          className={`bi ${hasPhoto ? "bi-check-circle-fill text-success" : "bi-exclamation-circle text-warning"} fs-5`}
+          aria-hidden
         />
+        <span className="fw-semibold">
+          {t(`administrative-operations.containers.photoSlots.${slot}` as TranslationKey)}
+        </span>
       </div>
+
+      {hasPhoto ? (
+        <div className="d-flex flex-wrap gap-2 mb-2">
+          {photos.map((photo) => (
+            <div
+              key={photo.id}
+              className="position-relative rounded overflow-hidden border"
+              style={{ width: 72, height: 72 }}
+            >
+              <img
+                src={photo.file.url}
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <Button
+                type="button"
+                variant="danger"
+                size="sm"
+                className="position-absolute top-0 end-0 m-1 p-0 d-flex align-items-center justify-content-center"
+                style={{ width: 18, height: 18, lineHeight: 1 }}
+                aria-label={t("administrative-operations.containers.photosRemove")}
+                disabled={removing}
+                onClick={() => onRemove(photo.id)}
+              >
+                <i className="bi bi-x" aria-hidden />
+              </Button>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <InputPhotoSingle<SlotUploadFormValues>
+        methods={methods}
+        fieldName="file"
+        label={t("administrative-operations.containers.photosAddToSlot")}
+        config={{ containerClass: "mb-0" }}
+      />
     </div>
   );
 }

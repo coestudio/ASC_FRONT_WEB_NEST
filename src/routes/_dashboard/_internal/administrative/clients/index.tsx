@@ -344,6 +344,7 @@ function ClientsPageBody() {
             );
           }}
           onRowOpen={(c) => setDetailRequest({ id: c.id, mode: "view" })}
+          onRowEdit={(c) => setDetailRequest({ id: c.id, mode: "edit" })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);

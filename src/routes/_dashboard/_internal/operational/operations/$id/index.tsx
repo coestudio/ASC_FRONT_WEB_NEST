@@ -7,6 +7,7 @@ import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
+import tableCardStyles from "@/components/crud/table-card.module.css";
 
 export const Route = createFileRoute("/_dashboard/_internal/operational/operations/$id/")({
   head: () => ({ meta: [{ title: "Operação — ASC" }] }),
@@ -236,37 +237,39 @@ function OperationalOperationDetailPage() {
               {t("operational.detail.containers.empty")}
             </div>
           ) : (
-            <div className="soft-card table-responsive">
-              <Table hover className="align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th>{t("operational.detail.containers.colIdentifier")}</th>
-                    <th>{t("operational.detail.containers.colType")}</th>
-                    <th>{t("operational.detail.containers.colSeal")}</th>
-                    <th>{t("operational.detail.containers.colStatus")}</th>
-                    <th>{t("operational.detail.containers.colVolumes")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {operation.containers.map((container) => (
-                    <tr
-                      key={container.id}
-                      role="button"
-                      onClick={() => setOpenContainer(container)}
-                    >
-                      <td className="font-monospace">{container.identifier}</td>
-                      <td>{container.type}</td>
-                      <td className="font-monospace">{container.seal}</td>
-                      <td>
-                        <Badge bg="secondary">{t(CONTAINER_STATUS_KEY[container.status])}</Badge>
-                      </td>
-                      <td>
-                        {container.stuffedVolumes} / {container.capacityVolumes}
-                      </td>
+            <div className={tableCardStyles.tableCard}>
+              <div className="table-responsive">
+                <Table hover className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+                  <thead>
+                    <tr>
+                      <th>{t("operational.detail.containers.colIdentifier")}</th>
+                      <th>{t("operational.detail.containers.colType")}</th>
+                      <th>{t("operational.detail.containers.colSeal")}</th>
+                      <th>{t("operational.detail.containers.colStatus")}</th>
+                      <th>{t("operational.detail.containers.colVolumes")}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {operation.containers.map((container) => (
+                      <tr
+                        key={container.id}
+                        role="button"
+                        onClick={() => setOpenContainer(container)}
+                      >
+                        <td className="font-monospace">{container.identifier}</td>
+                        <td>{container.type}</td>
+                        <td className="font-monospace">{container.seal}</td>
+                        <td>
+                          <Badge bg="secondary">{t(CONTAINER_STATUS_KEY[container.status])}</Badge>
+                        </td>
+                        <td>
+                          {container.stuffedVolumes} / {container.capacityVolumes}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
             </div>
           )
         ) : section === "operational" ? (

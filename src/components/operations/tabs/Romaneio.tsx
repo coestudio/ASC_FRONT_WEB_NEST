@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm, type FieldValues, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Form, Row, Spinner } from "react-bootstrap";
+import { Button, Card, Form, Row, Spinner } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
 import { z, type ZodType } from "zod";
@@ -39,7 +39,7 @@ import {
   type CrudSelection,
 } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
-import { CrudRowActions } from "@/components/crud/crud-row-actions";
+import { CrudBulkActions } from "@/components/crud/crud-bulk-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { InputFileSingle, InputText } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
@@ -179,7 +179,7 @@ export function Romaneio({ operationId }: { operationId: string }) {
       setSelectedIds(new Set());
       invalidateList();
     } catch {
-      toast.error(t("administrative-operations.romaneio.bulkActions.toastError"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     } finally {
       setBulkDeleteOpen(false);
     }
@@ -313,26 +313,22 @@ export function Romaneio({ operationId }: { operationId: string }) {
     {
       key: "isStuffed",
       headerKey: "administrative-operations.romaneio.colIsStuffed",
+      align: "center",
+      // SPEC-94, item 12: coluna do tamanho do ícone, não da palavra "Estufado".
+      width: "1%",
       render: (r) => (
-        <Badge bg={r.isStuffed ? "success" : "secondary"}>
-          {t(
+        <i
+          className={`bi ${r.isStuffed ? "bi-check-circle-fill text-success" : "bi-x-circle text-body-secondary"}`}
+          title={t(
             r.isStuffed
               ? "administrative-operations.romaneio.isStuffedYes"
               : "administrative-operations.romaneio.isStuffedNo",
           )}
-        </Badge>
-      ),
-    },
-    {
-      key: "actions",
-      headerKey: "administrative-operations.romaneio.colActions",
-      align: "end",
-      render: (r) => (
-        // RF2 (§3.4): sem exclusão individual (removida — vira só em massa);
-        // edição desabilitada em linha já estufada (regra de negócio §2).
-        <CrudRowActions
-          onView={() => setModal({ mode: "view", record: r })}
-          onEdit={r.isStuffed ? undefined : () => setModal({ mode: "edit", record: r })}
+          aria-label={t(
+            r.isStuffed
+              ? "administrative-operations.romaneio.isStuffedYes"
+              : "administrative-operations.romaneio.isStuffedNo",
+          )}
         />
       ),
     },
@@ -379,7 +375,8 @@ export function Romaneio({ operationId }: { operationId: string }) {
 
       toast.success(t("administrative-operations.romaneio.export.toast.success"));
     } catch {
-      toast.error(t("administrative-operations.romaneio.export.toast.error"));
+      // interceptor global (mutator.ts) já mostra o toast de erro da chamada HTTP —
+      // nada a fazer aqui (manipulação de DOM depois do GET raramente lança)
     } finally {
       setExporting(false);
     }
@@ -387,25 +384,6 @@ export function Romaneio({ operationId }: { operationId: string }) {
 
   return (
     <>
-      {/* Barra de ação em massa (§3.3) — só aparece com algo selecionado. */}
-      {selectedIds.size > 0 ? (
-        <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
-          <span className="fw-semibold">
-            {t("administrative-operations.romaneio.bulkActions.selectedCount", {
-              count: String(selectedIds.size),
-            })}
-          </span>
-          <Button variant="outline-primary" size="sm" onClick={() => setBulkEditOpen(true)}>
-            <i className="bi bi-pencil me-1" aria-hidden />
-            {t("administrative-operations.romaneio.bulkActions.editNfLote")}
-          </Button>
-          <Button variant="danger" size="sm" onClick={() => setBulkDeleteOpen(true)}>
-            <i className="bi bi-trash me-1" aria-hidden />
-            {t("administrative-operations.romaneio.bulkActions.deleteSelected")}
-          </Button>
-        </div>
-      ) : null}
-
       <CrudListPage
         titleKey="administrative-operations.romaneio.title"
         descriptionKey="administrative-operations.romaneio.description"
@@ -428,7 +406,69 @@ export function Romaneio({ operationId }: { operationId: string }) {
         queryOptions={listQueryOptions}
         columns={columns}
         spreadsheetVariant
+        // SPEC-97 (RF7): migra a barra de ação em massa pra `belowSearch`
+        // (mesma posição que `Operational.tsx` já usa) — sempre visível,
+        // botões desabilitados (não escondidos) sem seleção.
+        belowSearch={
+          <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
+            <span className="fw-semibold">
+              {t("administrative-operations.romaneio.bulkActions.selectedCount", {
+                count: String(selectedIds.size),
+              })}
+            </span>
+            <Button
+              variant="outline-primary"
+              size="sm"
+              disabled={selectedIds.size === 0}
+              onClick={() => setBulkEditOpen(true)}
+            >
+              <i className="bi bi-pencil me-1" aria-hidden />
+              {t("administrative-operations.romaneio.bulkActions.editNfLote")}
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              disabled={selectedIds.size === 0}
+              onClick={() => setBulkDeleteOpen(true)}
+            >
+              <i className="bi bi-trash me-1" aria-hidden />
+              {t("administrative-operations.romaneio.bulkActions.deleteSelected")}
+            </Button>
+          </div>
+        }
         selection={selection}
+        // SPEC-97 (RF4): botão direito com ≥1 item selecionado abre o mesmo
+        // menu de ações da barra acima — segundo ponto de entrada pros
+        // mesmos handlers (`setBulkEditOpen`/`setBulkDeleteOpen`), nenhuma
+        // lógica de negócio nova.
+        bulkActions={(ctl) => (
+          <CrudBulkActions
+            show={ctl.show}
+            position={ctl.position}
+            onToggle={ctl.onToggle}
+            actions={[
+              {
+                key: "edit",
+                icon: "bi-pencil",
+                label: t("administrative-operations.romaneio.bulkActions.editNfLote"),
+                onClick: () => setBulkEditOpen(true),
+              },
+              {
+                key: "delete",
+                icon: "bi-trash",
+                label: t("administrative-operations.romaneio.bulkActions.deleteSelected"),
+                onClick: () => setBulkDeleteOpen(true),
+                variant: "danger",
+              },
+            ]}
+          />
+        )}
+        onRowSingleClick={(r) => {
+          if (!selection.isDisabled?.(r)) selection.onToggle(r.id);
+        }}
+        onRowDoubleClick={(r) => {
+          if (!r.isStuffed) setModal({ mode: "edit", record: r });
+        }}
         sort={sort}
         onSortChange={setSort}
         renderCard={(r) => (
@@ -599,7 +639,7 @@ function RomaneioBulkEditModal({
       onApplied();
       onClose();
     } catch {
-      toast.error(t("administrative-operations.romaneio.bulkActions.toastError"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   });
 
@@ -699,7 +739,7 @@ function ImportRomaneioModal({
         ),
       );
     } catch {
-      toast.error(t("administrative-operations.romaneio.import.toast.analyzeError"));
+      // interceptor global (mutator.ts) já mostra o toast de erro — nada a fazer aqui
     }
   });
 
@@ -766,8 +806,13 @@ function ImportRomaneioModal({
       }
       onApplied();
       onClose();
-    } catch {
-      toast.error(t("administrative-operations.romaneio.import.toast.applyError"));
+    } catch (err) {
+      // `payload` vem de `.parse()` (síncrono, local) antes do `mutateAsync` (HTTP) —
+      // só mostra o toast aqui se o erro for de validação Zod local; erro vindo do
+      // `mutateAsync` já foi notificado pelo interceptor global (mutator.ts).
+      if (err instanceof z.ZodError) {
+        toast.error(t("administrative-operations.romaneio.import.toast.applyError"));
+      }
     }
   };
 

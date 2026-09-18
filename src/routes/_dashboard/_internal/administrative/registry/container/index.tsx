@@ -164,6 +164,7 @@ function ContainerPage() {
             />
           )}
           onRowOpen={(c) => setModal({ mode: "view", record: c })}
+          onRowEdit={(c) => setModal({ mode: "edit", record: c })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);

@@ -1,6 +1,10 @@
 {
   "titleFallback": "File",
   "error": "Could not load this file's content.",
+  "kind": {
+    "docx": "Word document",
+    "sheet": "Spreadsheet"
+  },
   "unavailable": {
     "message": "No preview available for this file type.",
     "noUrl": "This file is not available.",

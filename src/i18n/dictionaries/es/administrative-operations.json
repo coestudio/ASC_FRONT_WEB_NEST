@@ -265,6 +265,7 @@
     "byUser": "por {user}",
     "emptyState": "No hay eventos registrados.",
     "loadError": "No fue posible cargar el registro de la operación.",
+    "filterAllEntityTypes": "Todos los tipos",
     "actions": {
       "RomaneioImported": "Romaneo importado",
       "InvoiceCreated": "Factura creada",
@@ -356,10 +357,11 @@
       "cancelTitle": "Cancelar fardo",
       "cancelReason": "Motivo de la cancelación",
       "cancelConfirm": "Confirmar cancelación",
+      "destuffSelected": "Desestibar seleccionados",
       "toast": {
         "quantitySuccess": "Estiba completada con éxito.",
         "batchSuccess": "Fardos estibados con éxito.",
-        "canceled": "Fardo cancelado con éxito."
+        "canceled": "Fardo(s) cancelado(s) con éxito."
       },
       "batchButton": "Estibar en contenedor",
       "quantityButton": "Estibar por cantidad",
@@ -374,8 +376,10 @@
     "seal": {
       "sealButton": "Precintar",
       "unsealButton": "Quitar precinto",
+      "manageButton": "Precintos del contenedor",
+      "listEmpty": "Todavía no hay ningún precinto registrado.",
       "confirmUnsealTitle": "Quitar precinto del contenedor",
-      "confirmUnsealMessage": "¿Quitar el precinto activo de este contenedor?",
+      "confirmUnsealMessage": "¿Quitar este precinto?",
       "photoRequired": "Suba una foto del precinto antes de continuar.",
       "form": {
         "user": "Responsable del precinto",
@@ -402,6 +406,12 @@
       "title": "Fardos disponibles para estibar",
       "description": "Fardos de esta operación que todavía no fueron estibados.",
       "empty": "Ningún fardo disponible para estibar."
+    },
+    "destuffing": {
+      "title": "Fardos estibados de la operación",
+      "description": "Fardos de esta operación ya estibados, con opción de desestibar.",
+      "searchPlaceholder": "Buscar por identificador, factura o lote...",
+      "empty": "Ningún fardo estibado en esta operación."
     }
   },
   "documents": {
