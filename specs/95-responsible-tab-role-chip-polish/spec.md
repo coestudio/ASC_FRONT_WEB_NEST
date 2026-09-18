@@ -2,7 +2,7 @@
 
 - **ID:** 95
 - **Nome:** responsible-tab-role-chip-polish
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** claude (triagem de leva de ajustes pré-apresentação, pedido do
   usuário em 2026-09-17 — item marcado "Importante")
 - **Área:** `src/components/operations/tabs/Responsible.tsx`
@@ -113,3 +113,48 @@ existente.
 
 Baixo — mudança de apresentação isolada a um componente (`Responsible.tsx`)
 já recentemente trabalhado (SPEC-87, commit `f17c193`).
+
+## 10. Implementation Notes
+
+**Decisão `[NEEDS_DECISION]` resolvida (§5).** Instrução do usuário: seguir
+**literalmente** o que `admin/access/index.tsx` já faz hoje pro mesmo tipo
+de dado (papel/role do usuário) — não a leitura genérica de "opção 2"
+sugerida na spec original. Investigação: em `admin/access/index.tsx`,
+`Badge pill` é usado só pra campos **binários** (`isActive` linha 241/378,
+`type` Interno/Externo linha 381) — a coluna "papel" (`u.roles`, mesmo tipo
+de dado multi-valor de `Responsible.tsx`) é **texto simples** separado por
+vírgula (linha 234: `u.roles.map((r) => roleLabelByValue.get(r) ?? r).join(", ")`),
+sem `Badge` nenhum. Ou seja, seguir literalmente a referência citada =
+**opção 1** (texto puro), não opção 2 — a leitura mais próxima do pedido
+"remover o badge" bate exatamente com o que a referência já faz pro mesmo
+dado.
+
+**O que foi implementado:** o `Badge bg="info" text="dark"` por papel virou
+um único `<div className="small text-body-secondary mt-1">` com os papéis
+unidos por `", "` — mesmo formato/classe de texto secundário que o rótulo
+de tipo (Interno/Externo) logo acima já usava (SPEC-87), agora os dois
+seguem a mesma linguagem visual. Import `Badge` removido de
+`Responsible.tsx` (ficou sem uso). Estrutura do card (avatar, nome,
+contato, botão desvincular) mantida sem mudança — já alinhada ao nível de
+acabamento de `admin/access` desde a SPEC-87, sem divergência adicional
+encontrada na revisão lado a lado.
+
+**Arquivos alterados:** `src/components/operations/tabs/Responsible.tsx`.
+
+**Comandos executados:**
+- `bun run check` — VERIFIED, sem erros.
+- `bun run lint` — VERIFIED, 0 errors / 63 warnings (mesmo baseline, sem
+  warning novo — remoção do import não usado inclusive evita um warning a
+  mais).
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| 1 | Papéis sem `Badge bg="info" text="dark"` retangular | PASS |
+| 2 | Sem regressão no fluxo de desvincular | PASS (nenhuma lógica tocada) |
+| 3 | Acabamento comparável a `admin/access` | PASS (mesmo tratamento literal: texto simples pra papel multi-valor) |
+| 4 | `bun run check`/`lint` sem novos erros | PASS |
+
+**Limitações conhecidas:** sem verificação visual em navegador nesta
+sessão (mesma ressalva das SPECs anteriores desta leva).

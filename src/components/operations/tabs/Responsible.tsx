@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
@@ -305,14 +305,20 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
                     </span>
                   </div>
                   {item.user.roles.length > 0 ? (
-                    <div className="d-flex flex-wrap gap-1 mt-1">
-                      {item.user.roles.map((role) => (
-                        <Badge key={role} bg="info" text="dark">
-                          {t(
+                    // SPEC-95: mesmo tratamento que `admin/access/index.tsx`
+                    // já dá pro mesmo tipo de dado (papel/role do usuário,
+                    // referência citada pelo usuário) — lá a coluna "papel"
+                    // é texto simples separado por vírgula, não `Badge`
+                    // (`Badge pill` em `admin/access` é só pra `isActive`/
+                    // `type`, campos binários, não pra `roles`).
+                    <div className="small text-body-secondary mt-1">
+                      {item.user.roles
+                        .map((role) =>
+                          t(
                             `administrative-operations.responsible.roles.${role}` as TranslationKey,
-                          )}
-                        </Badge>
-                      ))}
+                          ),
+                        )
+                        .join(", ")}
                     </div>
                   ) : null}
                   <div className="small text-body-secondary text-truncate mt-1">
