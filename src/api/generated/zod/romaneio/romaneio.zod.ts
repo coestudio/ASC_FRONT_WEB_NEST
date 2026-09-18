@@ -63,8 +63,6 @@ export const getApiOperationOperationIdRomaneioQueryLimitRegExpTwo = new RegExp(
 
 export const GetApiOperationOperationIdRomaneioQueryParams = zod.object({
   "Search": zod.string().optional(),
-  "NotaFiscal": zod.string().optional(),
-  "Lote": zod.string().optional(),
   "IsStuffed": zod.boolean().optional(),
   "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioQueryOffsetRegExpTwo)]).optional(),
   "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioQueryLimitRegExpTwo)]).optional(),

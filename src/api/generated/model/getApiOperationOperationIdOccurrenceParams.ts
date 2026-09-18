@@ -6,7 +6,6 @@
  */
 
 export type GetApiOperationOperationIdOccurrenceParams = {
-Search?: string;
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$
  */

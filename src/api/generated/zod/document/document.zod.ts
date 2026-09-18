@@ -39,7 +39,6 @@ export const getApiOperationOperationIdDocumentQueryLimitRegExpTwo = new RegExp(
 
 
 export const GetApiOperationOperationIdDocumentQueryParams = zod.object({
-  "Search": zod.string().optional(),
   "Type": zod.enum(['Other', 'Booking', 'Instruction', 'PackingList', 'Invoice', 'Certificate', 'Report']).optional(),
   "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdDocumentQueryOffsetRegExpTwo)]).optional(),
   "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdDocumentQueryLimitRegExpTwo)]).optional(),

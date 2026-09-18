@@ -38,11 +38,9 @@ import { SortableTh } from "@/components/crud/sortable-th";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import {
-  InputDate,
   InputPhotoSingle,
   InputText,
   InputTextArea,
-  InputTime,
   Select,
   SelectAsync,
 } from "@/layouts/Form/Fields/Index";
@@ -468,17 +466,6 @@ export function Containers({ operationId }: { operationId: string }) {
   );
 }
 
-/** Data/hora atual, já nos formatos que `InputDate`/`InputTime` esperam
- * (`YYYY-MM-DD`/`HH:mm`) — pré-preenche o formulário de lacrar (SPEC-62). */
-function nowAsDateAndTime(): { sealDate: string; sealTime: string } {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return {
-    sealDate: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-    sealTime: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
-  };
-}
-
 /**
  * Formulário de "Lacrar" (SPEC-44 CA1) — `SealCreate` exige `userId`
  * explícito (quem lacrou fisicamente, não necessariamente quem está logado
@@ -486,16 +473,14 @@ function nowAsDateAndTime(): { sealDate: string; sealTime: string } {
  * Responsáveis (`getApiUser`, `fetchUserOptions`). `name` vem do enum
  * `SealName` (snapshot estático); `label`/`description` são opcionais.
  *
- * SPEC-62 acrescenta foto obrigatória e data/hora do lacre (Core
- * SPEC-45): a foto usa o mesmo campo `file` do payload tipado
- * (`SealFormValues`), checada manualmente antes do submit — o schema
- * gerado marca `file`/`sealedAt` como opcionais porque `[FromForm]`
- * escalar não expõe obrigatoriedade no OpenAPI (mesma situação já
- * existente no upload de foto de container). Data e hora **não** entram
- * no payload tipado — são um formulário local separado
- * (`dateTimeMethods`, mesmo padrão de campo isolado de
- * `ContainerSearchInput`), combinados num único `sealedAt` (ISO com
- * offset) só no submit.
+ * O Core removeu `file`/`sealedAt` do payload de criação de lacre (que
+ * antes era `[FromForm]`, com `PostApiOperationOperationIdContainerIdSealBody`)
+ * — a ação de lacrar agora é só JSON (`SealCreate`) e não recebe mais foto
+ * nem data/hora manuais nesta chamada. Os campos de foto e data/hora que a
+ * SPEC-62 tinha acrescentado aqui não têm mais contrato de API que os
+ * aceite; a captura da foto do lacre continua disponível pelo checklist de
+ * fotos do container (slot `Sealed`, ver `ContainerPhotoSlot`/
+ * `PHOTO_CHECKLIST_SLOTS`), fora deste modal.
  */
 function AddSealModal({
   operationId,
@@ -513,11 +498,7 @@ function AddSealModal({
 
   const methods = useForm<SealFormValues>({
     resolver: withEmptyStringsAsNull(PostApiOperationOperationIdContainerIdSealBody),
-    defaultValues: { userId: "", name: "NONE", label: "", description: "", file: undefined },
-  });
-
-  const dateTimeMethods = useForm<{ sealDate: string; sealTime: string }>({
-    defaultValues: nowAsDateAndTime(),
+    defaultValues: { userId: "", name: "NONE", label: "", description: "" },
   });
 
   const fetchUserOptions = (search: string) =>
@@ -529,19 +510,11 @@ function AddSealModal({
     );
 
   const handleSubmit: SubmitHandler<SealFormValues> = async (values) => {
-    if (!values.file) {
-      toast.error(t("administrative-operations.containers.seal.photoRequired"));
-      return;
-    }
-
-    const { sealDate, sealTime } = dateTimeMethods.getValues();
-    const sealedAt = new Date(`${sealDate}T${sealTime}:00`).toISOString();
-
     try {
       await mutation.mutateAsync({
         operationId,
         id: containerLinkId,
-        data: { ...values, sealedAt },
+        data: values,
       });
       toast.success(t("administrative-operations.containers.seal.toast.sealed"));
       onSealed();
@@ -582,25 +555,6 @@ function AddSealModal({
             label={t("administrative-operations.containers.seal.form.description")}
             maxLength={255}
           />
-          <InputPhotoSingle<SealFormValues>
-            methods={methods}
-            fieldName="file"
-            label={t("administrative-operations.containers.seal.form.photo")}
-          />
-          <div className="d-flex gap-2">
-            <InputDate
-              methods={dateTimeMethods}
-              fieldName="sealDate"
-              label={t("administrative-operations.containers.seal.form.date")}
-              config={{ containerClass: "mb-1 flex-fill" }}
-            />
-            <InputTime
-              methods={dateTimeMethods}
-              fieldName="sealTime"
-              label={t("administrative-operations.containers.seal.form.time")}
-              config={{ containerClass: "mb-1 flex-fill" }}
-            />
-          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-primary" onClick={onClose}>
@@ -704,7 +658,10 @@ function ContainerSeals({
                     {seal.label || (seal.name ? resolveSealNameLabel(seal.name, locale) : "—")}
                   </div>
                   <div className="text-body-secondary small">
-                    {new Date(seal.sealedAt).toLocaleString(locale)}
+                    {/* `SealDTO` não tem mais `sealedAt` (Core removeu, ver
+                    diff do `just map`) — `createdAt` é sempre presente e
+                    passa a ser a data/hora exibida do lacre. */}
+                    {new Date(seal.createdAt).toLocaleString(locale)}
                   </div>
                 </div>
               </div>

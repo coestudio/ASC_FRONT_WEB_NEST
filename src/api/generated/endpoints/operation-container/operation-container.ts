@@ -31,7 +31,7 @@ import type {
   GetApiOperationOperationIdContainerParams,
   PagedDTOOfContainerOperationDTO,
   PostApiOperationOperationIdContainerIdPhotoBody,
-  PostApiOperationOperationIdContainerIdSealBody,
+  SealCreate,
   SealDTO
 } from '../../model';
 
@@ -1077,34 +1077,15 @@ const {mutation: mutationOptions} = options ?
     export const postApiOperationOperationIdContainerIdSeal = (
     operationId: string,
     id: string,
-    postApiOperationOperationIdContainerIdSealBody: PostApiOperationOperationIdContainerIdSealBody,
+    sealCreate: SealCreate,
  signal?: AbortSignal
 ) => {
 
-      const formData = new FormData();
-if(postApiOperationOperationIdContainerIdSealBody.file !== undefined) {
- formData.append(`file`, postApiOperationOperationIdContainerIdSealBody.file);
- }
-if(postApiOperationOperationIdContainerIdSealBody.userId !== undefined) {
- formData.append(`userId`, postApiOperationOperationIdContainerIdSealBody.userId);
- }
-if(postApiOperationOperationIdContainerIdSealBody.label !== undefined) {
- formData.append(`label`, postApiOperationOperationIdContainerIdSealBody.label);
- }
-if(postApiOperationOperationIdContainerIdSealBody.name !== undefined) {
- formData.append(`name`, postApiOperationOperationIdContainerIdSealBody.name);
- }
-if(postApiOperationOperationIdContainerIdSealBody.description !== undefined) {
- formData.append(`description`, postApiOperationOperationIdContainerIdSealBody.description);
- }
-if(postApiOperationOperationIdContainerIdSealBody.sealedAt !== undefined) {
- formData.append(`sealedAt`, postApiOperationOperationIdContainerIdSealBody.sealedAt);
- }
 
       return apiRequest<ContainerOperationDTO>(
       {url: `/api/operation/${operationId}/container/${id}/seal`, method: 'POST',
-      headers: {'Content-Type': 'multipart/form-data', },
-       data: formData, signal
+      headers: {'Content-Type': 'application/json', },
+      data: sealCreate, signal
     },
       );
     }
@@ -1142,9 +1123,9 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PostApiOperationOperationIdContainerIdSealMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdContainerIdSeal>>>
-    export type PostApiOperationOperationIdContainerIdSealMutationBody = PostApiOperationOperationIdContainerIdSealBody
+    export type PostApiOperationOperationIdContainerIdSealMutationBody = SealCreate
     export type PostApiOperationOperationIdContainerIdSealMutationError = void
-    export type PostApiOperationOperationIdContainerIdSealMutationVariables = {operationId: string;id: string;data: PostApiOperationOperationIdContainerIdSealBody}
+    export type PostApiOperationOperationIdContainerIdSealMutationVariables = {operationId: string;id: string;data: SealCreate}
 
     export const usePostApiOperationOperationIdContainerIdSeal = <TError = void,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdContainerIdSeal>>, TError,PostApiOperationOperationIdContainerIdSealMutationVariables, TContext>, }

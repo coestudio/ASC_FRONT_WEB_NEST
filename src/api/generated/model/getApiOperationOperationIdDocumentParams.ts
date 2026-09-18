@@ -7,7 +7,6 @@
 import type { DocumentType } from './documentType.ts';
 
 export type GetApiOperationOperationIdDocumentParams = {
-Search?: string;
 Type?: DocumentType;
 /**
  * @pattern ^-?(?:0|[1-9]\d*)$

@@ -16,7 +16,6 @@ export const getApiOperationOperationIdOccurrenceQueryLimitRegExpTwo = new RegEx
 
 
 export const GetApiOperationOperationIdOccurrenceQueryParams = zod.object({
-  "Search": zod.string().optional(),
   "Offset": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdOccurrenceQueryOffsetRegExpTwo)]).optional(),
   "Limit": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdOccurrenceQueryLimitRegExpTwo)]).optional(),
   "Sort": zod.string().optional()

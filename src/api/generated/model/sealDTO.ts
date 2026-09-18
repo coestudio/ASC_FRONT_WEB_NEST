@@ -13,7 +13,6 @@ export interface SealDTO {
   name?: SealName;
   description?: string;
   userId: string;
-  sealedAt: string;
   photo?: null | FileDTO;
   status: SealStatus;
   /** @nullable */
