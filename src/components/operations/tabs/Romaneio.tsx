@@ -39,6 +39,7 @@ import {
   type CrudSelection,
 } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
+import { CrudBulkActions } from "@/components/crud/crud-bulk-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { InputFileSingle, InputText } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
@@ -383,25 +384,6 @@ export function Romaneio({ operationId }: { operationId: string }) {
 
   return (
     <>
-      {/* Barra de ação em massa (§3.3) — só aparece com algo selecionado. */}
-      {selectedIds.size > 0 ? (
-        <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
-          <span className="fw-semibold">
-            {t("administrative-operations.romaneio.bulkActions.selectedCount", {
-              count: String(selectedIds.size),
-            })}
-          </span>
-          <Button variant="outline-primary" size="sm" onClick={() => setBulkEditOpen(true)}>
-            <i className="bi bi-pencil me-1" aria-hidden />
-            {t("administrative-operations.romaneio.bulkActions.editNfLote")}
-          </Button>
-          <Button variant="danger" size="sm" onClick={() => setBulkDeleteOpen(true)}>
-            <i className="bi bi-trash me-1" aria-hidden />
-            {t("administrative-operations.romaneio.bulkActions.deleteSelected")}
-          </Button>
-        </div>
-      ) : null}
-
       <CrudListPage
         titleKey="administrative-operations.romaneio.title"
         descriptionKey="administrative-operations.romaneio.description"
@@ -424,7 +406,63 @@ export function Romaneio({ operationId }: { operationId: string }) {
         queryOptions={listQueryOptions}
         columns={columns}
         spreadsheetVariant
+        // SPEC-97 (RF7): migra a barra de ação em massa pra `belowSearch`
+        // (mesma posição que `Operational.tsx` já usa) — sempre visível,
+        // botões desabilitados (não escondidos) sem seleção.
+        belowSearch={
+          <div className="d-flex align-items-center gap-2 flex-wrap mb-3 p-2 border rounded bg-body-tertiary">
+            <span className="fw-semibold">
+              {t("administrative-operations.romaneio.bulkActions.selectedCount", {
+                count: String(selectedIds.size),
+              })}
+            </span>
+            <Button
+              variant="outline-primary"
+              size="sm"
+              disabled={selectedIds.size === 0}
+              onClick={() => setBulkEditOpen(true)}
+            >
+              <i className="bi bi-pencil me-1" aria-hidden />
+              {t("administrative-operations.romaneio.bulkActions.editNfLote")}
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              disabled={selectedIds.size === 0}
+              onClick={() => setBulkDeleteOpen(true)}
+            >
+              <i className="bi bi-trash me-1" aria-hidden />
+              {t("administrative-operations.romaneio.bulkActions.deleteSelected")}
+            </Button>
+          </div>
+        }
         selection={selection}
+        // SPEC-97 (RF4): botão direito com ≥1 item selecionado abre o mesmo
+        // menu de ações da barra acima — segundo ponto de entrada pros
+        // mesmos handlers (`setBulkEditOpen`/`setBulkDeleteOpen`), nenhuma
+        // lógica de negócio nova.
+        bulkActions={(ctl) => (
+          <CrudBulkActions
+            show={ctl.show}
+            position={ctl.position}
+            onToggle={ctl.onToggle}
+            actions={[
+              {
+                key: "edit",
+                icon: "bi-pencil",
+                label: t("administrative-operations.romaneio.bulkActions.editNfLote"),
+                onClick: () => setBulkEditOpen(true),
+              },
+              {
+                key: "delete",
+                icon: "bi-trash",
+                label: t("administrative-operations.romaneio.bulkActions.deleteSelected"),
+                onClick: () => setBulkDeleteOpen(true),
+                variant: "danger",
+              },
+            ]}
+          />
+        )}
         onRowSingleClick={(r) => {
           if (!selection.isDisabled?.(r)) selection.onToggle(r.id);
         }}

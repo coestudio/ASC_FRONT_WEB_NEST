@@ -197,6 +197,7 @@ function HarborPage() {
             />
           )}
           onRowOpen={(h) => setModal({ mode: "view", record: h })}
+          onRowEdit={(h) => setModal({ mode: "edit", record: h })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);

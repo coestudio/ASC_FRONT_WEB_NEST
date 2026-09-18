@@ -412,6 +412,7 @@ function AdminAccessPageContent() {
             />
           )}
           onRowOpen={(u) => setModal({ mode: "view", user: u })}
+          onRowEdit={(u) => setModal({ mode: "edit", user: u })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);

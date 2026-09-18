@@ -197,6 +197,7 @@ function TerminalPageBody() {
             />
           )}
           onRowOpen={(r) => setModal({ mode: "view", record: r })}
+          onRowEdit={(r) => setModal({ mode: "edit", record: r })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);

@@ -134,6 +134,7 @@ function VesselPage() {
             />
           )}
           onRowOpen={(v) => setModal({ mode: "view", record: v })}
+          onRowEdit={(v) => setModal({ mode: "edit", record: v })}
           search={search}
           onSearchChange={(value) => {
             setSearch(value);

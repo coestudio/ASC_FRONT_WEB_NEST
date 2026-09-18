@@ -35,6 +35,7 @@ import {
   type CrudColumn,
   type CrudSelection,
 } from "@/components/crud/crud-list-page";
+import { CrudBulkActions } from "@/components/crud/crud-bulk-actions";
 import { SortableTh } from "@/components/crud/sortable-th";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { InputNumber, InputText, InputTextArea, SelectAsync } from "@/layouts/Form/Fields/Index";
@@ -241,6 +242,26 @@ function StuffingTab({ operationId }: { operationId: string }) {
           </div>
         }
         selection={selection}
+        // SPEC-97 (RF5): botão direito com ≥1 item selecionado abre o menu
+        // de ações em massa — mesmo handler (`setBatchOpen`) que a barra
+        // fixa de `belowSearch` já usa, segundo ponto de entrada, sem lógica
+        // nova. A barra em si (`belowSearch` acima) não muda — já seguia o
+        // padrão de referência desta SPEC (RF8).
+        bulkActions={(ctl) => (
+          <CrudBulkActions
+            show={ctl.show}
+            position={ctl.position}
+            onToggle={ctl.onToggle}
+            actions={[
+              {
+                key: "batch",
+                icon: "bi-box-seam",
+                label: t("administrative-operations.containers.stuffing.batchButton"),
+                onClick: () => setBatchOpen(true),
+              },
+            ]}
+          />
+        )}
         // Pedido do usuário: clicar em qualquer lugar da linha (não só no
         // checkbox) já seleciona o fardo — mesmo padrão de toggle do
         // checkbox, sem abrir modal/navegar (esta tela não tem visualização

@@ -157,12 +157,21 @@ export type CrudListPageProps<
     ctl: { show: boolean; position: { x: number; y: number }; onToggle: (show: boolean) => void },
   ) => ReactNode;
   /**
-   * Duplo-clique (ou atalho de mouse equivalente) na linha/card — SPEC-79.
-   * Mesmo destino que "Ver" no menu de `rowActions` (mesmo `onView` que o
-   * consumidor já usa lá), só que sem precisar abrir o menu primeiro. Sem
+   * Clique (1x) na linha/card — SPEC-96 (substitui a regra da SPEC-79, onde
+   * o clique simples revelava o menu). Abre a visualização do item
+   * diretamente, mesmo destino que "Ver" no menu de `rowActions`. Sem
    * `rowActions`, esta prop não tem efeito (linha/card não fica clicável).
    */
   onRowOpen?: (item: T) => void;
+  /**
+   * Duplo clique na linha/card — SPEC-96. Abre a edição do item
+   * diretamente, mesmo destino que "Editar" no menu de `rowActions` (mesmo
+   * `onEdit` que o consumidor já usa lá). Se o consumidor não tiver edição
+   * disponível (ex. sem permissão, sem endpoint), não passa esta prop —
+   * duplo clique não faz nada, mesma regra condicional que já existe pro
+   * item "Editar" do menu. Sem `rowActions`, esta prop não tem efeito.
+   */
+  onRowEdit?: (item: T) => void;
   /**
    * Clique simples na linha (fora de checkbox/botão) — pedido do usuário na
    * aba Romaneio (2026-09-17): seleciona o item sem precisar acertar o
@@ -176,6 +185,20 @@ export type CrudListPageProps<
    * opcional e aditivo.
    */
   onRowDoubleClick?: (item: T) => void;
+  /**
+   * Menu de ações em massa, revelado por botão direito na linha/card —
+   * SPEC-97. Análogo a `rowActions`, mas o "item ativo" não é um registro
+   * específico — é um booleano de "menu de massa aberto" (a ação vale sobre
+   * `selection.selectedIds` inteiro, não sobre a linha clicada). Só tem
+   * efeito quando `selection` também está presente; o menu só abre se
+   * `selection.selectedIds.size > 0` (botão direito sem nada selecionado não
+   * faz nada — RF3). Ausente, nenhuma mudança pros demais consumidores.
+   */
+  bulkActions?: (ctl: {
+    show: boolean;
+    position: { x: number; y: number };
+    onToggle: (show: boolean) => void;
+  }) => ReactNode;
 };
 
 /**
@@ -213,8 +236,10 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   onSortChange,
   rowActions,
   onRowOpen,
+  onRowEdit,
   onRowSingleClick,
   onRowDoubleClick,
+  bulkActions,
 }: Pick<
   CrudListPageProps<T, TQueryData, TError>,
   | "queryOptions"
@@ -232,19 +257,28 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   | "onSortChange"
   | "rowActions"
   | "onRowOpen"
+  | "onRowEdit"
   | "onRowSingleClick"
   | "onRowDoubleClick"
+  | "bulkActions"
 > & { viewMode: ViewMode }) {
   const t = useT();
   const query = useSsrSafeQuery(queryOptions);
-  // Clique seleciona/revela o menu de `rowActions` daquele item, na posição
-  // exata do clique (`clientX`/`clientY` — pedido do usuário, SPEC-79
-  // reaberta: nada de coluna/célula reservada nem menu ancorado num ponto
-  // fixo da linha); duplo-clique aciona `onRowOpen` direto. Só um item ativo
-  // por vez — o próprio `CrudRowActions` (modo controlado) fecha ao clicar
-  // fora ou em `Escape`.
+  // SPEC-96: clique (1x) abre a view direto (`onRowOpen`); duplo clique abre
+  // a edição direto (`onRowEdit`); botão direito (`contextmenu`, com
+  // `preventDefault`) revela o menu de ações (`rowActions`) na posição
+  // exata do clique (`clientX`/`clientY`) — mesmo mecanismo de
+  // `activeId`/`clickPos`/render único fora da tabela que a SPEC-79 já
+  // implementava pro clique simples, só troca o evento de origem. Só um
+  // item ativo por vez — o próprio `CrudRowActions` (modo controlado) fecha
+  // ao clicar fora ou em `Escape`.
   const [activeId, setActiveId] = useState<string | null>(null);
   const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
+  // SPEC-97: menu de ações em massa — mesma ideia de `activeId`/`clickPos`
+  // acima, só que sem "item ativo" (a ação vale sobre `selection.selectedIds`
+  // inteiro). A posição não-nula já basta como "show" (`bulkMenuPos != null`
+  // ⇒ menu aberto).
+  const [bulkMenuPos, setBulkMenuPos] = useState<{ x: number; y: number } | null>(null);
   const isLoading = query.isLoading;
   const isError = query.isError;
   const items = query.data?.items ?? [];
@@ -327,13 +361,26 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                     <div
                       className={activeId === id ? styles.cardActive : undefined}
                       style={{ cursor: "pointer" }}
-                      onClick={(e) => {
+                      onClick={() => onRowOpen?.(item)}
+                      onDoubleClick={() => onRowEdit?.(item)}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
                         setActiveId(id);
                         setClickPos({ x: e.clientX, y: e.clientY });
                       }}
-                      onDoubleClick={() => {
-                        onRowOpen?.(item);
-                        setActiveId(null);
+                    >
+                      {renderCard(item)}
+                    </div>
+                  ) : selection && bulkActions ? (
+                    // SPEC-97 (RF2/RF3): botão direito no card abre o menu de
+                    // ações em massa, só quando há ≥1 item selecionado.
+                    // Clique (1x)/duplo clique do card continuam sem mudança
+                    // (nenhum handler novo pra eles aqui).
+                    <div
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        if (selection.selectedIds.size === 0) return;
+                        setBulkMenuPos({ x: e.clientX, y: e.clientY });
                       }}
                     >
                       {renderCard(item)}
@@ -432,10 +479,7 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                     key={id}
                     onClick={
                       rowActions
-                        ? (e) => {
-                            setActiveId(id);
-                            setClickPos({ x: e.clientX, y: e.clientY });
-                          }
+                        ? () => onRowOpen?.(item)
                         : onRowSingleClick
                           ? (e) => {
                               // Ignora clique em checkbox/botão dentro da linha —
@@ -449,15 +493,32 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                     }
                     onDoubleClick={
                       rowActions
-                        ? () => {
-                            onRowOpen?.(item);
-                            setActiveId(null);
-                          }
+                        ? () => onRowEdit?.(item)
                         : onRowDoubleClick
                           ? (e) => {
                               if ((e.target as HTMLElement).closest("button, a, input, label"))
                                 return;
                               onRowDoubleClick(item);
+                            }
+                          : undefined
+                    }
+                    onContextMenu={
+                      rowActions
+                        ? (e) => {
+                            e.preventDefault();
+                            setActiveId(id);
+                            setClickPos({ x: e.clientX, y: e.clientY });
+                          }
+                        : selection && bulkActions
+                          ? (e) => {
+                              // SPEC-97 (RF2/RF3): botão direito abre o menu
+                              // de ações em massa — só com ≥1 item
+                              // selecionado; a linha clicada não importa (a
+                              // ação vale sobre a seleção inteira, não sobre
+                              // este item).
+                              e.preventDefault();
+                              if (selection.selectedIds.size === 0) return;
+                              setBulkMenuPos({ x: e.clientX, y: e.clientY });
                             }
                           : undefined
                     }
@@ -512,6 +573,16 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
             },
           })
         : null}
+
+      {bulkActions && bulkMenuPos
+        ? bulkActions({
+            show: true,
+            position: bulkMenuPos,
+            onToggle: (show) => {
+              if (!show) setBulkMenuPos(null);
+            },
+          })
+        : null}
     </>
   );
 }
@@ -555,8 +626,10 @@ export function CrudListPage<
   onSortChange,
   rowActions,
   onRowOpen,
+  onRowEdit,
   onRowSingleClick,
   onRowDoubleClick,
+  bulkActions,
 }: CrudListPageProps<T, TQueryData, TError>) {
   const t = useT();
   const { viewMode, preferredMode, setViewMode, isMobile } = useResponsiveViewMode();
@@ -623,8 +696,10 @@ export function CrudListPage<
           onSortChange={onSortChange}
           rowActions={rowActions}
           onRowOpen={onRowOpen}
+          onRowEdit={onRowEdit}
           onRowSingleClick={onRowSingleClick}
           onRowDoubleClick={onRowDoubleClick}
+          bulkActions={bulkActions}
         />
       ) : (
         <LoadingState variant="inline" />

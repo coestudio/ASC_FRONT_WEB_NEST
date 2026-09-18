@@ -62,8 +62,12 @@ const MENU_VIEWPORT_MARGIN_PX = 8;
  * pra não vazar da viewport (o clique pode acontecer perto de qualquer
  * borda). Fecha em clique fora (`mousedown` no documento, ignorando cliques
  * dentro do próprio menu) e em `Escape`.
+ *
+ * Exportado (SPEC-97) pra ser reaproveitado por `crud-bulk-actions.tsx` — o
+ * menu de ações em massa usa o mesmo mecanismo flutuante/portalado, só com
+ * itens diferentes (ações em lote, não de um item só).
  */
-function ControlledMenu({
+export function ControlledMenu({
   x,
   y,
   onClose,

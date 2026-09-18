@@ -236,23 +236,21 @@ function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
 
   return (
     <section className={`soft-card mb-4 ${styles.header}`}>
-      <div className="d-flex flex-wrap align-items-end justify-content-between gap-3">
-        <div>
-          <div className="text-body-secondary small">
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div className="d-flex flex-wrap align-items-center gap-2">
+          <span className="text-body-secondary small">
             {t("administrative-operations.shell.eyebrow", { number: String(operation.number) })}
-          </div>
-          <h1 className="h4 fw-semibold mt-1 mb-2">{operation.client.fullName}</h1>
-          <div className="d-flex flex-wrap gap-2">
-            <span className="badge text-bg-secondary">
-              {resolveOperationTypeLabel(operation.opType, locale)}
-            </span>
-            <span className="badge text-bg-secondary">
-              {resolveOperationServiceLabel(operation.opService, locale)}
-            </span>
-            <span className="badge text-bg-primary">
-              {resolveOperationStatusLabel(operation.status, locale)}
-            </span>
-          </div>
+          </span>
+          <h1 className="h5 fw-semibold mb-0">{operation.client.fullName}</h1>
+          <span className="badge text-bg-secondary">
+            {resolveOperationTypeLabel(operation.opType, locale)}
+          </span>
+          <span className="badge text-bg-secondary">
+            {resolveOperationServiceLabel(operation.opService, locale)}
+          </span>
+          <span className="badge text-bg-primary">
+            {resolveOperationStatusLabel(operation.status, locale)}
+          </span>
         </div>
         <div style={{ minWidth: 220 }}>
           <Select<StatusFormValues>

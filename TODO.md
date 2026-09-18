@@ -106,6 +106,10 @@ processo formal: adiciona e risca como quiser.
   coisa a ser feita" — sistema ainda precisa ser validado com o
   negócio; Core `34-container-split-transfer-gaps` também `DEFERRED`)
 
+- [ ] Tela pra ver os fardos: qual container cada um está e qual NF
+  pertence, antes de emitir o relatório. A confirmar com o cliente
+  (2026-09-17) — ainda sem spec.
+
 - [x] ~~`Profile.ViewModel.Document` obrigatório~~ — Core resolveu
   (`27-profile-document-optional`, `IMPLEMENTED`). Lado NewPortal
   → SPEC-47 (`IMPLEMENTED`, 2026-09-16 — `InputDocument.tsx` não
