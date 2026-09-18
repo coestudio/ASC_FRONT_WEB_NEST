@@ -47,3 +47,33 @@
   outline-offset: 2px;
   border-radius: var(--bs-border-radius-sm);
 }
+
+/* Variante planilha sem rolagem horizontal: a tabela ocupa 100% do card e
+   textos longos viram `...` (`TruncCell`), expandindo no clique. `max-width:
+   0` + `width` a 100% é o truque de `text-overflow: ellipsis` em
+   `table-layout: auto`: a coluna encolhe até caber (nunca gera barra de
+   rolagem); `.truncCellOpen` libera a coluna pra crescer e o texto quebra. */
+.crudTableSpreadsheet {
+  width: 100%;
+}
+.crudTableSpreadsheet tbody td.truncCell {
+  max-width: 0;
+  min-width: 4rem;
+}
+.truncText {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: zoom-in;
+}
+.truncTextOpen {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: zoom-out;
+}
+.crudTableSpreadsheet tbody td.truncCellOpen {
+  max-width: none;
+  min-width: 9rem;
+}

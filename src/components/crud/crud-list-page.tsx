@@ -13,6 +13,7 @@ import { FilterText } from "@/layouts/Filters/Index";
 import { useMounted } from "@/hooks/useMounted";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { nextSort } from "./sort";
+import { TruncCell } from "./trunc-cell";
 import styles from "./crud-list-page.module.css";
 
 export type CrudColumn<T> = {
@@ -273,6 +274,8 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
   // item ativo por vez — o próprio `CrudRowActions` (modo controlado) fecha
   // ao clicar fora ou em `Escape`.
   const [activeId, setActiveId] = useState<string | null>(null);
+  // Células expandidas (variante planilha) — chave `${id}:${col.key}`.
+  const [expandedCells, setExpandedCells] = useState<Set<string>>(new Set());
   const [clickPos, setClickPos] = useState<{ x: number; y: number } | null>(null);
   // SPEC-97: menu de ações em massa — mesma ideia de `activeId`/`clickPos`
   // acima, só que sem "item ativo" (a ação vale sobre `selection.selectedIds`
@@ -540,15 +543,44 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                         />
                       </td>
                     ) : null}
-                    {columns.map((col) => (
-                      <td
-                        key={col.key}
-                        className={col.align ? `text-${col.align}` : undefined}
-                        style={col.width ? { width: col.width } : undefined}
-                      >
-                        {col.render(item)}
-                      </td>
-                    ))}
+                    {columns.map((col) => {
+                      const content = col.render(item);
+                      // Variante planilha: texto/número longo vira `...` e
+                      // expande no clique (`TruncCell`).
+                      const expandable =
+                        spreadsheetVariant &&
+                        (typeof content === "string" || typeof content === "number");
+                      const cellKey = `${id}:${col.key}`;
+                      return (
+                        <td
+                          key={col.key}
+                          className={[
+                            col.align ? `text-${col.align}` : "",
+                            expandable ? styles.truncCell : "",
+                            expandable && expandedCells.has(cellKey) ? styles.truncCellOpen : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                          style={col.width ? { width: col.width } : undefined}
+                        >
+                          {expandable ? (
+                            <TruncCell
+                              text={String(content)}
+                              expanded={expandedCells.has(cellKey)}
+                              onToggle={() =>
+                                setExpandedCells((prev) => {
+                                  const next = new Set(prev);
+                                  if (!next.delete(cellKey)) next.add(cellKey);
+                                  return next;
+                                })
+                              }
+                            />
+                          ) : (
+                            content
+                          )}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
