@@ -375,8 +375,10 @@
     "seal": {
       "sealButton": "Precintar",
       "unsealButton": "Quitar precinto",
+      "manageButton": "Precintos del contenedor",
+      "listEmpty": "Todavía no hay ningún precinto registrado.",
       "confirmUnsealTitle": "Quitar precinto del contenedor",
-      "confirmUnsealMessage": "¿Quitar el precinto activo de este contenedor?",
+      "confirmUnsealMessage": "¿Quitar este precinto?",
       "photoRequired": "Suba una foto del precinto antes de continuar.",
       "form": {
         "user": "Responsable del precinto",

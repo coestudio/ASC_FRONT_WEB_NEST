@@ -375,8 +375,10 @@
     "seal": {
       "sealButton": "Seal",
       "unsealButton": "Unseal",
+      "manageButton": "Container seals",
+      "listEmpty": "No seal registered yet.",
       "confirmUnsealTitle": "Unseal container",
-      "confirmUnsealMessage": "Remove the active seal from this container?",
+      "confirmUnsealMessage": "Remove this seal?",
       "photoRequired": "Upload a photo of the seal before continuing.",
       "form": {
         "user": "Responsible for the seal",

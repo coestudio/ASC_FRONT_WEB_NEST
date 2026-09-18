@@ -375,8 +375,10 @@
     "seal": {
       "sealButton": "Lacrar",
       "unsealButton": "Deslacrar",
+      "manageButton": "Lacres do container",
+      "listEmpty": "Nenhum lacre registrado ainda.",
       "confirmUnsealTitle": "Deslacrar container",
-      "confirmUnsealMessage": "Remover o lacre ativo deste container?",
+      "confirmUnsealMessage": "Remover este lacre?",
       "photoRequired": "Envie uma foto do lacre antes de continuar.",
       "form": {
         "user": "Responsável pelo lacre",

@@ -375,8 +375,10 @@
     "seal": {
       "sealButton": "加封条",
       "unsealButton": "拆封条",
+      "manageButton": "集装箱封条",
+      "listEmpty": "尚未登记任何封条。",
       "confirmUnsealTitle": "拆除集装箱封条",
-      "confirmUnsealMessage": "确定要移除此集装箱当前生效的封条吗？",
+      "confirmUnsealMessage": "确定要移除此封条吗？",
       "photoRequired": "请先上传封条照片再继续。",
       "form": {
         "user": "封条责任人",
