@@ -467,7 +467,8 @@ export function Romaneio({ operationId }: { operationId: string }) {
           if (!selection.isDisabled?.(r)) selection.onToggle(r.id);
         }}
         onRowDoubleClick={(r) => {
-          if (!r.isStuffed) setModal({ mode: "edit", record: r });
+          // Fardo estufado não edita — abre só a visualização (somente leitura).
+          setModal({ mode: r.isStuffed ? "view" : "edit", record: r });
         }}
         sort={sort}
         onSortChange={setSort}
