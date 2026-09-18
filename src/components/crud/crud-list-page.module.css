@@ -225,3 +225,14 @@
 .crudTable tbody tr.rowSelected:hover > * {
   background-color: rgba(var(--bs-primary-rgb), 0.2);
 }
+
+/* Checkbox desabilitado (linha não selecionável, ex.: fardo já estufado) —
+   sem isso o contraste reforçado acima faz ele parecer clicável. Apagado,
+   borda tracejada e cursor de bloqueado deixam claro que é intencional. */
+.crudTable .selectCell :global(.form-check-input:disabled) {
+  border-style: dashed;
+  border-color: rgba(var(--bs-emphasis-color-rgb), 0.3);
+  background-color: transparent;
+  opacity: 0.45;
+  cursor: not-allowed;
+}
