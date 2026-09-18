@@ -261,22 +261,32 @@ export function Documents({ operationId }: { operationId: string }) {
                         ainda assim baixa em vez de navegar, contanto que o
                         servidor não force Content-Disposition:inline;
                         `target="_blank"` cobre o caso de acabar abrindo. */}
-                      <CrudRowActions
-                        onView={() => setPreviewing(item)}
-                        extraActions={[
-                          {
-                            key: "download",
-                            icon: "bi-download",
-                            label: t("administrative-operations.documents.download"),
-                            href: item.file.url ?? undefined,
-                            download: item.file.name ?? undefined,
-                            target: "_blank",
-                            rel: "noreferrer",
-                            disabled: !item.file.url,
-                          },
-                        ]}
-                        onEdit={() => setEditing(item)}
-                      />
+                      <div className="d-flex align-items-center gap-1">
+                        {/* Botão de download sempre visível (SPEC-91, item 1
+                            do usuário) — fora do menu `⋮`, ao lado dele.
+                            Local a esta tela (decisão §5 da SPEC: opção 1,
+                            sem mudar a assinatura pública de
+                            `CrudRowActions`, usado em 9+ telas). */}
+                        <a
+                          className={`btn btn-sm btn-soft ${!item.file.url ? "disabled" : ""}`}
+                          href={item.file.url ?? undefined}
+                          download={item.file.name ?? undefined}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-disabled={!item.file.url}
+                          title={t("administrative-operations.documents.download")}
+                          aria-label={t("administrative-operations.documents.download")}
+                          onClick={(e) => {
+                            if (!item.file.url) e.preventDefault();
+                          }}
+                        >
+                          <i className="bi bi-download" aria-hidden />
+                        </a>
+                        <CrudRowActions
+                          onView={() => setPreviewing(item)}
+                          onEdit={() => setEditing(item)}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}

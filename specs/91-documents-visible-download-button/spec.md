@@ -2,7 +2,7 @@
 
 - **ID:** 91
 - **Nome:** documents-visible-download-button
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** claude (triagem de leva de ajustes pré-apresentação, pedido do
   usuário em 2026-09-17)
 - **Área:** `src/components/operations/tabs/Documents.tsx`,
@@ -119,3 +119,42 @@ Aguardando decisão do usuário.
 ## 8. Riscos
 
 Baixo. Mudança de apresentação isolada, sem contrato de API novo.
+
+## 9. Implementation Notes
+
+**Decisão `[NEEDS_DECISION]` resolvida (§5): opção 1.** Botão de ícone
+(`<a className="btn btn-sm btn-soft">`, mesma classe do toggle `⋮` de
+`CrudRowActions`) montado localmente em `Documents.tsx`, ao lado do
+`CrudRowActions` (não mais dentro de `extraActions`) — sem mudar a
+assinatura pública de `CrudRowActions` (componente usado em 9+ telas).
+Alinhado com o próprio §4 "Fora do escopo" da spec (não mudar o
+componente compartilhado sem confirmação explícita do usuário pra virar
+padrão novo, o que não veio).
+
+**O que foi implementado:** removido o item `"download"` de
+`extraActions` de `Documents.tsx`; no lugar, um `<a>` nativo
+(`href`/`download`/`target`/`rel` idênticos ao que já existia) fora do
+dropdown, com `disabled`/classe `disabled` quando `item.file.url` for
+`null`/`undefined` (clique é ignorado via `preventDefault`, já que `<a>`
+não tem atributo `disabled` real). "Ver" e "Editar" continuam no
+dropdown do `CrudRowActions`, sem mudança.
+
+**Arquivos alterados:** `src/components/operations/tabs/Documents.tsx`.
+
+**Comandos executados:**
+- `bun run check` — VERIFIED, sem erros.
+- `bun run lint` — VERIFIED, 0 errors / 63 warnings (mesmo baseline pós
+  SPEC-94, nenhum warning novo).
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| 1 | Botão de download sempre visível | PASS |
+| 2 | Clique baixa o arquivo (mesmo `href`/`download` nativo) | PASS |
+| 3 | Desabilitado sem `item.file.url` | PASS |
+| 4 | "Ver"/"Editar" continuam no dropdown | PASS |
+| 5 | `bun run check`/`lint` sem novos erros | PASS |
+
+**Limitações conhecidas:** sem verificação visual em navegador nesta
+sessão (mesma ressalva da SPEC-94).
