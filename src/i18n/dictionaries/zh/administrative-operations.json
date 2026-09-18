@@ -357,6 +357,7 @@
       "cancelTitle": "取消包件",
       "cancelReason": "取消原因",
       "cancelConfirm": "确认取消",
+      "destuffSelected": "拆箱所选项",
       "toast": {
         "quantitySuccess": "装箱完成成功。",
         "batchSuccess": "包件批量装箱成功。",
@@ -407,8 +408,10 @@
       "empty": "没有可装箱的包件。"
     },
     "destuffing": {
+      "title": "该作业已装箱的包件",
       "description": "该作业中已装箱的包件，可选择拆箱。",
-      "searchPlaceholder": "按标识、发票或批次搜索..."
+      "searchPlaceholder": "按标识、发票或批次搜索...",
+      "empty": "该作业中没有已装箱的包件。"
     }
   },
   "documents": {

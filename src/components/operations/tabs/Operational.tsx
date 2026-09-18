@@ -2,21 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge, Button, Card, Form, Nav, Spinner, Tab, Table } from "react-bootstrap";
+import { Badge, Button, Card, Form, Nav, Spinner, Tab } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
-import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
   getGetApiOperationOperationIdCargoQueryKey,
   getGetApiOperationOperationIdCargoQueryOptions,
-  usePostApiOperationOperationIdCargoIdCancel,
+  usePostApiOperationOperationIdCargoCancelBatch,
   usePostApiOperationOperationIdCargoStuffIdentifiedBatch,
   usePostApiOperationOperationIdCargoStuffQuantity,
 } from "@/api/generated/endpoints/cargo-unit/cargo-unit";
 import {
-  PostApiOperationOperationIdCargoIdCancelBody,
+  PostApiOperationOperationIdCargoCancelBatchBody,
   PostApiOperationOperationIdCargoStuffQuantityBody,
 } from "@/api/generated/zod/cargo-unit/cargo-unit.zod";
 import { getApiOperationOperationIdInvoice } from "@/api/generated/endpoints/invoice/invoice";
@@ -36,19 +35,15 @@ import {
   type CrudSelection,
 } from "@/components/crud/crud-list-page";
 import { CrudBulkActions } from "@/components/crud/crud-bulk-actions";
-import { SortableTh } from "@/components/crud/sortable-th";
-import { ListPagination } from "@/components/ui/list-pagination";
 import { InputNumber, InputText, InputTextArea, SelectAsync } from "@/layouts/Form/Fields/Index";
-import { FilterText } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
-import tableCardStyles from "@/components/crud/table-card.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 type StuffQuantityFormValues = z.infer<typeof PostApiOperationOperationIdCargoStuffQuantityBody>;
-type CancelCargoFormValues = z.infer<typeof PostApiOperationOperationIdCargoIdCancelBody>;
+type CancelCargoBatchFormValues = z.infer<typeof PostApiOperationOperationIdCargoCancelBatchBody>;
 type ContainerPickFormValues = { containerOperationId: string };
 
 /**
@@ -596,32 +591,42 @@ function StuffBatchModal({
 }
 
 /**
- * Cancelamento de `CargoUnit` (§3.4) — motivo obrigatório (`reason`,
- * `maxLength 500`), mesmo padrão de `InvoiceStatusChange.note` usado em
- * Confirmar/Cancelar de Invoice (SPEC-07-10 §5 RF4).
+ * Cancelamento em lote de `CargoUnit`s (SPEC-99, substitui o antigo
+ * `CancelCargoUnitModal` de alvo único) — motivo obrigatório (`reason`,
+ * `maxLength 500`), mesma UX/estrutura do modal single-target anterior, só
+ * trocando o alvo (lista de ids selecionados via `CrudSelection`, não um
+ * `cargoUnit` só) e o hook (`usePostApiOperationOperationIdCargoCancelBatch`,
+ * gerado a partir da SPEC-49 do Core: `CargoUnitCancelBatch` = `{ ids:
+ * string[], reason: string }`). Chamada tudo-ou-nada — erro (algum `id` já
+ * cancelado/não encontrado) aparece via toast do interceptor global
+ * (`mutator.ts`), sem tratamento por item (RF8).
  */
-function CancelCargoUnitModal({
+function CancelCargoUnitBatchModal({
   operationId,
-  cargoUnit,
+  cargoUnitIds,
   onClose,
   onCanceled,
 }: {
   operationId: string;
-  cargoUnit: CargoUnitDTO;
+  cargoUnitIds: string[];
   onClose: () => void;
   onCanceled: () => void;
 }) {
   const t = useT();
-  const mutation = usePostApiOperationOperationIdCargoIdCancel();
+  const mutation = usePostApiOperationOperationIdCargoCancelBatch();
 
-  const methods = useForm<CancelCargoFormValues>({
-    resolver: zodResolver(PostApiOperationOperationIdCargoIdCancelBody),
-    defaultValues: { reason: "" },
+  // `ids` não é um campo do formulário (não renderiza `Controller` pra ele)
+  // — vem fixo do `defaultValues`, só o motivo (`reason`) é editado pelo
+  // operador. O resolver ainda valida o objeto inteiro (`ids`+`reason`),
+  // então o schema gerado (`min(1)` em `ids`) segue valendo.
+  const methods = useForm<CancelCargoBatchFormValues>({
+    resolver: zodResolver(PostApiOperationOperationIdCargoCancelBatchBody),
+    defaultValues: { ids: cargoUnitIds, reason: "" },
   });
 
-  const handleSubmit: SubmitHandler<CancelCargoFormValues> = async (values) => {
+  const handleSubmit: SubmitHandler<CancelCargoBatchFormValues> = async (values) => {
     try {
-      await mutation.mutateAsync({ operationId, id: cargoUnit.id, data: values });
+      await mutation.mutateAsync({ operationId, data: values });
       toast.success(t("administrative-operations.containers.stuffing.toast.canceled"));
       onCanceled();
       onClose();
@@ -639,7 +644,12 @@ function CancelCargoUnitModal({
       </Modal.Header>
       <Form noValidate onSubmit={methods.handleSubmit(handleSubmit)}>
         <Modal.Body>
-          <InputTextArea<CancelCargoFormValues>
+          <p className="text-body-secondary">
+            {t("administrative-operations.containers.stuffing.batchSelected", {
+              count: cargoUnitIds.length,
+            })}
+          </p>
+          <InputTextArea<CancelCargoBatchFormValues>
             methods={methods}
             fieldName="reason"
             label={t("administrative-operations.containers.stuffing.cancelReason")}
@@ -664,14 +674,17 @@ function CancelCargoUnitModal({
 
 /**
  * Sub-aba Desestufagem (ex-`AllStuffedCargoSection` da SPEC-36, movida da
- * aba Containers pela SPEC-60 — antes era uma seção com toggle dentro de
- * Containers, agora é o conteúdo inteiro desta sub-aba, sem toggle nem
- * moldura própria) — listagem de todos os fardos `Stuffed` da operação,
- * independente de container, com ação de cancelar (desestufar). Reaproveita
- * `CancelCargoUnitModal`, já genérico sobre `cargoUnit`. `GetApiOperation
- * OperationIdCargoParams` não devolve o container aninhado — só
- * `containerOperationId` — então o identifier de origem vem de um join
- * local contra a lista de vínculos da operação (`ContainerOperationDTO`).
+ * aba Containers pela SPEC-60, migrada pro padrão Multi-select pela SPEC-99)
+ * — listagem de todos os fardos `Stuffed` da operação, independente de
+ * container, com ação de cancelar (desestufar) **em lote**. Mesma
+ * infraestrutura de `StuffingTab` (`CrudListPage`/`CrudSelection`,
+ * `belowSearch`/`bulkActions`, SPEC-53/76/97): seleção múltipla por
+ * checkbox ou clique simples na linha, sem atalho de cancelamento
+ * individual por linha (decisão do usuário — mesmo trade-off que o
+ * Romaneio já aceitou na SPEC-53). `GetApiOperationOperationIdCargoParams`
+ * não devolve o container aninhado — só `containerOperationId` — então o
+ * identifier de origem vem de um join local contra a lista de vínculos da
+ * operação (`ContainerOperationDTO`).
  */
 function DestuffingTab({ operationId }: { operationId: string }) {
   const t = useT();
@@ -683,17 +696,16 @@ function DestuffingTab({ operationId }: { operationId: string }) {
   // `GetApiOperationOperationIdCargoParams`, só não era usado aqui.
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<string | undefined>(undefined);
-  const [cancelTarget, setCancelTarget] = useState<CargoUnitDTO | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [cancelOpen, setCancelOpen] = useState(false);
 
-  const cargoQuery = useSsrSafeQuery(
-    getGetApiOperationOperationIdCargoQueryOptions(operationId, {
-      Status: "Stuffed",
-      Search: search || undefined,
-      Offset: (page - 1) * PAGE_SIZE,
-      Limit: PAGE_SIZE,
-      Sort: sort,
-    }),
-  );
+  const listQueryOptions = getGetApiOperationOperationIdCargoQueryOptions(operationId, {
+    Status: "Stuffed",
+    Search: search || undefined,
+    Offset: (page - 1) * PAGE_SIZE,
+    Limit: PAGE_SIZE,
+    Sort: sort,
+  });
   // Busca leve só pra resolver `containerOperationId → identifier` — não é
   // a listagem paginada principal desta sub-aba (que fica limitada à
   // página atual), precisa cobrir todos os containers vinculados à
@@ -707,102 +719,150 @@ function DestuffingTab({ operationId }: { operationId: string }) {
       queryKey: getGetApiOperationOperationIdCargoQueryKey(operationId),
     });
 
-  const items = cargoQuery.data?.items ?? [];
-  const total = Number(cargoQuery.data?.total ?? 0);
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
   const identifierByContainerId = new Map(
     (containersQuery.data?.items ?? []).map((c) => [c.id, c.container.identifier]),
   );
 
+  const toggleSelected = (id: string) =>
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const selection: CrudSelection<CargoUnitDTO> = {
+    selectedIds,
+    onToggle: toggleSelected,
+    onToggleAll: (ids, checked) => {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        ids.forEach((id) => (checked ? next.add(id) : next.delete(id)));
+        return next;
+      });
+    },
+    // RF2 da SPEC-99: todo item listado aqui já é `Status: "Stuffed"`,
+    // logo sempre cancelável — sem `isDisabled`.
+  };
+
+  const columns: CrudColumn<CargoUnitDTO>[] = [
+    {
+      key: "status",
+      headerKey: "administrative-operations.containers.stuffing.colStatus",
+      sortKey: "status",
+      render: (r) => (
+        <Badge bg="secondary">{resolveCargoUnitStatusLabel(r.status ?? "Stuffed", locale)}</Badge>
+      ),
+    },
+    {
+      key: "identified",
+      headerKey: "administrative-operations.containers.stuffing.colIdentified",
+      render: (r) =>
+        r.identified
+          ? t("administrative-operations.containers.stuffing.yes")
+          : t("administrative-operations.containers.stuffing.no"),
+    },
+    {
+      key: "grossWeight",
+      headerKey: "administrative-operations.containers.stuffing.colGrossWeight",
+      align: "end",
+      render: (r) => (r.grossWeight != null ? String(r.grossWeight) : "—"),
+    },
+    {
+      key: "containerOperationId",
+      headerKey: "administrative-operations.containers.destuffing.colContainer",
+      sortKey: "containerOperationId",
+      render: (r) => identifierByContainerId.get(r.containerOperationId ?? "") ?? "—",
+    },
+  ];
+
   return (
     <div>
-      {/* SPEC-93: cabeçalho de seção com título/descrição, mesmo padrão
-          visual de `CrudListPage.titleKey`/`descriptionKey`, montado à mão
-          aqui porque esta sub-aba não usa `CrudListPage` (leitura + ação de
-          cancelar por linha, não CRUD paginado clássico). */}
-      <div className="mb-3">
-        <h2 className="h6 mb-0">{t("administrative-operations.containers.destuffing.title")}</h2>
-        <p className="text-body-secondary small mb-0">
-          {t("administrative-operations.operational.destuffing.description")}
-        </p>
-      </div>
-
-      <div className="mb-3" style={{ maxWidth: 320 }}>
-        <FilterText
-          value={search}
-          onChange={(value) => {
-            setSearch(value);
-            setPage(1);
-          }}
-          placeholder={t("administrative-operations.operational.destuffing.searchPlaceholder")}
-        />
-      </div>
-
-      {cargoQuery.isLoading ? (
-        <LoadingState variant="inline" />
-      ) : items.length === 0 ? (
-        <div className="alert alert-secondary mb-0">
-          {t("administrative-operations.containers.destuffing.empty")}
-        </div>
-      ) : (
-        <div className={tableCardStyles.tableCard}>
-          <div className="table-responsive">
-            <Table hover size="sm" className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
-              <thead>
-                <tr>
-                  <SortableTh sortKey="status" sort={sort} onSortChange={setSort}>
-                    {t("administrative-operations.containers.stuffing.colStatus")}
-                  </SortableTh>
-                  <th>{t("administrative-operations.containers.stuffing.colIdentified")}</th>
-                  <th>{t("administrative-operations.containers.stuffing.colGrossWeight")}</th>
-                  <SortableTh sortKey="containerOperationId" sort={sort} onSortChange={setSort}>
-                    {t("administrative-operations.containers.destuffing.colContainer")}
-                  </SortableTh>
-                  <th>{t("administrative-operations.containers.stuffing.colActions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((unit) => (
-                  <tr key={unit.id}>
-                    <td>
-                      <Badge bg="secondary">
-                        {resolveCargoUnitStatusLabel(unit.status ?? "Stuffed", locale)}
-                      </Badge>
-                    </td>
-                    <td>
-                      {unit.identified
-                        ? t("administrative-operations.containers.stuffing.yes")
-                        : t("administrative-operations.containers.stuffing.no")}
-                    </td>
-                    <td>{unit.grossWeight != null ? String(unit.grossWeight) : "—"}</td>
-                    <td>{identifierByContainerId.get(unit.containerOperationId ?? "") ?? "—"}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-danger"
-                        title={t("administrative-operations.containers.stuffing.cancelTitle")}
-                        onClick={() => setCancelTarget(unit)}
-                      >
-                        <i className="bi bi-x-circle" aria-hidden />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+      <CrudListPage
+        titleKey="administrative-operations.operational.destuffing.title"
+        descriptionKey="administrative-operations.operational.destuffing.description"
+        queryOptions={listQueryOptions}
+        columns={columns}
+        fillHeight
+        // Mesmo padrão de `StuffingTab` (SPEC-76): barra fixa abaixo da
+        // busca, sempre visível, botão desabilitado sem seleção.
+        belowSearch={
+          <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+            <span className="text-body-secondary small">
+              {t("administrative-operations.containers.stuffing.batchSelected", {
+                count: selectedIds.size,
+              })}
+            </span>
+            <Button
+              variant="danger"
+              size="sm"
+              disabled={selectedIds.size === 0}
+              onClick={() => setCancelOpen(true)}
+            >
+              <i className="bi bi-x-circle me-1" aria-hidden />
+              {t("administrative-operations.containers.stuffing.destuffSelected")}
+            </Button>
           </div>
-        </div>
-      )}
+        }
+        selection={selection}
+        // SPEC-97 (RF5): botão direito com ≥1 item selecionado abre o menu
+        // de ações em massa — mesmo handler (`setCancelOpen`) que a barra
+        // fixa de `belowSearch` já usa, segundo ponto de entrada.
+        bulkActions={(ctl) => (
+          <CrudBulkActions
+            show={ctl.show}
+            position={ctl.position}
+            onToggle={ctl.onToggle}
+            actions={[
+              {
+                key: "destuff",
+                icon: "bi-x-circle",
+                label: t("administrative-operations.containers.stuffing.destuffSelected"),
+                onClick: () => setCancelOpen(true),
+                variant: "danger",
+              },
+            ]}
+          />
+        )}
+        // Clique simples seleciona/desseleciona o fardo, mesmo padrão de
+        // `StuffingTab` — sem `onRowDoubleClick` (sem ação de ver/editar
+        // item individual aqui).
+        onRowSingleClick={(r) => toggleSelected(r.id)}
+        sort={sort}
+        onSortChange={setSort}
+        renderCard={(r) => (
+          <Card>
+            <Card.Body>
+              <Card.Title className="h6 mb-0">
+                {identifierByContainerId.get(r.containerOperationId ?? "") ?? "—"}
+              </Card.Title>
+              <Card.Subtitle className="text-body-secondary small mt-1">
+                {resolveCargoUnitStatusLabel(r.status ?? "Stuffed", locale)}
+              </Card.Subtitle>
+            </Card.Body>
+          </Card>
+        )}
+        getItemKey={(r) => r.id}
+        search={search}
+        onSearchChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
+        page={page}
+        pageSize={PAGE_SIZE}
+        onPageChange={setPage}
+        emptyMessageKey="administrative-operations.operational.destuffing.empty"
+      />
 
-      <ListPagination page={page} totalPages={totalPages} onPageChange={setPage} />
-
-      {cancelTarget ? (
-        <CancelCargoUnitModal
+      {cancelOpen ? (
+        <CancelCargoUnitBatchModal
           operationId={operationId}
-          cargoUnit={cancelTarget}
-          onClose={() => setCancelTarget(null)}
-          onCanceled={invalidate}
+          cargoUnitIds={Array.from(selectedIds)}
+          onClose={() => setCancelOpen(false)}
+          onCanceled={() => {
+            invalidate();
+            setSelectedIds(new Set());
+          }}
         />
       ) : null}
     </div>

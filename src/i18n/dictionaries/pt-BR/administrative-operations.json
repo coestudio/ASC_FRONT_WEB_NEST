@@ -357,10 +357,11 @@
       "cancelTitle": "Cancelar fardo",
       "cancelReason": "Motivo do cancelamento",
       "cancelConfirm": "Confirmar cancelamento",
+      "destuffSelected": "Desestufar selecionados",
       "toast": {
         "quantitySuccess": "Estufagem concluída com sucesso.",
         "batchSuccess": "Fardos estufados com sucesso.",
-        "canceled": "Fardo cancelado com sucesso."
+        "canceled": "Fardo(s) cancelado(s) com sucesso."
       },
       "batchButton": "Estufar em container",
       "quantityButton": "Estufagem por quantidade",
@@ -407,8 +408,10 @@
       "empty": "Nenhum fardo disponível para estufagem."
     },
     "destuffing": {
+      "title": "Fardos estufados da operação",
       "description": "Fardos desta operação já estufados, com opção de desestufar.",
-      "searchPlaceholder": "Buscar por identificação, NF ou lote..."
+      "searchPlaceholder": "Buscar por identificação, NF ou lote...",
+      "empty": "Nenhum fardo estufado nesta operação."
     }
   },
   "documents": {

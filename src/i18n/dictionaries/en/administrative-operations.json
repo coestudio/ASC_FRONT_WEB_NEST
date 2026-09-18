@@ -357,10 +357,11 @@
       "cancelTitle": "Cancel cargo unit",
       "cancelReason": "Cancellation reason",
       "cancelConfirm": "Confirm cancellation",
+      "destuffSelected": "Destuff selected",
       "toast": {
         "quantitySuccess": "Stuffing completed successfully.",
         "batchSuccess": "Bales stuffed successfully.",
-        "canceled": "Cargo unit canceled successfully."
+        "canceled": "Cargo unit(s) canceled successfully."
       },
       "batchButton": "Stuff into container",
       "quantityButton": "Stuff by quantity",
@@ -407,8 +408,10 @@
       "empty": "No bales available for stuffing."
     },
     "destuffing": {
+      "title": "Bales stuffed in the operation",
       "description": "Bales in this operation that are already stuffed, with the option to destuff.",
-      "searchPlaceholder": "Search by identifier, invoice or lot..."
+      "searchPlaceholder": "Search by identifier, invoice or lot...",
+      "empty": "No bales stuffed in this operation."
     }
   },
   "documents": {

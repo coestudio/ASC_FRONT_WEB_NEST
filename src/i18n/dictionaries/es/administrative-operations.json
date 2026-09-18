@@ -357,10 +357,11 @@
       "cancelTitle": "Cancelar fardo",
       "cancelReason": "Motivo de la cancelación",
       "cancelConfirm": "Confirmar cancelación",
+      "destuffSelected": "Desestibar seleccionados",
       "toast": {
         "quantitySuccess": "Estiba completada con éxito.",
         "batchSuccess": "Fardos estibados con éxito.",
-        "canceled": "Fardo cancelado con éxito."
+        "canceled": "Fardo(s) cancelado(s) con éxito."
       },
       "batchButton": "Estibar en contenedor",
       "quantityButton": "Estibar por cantidad",
@@ -407,8 +408,10 @@
       "empty": "Ningún fardo disponible para estibar."
     },
     "destuffing": {
+      "title": "Fardos estibados de la operación",
       "description": "Fardos de esta operación ya estibados, con opción de desestibar.",
-      "searchPlaceholder": "Buscar por identificador, factura o lote..."
+      "searchPlaceholder": "Buscar por identificador, factura o lote...",
+      "empty": "Ningún fardo estibado en esta operación."
     }
   },
   "documents": {

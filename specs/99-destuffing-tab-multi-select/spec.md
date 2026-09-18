@@ -2,15 +2,17 @@
 
 - **ID:** SPEC-99
 - **Nome:** destuffing-tab-multi-select
-- **Status:** DRAFT (2026-09-18) — aguardando aprovação (`APROVAR SPEC-99`).
-  **Bloqueada** até `warren/Core/specs/49-cargo-unit-cancel-batch` estar
-  `IMPLEMENTED` e o client regenerado (`just map`) — ver §2.
+- **Status:** IMPLEMENTED (2026-09-18) — aprovado pelo usuário ("APROVAR
+  SPEC-99"). Bloqueio de §2 resolvido: `warren/Core/specs/49-cargo-unit-cancel-batch`
+  está `IMPLEMENTED` e `just map` já rodou (hook
+  `usePostApiOperationOperationIdCargoCancelBatch` disponível em
+  `src/api/generated/endpoints/cargo-unit/cargo-unit.ts`).
 - **Autor:** claude (pedido do usuário, 2026-09-18)
 - **Área:** `src/components/operations/tabs/Operational.tsx`
   (`DestuffingTab`, linhas 665-810, e `CancelCargoUnitModal`, linhas
   598-660).
-- **Depende de (Core):** `specs/49-cargo-unit-cancel-batch` (`DRAFT`) —
-  endpoint `POST operation/{operationId}/cargo/cancel-batch`.
+- **Depende de (Core):** `specs/49-cargo-unit-cancel-batch`
+  (`IMPLEMENTED`) — endpoint `POST operation/{operationId}/cargo/cancel-batch`.
 - **Não se aplica a:** `StuffingTab` (já é o padrão de referência,
   `specs/53`/`76`/`97`, sem mudança aqui) nem a nenhuma outra sub-aba de
   Operação.
@@ -164,3 +166,103 @@ OperationIdCargoCancelBatch` ou nome equivalente gerado pelo Orval).
 | CA5 | Não existe mais botão de cancelar individual por linha. |
 | CA6 | Confirmar o modal de lote cancela todos os fardos selecionados com um motivo só, invalida a listagem e limpa a seleção. |
 | CA7 | `bun run check` + `bun run lint` sem regressão. |
+
+## 9. Implementation Notes
+
+- **Arquivos alterados:**
+  - `src/components/operations/tabs/Operational.tsx` — `DestuffingTab`
+    reescrita (linhas ~676-865): de `<Table>` crua pra `CrudListPage`, com
+    `selection`/`belowSearch`/`bulkActions`/`onRowSingleClick`, mesmo padrão
+    de `StuffingTab`. `CancelCargoUnitModal` (single-target) removido e
+    substituído por `CancelCargoUnitBatchModal` (lote). Imports ajustados:
+    saíram `Table`, `SortableTh`, `ListPagination`, `FilterText`,
+    `LoadingState`, `tableCardStyles` (não usados mais nesta sub-aba) e
+    `usePostApiOperationOperationIdCargoIdCancel`/
+    `PostApiOperationOperationIdCargoIdCancelBody`; entraram
+    `usePostApiOperationOperationIdCargoCancelBatch`/
+    `PostApiOperationOperationIdCargoCancelBatchBody`.
+  - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`
+    — chave nova `containers.stuffing.destuffSelected` ("Desestufar
+    selecionados"/"Destuff selected"/"Desestibar seleccionados"/"拆箱所选项")
+    e `operational.destuffing.title`/`.empty` (faltavam — `CrudListPage`
+    exige `titleKey` e o `emptyMessageKey` é usado pro estado vazio nativo
+    do componente; texto reaproveitado do antigo cabeçalho manual/
+    `containers.destuffing.title/.empty`). `toast.canceled` adaptado pra
+    plural genérico ("Fardo(s) cancelado(s) com sucesso." e equivalentes),
+    sem virar chave nova nem precisar de `{count}` — é o único consumidor
+    dessa chave agora que o modal single-target saiu.
+
+- **Shape exato do hook/tipo gerado usado:**
+  - `usePostApiOperationOperationIdCargoCancelBatch()` — mutation
+    `(operationId: string, data: CargoUnitCancelBatch) => CargoUnitDTO[]`,
+    chamada via `mutation.mutateAsync({ operationId, data: values })`.
+  - `CargoUnitCancelBatch = { ids: string[] /* @minItems 1 */; reason:
+    string /* @maxLength 500 */ }` (`src/api/generated/model/
+    cargoUnitCancelBatch.ts`) — mesmo casing que o C#, sem surpresa de
+    naming.
+  - Zod gerado: `PostApiOperationOperationIdCargoCancelBatchBody =
+    zod.object({ ids: zod.array(zod.uuid()).min(1), reason:
+    zod.string().max(500) })` — mesmo padrão do schema individual
+    (`PostApiOperationOperationIdCargoIdCancelBody`, só `reason`), sem
+    `min(1)`/obrigatoriedade de conteúdo em `reason` (mesma ausência de
+    validação "não vazio" que o modal single-target antigo já tinha —
+    comportamento preexistente, não uma regressão desta SPEC).
+
+- **Decisões tomadas durante a implementação (não 100% explícitas na
+  spec):**
+  - `CancelCargoUnitBatchModal` usa `zodResolver` sobre o schema **inteiro**
+    (`ids` + `reason`), não só sobre `reason`. Como o campo `ids` nunca é
+    renderizado (`Controller`/`register`) — só entra via `defaultValues:
+    { ids: cargoUnitIds, reason: "" }` no `useForm` —, ele fica fixo desde
+    a montagem do modal (que é remontado a cada abertura, via renderização
+    condicional `cancelOpen ? <Modal ids={...}/> : null`, então sempre
+    reflete a seleção atual). Isso evita reimplementar a validação de
+    `reason` à mão (proibido — regra Zod intocável) e ainda valida `ids`
+    (`min(1)`) de graça, sem custo de UI extra.
+  - `belowSearch`/`bulkActions` usam `variant="danger"` no botão/ícone de
+    "Desestufar selecionados" (ícone `bi-x-circle`) — diferente do azul/
+    `bi-box-seam` de "Estufar em container" na `StuffingTab` — pra sinalizar
+    visualmente que a ação é destrutiva (cancelamento), mesmo tratamento
+    que o antigo botão `❌` por linha já dava (`btn-outline-danger`). Não
+    estava explícito na spec, mas é consistente com o resto do app
+    (`CrudBulkActions` já suporta `variant: "danger"` nativamente).
+  - `CrudColumn.headerKey` das 4 colunas reaproveita chaves existentes de
+    `containers.stuffing.*`/`containers.destuffing.colContainer` (mesmas
+    usadas no cabeçalho manual anterior) — sem criar chave nova pras
+    colunas, já que o texto era idêntico.
+  - `renderCard` (visão mobile/cards do `CrudListPage`, obrigatório na
+    prop) mostra identificador do container + status do fardo — não havia
+    card equivalente antes (a tabela crua não tinha fallback mobile
+    dedicado); segui o mesmo padrão de composição de `StuffingTab.renderCard`
+    (título + subtítulo), sem nenhuma chave de i18n nova.
+  - `itemsByIdRef` (padrão usado em `StuffingTab` pra reter dados
+    completos dos itens selecionados através de páginas) não foi
+    necessário aqui: o modal de lote só precisa dos `id`s selecionados
+    (`Array.from(selectedIds)`), não de nenhum outro campo do `CargoUnitDTO`.
+
+- **Comandos executados e resultado:**
+  - `bun run check` (`tsc --noEmit`) — **VERIFIED**, 0 erros.
+  - `bun run lint` (`eslint .`) — **VERIFIED**, 0 erros, 63 warnings
+    (mesmo baseline pré-existente, nenhum novo).
+  - `just map` não rodou nesta implementação — não era necessário, o
+    contrato já estava atualizado (pré-requisito da SPEC-49 do Core,
+    resolvido antes desta implementação começar).
+
+- **Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| CA1 | `DestuffingTab` usa `CrudListPage` com `selection`, preservando busca/ordenação/paginação. | PASS |
+| CA2 | Clique simples numa linha seleciona/desseleciona o fardo. | PASS (`onRowSingleClick`) |
+| CA3 | Barra fixa (`belowSearch`) sempre visível, botão desabilitado sem seleção. | PASS |
+| CA4 | Botão direito abre menu com "Desestufar selecionados", mesmo destino da barra. | PASS (`bulkActions`) |
+| CA5 | Não existe mais botão de cancelar individual por linha. | PASS (coluna/célula removida) |
+| CA6 | Confirmar o modal de lote cancela todos os fardos selecionados com um motivo só, invalida a listagem e limpa a seleção. | PASS |
+| CA7 | `bun run check` + `bun run lint` sem regressão. | PASS |
+
+- **Limitações conhecidas:** mesma pendência de acesso ao menu de ações em
+  massa em touch/mobile já registrada nas SPECs 96/97 — não resolvida
+  aqui, fora de escopo (§4.2). Verificação foi estática (leitura de
+  código + `check`/`lint`); não há suíte de testes automatizados no
+  projeto e a spec não pediu verificação visual/manual específica além
+  dos critérios de aceitação.
