@@ -28,6 +28,14 @@ export type CrudColumn<T> = {
    * cabeçalho estático, sem mudança de comportamento (aditivo).
    */
   sortKey?: string;
+  /**
+   * Largura fixa/compacta da coluna (ex. `"1%"`, junto de `white-space:
+   * nowrap` do `.crudTable`, deixa a coluna do tamanho do próprio conteúdo
+   * — SPEC-94, item 12: coluna "Estufado" do Romaneio do tamanho do ícone,
+   * não da palavra). Ausente, nenhuma mudança de largura (comportamento
+   * padrão do `<table>`).
+   */
+  width?: string;
 };
 
 /**
@@ -392,7 +400,10 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                           ? () => onSortChange?.(nextSort(sort, col.sortKey as string))
                           : undefined
                       }
-                      style={col.sortKey ? { cursor: "pointer", userSelect: "none" } : undefined}
+                      style={{
+                        ...(col.sortKey ? { cursor: "pointer", userSelect: "none" } : undefined),
+                        ...(col.width ? { width: col.width } : undefined),
+                      }}
                     >
                       {t(col.headerKey)}
                       {col.sortKey ? (
@@ -430,7 +441,8 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                               // Ignora clique em checkbox/botão dentro da linha —
                               // esses já têm o próprio handler (ex. toggle do
                               // checkbox de seleção, ícone de ação).
-                              if ((e.target as HTMLElement).closest("button, a, input, label")) return;
+                              if ((e.target as HTMLElement).closest("button, a, input, label"))
+                                return;
                               onRowSingleClick(item);
                             }
                           : undefined
@@ -443,7 +455,8 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                           }
                         : onRowDoubleClick
                           ? (e) => {
-                              if ((e.target as HTMLElement).closest("button, a, input, label")) return;
+                              if ((e.target as HTMLElement).closest("button, a, input, label"))
+                                return;
                               onRowDoubleClick(item);
                             }
                           : undefined
@@ -467,7 +480,11 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                       </td>
                     ) : null}
                     {columns.map((col) => (
-                      <td key={col.key} className={col.align ? `text-${col.align}` : undefined}>
+                      <td
+                        key={col.key}
+                        className={col.align ? `text-${col.align}` : undefined}
+                        style={col.width ? { width: col.width } : undefined}
+                      >
                         {col.render(item)}
                       </td>
                     ))}

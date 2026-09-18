@@ -2,7 +2,7 @@
 
 - **ID:** 94
 - **Nome:** raw-table-visual-standardization
-- **Status:** DRAFT
+- **Status:** IMPLEMENTED
 - **Autor:** claude (triagem de leva de ajustes pré-apresentação, pedido do
   usuário em 2026-09-17 — itens marcados "Importantes")
 - **Área:** `src/components/operations/tabs/{Documents,Invoice,Containers,
@@ -232,3 +232,73 @@ quando a decisão fechar.
 Médio — item 18 (badge→ícone) tem volume de trabalho variável dependendo
 da decisão do usuário; itens 15/17/12 são de risco baixo e bem localizados
 (mudança de CSS/wrapper, sem mudança de comportamento).
+
+## 11. Implementation Notes
+
+**Decisões `[NEEDS_DECISION]` resolvidas** (usuário: "aprova tudo, pode
+implementar", com orientação de manter o padrão já estabelecido — ver
+mensagem de implementação):
+
+- **Extração do CSS (§5, decisão 1): opção 2.** Criado
+  `src/components/crud/table-card.module.css` com `.tableCard` (fundo,
+  borda, `border-radius`, `box-shadow`, `overflow: hidden`) e `.rawTable`
+  (cabeçalho `--table-header-bg`, hairline, hover) — os mesmos valores que
+  já existiam em `crud-list-page.module.css`. `crud-list-page.module.css`
+  passou a `composes: tableCard/rawTable from "./table-card.module.css"`
+  em vez de duplicar os valores — nenhum componente novo em
+  `components/ui/`, reusando o padrão de card já estabelecido (`.tableCard`)
+  em vez de criar um terceiro.
+- **Badge → ícone (§5, decisão 2): opção 1.** Nenhum dos 4 candidatos
+  levantados (`Invoice.status`, `Invoice.source`, `Documents.type`,
+  `Containers.status`) é binário como `isStuffed` — são enums de 3+
+  valores, onde a cor do `Badge` já carrega o significado (`statusBadge
+  Variant`/`sourceBadgeVariant` já usam variantes semânticas do Bootstrap,
+  não cor fixa). Mantidos como `Badge`, sem mudança de componente — trocar
+  por ícone exigiria inventar um mapeamento ícone-por-valor novo (opção 2
+  da spec), fora do escopo decidido. `Containers.status` fica como estava
+  (`bg="secondary"`) porque a mudança de UI de lacre (SPEC-92) mexe na
+  mesma linha — evita retrabalho.
+
+**O que foi implementado:**
+
+1. **Vazamento (item 15) + cabeçalho escuro (item 17).** Nos 5 locais
+   (`Documents.tsx`, `Invoice.tsx` ×3, `Containers.tsx`, `Occurrences.tsx`,
+   `operational/operations/$id/index.tsx`), o antigo
+   `<div className="soft-card table-responsive"><Table>` virou
+   `<div className={tableCardStyles.tableCard}><div className="table-responsive">
+   <Table className={`... ${tableCardStyles.rawTable}`}>` — mesma estrutura
+   de dois níveis que o `CrudListPage` já usa (`overflow: hidden` no card
+   externo, `overflow-x: auto` do Bootstrap no wrapper interno), corrigindo
+   o corte dos cantos arredondados e herdando `--table-header-bg` no
+   `<thead>`.
+2. **Coluna "Estufado" compacta (item 12).** `CrudColumn` ganhou `width?:
+   string`, aplicada via `style={{ width }}` no `<th>`/`<td>` do
+   `CrudListPage`. A coluna `isStuffed` do Romaneio usa `width: "1%"`
+   (mesma técnica já usada na coluna de checkbox de seleção).
+
+**Arquivos alterados:**
+- `src/components/crud/table-card.module.css` (novo)
+- `src/components/crud/crud-list-page.module.css`
+- `src/components/crud/crud-list-page.tsx`
+- `src/components/operations/tabs/{Documents,Invoice,Containers,Occurrences,Romaneio}.tsx`
+- `src/routes/_dashboard/_internal/operational/operations/$id/index.tsx`
+
+**Comandos executados:**
+- `bun run check` — VERIFIED, sem erros (`tsc --noEmit` limpo).
+- `bun run lint` — VERIFIED, 0 errors / 63 warnings (baseline em `main`
+  antes desta SPEC: 0 errors / 65 warnings — nenhum warning novo).
+
+**Critérios de aceitação:**
+
+| # | Critério | Resultado |
+| --- | --- | --- |
+| 1 | Nenhuma tabela "vaza" dos cantos arredondados | PASS (estrutura idêntica ao `CrudListPage`, `overflow: hidden` no card) |
+| 2 | Cabeçalho usa `--table-header-bg` como `Romaneio.tsx` | PASS (`.rawTable` compartilha o mesmo token) |
+| 3 | Coluna "Estufado" compacta | PASS (`width: "1%"`) |
+| 4 | Badge→ícone conforme decisão | PASS (decisão: manter Badge nos 4 candidatos, nenhum é binário) |
+| 5 | `bun run check`/`lint` sem novos erros | PASS |
+
+**Limitações conhecidas:** verificação visual não foi feita em navegador
+(sem ambiente rodando nesta sessão) — a correção segue a mesma estrutura
+comprovada do `CrudListPage`, mas a confirmação final é visual, pendente de
+review humano nas 5 telas (todos os brands/modos).

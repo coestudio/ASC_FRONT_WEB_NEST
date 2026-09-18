@@ -45,6 +45,7 @@ import { FilterText } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import tableCardStyles from "@/components/crud/table-card.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -283,113 +284,115 @@ function InvoiceListing({ operationId }: { operationId: string }) {
       ) : items.length === 0 ? (
         <div className="alert alert-secondary">{t("administrative-operations.invoice.empty")}</div>
       ) : (
-        <div className="soft-card table-responsive">
-          <Table hover className="align-middle mb-0">
-            <thead>
-              <tr>
-                <SortableTh sortKey="number" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.invoice.colNumber")}
-                </SortableTh>
-                <th>{t("administrative-operations.invoice.colSource")}</th>
-                <SortableTh sortKey="status" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.invoice.colStatus")}
-                </SortableTh>
-                <SortableTh sortKey="issuedOn" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.invoice.colDates")}
-                </SortableTh>
-                <th>{t("administrative-operations.invoice.colValues")}</th>
-                <th>{t("administrative-operations.invoice.colDocuments")}</th>
-                <th>{t("administrative-operations.invoice.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => {
-                const canChangeStatus = item.status === "Pending" && item.source === "Manual";
-                const documents = item.documents ?? [];
-                return (
-                  <tr key={item.id}>
-                    <td>{item.number || "—"}</td>
-                    <td>
-                      {item.source ? (
-                        <Badge bg={sourceBadgeVariant(item.source)}>
-                          {resolveInvoiceSourceLabel(item.source, locale)}
+        <div className={tableCardStyles.tableCard}>
+          <div className="table-responsive">
+            <Table hover className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+              <thead>
+                <tr>
+                  <SortableTh sortKey="number" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.invoice.colNumber")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.invoice.colSource")}</th>
+                  <SortableTh sortKey="status" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.invoice.colStatus")}
+                  </SortableTh>
+                  <SortableTh sortKey="issuedOn" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.invoice.colDates")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.invoice.colValues")}</th>
+                  <th>{t("administrative-operations.invoice.colDocuments")}</th>
+                  <th>{t("administrative-operations.invoice.colActions")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => {
+                  const canChangeStatus = item.status === "Pending" && item.source === "Manual";
+                  const documents = item.documents ?? [];
+                  return (
+                    <tr key={item.id}>
+                      <td>{item.number || "—"}</td>
+                      <td>
+                        {item.source ? (
+                          <Badge bg={sourceBadgeVariant(item.source)}>
+                            {resolveInvoiceSourceLabel(item.source, locale)}
+                          </Badge>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td>
+                        <Badge bg={statusBadgeVariant(item.status)}>
+                          {item.status ? resolveInvoiceStatusLabel(item.status, locale) : "—"}
                         </Badge>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td>
-                      <Badge bg={statusBadgeVariant(item.status)}>
-                        {item.status ? resolveInvoiceStatusLabel(item.status, locale) : "—"}
-                      </Badge>
-                    </td>
-                    <td className="small">
-                      <div>
-                        {t("administrative-operations.invoice.entryDate")}:{" "}
-                        {formatDate(item.entryDate)}
-                      </div>
-                      <div>
-                        {t("administrative-operations.invoice.exitDate")}:{" "}
-                        {formatDate(item.exitDate)}
-                      </div>
-                    </td>
-                    <td className="small">
-                      <div>
-                        {t("administrative-operations.invoice.totalInvoiceValue")}:{" "}
-                        {formatMoney(item.totalInvoiceValue)}
-                      </div>
-                      <div>
-                        {t("administrative-operations.invoice.totalProductsValue")}:{" "}
-                        {formatMoney(item.totalProductsValue)}
-                      </div>
-                    </td>
-                    <td>
-                      {documents.length === 0 ? (
-                        "—"
-                      ) : (
-                        <div className="d-flex flex-column gap-1">
-                          {documents.map((doc) => (
-                            <button
-                              key={doc.id}
-                              type="button"
-                              className="btn btn-link btn-sm p-0 text-start text-truncate"
-                              style={{ maxWidth: 180 }}
-                              onClick={() => setPreviewing(doc.file ?? null)}
-                            >
-                              {doc.file?.name ||
-                                t("administrative-operations.invoice.documentFallbackName")}
-                            </button>
-                          ))}
+                      </td>
+                      <td className="small">
+                        <div>
+                          {t("administrative-operations.invoice.entryDate")}:{" "}
+                          {formatDate(item.entryDate)}
                         </div>
-                      )}
-                    </td>
-                    <td>
-                      {canChangeStatus ? (
-                        <CrudRowActions
-                          extraActions={[
-                            {
-                              key: "confirm",
-                              icon: "bi-check-lg",
-                              label: t("administrative-operations.invoice.confirm.action"),
-                              onClick: () => setConfirmTarget(item),
-                            },
-                            {
-                              key: "cancel",
-                              icon: "bi-x-lg",
-                              label: t("administrative-operations.invoice.cancel.action"),
-                              onClick: () => setCancelTarget(item),
-                            },
-                          ]}
-                        />
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+                        <div>
+                          {t("administrative-operations.invoice.exitDate")}:{" "}
+                          {formatDate(item.exitDate)}
+                        </div>
+                      </td>
+                      <td className="small">
+                        <div>
+                          {t("administrative-operations.invoice.totalInvoiceValue")}:{" "}
+                          {formatMoney(item.totalInvoiceValue)}
+                        </div>
+                        <div>
+                          {t("administrative-operations.invoice.totalProductsValue")}:{" "}
+                          {formatMoney(item.totalProductsValue)}
+                        </div>
+                      </td>
+                      <td>
+                        {documents.length === 0 ? (
+                          "—"
+                        ) : (
+                          <div className="d-flex flex-column gap-1">
+                            {documents.map((doc) => (
+                              <button
+                                key={doc.id}
+                                type="button"
+                                className="btn btn-link btn-sm p-0 text-start text-truncate"
+                                style={{ maxWidth: 180 }}
+                                onClick={() => setPreviewing(doc.file ?? null)}
+                              >
+                                {doc.file?.name ||
+                                  t("administrative-operations.invoice.documentFallbackName")}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                      <td>
+                        {canChangeStatus ? (
+                          <CrudRowActions
+                            extraActions={[
+                              {
+                                key: "confirm",
+                                icon: "bi-check-lg",
+                                label: t("administrative-operations.invoice.confirm.action"),
+                                onClick: () => setConfirmTarget(item),
+                              },
+                              {
+                                key: "cancel",
+                                icon: "bi-x-lg",
+                                label: t("administrative-operations.invoice.cancel.action"),
+                                onClick: () => setCancelTarget(item),
+                              },
+                            ]}
+                          />
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </div>
         </div>
       )}
 
@@ -660,51 +663,53 @@ function InvoiceComparisonTab({ operationId }: { operationId: string }) {
   }
 
   return (
-    <div className="soft-card table-responsive">
-      <Table hover className="align-middle mb-0">
-        <thead>
-          <tr>
-            <th>{t("administrative-operations.invoice.comparison.colNumber")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colDeclaredItemsCount")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colDeclaredGrossWeight")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colDeclaredNetWeight")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colStuffedItemsCount")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colStuffedGrossWeight")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colStuffedNetWeight")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.invoiceId}>
-              <td>{item.number || "—"}</td>
-              <td>{formatQty(item.declaredItemsCount)}</td>
-              <td>{formatWeight(item.declaredGrossWeight)}</td>
-              <td>{formatWeight(item.declaredNetWeight)}</td>
-              <td>
-                <DivergenceBadge
-                  declared={item.declaredItemsCount}
-                  stuffed={item.stuffedItemsCount}
-                  format={formatQty}
-                />
-              </td>
-              <td>
-                <DivergenceBadge
-                  declared={item.declaredGrossWeight}
-                  stuffed={item.stuffedGrossWeight}
-                  format={formatWeight}
-                />
-              </td>
-              <td>
-                <DivergenceBadge
-                  declared={item.declaredNetWeight}
-                  stuffed={item.stuffedNetWeight}
-                  format={formatWeight}
-                />
-              </td>
+    <div className={tableCardStyles.tableCard}>
+      <div className="table-responsive">
+        <Table hover className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+          <thead>
+            <tr>
+              <th>{t("administrative-operations.invoice.comparison.colNumber")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colDeclaredItemsCount")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colDeclaredGrossWeight")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colDeclaredNetWeight")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colStuffedItemsCount")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colStuffedGrossWeight")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colStuffedNetWeight")}</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.invoiceId}>
+                <td>{item.number || "—"}</td>
+                <td>{formatQty(item.declaredItemsCount)}</td>
+                <td>{formatWeight(item.declaredGrossWeight)}</td>
+                <td>{formatWeight(item.declaredNetWeight)}</td>
+                <td>
+                  <DivergenceBadge
+                    declared={item.declaredItemsCount}
+                    stuffed={item.stuffedItemsCount}
+                    format={formatQty}
+                  />
+                </td>
+                <td>
+                  <DivergenceBadge
+                    declared={item.declaredGrossWeight}
+                    stuffed={item.stuffedGrossWeight}
+                    format={formatWeight}
+                  />
+                </td>
+                <td>
+                  <DivergenceBadge
+                    declared={item.declaredNetWeight}
+                    stuffed={item.stuffedNetWeight}
+                    format={formatWeight}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     </div>
   );
 }
@@ -755,59 +760,61 @@ function InvoiceLoteComparisonTab({ operationId }: { operationId: string }) {
   }
 
   return (
-    <div className="soft-card table-responsive">
-      <Table hover className="align-middle mb-0">
-        <thead>
-          <tr>
-            <th>{t("administrative-operations.invoice.comparison.colLote")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colDeclaredItemsCount")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colDeclaredGrossWeight")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colDeclaredNetWeight")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colStuffedItemsCount")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colStuffedGrossWeight")}</th>
-            <th>{t("administrative-operations.invoice.comparison.colStuffedNetWeight")}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((item, index) => (
-            <tr key={item.lote ?? `sem-lote-${index}`}>
-              <td>
-                {item.lote ? (
-                  item.lote
-                ) : (
-                  <Badge bg="secondary">
-                    {t("administrative-operations.invoice.comparison.noLote")}
-                  </Badge>
-                )}
-              </td>
-              <td>{formatQty(item.declaredItemsCount)}</td>
-              <td>{formatWeight(item.declaredGrossWeight)}</td>
-              <td>{formatWeight(item.declaredNetWeight)}</td>
-              <td>
-                <DivergenceBadge
-                  declared={item.declaredItemsCount}
-                  stuffed={item.stuffedItemsCount}
-                  format={formatQty}
-                />
-              </td>
-              <td>
-                <DivergenceBadge
-                  declared={item.declaredGrossWeight}
-                  stuffed={item.stuffedGrossWeight}
-                  format={formatWeight}
-                />
-              </td>
-              <td>
-                <DivergenceBadge
-                  declared={item.declaredNetWeight}
-                  stuffed={item.stuffedNetWeight}
-                  format={formatWeight}
-                />
-              </td>
+    <div className={tableCardStyles.tableCard}>
+      <div className="table-responsive">
+        <Table hover className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+          <thead>
+            <tr>
+              <th>{t("administrative-operations.invoice.comparison.colLote")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colDeclaredItemsCount")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colDeclaredGrossWeight")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colDeclaredNetWeight")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colStuffedItemsCount")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colStuffedGrossWeight")}</th>
+              <th>{t("administrative-operations.invoice.comparison.colStuffedNetWeight")}</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {items.map((item, index) => (
+              <tr key={item.lote ?? `sem-lote-${index}`}>
+                <td>
+                  {item.lote ? (
+                    item.lote
+                  ) : (
+                    <Badge bg="secondary">
+                      {t("administrative-operations.invoice.comparison.noLote")}
+                    </Badge>
+                  )}
+                </td>
+                <td>{formatQty(item.declaredItemsCount)}</td>
+                <td>{formatWeight(item.declaredGrossWeight)}</td>
+                <td>{formatWeight(item.declaredNetWeight)}</td>
+                <td>
+                  <DivergenceBadge
+                    declared={item.declaredItemsCount}
+                    stuffed={item.stuffedItemsCount}
+                    format={formatQty}
+                  />
+                </td>
+                <td>
+                  <DivergenceBadge
+                    declared={item.declaredGrossWeight}
+                    stuffed={item.stuffedGrossWeight}
+                    format={formatWeight}
+                  />
+                </td>
+                <td>
+                  <DivergenceBadge
+                    declared={item.declaredNetWeight}
+                    stuffed={item.stuffedNetWeight}
+                    format={formatWeight}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
     </div>
   );
 }

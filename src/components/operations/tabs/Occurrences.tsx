@@ -28,6 +28,7 @@ import {
 } from "@/lib/validation/operation-occurrence";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import tableCardStyles from "@/components/crud/table-card.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -165,37 +166,39 @@ export function Occurrences({ operationId }: { operationId: string }) {
           {t("administrative-operations.occurrences.empty")}
         </div>
       ) : (
-        <div className="soft-card table-responsive">
-          <Table hover className="align-middle mb-0">
-            <thead>
-              <tr>
-                <SortableTh sortKey="title" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.occurrences.colTitle")}
-                </SortableTh>
-                <th>{t("administrative-operations.occurrences.colNote")}</th>
-                <th>{t("administrative-operations.occurrences.colPhotos")}</th>
-                <SortableTh sortKey="createdOn" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.occurrences.colCreatedAt")}
-                </SortableTh>
-                <th>{t("administrative-operations.occurrences.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.title || "—"}</td>
-                  <td className="text-truncate" style={{ maxWidth: 320 }}>
-                    {item.note || "—"}
-                  </td>
-                  <td>{item.photos?.length ?? 0}</td>
-                  <td>{new Date(item.createdAt).toLocaleString(locale)}</td>
-                  <td>
-                    <CrudRowActions onEdit={() => setEditing(item)} />
-                  </td>
+        <div className={tableCardStyles.tableCard}>
+          <div className="table-responsive">
+            <Table hover className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+              <thead>
+                <tr>
+                  <SortableTh sortKey="title" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.occurrences.colTitle")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.occurrences.colNote")}</th>
+                  <th>{t("administrative-operations.occurrences.colPhotos")}</th>
+                  <SortableTh sortKey="createdOn" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.occurrences.colCreatedAt")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.occurrences.colActions")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.title || "—"}</td>
+                    <td className="text-truncate" style={{ maxWidth: 320 }}>
+                      {item.note || "—"}
+                    </td>
+                    <td>{item.photos?.length ?? 0}</td>
+                    <td>{new Date(item.createdAt).toLocaleString(locale)}</td>
+                    <td>
+                      <CrudRowActions onEdit={() => setEditing(item)} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </div>
       )}
 

@@ -313,6 +313,8 @@ export function Romaneio({ operationId }: { operationId: string }) {
       key: "isStuffed",
       headerKey: "administrative-operations.romaneio.colIsStuffed",
       align: "center",
+      // SPEC-94, item 12: coluna do tamanho do ícone, não da palavra "Estufado".
+      width: "1%",
       render: (r) => (
         <i
           className={`bi ${r.isStuffed ? "bi-check-circle-fill text-success" : "bi-x-circle text-body-secondary"}`}

@@ -50,6 +50,7 @@ import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import tableCardStyles from "@/components/crud/table-card.module.css";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -296,59 +297,61 @@ export function Containers({ operationId }: { operationId: string }) {
           {t("administrative-operations.containers.empty")}
         </div>
       ) : (
-        <div className="soft-card table-responsive">
-          <Table hover size="sm" className="align-middle mb-0">
-            <thead>
-              <tr>
-                <SortableTh sortKey="identifier" sort={sort} onSortChange={setSort}>
-                  {t("administrative-operations.containers.colIdentifier")}
-                </SortableTh>
-                <th>{t("administrative-operations.containers.colTara")}</th>
-                <th>{t("administrative-operations.containers.colStatus")}</th>
-                <th>{t("administrative-operations.containers.colPhotos")}</th>
-                <th>{t("administrative-operations.containers.colActions")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.container.identifier}</td>
-                  <td>{item.tara != null ? String(item.tara) : "—"}</td>
-                  <td>
-                    <Badge bg="secondary">
-                      {resolveContainerOperationStatusLabel(item.status, locale)}
-                    </Badge>
-                  </td>
-                  <td>{item.photos?.length ?? 0}</td>
-                  <td>
-                    <CrudRowActions
-                      extraActions={[
-                        {
-                          key: "photos",
-                          icon: "bi-camera",
-                          label: t("administrative-operations.containers.photosButton"),
-                          onClick: () => setPhotosFor(item),
-                        },
-                        {
-                          key: "seal",
-                          icon: item.status === "Sealed" ? "bi-shield-lock" : "bi-shield",
-                          label: t(
-                            item.status === "Sealed"
-                              ? "administrative-operations.containers.seal.unsealButton"
-                              : "administrative-operations.containers.seal.sealButton",
-                          ),
-                          onClick: () =>
-                            item.status === "Sealed" ? setUnsealFor(item) : setAddSealFor(item),
-                        },
-                      ]}
-                      onEdit={() => setEditing(item)}
-                      onDelete={() => setPendingDelete(item)}
-                    />
-                  </td>
+        <div className={tableCardStyles.tableCard}>
+          <div className="table-responsive">
+            <Table hover size="sm" className={`align-middle mb-0 ${tableCardStyles.rawTable}`}>
+              <thead>
+                <tr>
+                  <SortableTh sortKey="identifier" sort={sort} onSortChange={setSort}>
+                    {t("administrative-operations.containers.colIdentifier")}
+                  </SortableTh>
+                  <th>{t("administrative-operations.containers.colTara")}</th>
+                  <th>{t("administrative-operations.containers.colStatus")}</th>
+                  <th>{t("administrative-operations.containers.colPhotos")}</th>
+                  <th>{t("administrative-operations.containers.colActions")}</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.container.identifier}</td>
+                    <td>{item.tara != null ? String(item.tara) : "—"}</td>
+                    <td>
+                      <Badge bg="secondary">
+                        {resolveContainerOperationStatusLabel(item.status, locale)}
+                      </Badge>
+                    </td>
+                    <td>{item.photos?.length ?? 0}</td>
+                    <td>
+                      <CrudRowActions
+                        extraActions={[
+                          {
+                            key: "photos",
+                            icon: "bi-camera",
+                            label: t("administrative-operations.containers.photosButton"),
+                            onClick: () => setPhotosFor(item),
+                          },
+                          {
+                            key: "seal",
+                            icon: item.status === "Sealed" ? "bi-shield-lock" : "bi-shield",
+                            label: t(
+                              item.status === "Sealed"
+                                ? "administrative-operations.containers.seal.unsealButton"
+                                : "administrative-operations.containers.seal.sealButton",
+                            ),
+                            onClick: () =>
+                              item.status === "Sealed" ? setUnsealFor(item) : setAddSealFor(item),
+                          },
+                        ]}
+                        onEdit={() => setEditing(item)}
+                        onDelete={() => setPendingDelete(item)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </div>
       )}
 
