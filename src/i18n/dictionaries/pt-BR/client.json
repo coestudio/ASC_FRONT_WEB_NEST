@@ -39,12 +39,20 @@
     "toast": {
       "created": "Colaborador criado com sucesso.",
       "deleted": "Colaborador excluído.",
-      "error": "Não foi possível concluir a ação. Tente novamente."
+      "error": "Não foi possível concluir a ação. Tente novamente.",
+      "passwordReset": "Senha resetada com sucesso.",
+      "activated": "Colaborador ativado.",
+      "deactivated": "Colaborador desativado."
     },
     "confirm": {
       "deleteTitle": "Excluir colaborador",
-      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
-    }
+      "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?",
+      "resetTitle": "Resetar senha",
+      "resetMessage": "Uma nova senha será enviada para \"{name}\". Deseja continuar?"
+    },
+    "actionResetPassword": "Resetar senha",
+    "actionActivate": "Ativar",
+    "actionDeactivate": "Desativar"
   },
   "finalReport": {
     "title": "Relatório Final",

@@ -43,5 +43,8 @@
   "confirm": {
     "deleteTitle": "Delete client",
     "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
-  }
+  },
+  "collaboratorsPickerTitle": "Collaborators",
+  "collaboratorsPickerDescription": "Collaborators registered across all clients.",
+  "colClient": "Client"
 }

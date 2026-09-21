@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-import { PostApiClientClientIdCollaboratorBody } from "@/api/generated/zod/collaborator/collaborator.zod";
+import {
+  PostApiClientClientIdCollaboratorBody,
+  PostApiClientClientIdCollaboratorParams,
+} from "@/api/generated/zod/collaborator/collaborator.zod";
 
 /**
  * Schema achatado do formulário de Colaborador (`/client/collaborators`) —
@@ -22,3 +25,15 @@ export const collaboratorFormSchema = z.object({
 });
 
 export type CollaboratorFormValues = z.infer<typeof collaboratorFormSchema>;
+
+/**
+ * Variante do administrativo (`/administrative/collaborators`): o admin não
+ * tem `clientId` na sessão, então escolhe o cliente no formulário. Só
+ * remapeia `clientId` de `PostApiClientClientIdCollaboratorParams` (gerado)
+ * junto do schema base — sem regra nova (regra 2 do AGENTS.md).
+ */
+export const adminCollaboratorFormSchema = collaboratorFormSchema.extend({
+  clientId: PostApiClientClientIdCollaboratorParams.shape.clientId,
+});
+
+export type AdminCollaboratorFormValues = z.infer<typeof adminCollaboratorFormSchema>;

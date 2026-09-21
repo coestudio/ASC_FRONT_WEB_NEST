@@ -39,12 +39,20 @@
     "toast": {
       "created": "Colaborador creado con éxito.",
       "deleted": "Colaborador eliminado.",
-      "error": "No se pudo completar la acción. Inténtelo de nuevo."
+      "error": "No se pudo completar la acción. Inténtelo de nuevo.",
+      "passwordReset": "Contraseña restablecida con éxito.",
+      "activated": "Colaborador activado.",
+      "deactivated": "Colaborador desactivado."
     },
     "confirm": {
       "deleteTitle": "Eliminar colaborador",
-      "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?"
-    }
+      "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?",
+      "resetTitle": "Restablecer contraseña",
+      "resetMessage": "Se enviará una nueva contraseña a \"{name}\". ¿Continuar?"
+    },
+    "actionResetPassword": "Restablecer contraseña",
+    "actionActivate": "Activar",
+    "actionDeactivate": "Desactivar"
   },
   "finalReport": {
     "title": "Informe Final",

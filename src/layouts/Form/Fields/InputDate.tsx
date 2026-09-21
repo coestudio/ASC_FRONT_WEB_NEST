@@ -1,11 +1,16 @@
 import { forwardRef, useRef, useState } from "react";
 import { FieldValues } from "react-hook-form";
 import { IMaskInput } from "react-imask";
-import DatePicker from "react-datepicker";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { ptBR } from "date-fns/locale/pt-BR";
 import "react-datepicker/dist/react-datepicker.css";
 
 import InputDTO from "layouts/Form/types/Input";
 import Input from "layouts/Form/Fields/Input";
+
+// Sem registrar, o react-datepicker avisa "A locale object was not found for
+// the provided string [\"pt-BR\"]" e cai no locale padrão.
+registerLocale("pt-BR", ptBR);
 
 const isoToDisplay = (iso: unknown): string => {
   if (typeof iso !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return "";

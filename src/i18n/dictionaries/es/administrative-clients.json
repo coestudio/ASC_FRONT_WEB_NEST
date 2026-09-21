@@ -43,5 +43,8 @@
   "confirm": {
     "deleteTitle": "Eliminar cliente",
     "deleteMessage": "Esta acción no se puede deshacer. ¿Desea eliminar \"{name}\"?"
-  }
+  },
+  "collaboratorsPickerTitle": "Colaboradores",
+  "collaboratorsPickerDescription": "Colaboradores registrados en todos los clientes.",
+  "colClient": "Cliente"
 }

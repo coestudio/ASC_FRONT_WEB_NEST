@@ -36,8 +36,10 @@ import { Route as DashboardAdminDebugIndexRouteImport } from './routes/_dashboar
 import { Route as DashboardAdminRolesIndexRouteImport } from './routes/_dashboard/admin/roles/index'
 import { Route as DashboardClientCollaboratorsIndexRouteImport } from './routes/_dashboard/client/collaborators/index'
 import { Route as DashboardClientFinalReportIndexRouteImport } from './routes/_dashboard/client/final-report/index'
+import { Route as DashboardClientOperationsIndexRouteImport } from './routes/_dashboard/client/operations/index'
 import { Route as DashboardClientTrackingIndexRouteImport } from './routes/_dashboard/client/tracking/index'
 import { Route as DashboardInternalAdministrativeClientsIndexRouteImport } from './routes/_dashboard/_internal/administrative/clients/index'
+import { Route as DashboardInternalAdministrativeCollaboratorsIndexRouteImport } from './routes/_dashboard/_internal/administrative/collaborators/index'
 import { Route as DashboardInternalAdministrativeOperationsIndexRouteImport } from './routes/_dashboard/_internal/administrative/operations/index'
 import { Route as DashboardInternalOperationalOperationsIndexRouteImport } from './routes/_dashboard/_internal/operational/operations/index'
 import { Route as DashboardInternalAdministrativeOperationsIdIndexRouteImport } from './routes/_dashboard/_internal/administrative/operations/$id/index'
@@ -190,6 +192,12 @@ const DashboardClientFinalReportIndexRoute =
     path: '/final-report/',
     getParentRoute: () => DashboardClientRouteRoute,
   } as any)
+const DashboardClientOperationsIndexRoute =
+  DashboardClientOperationsIndexRouteImport.update({
+    id: '/operations/',
+    path: '/operations/',
+    getParentRoute: () => DashboardClientRouteRoute,
+  } as any)
 const DashboardClientTrackingIndexRoute =
   DashboardClientTrackingIndexRouteImport.update({
     id: '/tracking/',
@@ -200,6 +208,12 @@ const DashboardInternalAdministrativeClientsIndexRoute =
   DashboardInternalAdministrativeClientsIndexRouteImport.update({
     id: '/clients/',
     path: '/clients/',
+    getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
+  } as any)
+const DashboardInternalAdministrativeCollaboratorsIndexRoute =
+  DashboardInternalAdministrativeCollaboratorsIndexRouteImport.update({
+    id: '/collaborators/',
+    path: '/collaborators/',
     getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
 const DashboardInternalAdministrativeOperationsIndexRoute =
@@ -281,8 +295,10 @@ export interface FileRoutesByFullPath {
   '/admin/roles/': typeof DashboardAdminRolesIndexRoute
   '/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
   '/client/final-report/': typeof DashboardClientFinalReportIndexRoute
+  '/client/operations/': typeof DashboardClientOperationsIndexRoute
   '/client/tracking/': typeof DashboardClientTrackingIndexRoute
   '/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/administrative/collaborators/': typeof DashboardInternalAdministrativeCollaboratorsIndexRoute
   '/administrative/operations/': typeof DashboardInternalAdministrativeOperationsIndexRoute
   '/operational/operations/': typeof DashboardInternalOperationalOperationsIndexRoute
   '/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
@@ -312,8 +328,10 @@ export interface FileRoutesByTo {
   '/admin/roles': typeof DashboardAdminRolesIndexRoute
   '/client/collaborators': typeof DashboardClientCollaboratorsIndexRoute
   '/client/final-report': typeof DashboardClientFinalReportIndexRoute
+  '/client/operations': typeof DashboardClientOperationsIndexRoute
   '/client/tracking': typeof DashboardClientTrackingIndexRoute
   '/administrative/clients': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/administrative/collaborators': typeof DashboardInternalAdministrativeCollaboratorsIndexRoute
   '/administrative/operations': typeof DashboardInternalAdministrativeOperationsIndexRoute
   '/operational/operations': typeof DashboardInternalOperationalOperationsIndexRoute
   '/administrative/operations/$id': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
@@ -353,8 +371,10 @@ export interface FileRoutesById {
   '/_dashboard/admin/roles/': typeof DashboardAdminRolesIndexRoute
   '/_dashboard/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
   '/_dashboard/client/final-report/': typeof DashboardClientFinalReportIndexRoute
+  '/_dashboard/client/operations/': typeof DashboardClientOperationsIndexRoute
   '/_dashboard/client/tracking/': typeof DashboardClientTrackingIndexRoute
   '/_dashboard/_internal/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
+  '/_dashboard/_internal/administrative/collaborators/': typeof DashboardInternalAdministrativeCollaboratorsIndexRoute
   '/_dashboard/_internal/administrative/operations/': typeof DashboardInternalAdministrativeOperationsIndexRoute
   '/_dashboard/_internal/operational/operations/': typeof DashboardInternalOperationalOperationsIndexRoute
   '/_dashboard/_internal/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
@@ -391,8 +411,10 @@ export interface FileRouteTypes {
     | '/admin/roles/'
     | '/client/collaborators/'
     | '/client/final-report/'
+    | '/client/operations/'
     | '/client/tracking/'
     | '/administrative/clients/'
+    | '/administrative/collaborators/'
     | '/administrative/operations/'
     | '/operational/operations/'
     | '/administrative/operations/$id/'
@@ -422,8 +444,10 @@ export interface FileRouteTypes {
     | '/admin/roles'
     | '/client/collaborators'
     | '/client/final-report'
+    | '/client/operations'
     | '/client/tracking'
     | '/administrative/clients'
+    | '/administrative/collaborators'
     | '/administrative/operations'
     | '/operational/operations'
     | '/administrative/operations/$id'
@@ -462,8 +486,10 @@ export interface FileRouteTypes {
     | '/_dashboard/admin/roles/'
     | '/_dashboard/client/collaborators/'
     | '/_dashboard/client/final-report/'
+    | '/_dashboard/client/operations/'
     | '/_dashboard/client/tracking/'
     | '/_dashboard/_internal/administrative/clients/'
+    | '/_dashboard/_internal/administrative/collaborators/'
     | '/_dashboard/_internal/administrative/operations/'
     | '/_dashboard/_internal/operational/operations/'
     | '/_dashboard/_internal/administrative/operations/$id/'
@@ -674,6 +700,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardClientFinalReportIndexRouteImport
       parentRoute: typeof DashboardClientRouteRoute
     }
+    '/_dashboard/client/operations/': {
+      id: '/_dashboard/client/operations/'
+      path: '/operations'
+      fullPath: '/client/operations/'
+      preLoaderRoute: typeof DashboardClientOperationsIndexRouteImport
+      parentRoute: typeof DashboardClientRouteRoute
+    }
     '/_dashboard/client/tracking/': {
       id: '/_dashboard/client/tracking/'
       path: '/tracking'
@@ -686,6 +719,13 @@ declare module '@tanstack/react-router' {
       path: '/clients'
       fullPath: '/administrative/clients/'
       preLoaderRoute: typeof DashboardInternalAdministrativeClientsIndexRouteImport
+      parentRoute: typeof DashboardInternalAdministrativeRouteRoute
+    }
+    '/_dashboard/_internal/administrative/collaborators/': {
+      id: '/_dashboard/_internal/administrative/collaborators/'
+      path: '/collaborators'
+      fullPath: '/administrative/collaborators/'
+      preLoaderRoute: typeof DashboardInternalAdministrativeCollaboratorsIndexRouteImport
       parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
     '/_dashboard/_internal/administrative/operations/': {
@@ -791,6 +831,7 @@ interface DashboardClientRouteRouteChildren {
   DashboardClientIndexRoute: typeof DashboardClientIndexRoute
   DashboardClientCollaboratorsIndexRoute: typeof DashboardClientCollaboratorsIndexRoute
   DashboardClientFinalReportIndexRoute: typeof DashboardClientFinalReportIndexRoute
+  DashboardClientOperationsIndexRoute: typeof DashboardClientOperationsIndexRoute
   DashboardClientTrackingIndexRoute: typeof DashboardClientTrackingIndexRoute
 }
 
@@ -799,6 +840,7 @@ const DashboardClientRouteRouteChildren: DashboardClientRouteRouteChildren = {
   DashboardClientCollaboratorsIndexRoute:
     DashboardClientCollaboratorsIndexRoute,
   DashboardClientFinalReportIndexRoute: DashboardClientFinalReportIndexRoute,
+  DashboardClientOperationsIndexRoute: DashboardClientOperationsIndexRoute,
   DashboardClientTrackingIndexRoute: DashboardClientTrackingIndexRoute,
 }
 
@@ -808,6 +850,7 @@ const DashboardClientRouteRouteWithChildren =
 interface DashboardInternalAdministrativeRouteRouteChildren {
   DashboardInternalAdministrativeIndexRoute: typeof DashboardInternalAdministrativeIndexRoute
   DashboardInternalAdministrativeClientsIndexRoute: typeof DashboardInternalAdministrativeClientsIndexRoute
+  DashboardInternalAdministrativeCollaboratorsIndexRoute: typeof DashboardInternalAdministrativeCollaboratorsIndexRoute
   DashboardInternalAdministrativeOperationsIndexRoute: typeof DashboardInternalAdministrativeOperationsIndexRoute
   DashboardInternalAdministrativeOperationsIdIndexRoute: typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   DashboardInternalAdministrativeRegistryContainerIndexRoute: typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
@@ -823,6 +866,8 @@ const DashboardInternalAdministrativeRouteRouteChildren: DashboardInternalAdmini
       DashboardInternalAdministrativeIndexRoute,
     DashboardInternalAdministrativeClientsIndexRoute:
       DashboardInternalAdministrativeClientsIndexRoute,
+    DashboardInternalAdministrativeCollaboratorsIndexRoute:
+      DashboardInternalAdministrativeCollaboratorsIndexRoute,
     DashboardInternalAdministrativeOperationsIndexRoute:
       DashboardInternalAdministrativeOperationsIndexRoute,
     DashboardInternalAdministrativeOperationsIdIndexRoute:

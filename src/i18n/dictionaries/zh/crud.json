@@ -10,7 +10,8 @@
     "rowActionsEdit": "编辑",
     "rowActionsDelete": "删除",
     "selectAll": "全选",
-    "selectRow": "选择行"
+    "selectRow": "选择行",
+    "searchButton": "搜索"
   },
   "recordModal": {
     "cancel": "取消",

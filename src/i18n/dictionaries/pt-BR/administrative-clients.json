@@ -43,5 +43,8 @@
   "confirm": {
     "deleteTitle": "Excluir cliente",
     "deleteMessage": "Esta ação não pode ser desfeita. Deseja excluir \"{name}\"?"
-  }
+  },
+  "collaboratorsPickerTitle": "Colaboradores",
+  "collaboratorsPickerDescription": "Colaboradores cadastrados em todos os clientes.",
+  "colClient": "Cliente"
 }

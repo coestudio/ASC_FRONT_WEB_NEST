@@ -39,12 +39,20 @@
     "toast": {
       "created": "协作者创建成功。",
       "deleted": "协作者已删除。",
-      "error": "无法完成操作，请重试。"
+      "error": "无法完成操作，请重试。",
+      "passwordReset": "密码已重置。",
+      "activated": "协作者已启用。",
+      "deactivated": "协作者已停用。"
     },
     "confirm": {
       "deleteTitle": "删除协作者",
-      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
-    }
+      "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？",
+      "resetTitle": "重置密码",
+      "resetMessage": "将向\"{name}\"发送新密码。是否继续？"
+    },
+    "actionResetPassword": "重置密码",
+    "actionActivate": "启用",
+    "actionDeactivate": "停用"
   },
   "finalReport": {
     "title": "最终报告",

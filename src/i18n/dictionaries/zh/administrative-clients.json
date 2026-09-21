@@ -43,5 +43,8 @@
   "confirm": {
     "deleteTitle": "删除客户",
     "deleteMessage": "此操作无法撤销。确定要删除“{name}”吗？"
-  }
+  },
+  "collaboratorsPickerTitle": "协作者",
+  "collaboratorsPickerDescription": "所有客户下已注册的协作者。",
+  "colClient": "客户"
 }

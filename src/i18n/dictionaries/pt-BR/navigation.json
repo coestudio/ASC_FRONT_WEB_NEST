@@ -20,5 +20,7 @@
   "clientHome": "Início",
   "clientFinalReport": "Relatório Final",
   "clientTracking": "Acompanhamento",
-  "clientCollaborators": "Colaboradores"
+  "clientCollaborators": "Colaboradores",
+  "administrativoCollaborators": "Colaboradores",
+  "clientOperations": "Operações"
 }

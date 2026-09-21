@@ -20,5 +20,7 @@
   "clientHome": "首页",
   "clientFinalReport": "最终报告",
   "clientTracking": "跟踪",
-  "clientCollaborators": "协作人员"
+  "clientCollaborators": "协作人员",
+  "administrativoCollaborators": "协作者",
+  "clientOperations": "操作"
 }

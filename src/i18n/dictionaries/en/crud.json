@@ -10,7 +10,8 @@
     "rowActionsEdit": "Edit",
     "rowActionsDelete": "Delete",
     "selectAll": "Select all",
-    "selectRow": "Select row"
+    "selectRow": "Select row",
+    "searchButton": "Search"
   },
   "recordModal": {
     "cancel": "Cancel",

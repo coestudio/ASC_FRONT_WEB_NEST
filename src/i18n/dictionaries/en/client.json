@@ -39,12 +39,20 @@
     "toast": {
       "created": "Collaborator created successfully.",
       "deleted": "Collaborator deleted.",
-      "error": "Could not complete the action. Please try again."
+      "error": "Could not complete the action. Please try again.",
+      "passwordReset": "Password reset successfully.",
+      "activated": "Collaborator activated.",
+      "deactivated": "Collaborator deactivated."
     },
     "confirm": {
       "deleteTitle": "Delete collaborator",
-      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?"
-    }
+      "deleteMessage": "This action cannot be undone. Delete \"{name}\"?",
+      "resetTitle": "Reset password",
+      "resetMessage": "A new password will be sent to \"{name}\". Continue?"
+    },
+    "actionResetPassword": "Reset password",
+    "actionActivate": "Activate",
+    "actionDeactivate": "Deactivate"
   },
   "finalReport": {
     "title": "Final Report",

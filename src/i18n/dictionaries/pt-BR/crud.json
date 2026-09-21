@@ -10,7 +10,8 @@
     "rowActionsEdit": "Editar",
     "rowActionsDelete": "Excluir",
     "selectAll": "Selecionar todos",
-    "selectRow": "Selecionar linha"
+    "selectRow": "Selecionar linha",
+    "searchButton": "Pesquisar"
   },
   "recordModal": {
     "cancel": "Cancelar",
