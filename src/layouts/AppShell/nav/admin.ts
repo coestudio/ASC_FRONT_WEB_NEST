@@ -13,6 +13,12 @@ const fragment: NavFragment = {
       icon: "bi-shield-check",
       order: 2,
     },
+    {
+      labelKey: "navigation.adminLaboratory",
+      to: "/admin/laboratory",
+      icon: "bi-eyedropper",
+      order: 3,
+    },
   ],
 };
 

@@ -9,6 +9,7 @@ import {
   useDeleteApiHarborId,
   usePostApiHarbor,
   usePutApiHarborId,
+  getApiHarbor,
 } from "@/api/generated/endpoints/harbor/harbor";
 import { getGetApiTerminalQueryOptions } from "@/api/generated/endpoints/terminal/terminal";
 import { PostApiHarborBody } from "@/api/generated/zod/harbor/harbor.zod";
@@ -22,6 +23,7 @@ import { PageLayout } from "@/layouts/PageLayout";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -96,11 +98,20 @@ function HarborPage() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: HarborDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<HarborDTO | null>(null);
 
-  const listQueryOptions = getGetApiHarborQueryOptions({
-    Search: search || undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-    Sort: sort,
+  // Busca tolerante (sem caixa/acento, aceita erro de digitação) — ver `useFuzzyListQuery`.
+  const listQueryOptions = useFuzzyListQuery({
+    serverOptions: getGetApiHarborQueryOptions({
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+      Sort: sort,
+    }),
+    baseKey: getGetApiHarborQueryKey(),
+    fetchPage: (offset, limit) => getApiHarbor({ Offset: offset, Limit: limit, Sort: sort }),
+    sort,
+    search,
+    page,
+    pageSize: PAGE_SIZE,
+    getTexts: (v: HarborDTO) => [v.name, v.address?.city, v.address?.state],
   });
 
   const createMutation = usePostApiHarbor();

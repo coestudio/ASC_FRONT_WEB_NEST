@@ -74,5 +74,7 @@
   },
   "rolesTitle": "Roles",
   "rolesDescription": "Reference of access roles and what each one can see in the system.",
-  "rolesEmpty": "Content not registered yet — role descriptions pending confirmation."
+  "rolesEmpty": "Content not registered yet — role descriptions pending confirmation.",
+  "laboratoryTitle": "Laboratory staff",
+  "laboratoryDescription": "Laboratory users with access to the system."
 }

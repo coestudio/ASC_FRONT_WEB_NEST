@@ -33,6 +33,7 @@ import { Route as DashboardInternalLaboratoryIndexRouteImport } from './routes/_
 import { Route as DashboardInternalOperationalIndexRouteImport } from './routes/_dashboard/_internal/operational/index'
 import { Route as DashboardAdminAccessIndexRouteImport } from './routes/_dashboard/admin/access/index'
 import { Route as DashboardAdminDebugIndexRouteImport } from './routes/_dashboard/admin/debug/index'
+import { Route as DashboardAdminLaboratoryIndexRouteImport } from './routes/_dashboard/admin/laboratory/index'
 import { Route as DashboardAdminRolesIndexRouteImport } from './routes/_dashboard/admin/roles/index'
 import { Route as DashboardClientCollaboratorsIndexRouteImport } from './routes/_dashboard/client/collaborators/index'
 import { Route as DashboardClientFinalReportIndexRouteImport } from './routes/_dashboard/client/final-report/index'
@@ -174,6 +175,12 @@ const DashboardAdminDebugIndexRoute =
     path: '/debug/',
     getParentRoute: () => DashboardAdminRouteRoute,
   } as any)
+const DashboardAdminLaboratoryIndexRoute =
+  DashboardAdminLaboratoryIndexRouteImport.update({
+    id: '/laboratory/',
+    path: '/laboratory/',
+    getParentRoute: () => DashboardAdminRouteRoute,
+  } as any)
 const DashboardAdminRolesIndexRoute =
   DashboardAdminRolesIndexRouteImport.update({
     id: '/roles/',
@@ -292,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/operational/': typeof DashboardInternalOperationalIndexRoute
   '/admin/access/': typeof DashboardAdminAccessIndexRoute
   '/admin/debug/': typeof DashboardAdminDebugIndexRoute
+  '/admin/laboratory/': typeof DashboardAdminLaboratoryIndexRoute
   '/admin/roles/': typeof DashboardAdminRolesIndexRoute
   '/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
   '/client/final-report/': typeof DashboardClientFinalReportIndexRoute
@@ -325,6 +333,7 @@ export interface FileRoutesByTo {
   '/operational': typeof DashboardInternalOperationalIndexRoute
   '/admin/access': typeof DashboardAdminAccessIndexRoute
   '/admin/debug': typeof DashboardAdminDebugIndexRoute
+  '/admin/laboratory': typeof DashboardAdminLaboratoryIndexRoute
   '/admin/roles': typeof DashboardAdminRolesIndexRoute
   '/client/collaborators': typeof DashboardClientCollaboratorsIndexRoute
   '/client/final-report': typeof DashboardClientFinalReportIndexRoute
@@ -368,6 +377,7 @@ export interface FileRoutesById {
   '/_dashboard/_internal/operational/': typeof DashboardInternalOperationalIndexRoute
   '/_dashboard/admin/access/': typeof DashboardAdminAccessIndexRoute
   '/_dashboard/admin/debug/': typeof DashboardAdminDebugIndexRoute
+  '/_dashboard/admin/laboratory/': typeof DashboardAdminLaboratoryIndexRoute
   '/_dashboard/admin/roles/': typeof DashboardAdminRolesIndexRoute
   '/_dashboard/client/collaborators/': typeof DashboardClientCollaboratorsIndexRoute
   '/_dashboard/client/final-report/': typeof DashboardClientFinalReportIndexRoute
@@ -408,6 +418,7 @@ export interface FileRouteTypes {
     | '/operational/'
     | '/admin/access/'
     | '/admin/debug/'
+    | '/admin/laboratory/'
     | '/admin/roles/'
     | '/client/collaborators/'
     | '/client/final-report/'
@@ -441,6 +452,7 @@ export interface FileRouteTypes {
     | '/operational'
     | '/admin/access'
     | '/admin/debug'
+    | '/admin/laboratory'
     | '/admin/roles'
     | '/client/collaborators'
     | '/client/final-report'
@@ -483,6 +495,7 @@ export interface FileRouteTypes {
     | '/_dashboard/_internal/operational/'
     | '/_dashboard/admin/access/'
     | '/_dashboard/admin/debug/'
+    | '/_dashboard/admin/laboratory/'
     | '/_dashboard/admin/roles/'
     | '/_dashboard/client/collaborators/'
     | '/_dashboard/client/final-report/'
@@ -679,6 +692,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAdminDebugIndexRouteImport
       parentRoute: typeof DashboardAdminRouteRoute
     }
+    '/_dashboard/admin/laboratory/': {
+      id: '/_dashboard/admin/laboratory/'
+      path: '/laboratory'
+      fullPath: '/admin/laboratory/'
+      preLoaderRoute: typeof DashboardAdminLaboratoryIndexRouteImport
+      parentRoute: typeof DashboardAdminRouteRoute
+    }
     '/_dashboard/admin/roles/': {
       id: '/_dashboard/admin/roles/'
       path: '/roles'
@@ -814,6 +834,7 @@ interface DashboardAdminRouteRouteChildren {
   DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
   DashboardAdminAccessIndexRoute: typeof DashboardAdminAccessIndexRoute
   DashboardAdminDebugIndexRoute: typeof DashboardAdminDebugIndexRoute
+  DashboardAdminLaboratoryIndexRoute: typeof DashboardAdminLaboratoryIndexRoute
   DashboardAdminRolesIndexRoute: typeof DashboardAdminRolesIndexRoute
 }
 
@@ -821,6 +842,7 @@ const DashboardAdminRouteRouteChildren: DashboardAdminRouteRouteChildren = {
   DashboardAdminIndexRoute: DashboardAdminIndexRoute,
   DashboardAdminAccessIndexRoute: DashboardAdminAccessIndexRoute,
   DashboardAdminDebugIndexRoute: DashboardAdminDebugIndexRoute,
+  DashboardAdminLaboratoryIndexRoute: DashboardAdminLaboratoryIndexRoute,
   DashboardAdminRolesIndexRoute: DashboardAdminRolesIndexRoute,
 }
 

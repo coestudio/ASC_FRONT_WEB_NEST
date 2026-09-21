@@ -28,7 +28,7 @@ import {
   resolveDocumentTypeLabel,
 } from "@/api/generated/static/documentTypeOptions";
 import { InputFileSingle, InputText, InputTextArea, Select } from "@/layouts/Form/Fields/Index";
-import { FilterText } from "@/layouts/Filters/Index";
+import { FilterSearch } from "@/layouts/Filters/Index";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
@@ -171,9 +171,9 @@ export function Documents({ operationId }: { operationId: string }) {
       <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
         <div className="d-flex gap-2 flex-wrap">
           <div style={{ minWidth: 240 }}>
-            <FilterText
+            <FilterSearch
               value={search}
-              onChange={(value) => {
+              onSearch={(value) => {
                 setSearch(value);
                 setPage(1);
               }}

@@ -9,6 +9,7 @@ import {
   useDeleteApiTerminalId,
   usePostApiTerminal,
   usePutApiTerminalId,
+  getApiTerminal,
 } from "@/api/generated/endpoints/terminal/terminal";
 import {
   getApiHarbor,
@@ -27,6 +28,7 @@ import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useMounted } from "@/hooks/useMounted";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -80,11 +82,20 @@ function TerminalPageBody() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: TerminalDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<TerminalDTO | null>(null);
 
-  const listQueryOptions = getGetApiTerminalQueryOptions({
-    Search: search || undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-    Sort: sort,
+  // Busca tolerante (sem caixa/acento, aceita erro de digitação) — ver `useFuzzyListQuery`.
+  const listQueryOptions = useFuzzyListQuery({
+    serverOptions: getGetApiTerminalQueryOptions({
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+      Sort: sort,
+    }),
+    baseKey: getGetApiTerminalQueryKey(),
+    fetchPage: (offset, limit) => getApiTerminal({ Offset: offset, Limit: limit, Sort: sort }),
+    sort,
+    search,
+    page,
+    pageSize: PAGE_SIZE,
+    getTexts: (v: TerminalDTO) => [v.name],
   });
 
   // Rótulo já resolvido do porto selecionado (edição/detalhe) — o

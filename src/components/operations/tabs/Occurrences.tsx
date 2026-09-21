@@ -20,7 +20,7 @@ import { ListPagination } from "@/components/ui/list-pagination";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
 import { SortableTh } from "@/components/crud/sortable-th";
 import { InputPhotoMulti, InputText, InputTextArea } from "@/layouts/Form/Fields/Index";
-import { FilterText } from "@/layouts/Filters/Index";
+import { FilterSearch } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import {
   operationOccurrenceCreateFormSchema,
@@ -133,9 +133,9 @@ export function Occurrences({ operationId }: { operationId: string }) {
 
       <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
         <div style={{ minWidth: 240 }}>
-          <FilterText
+          <FilterSearch
             value={search}
-            onChange={(value) => {
+            onSearch={(value) => {
               setSearch(value);
               setPage(1);
             }}

@@ -22,5 +22,6 @@
   "clientTracking": "Seguimiento",
   "clientCollaborators": "Colaboradores",
   "administrativoCollaborators": "Colaboradores",
-  "clientOperations": "Operaciones"
+  "clientOperations": "Operaciones",
+  "adminLaboratory": "Personal del laboratorio"
 }

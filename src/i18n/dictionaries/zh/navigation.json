@@ -22,5 +22,6 @@
   "clientTracking": "跟踪",
   "clientCollaborators": "协作人员",
   "administrativoCollaborators": "协作者",
-  "clientOperations": "操作"
+  "clientOperations": "操作",
+  "adminLaboratory": "实验室人员"
 }

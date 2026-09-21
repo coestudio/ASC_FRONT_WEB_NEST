@@ -25,6 +25,7 @@ import { PageLayout } from "@/layouts/PageLayout";
 import { collaboratorFormSchema, type CollaboratorFormValues } from "@/lib/validation/collaborator";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useMounted } from "@/hooks/useMounted";
+import { fuzzyFilter } from "@/lib/fuzzy-search";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -88,16 +89,11 @@ function toPagedResult(
   sort: string | undefined,
   page: number,
 ): CrudPagedResult<CollaboratorDTO> {
-  const q = search.trim().toLowerCase();
-  const filtered = q
-    ? items.filter((c) => {
-        const fullName = c.user.profile.fullName?.toLowerCase() ?? "";
-        const email = c.user.profile.email?.toLowerCase() ?? "";
-        return (
-          fullName.includes(q) || c.user.userName.toLowerCase().includes(q) || email.includes(q)
-        );
-      })
-    : items;
+  const filtered = fuzzyFilter(items, search, (c) => [
+    c.user.profile.fullName,
+    c.user.userName,
+    c.user.profile.email,
+  ]);
   const sorted = sortItems(filtered, sort);
   const start = (page - 1) * PAGE_SIZE;
   return { items: sorted.slice(start, start + PAGE_SIZE), total: sorted.length };
@@ -307,7 +303,6 @@ function CollaboratorsCrudBody({ clientId }: { clientId: string | undefined }) {
           )}
           getItemKey={(c) => c.id}
           search={search}
-          searchButton
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);

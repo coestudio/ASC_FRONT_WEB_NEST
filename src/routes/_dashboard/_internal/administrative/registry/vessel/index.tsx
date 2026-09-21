@@ -9,6 +9,7 @@ import {
   useDeleteApiVesselId,
   usePostApiVessel,
   usePutApiVesselId,
+  getApiVessel,
 } from "@/api/generated/endpoints/vessel/vessel";
 import { PostApiVesselBody } from "@/api/generated/zod/vessel/vessel.zod";
 import type { VesselDTO } from "@/api/generated/model";
@@ -20,6 +21,7 @@ import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -47,11 +49,20 @@ function VesselPage() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: VesselDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<VesselDTO | null>(null);
 
-  const listQueryOptions = getGetApiVesselQueryOptions({
-    Search: search || undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-    Sort: sort,
+  // Busca tolerante (sem caixa/acento, aceita erro de digitação) — ver `useFuzzyListQuery`.
+  const listQueryOptions = useFuzzyListQuery({
+    serverOptions: getGetApiVesselQueryOptions({
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+      Sort: sort,
+    }),
+    baseKey: getGetApiVesselQueryKey(),
+    fetchPage: (offset, limit) => getApiVessel({ Offset: offset, Limit: limit, Sort: sort }),
+    sort,
+    search,
+    page,
+    pageSize: PAGE_SIZE,
+    getTexts: (v: VesselDTO) => [v.name],
   });
 
   const createMutation = usePostApiVessel();

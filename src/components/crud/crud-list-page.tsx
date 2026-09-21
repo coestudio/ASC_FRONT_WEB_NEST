@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import type { UseQueryOptions } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ import { useResponsiveViewMode, type ViewMode } from "@/lib/view-mode";
 import { ViewToggle } from "@/components/ui/view-toggle";
 import { MockDataBanner } from "@/components/ui/mock-data-banner";
 import { ListPagination } from "@/components/ui/list-pagination";
-import { FilterText } from "@/layouts/Filters/Index";
+import { FilterSearch } from "@/layouts/Filters/Index";
 import { useMounted } from "@/hooks/useMounted";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { nextSort } from "./sort";
@@ -87,11 +87,6 @@ export type CrudListPageProps<
   getItemKey: (item: T) => string;
   search?: string;
   onSearchChange?: (value: string) => void;
-  /**
-   * Busca só dispara ao clicar em "Pesquisar" (ou Enter), em vez de a cada
-   * tecla. Opt-in — sem a prop, o comportamento é o de sempre.
-   */
-  searchButton?: boolean;
   page: number;
   pageSize: number;
   onPageChange: (page: number) => void;
@@ -634,42 +629,6 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
  * spinner até lá — garante que o hook nunca existe durante o SSR, em vez de
  * só ficar `enabled: false`.
  */
-/** Campo de busca com botão "Pesquisar" — só aplica o texto no clique/Enter. */
-function SearchWithButton({
-  value,
-  onSearch,
-  placeholder,
-  buttonLabel,
-}: {
-  value: string;
-  onSearch: (value: string) => void;
-  placeholder: string;
-  buttonLabel: string;
-}) {
-  const [draft, setDraft] = useState(value);
-
-  // Mantém o rascunho alinhado se o pai mudar a busca por fora.
-  useEffect(() => setDraft(value), [value]);
-
-  return (
-    <form
-      className="d-flex gap-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSearch(draft.trim());
-      }}
-    >
-      <div className="flex-grow-1">
-        <FilterText value={draft} onChange={setDraft} placeholder={placeholder} />
-      </div>
-      <Button type="submit" variant="outline-primary">
-        <i className="bi bi-search me-1" aria-hidden />
-        {buttonLabel}
-      </Button>
-    </form>
-  );
-}
-
 export function CrudListPage<
   T,
   TQueryData extends CrudPagedResult<T> = CrudPagedResult<T>,
@@ -683,7 +642,6 @@ export function CrudListPage<
   getItemKey,
   search,
   onSearchChange,
-  searchButton,
   page,
   pageSize,
   onPageChange,
@@ -728,20 +686,11 @@ export function CrudListPage<
       <div className="d-flex align-items-center gap-2 mb-4 flex-wrap">
         {onSearchChange ? (
           <div className="flex-grow-1" style={{ minWidth: 220 }}>
-            {searchButton ? (
-              <SearchWithButton
-                value={search ?? ""}
-                onSearch={onSearchChange}
-                placeholder={t("crud.list.searchPlaceholder")}
-                buttonLabel={t("crud.list.searchButton")}
-              />
-            ) : (
-              <FilterText
-                value={search ?? ""}
-                onChange={onSearchChange}
-                placeholder={t("crud.list.searchPlaceholder")}
-              />
-            )}
+            <FilterSearch
+              value={search ?? ""}
+              onSearch={onSearchChange}
+              placeholder={t("crud.list.searchPlaceholder")}
+            />
           </div>
         ) : null}
         {filters}

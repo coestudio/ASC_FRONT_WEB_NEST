@@ -9,6 +9,7 @@ import {
   useDeleteApiContainerId,
   usePostApiContainer,
   usePutApiContainerId,
+  getApiContainer,
 } from "@/api/generated/endpoints/container/container";
 import { PostApiContainerBody } from "@/api/generated/zod/container/container.zod";
 import type { ContainerDTO } from "@/api/generated/model";
@@ -20,6 +21,7 @@ import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -51,11 +53,20 @@ function ContainerPage() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ContainerDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ContainerDTO | null>(null);
 
-  const listQueryOptions = getGetApiContainerQueryOptions({
-    Search: search || undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-    Sort: sort,
+  // Busca tolerante (sem caixa/acento, aceita erro de digitação) — ver `useFuzzyListQuery`.
+  const listQueryOptions = useFuzzyListQuery({
+    serverOptions: getGetApiContainerQueryOptions({
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+      Sort: sort,
+    }),
+    baseKey: getGetApiContainerQueryKey(),
+    fetchPage: (offset, limit) => getApiContainer({ Offset: offset, Limit: limit, Sort: sort }),
+    sort,
+    search,
+    page,
+    pageSize: PAGE_SIZE,
+    getTexts: (v: ContainerDTO) => [v.identifier],
   });
 
   const createMutation = usePostApiContainer();

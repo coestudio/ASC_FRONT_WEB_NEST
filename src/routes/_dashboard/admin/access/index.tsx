@@ -13,6 +13,7 @@ import {
   usePostApiUser,
   usePostApiUserIdResetPassword,
   usePutApiUserId,
+  getApiUser,
   getGetApiUserQueryKey,
 } from "@/api/generated/endpoints/user/user";
 import { PostApiUserBody } from "@/api/generated/zod/user/user.zod";
@@ -30,6 +31,7 @@ import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { resolveInternalRoleLabel } from "@/api/generated/static/internalRoleOptions";
 import styles from "./index.module.css";
+import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -132,13 +134,31 @@ function AdminAccessPageContent() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
-  const listQueryOptions = userListQueryOptions({
-    Search: search || undefined,
-    Role: roleFilter || undefined,
-    IsAdmin: isAdminFilter === "admin" ? true : isAdminFilter === "nonAdmin" ? false : undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-    Sort: sort,
+  const isAdminParam =
+    isAdminFilter === "admin" ? true : isAdminFilter === "nonAdmin" ? false : undefined;
+  // Busca tolerante (sem caixa/acento, aceita erro de digitação) — ver `useFuzzyListQuery`.
+  const listQueryOptions = useFuzzyListQuery({
+    serverOptions: userListQueryOptions({
+      Role: roleFilter || undefined,
+      IsAdmin: isAdminParam,
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+      Sort: sort,
+    }),
+    baseKey: getGetApiUserQueryKey(),
+    fetchPage: (offset, limit) =>
+      getApiUser({
+        Role: roleFilter || undefined,
+        IsAdmin: isAdminParam,
+        Offset: offset,
+        Limit: limit,
+        Sort: sort,
+      }),
+    sort: `${sort ?? ""}|${roleFilter}|${isAdminFilter}`,
+    search,
+    page,
+    pageSize: PAGE_SIZE,
+    getTexts: (u: UserDTO) => [u.profile.fullName, u.userName, u.profile.email, u.profile.document],
   });
   // Lookup de roles pro multi-select do form (fora do CrudListPage) — mesmo
   // guard de SSR via useSsrSafeQuery (SPEC-10); o cache já vem quente do

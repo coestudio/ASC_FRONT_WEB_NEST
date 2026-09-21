@@ -9,6 +9,7 @@ import {
   useDeleteApiProductId,
   usePostApiProduct,
   usePutApiProductId,
+  getApiProduct,
 } from "@/api/generated/endpoints/product/product";
 import { PostApiProductBody } from "@/api/generated/zod/product/product.zod";
 import type { ProductDTO } from "@/api/generated/model";
@@ -20,6 +21,7 @@ import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useLocale, useT } from "@/lib/ui-prefs";
+import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -47,11 +49,20 @@ function ProductPage() {
   const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ProductDTO } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ProductDTO | null>(null);
 
-  const listQueryOptions = getGetApiProductQueryOptions({
-    Search: search || undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-    Sort: sort,
+  // Busca tolerante (sem caixa/acento, aceita erro de digitação) — ver `useFuzzyListQuery`.
+  const listQueryOptions = useFuzzyListQuery({
+    serverOptions: getGetApiProductQueryOptions({
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+      Sort: sort,
+    }),
+    baseKey: getGetApiProductQueryKey(),
+    fetchPage: (offset, limit) => getApiProduct({ Offset: offset, Limit: limit, Sort: sort }),
+    sort,
+    search,
+    page,
+    pageSize: PAGE_SIZE,
+    getTexts: (v: ProductDTO) => [v.name],
   });
 
   const createMutation = usePostApiProduct();

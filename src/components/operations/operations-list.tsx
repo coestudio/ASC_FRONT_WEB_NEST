@@ -46,7 +46,7 @@ import { ViewToggle } from "@/components/ui/view-toggle";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { Select, SelectAsync } from "@/layouts/Form/Fields/Index";
 import type { LayoutField } from "@/layouts/Form/Fields/Index";
-import { FilterText } from "@/layouts/Filters/Index";
+import { FilterSearch } from "@/layouts/Filters/Index";
 import type { Locale } from "@/i18n/config";
 import { useResponsiveViewMode } from "@/lib/view-mode";
 import { useLocale, useT } from "@/lib/ui-prefs";
@@ -528,9 +528,9 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
 
       <div className="d-flex align-items-center gap-2 mb-4 flex-wrap">
         <div style={{ minWidth: 220 }}>
-          <FilterText
+          <FilterSearch
             value={search}
-            onChange={(value) => {
+            onSearch={(value) => {
               setSearch(value);
               setPage(1);
             }}

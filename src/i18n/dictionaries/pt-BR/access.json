@@ -74,5 +74,7 @@
   },
   "rolesTitle": "Perfis",
   "rolesDescription": "Referência dos perfis de acesso e o que cada um pode ver no sistema.",
-  "rolesEmpty": "Conteúdo ainda não cadastrado — descrição dos perfis pendente de confirmação."
+  "rolesEmpty": "Conteúdo ainda não cadastrado — descrição dos perfis pendente de confirmação.",
+  "laboratoryTitle": "Pessoal do laboratório",
+  "laboratoryDescription": "Usuários do laboratório com acesso ao sistema."
 }

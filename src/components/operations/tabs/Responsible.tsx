@@ -24,7 +24,8 @@ import {
   resolveInternalRoleLabel,
 } from "@/api/generated/static/internalRoleOptions";
 import { SelectAsync } from "@/layouts/Form/Fields/Index";
-import { FilterText } from "@/layouts/Filters/Index";
+import { fuzzyScore } from "@/lib/fuzzy-search";
+import { FilterSearch } from "@/layouts/Filters/Index";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { usePagination } from "@/hooks/usePagination";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -174,10 +175,13 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
         return false;
       }
       if (!queryText) return true;
-      const name = item.user.profile.fullName ?? item.user.userName;
+      // Busca tolerante: sem caixa/acento e aceita erro de digitação.
       return (
-        name.toLowerCase().includes(queryText) ||
-        item.user.profile.email.toLowerCase().includes(queryText)
+        fuzzyScore(queryText, [
+          item.user.profile.fullName,
+          item.user.userName,
+          item.user.profile.email,
+        ]) !== null
       );
     });
   }, [search, roleFilter, query.data]);
@@ -201,9 +205,9 @@ export function OperationResponsibleTab({ operationId }: { operationId: string }
       <div className="d-flex flex-column gap-2 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2">
           <div className="flex-grow-1" style={{ minWidth: 220 }}>
-            <FilterText
+            <FilterSearch
               value={search}
-              onChange={setSearch}
+              onSearch={setSearch}
               placeholder={t("administrative-operations.responsible.searchPlaceholder")}
             />
           </div>

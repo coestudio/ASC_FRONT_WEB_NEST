@@ -1,10 +1,10 @@
 /* Cabeçalho da operação (`OperationHeader`) — card com barra de acento na
-   cor primária da brand, eyebrow em caixa-alta, título de destaque e chips
+   cor primária da brand, título com o número da operação e chips
    "soft" (fundo translúcido + ícone) em vez de badges sólidos. Cores só via
    tokens `--bs-*` (regra de tema). */
 .header {
   position: relative;
-  padding: 1.25rem 1.5rem 1.25rem 1.75rem;
+  padding: 0.75rem 1.25rem 0.75rem 1.5rem;
   overflow: hidden;
   background-image: linear-gradient(100deg, rgba(var(--bs-primary-rgb), 0.08) 0%, transparent 55%);
 }
@@ -17,17 +17,9 @@
   background: var(--bs-primary);
 }
 
-.eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--bs-primary);
-}
-
 .title {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
@@ -77,6 +69,31 @@
   border-color: rgba(var(--chip-rgb), 0.4);
 }
 
-.statusBox {
-  min-width: 240px;
+/* Toggle do menu de status — chip clicável. */
+.statusToggle {
+  cursor: pointer;
+}
+
+.statusToggle::after {
+  margin-left: 0.25rem;
+}
+
+/* Abas do detalhe — aba ativa em destaque com a cor primária da brand (fundo
+   translúcido + texto + borda inferior). Só tokens `--bs-*`, então vale nos
+   temas light e dark e nas 3 brands sem bloco por tema. */
+.tabs:global(.nav-tabs) :global(.nav-link) {
+  color: var(--bs-secondary-color);
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+}
+
+.tabs:global(.nav-tabs) :global(.nav-link:hover) {
+  color: var(--bs-primary);
+}
+
+.tabs:global(.nav-tabs) :global(.nav-link.active) {
+  color: var(--bs-primary);
+  font-weight: 600;
+  background-color: rgba(var(--bs-primary-rgb), 0.12);
+  border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-primary);
 }

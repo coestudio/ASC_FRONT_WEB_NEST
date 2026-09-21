@@ -29,6 +29,7 @@ import {
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useMounted } from "@/hooks/useMounted";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
+import { fuzzyFilter } from "@/lib/fuzzy-search";
 import { useLocale, useT } from "@/lib/ui-prefs";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -96,14 +97,12 @@ function toPagedResult(
   sort: string | undefined,
   page: number,
 ): CrudPagedResult<CollaboratorRow> {
-  const q = search.trim().toLowerCase();
-  let list = q
-    ? items.filter((c) =>
-        [c.user.profile.fullName, c.user.userName, c.user.profile.email, c.clientName].some((v) =>
-          v?.toLowerCase().includes(q),
-        ),
-      )
-    : items;
+  let list = fuzzyFilter(items, search, (c) => [
+    c.user.profile.fullName,
+    c.user.userName,
+    c.user.profile.email,
+    c.clientName,
+  ]);
   if (sort) {
     const desc = sort.startsWith("-");
     const key = desc ? sort.slice(1) : sort;
@@ -296,7 +295,6 @@ function AdministrativeCollaboratorsBody() {
           )}
           getItemKey={(c) => c.id}
           search={search}
-          searchButton
           onSearchChange={(value) => {
             setSearch(value);
             setPage(1);

@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { Nav } from "react-bootstrap";
+import { Dropdown, Nav } from "react-bootstrap";
 import { LoadingState } from "@/components/ui/loading-state";
 import { toast } from "react-toastify";
 
@@ -12,7 +10,6 @@ import {
   getGetApiOperationQueryKey,
   usePatchApiOperationIdStatus,
 } from "@/api/generated/endpoints/operation/operation";
-import { PatchApiOperationIdStatusBody } from "@/api/generated/zod/operation/operation.zod";
 import type { OperationDetailDTO, OperationStatus } from "@/api/generated/model";
 import {
   operationStatusOptions,
@@ -25,7 +22,6 @@ import { OperationDetailsTab } from "@/components/operations/tabs/Details";
 import { OperationResponsibleTab } from "@/components/operations/tabs/Responsible";
 import { Log } from "@/components/operations/tabs/Log";
 import { Reports } from "@/components/operations/tabs/Reports";
-import { Select } from "@/layouts/Form/Fields/Index";
 import { PageLayout } from "@/layouts/PageLayout";
 import { useMounted } from "@/hooks/useMounted";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
@@ -133,7 +129,7 @@ function OperationShellBody({ id }: { id: string }) {
         variant="tabs"
         activeKey={tab}
         onSelect={(key) => setTab((key as Tab | null) ?? "details")}
-        className="mb-3"
+        className={`mb-3 ${styles.tabs}`}
       >
         {TABS.map((item) => (
           <Nav.Item key={item.key}>
@@ -176,18 +172,12 @@ function OperationShellBody({ id }: { id: string }) {
   );
 }
 
-type StatusFormValues = { status: OperationStatus };
-
 /**
- * Cabeçalho com os dados básicos da operação (número, cliente, tipo,
- * serviço) e a troca de status — um único `Select` (SPEC-SHARE-01) que
- * dispara o PATCH assim que o usuário escolhe uma opção nova, sem botão de
- * salvar (mesmo comportamento do `Form.Select` do legado,
- * `Operations/Detail.tsx`). É "formulário" de um campo só, mesmo padrão de
- * `ListSearchInput` (`crud-list-page.tsx`): `useForm` local + `watch` +
- * efeito, aqui com `zodResolver` sobre o schema gerado
- * (`PatchApiOperationIdStatusBody`) porque o valor vai direto pro PATCH do
- * Core.
+ * Cabeçalho da operação em uma linha só: número em destaque, chips de tipo e
+ * serviço e, à direita, a troca de status. O nome do cliente não entra aqui
+ * (já aparece na aba Detalhes). A troca de status é um menu (`Dropdown`) que
+ * dispara o PATCH assim que o usuário escolhe uma opção, sem botão de salvar
+ * — não é formulário, então não usa `layouts/Form/Fields` nem `react-hook-form`.
  */
 function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
   const t = useT();
@@ -195,28 +185,14 @@ function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
   const queryClient = useQueryClient();
   const statusMutation = usePatchApiOperationIdStatus();
 
-  const methods = useForm<StatusFormValues>({
-    resolver: zodResolver(PatchApiOperationIdStatusBody),
-    defaultValues: { status: operation.status },
-  });
-  const status = methods.watch("status");
-
-  useEffect(() => {
-    if (status !== operation.status) methods.setValue("status", operation.status);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [operation.status]);
-
-  useEffect(() => {
+  const changeStatus = (status: OperationStatus) => {
     if (status === operation.status) return;
     statusMutation.mutate(
       { id: operation.id, data: { status } },
       {
-        // Sem isso o cache do React Query (`operation`, vindo do
-        // `useSsrSafeQuery` do pai) não sabia do PATCH — o `<select>`
-        // mudava (é o valor local do react-hook-form), mas o resto da tela
-        // (badge de status aqui do lado) só atualizava com F5. `setQueryData`
-        // com a resposta já mapeada do Core evita um refetch redundante;
-        // a lista invalida pra não mostrar status velho se o usuário voltar.
+        // `setQueryData` com a resposta do Core atualiza o cache da operação
+        // (`useSsrSafeQuery` do pai) sem refetch; a lista invalida pra não
+        // mostrar status velho se o usuário voltar.
         onSuccess: (updated) => {
           queryClient.setQueryData(
             getGetApiOperationIdQueryOptions(operation.id).queryKey,
@@ -227,47 +203,52 @@ function OperationHeader({ operation }: { operation: OperationDetailDTO }) {
         },
         onError: () => {
           toast.error(t("administrative-operations.shell.statusError"));
-          methods.setValue("status", operation.status);
         },
       },
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status]);
+  };
 
   return (
     <section className={`soft-card mb-4 ${styles.header}`}>
-      <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
-        <div className="d-flex flex-column gap-2 min-w-0">
-          <span className={styles.eyebrow}>
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div className="d-flex flex-wrap align-items-center gap-2 min-w-0">
+          <h1 className={styles.title}>
             {t("administrative-operations.shell.eyebrow", { number: String(operation.number) })}
+          </h1>
+          <span className={styles.chip}>
+            <i
+              className={`bi ${operation.opType === "Stuffing" ? "bi-box-arrow-in-down" : "bi-truck"}`}
+            />
+            {resolveOperationTypeLabel(operation.opType, locale)}
           </span>
-          <h1 className={styles.title}>{operation.client.fullName}</h1>
-          <div className="d-flex flex-wrap align-items-center gap-2">
-            <span className={styles.chip}>
-              <i
-                className={`bi ${operation.opType === "Stuffing" ? "bi-box-arrow-in-down" : "bi-truck"}`}
-              />
-              {resolveOperationTypeLabel(operation.opType, locale)}
-            </span>
-            <span className={styles.chip}>
-              <i className="bi bi-box-seam" />
-              {resolveOperationServiceLabel(operation.opService, locale)}
-            </span>
-            <span className={`${styles.chip} ${styles[`status${operation.status}`]}`}>
-              <i className="bi bi-circle-fill" />
-              {resolveOperationStatusLabel(operation.status, locale)}
-            </span>
-          </div>
+          <span className={styles.chip}>
+            <i className="bi bi-box-seam" />
+            {resolveOperationServiceLabel(operation.opService, locale)}
+          </span>
         </div>
-        <div className={styles.statusBox}>
-          <Select<StatusFormValues>
-            methods={methods}
-            fieldName="status"
-            label={t("administrative-operations.shell.statusLabel")}
-            enumOptions={operationStatusOptions}
-            config={{ containerClass: "mb-0" }}
-          />
-        </div>
+        <Dropdown align="end">
+          <Dropdown.Toggle
+            as="button"
+            type="button"
+            className={`${styles.chip} ${styles.statusToggle} ${styles[`status${operation.status}`]}`}
+            disabled={statusMutation.isPending}
+            aria-label={t("administrative-operations.shell.statusLabel")}
+          >
+            <i className="bi bi-circle-fill" />
+            {resolveOperationStatusLabel(operation.status, locale)}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {operationStatusOptions.map((opt) => (
+              <Dropdown.Item
+                key={opt.key}
+                active={opt.key === operation.status}
+                onClick={() => changeStatus(opt.key as OperationStatus)}
+              >
+                {opt.name[locale] ?? opt.name["pt-BR"] ?? opt.key}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     </section>
   );

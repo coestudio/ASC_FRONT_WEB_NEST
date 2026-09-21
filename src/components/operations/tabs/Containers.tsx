@@ -44,7 +44,7 @@ import {
   Select,
   SelectAsync,
 } from "@/layouts/Form/Fields/Index";
-import { FilterText } from "@/layouts/Filters/Index";
+import { FilterSearch } from "@/layouts/Filters/Index";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
@@ -238,9 +238,9 @@ export function Containers({ operationId }: { operationId: string }) {
     <div>
       <div className="d-flex justify-content-between align-items-start gap-3 mb-3 flex-wrap">
         <div style={{ minWidth: 240 }}>
-          <FilterText
+          <FilterSearch
             value={search}
-            onChange={(value) => {
+            onSearch={(value) => {
               setSearch(value);
               setPage(1);
             }}

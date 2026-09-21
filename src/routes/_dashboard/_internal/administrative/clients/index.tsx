@@ -11,6 +11,7 @@ import {
   useDeleteApiClientId,
   usePostApiClient,
   usePutApiClientId,
+  getApiClient,
 } from "@/api/generated/endpoints/client/client";
 import { PostApiClientBody } from "@/api/generated/zod/client/client.zod";
 import type { ClientDTO, ClientDetailDTO } from "@/api/generated/model";
@@ -26,6 +27,7 @@ import { useMounted } from "@/hooks/useMounted";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import styles from "./index.module.css";
+import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -140,11 +142,20 @@ function ClientsPageBody() {
     mode: Extract<CrudRecordMode, "edit" | "view">;
   } | null>(null);
 
-  const listQueryOptions = getGetApiClientQueryOptions({
-    Search: search || undefined,
-    Offset: (page - 1) * PAGE_SIZE,
-    Limit: PAGE_SIZE,
-    Sort: sort,
+  // Busca tolerante (sem caixa/acento, aceita erro de digitação) — ver `useFuzzyListQuery`.
+  const listQueryOptions = useFuzzyListQuery({
+    serverOptions: getGetApiClientQueryOptions({
+      Offset: (page - 1) * PAGE_SIZE,
+      Limit: PAGE_SIZE,
+      Sort: sort,
+    }),
+    baseKey: getGetApiClientQueryKey(),
+    fetchPage: (offset, limit) => getApiClient({ Offset: offset, Limit: limit, Sort: sort }),
+    sort,
+    search,
+    page,
+    pageSize: PAGE_SIZE,
+    getTexts: (v: ClientDTO) => [v.fullName, v.shortName, v.document, v.email, v.phone],
   });
 
   const createMutation = usePostApiClient();
