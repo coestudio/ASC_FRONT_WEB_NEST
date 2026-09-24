@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
+  getApiOperationOperationIdRomaneioImportImportId,
   usePostApiOperationOperationIdRomaneioImportAnalyze,
   usePostApiOperationOperationIdRomaneioImportApply,
   usePostApiOperationOperationIdRomaneioImportImportIdDecide,
@@ -27,6 +28,7 @@ import {
   RomaneioImportNewDecision,
   type RomaneioImportAnalysisDTO,
   type RomaneioImportConflictDTO,
+  type RomaneioImportConflictDecisionItem,
   type RomaneioImportDecide,
   type RomaneioImportDuplicateGroupDTO,
   type RomaneioImportForeignDTO,
@@ -123,6 +125,17 @@ const missingKey = (item: RomaneioImportMissingItemDTO) => item.romaneio?.itemId
 const conflictKey = (item: RomaneioImportConflictDTO) => item.incoming?.itemIdentifier ?? "";
 const invalidKey = (item: RomaneioImportInvalidDTO) => String(item.sheetRow ?? "");
 const duplicatedKey = (item: RomaneioImportDuplicateGroupDTO) => item.certificado ?? "";
+
+/** SPEC-56 (Core) — campos do diff que não podem ser aceitos (fardo estufado). */
+const lockedFieldsOf = (item: RomaneioImportConflictDTO) =>
+  new Set(item.isStuffed ? (item.lockedFields ?? []) : []);
+
+/** Certificados do 409 "estufado durante a revisão" (`extensions.stuffed`). */
+function stuffedFromError(err: unknown): string[] | null {
+  const data = (err as { response?: { status?: number; data?: Record<string, unknown> } }).response;
+  if (data?.status !== 409 || !Array.isArray(data.data?.stuffed)) return null;
+  return data.data.stuffed.map(String);
+}
 
 /** Junta os campos pesquisáveis de um item num texto só, em minúsculas. */
 function searchText(...parts: (string | number | null | undefined)[]): string {
@@ -266,9 +279,14 @@ export function ImportRomaneioModal({
     duplicatedRows.filter((i) => i.decision === RomaneioImportDuplicateDecision.DiscardedAll)
       .length;
 
-  const conflictFieldsOf = (row: RomaneioImportConflictDTO) =>
-    conflictDraft[conflictKey(row)] ??
-    new Set(row.acceptedFields?.length ? row.acceptedFields : (row.diff ?? []));
+  /** Campos marcados do conflito — nunca inclui campo travado (estufado). */
+  const conflictFieldsOf = (row: RomaneioImportConflictDTO) => {
+    const locked = lockedFieldsOf(row);
+    const base =
+      conflictDraft[conflictKey(row)] ??
+      new Set(row.acceptedFields?.length ? row.acceptedFields : (row.diff ?? []));
+    return new Set([...base].filter((field) => !locked.has(field)));
+  };
 
   const handleAnalyze = analyzeMethods.handleSubmit(async (values) => {
     try {
@@ -330,25 +348,37 @@ export function ImportRomaneioModal({
   const decideNew = (items: RomaneioImportNewItemDTO[], create: boolean) =>
     decide({ newDecisions: items.map((i) => ({ certificado: newKey(i), create })) });
 
-  const decideMissing = (items: RomaneioImportMissingItemDTO[], del: boolean) =>
-    decide({ missingDecisions: items.map((i) => ({ certificado: missingKey(i), delete: del })) });
-
-  const decideConflicts = (items: RomaneioImportConflictDTO[], accept: boolean) =>
-    decide({
-      conflictDecisions: items.map((i) =>
-        accept
-          ? { certificado: conflictKey(i), fields: Array.from(conflictFieldsOf(i)) }
-          : { certificado: conflictKey(i), ignore: true },
-      ),
+  // Fardo estufado nunca entra no lote: ausente estufado já nasce "Manter"
+  // travado no Core e o `decide` recusaria o lote inteiro (tudo-ou-nada).
+  const decideMissing = (items: RomaneioImportMissingItemDTO[], del: boolean) => {
+    const free = items.filter((i) => !i.isStuffed);
+    if (free.length === 0) return;
+    return decide({
+      missingDecisions: free.map((i) => ({ certificado: missingKey(i), delete: del })),
     });
+  };
 
-  const toggleConflictField = (row: RomaneioImportConflictDTO, field: string) =>
+  // Aceitar só manda campos não travados; conflito sem campo aceitável fica
+  // de fora (o Core já o resolve como "Ignorar" automático).
+  const decideConflicts = (items: RomaneioImportConflictDTO[], accept: boolean) => {
+    const decisions = items.flatMap<RomaneioImportConflictDecisionItem>((i) => {
+      if (!accept) return [{ certificado: conflictKey(i), ignore: true }];
+      const fields = Array.from(conflictFieldsOf(i));
+      return fields.length > 0 ? [{ certificado: conflictKey(i), fields }] : [];
+    });
+    if (decisions.length === 0) return;
+    return decide({ conflictDecisions: decisions });
+  };
+
+  const toggleConflictField = (row: RomaneioImportConflictDTO, field: string) => {
+    if (lockedFieldsOf(row).has(field)) return;
     setConflictDraft((prev) => {
       const current = new Set(conflictFieldsOf(row));
       if (current.has(field)) current.delete(field);
       else current.add(field);
       return { ...prev, [conflictKey(row)]: current };
     });
+  };
 
   /**
    * Descartes (`discard-row` / `resolve-duplicate`) são um por chamada e não
@@ -479,6 +509,25 @@ export function ImportRomaneioModal({
     } catch (err) {
       if (err instanceof z.ZodError) {
         toast.error(t("administrative-operations.romaneio.import.toast.applyError"));
+        return;
+      }
+      // SPEC-56 (Core): fardo estufado entre a revisão e o Aplicar — nada foi
+      // gravado e o Core já corrigiu a análise (decisões afetadas voltaram a
+      // pendente / "Manter"). Recarrega pra mostrar as pendências novas.
+      const stuffed = stuffedFromError(err);
+      if (stuffed) {
+        try {
+          setAnalysis(
+            await getApiOperationOperationIdRomaneioImportImportId(operationId, importId),
+          );
+          toast.warn(
+            t("administrative-operations.romaneio.import.stuffed.duringReview", {
+              count: String(stuffed.length),
+            }),
+          );
+        } catch {
+          // interceptor global (mutator.ts) já mostra o toast de erro
+        }
       }
     }
   };
@@ -998,6 +1047,7 @@ function MissingTab({
                 <span className="text-body-secondary small">
                   {item.romaneio?.itemCode} · {item.romaneio?.lote}
                 </span>
+                {item.isStuffed ? <StuffedBadge /> : null}
                 <ButtonGroup size="sm" className="ms-auto">
                   <Button
                     variant={
@@ -1005,7 +1055,7 @@ function MissingTab({
                         ? "primary"
                         : "outline-primary"
                     }
-                    disabled={busy}
+                    disabled={busy || item.isStuffed}
                     onClick={() => onDecide([item], false)}
                   >
                     {t("administrative-operations.romaneio.import.decision.keep")}
@@ -1016,7 +1066,12 @@ function MissingTab({
                         ? "danger"
                         : "outline-danger"
                     }
-                    disabled={busy}
+                    disabled={busy || item.isStuffed}
+                    title={
+                      item.isStuffed
+                        ? t("administrative-operations.romaneio.import.stuffed.cannotDelete")
+                        : undefined
+                    }
                     onClick={() => onDecide([item], true)}
                   >
                     {t("administrative-operations.romaneio.import.decision.delete")}
@@ -1085,6 +1140,7 @@ function ConflictsTab({
             const decision = conflict.decision;
             const isPending = isConflictPending(conflict);
             const ignored = decision === RomaneioImportConflictDecision.Ignore;
+            const locked = lockedFieldsOf(conflict);
             return (
               <div
                 key={certificado}
@@ -1092,6 +1148,7 @@ function ConflictsTab({
               >
                 <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
                   <span className="fw-semibold text-break">{certificado}</span>
+                  {conflict.isStuffed ? <StuffedBadge /> : null}
                   <Badge
                     bg={isPending ? "warning" : ignored ? "secondary" : "success"}
                     text={isPending ? "dark" : undefined}
@@ -1126,20 +1183,33 @@ function ConflictsTab({
                   </ButtonGroup>
                 </div>
                 <div className="d-flex flex-wrap gap-3">
-                  {(conflict.diff ?? []).map((field) => (
-                    <Form.Check
-                      key={field}
-                      id={`conflict-${certificado}-${field}`}
-                      type="checkbox"
-                      disabled={busy}
-                      label={t(
-                        DIFF_FIELD_LABELS[field] ??
-                          "administrative-operations.romaneio.import.fields.itemCode",
-                      )}
-                      checked={selected.has(field)}
-                      onChange={() => onToggleField(conflict, field)}
-                    />
-                  ))}
+                  {(conflict.diff ?? []).map((field) => {
+                    const label = t(
+                      DIFF_FIELD_LABELS[field] ??
+                        "administrative-operations.romaneio.import.fields.itemCode",
+                    );
+                    // Campo travado (fardo estufado): sem checkbox, com cadeado.
+                    return locked.has(field) ? (
+                      <span
+                        key={field}
+                        className="text-body-secondary small"
+                        title={t("administrative-operations.romaneio.import.stuffed.fieldLocked")}
+                      >
+                        <i className="bi bi-lock-fill me-1" aria-hidden="true" />
+                        {label}
+                      </span>
+                    ) : (
+                      <Form.Check
+                        key={field}
+                        id={`conflict-${certificado}-${field}`}
+                        type="checkbox"
+                        disabled={busy}
+                        label={label}
+                        checked={selected.has(field)}
+                        onChange={() => onToggleField(conflict, field)}
+                      />
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -1372,6 +1442,21 @@ function DuplicatedTab({
         </div>
       </PagedList>
     </>
+  );
+}
+
+/** Selo "Estufado" — fardo com carga ativa (SPEC-56 do Core). */
+function StuffedBadge() {
+  const t = useT();
+  return (
+    <Badge
+      bg="info"
+      text="dark"
+      title={t("administrative-operations.romaneio.import.stuffed.hint")}
+    >
+      <i className="bi bi-box-seam me-1" aria-hidden="true" />
+      {t("administrative-operations.romaneio.import.stuffed.badge")}
+    </Badge>
   );
 }
 

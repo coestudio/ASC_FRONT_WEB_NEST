@@ -441,7 +441,8 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }).optional(),
-  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional(),
+  "isStuffed": zod.boolean().optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -479,7 +480,9 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
 }).optional(),
   "diff": zod.array(zod.string()).optional(),
   "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
-  "acceptedFields": zod.array(zod.string()).optional()
+  "acceptedFields": zod.array(zod.string()).optional(),
+  "isStuffed": zod.boolean().optional(),
+  "lockedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({
@@ -709,7 +712,8 @@ export const PostApiOperationOperationIdRomaneioImportImportIdFixRowResponse = z
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }).optional(),
-  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional(),
+  "isStuffed": zod.boolean().optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -747,7 +751,9 @@ export const PostApiOperationOperationIdRomaneioImportImportIdFixRowResponse = z
 }).optional(),
   "diff": zod.array(zod.string()).optional(),
   "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
-  "acceptedFields": zod.array(zod.string()).optional()
+  "acceptedFields": zod.array(zod.string()).optional(),
+  "isStuffed": zod.boolean().optional(),
+  "lockedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({
@@ -922,7 +928,8 @@ export const PostApiOperationOperationIdRomaneioImportImportIdDiscardRowResponse
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }).optional(),
-  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional(),
+  "isStuffed": zod.boolean().optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -960,7 +967,9 @@ export const PostApiOperationOperationIdRomaneioImportImportIdDiscardRowResponse
 }).optional(),
   "diff": zod.array(zod.string()).optional(),
   "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
-  "acceptedFields": zod.array(zod.string()).optional()
+  "acceptedFields": zod.array(zod.string()).optional(),
+  "isStuffed": zod.boolean().optional(),
+  "lockedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({
@@ -1137,7 +1146,8 @@ export const PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateRe
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }).optional(),
-  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional(),
+  "isStuffed": zod.boolean().optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -1175,7 +1185,9 @@ export const PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateRe
 }).optional(),
   "diff": zod.array(zod.string()).optional(),
   "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
-  "acceptedFields": zod.array(zod.string()).optional()
+  "acceptedFields": zod.array(zod.string()).optional(),
+  "isStuffed": zod.boolean().optional(),
+  "lockedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({
@@ -1359,7 +1371,8 @@ export const PostApiOperationOperationIdRomaneioImportImportIdDecideResponse = z
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }).optional(),
-  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional(),
+  "isStuffed": zod.boolean().optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -1397,7 +1410,9 @@ export const PostApiOperationOperationIdRomaneioImportImportIdDecideResponse = z
 }).optional(),
   "diff": zod.array(zod.string()).optional(),
   "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
-  "acceptedFields": zod.array(zod.string()).optional()
+  "acceptedFields": zod.array(zod.string()).optional(),
+  "isStuffed": zod.boolean().optional(),
+  "lockedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({
@@ -1565,7 +1580,8 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
 }).optional(),
-  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional(),
+  "isStuffed": zod.boolean().optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -1603,7 +1619,9 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
 }).optional(),
   "diff": zod.array(zod.string()).optional(),
   "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
-  "acceptedFields": zod.array(zod.string()).optional()
+  "acceptedFields": zod.array(zod.string()).optional(),
+  "isStuffed": zod.boolean().optional(),
+  "lockedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({

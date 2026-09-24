@@ -241,3 +241,29 @@ Chaves novas em `administrative-operations.romaneio.import` nos 4 locales
   o schema gerado do `fix-row`).
 - Gates: `tsc` limpo; `bun run lint` 0 erros. **Não testado em runtime.**
 
+### RF14 — Fardo estufado (Core SPEC-56, 2026-09-24)
+
+Regra do usuário: fardo **estufado** (CargoUnit ativa) não pode ter
+identificador, nota fiscal, lote e pesos alterados, nem ser excluído. Quem
+garante é o Core (`feat/56-romaneio-stuffed-lock`); o front só antecipa.
+
+- `just map` contra o Core da SPEC-56: `RomaneioImportConflictDTO` ganhou
+  `isStuffed`/`lockedFields`; `RomaneioImportMissingItemDTO` ganhou
+  `isStuffed`.
+- **Aba Romaneio — editar fardo:** se `isStuffed`, os campos travados ficam
+  desabilitados com cadeado (`STUFFED_LOCKED_FIELDS` em `RomaneioForm.ts`,
+  espelho de `RomaneioModel.StuffedLockedFields`). `LayoutField` ganhou
+  `disabled` (repassado pelo `RenderFields` só quando ligado).
+- **Import — Conflitos:** selo "Estufado"; campo travado aparece com
+  cadeado, sem checkbox, e nunca entra no "Aceitar". Conflito sem campo
+  aceitável fica de fora do aceite em massa (o Core já o marca como Ignorar
+  automático).
+- **Import — Ausentes:** selo "Estufado"; Manter/Excluir desabilitados (o
+  Core já o marca "Manter" travado). Fardo estufado não entra nas ações em
+  massa — o `decide` é tudo-ou-nada e recusaria o lote inteiro.
+- **Aplicar recusado (409 `stuffed`):** fardo estufado entre a revisão e o
+  Aplicar. Nada foi gravado; o front recarrega a análise
+  (`GET import/{importId}`) e avisa quantos fardos foram estufados — as
+  decisões afetadas voltam como pendência.
+- Gates: `tsc` limpo; `bun run lint` 0 erros. **Não testado em runtime.**
+

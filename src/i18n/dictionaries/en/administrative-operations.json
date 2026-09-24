@@ -280,6 +280,13 @@
         "title": "Discard rows?",
         "message": "{count} item(s) will be discarded from this import and cannot be recovered without re-uploading the spreadsheet.",
         "confirm": "Discard"
+      },
+      "stuffed": {
+        "badge": "Stuffed",
+        "hint": "Bale already stuffed: identifier, invoice, lot and weights cannot change and it cannot be deleted.",
+        "fieldLocked": "Locked field: bale is stuffed.",
+        "cannotDelete": "A stuffed bale cannot be deleted.",
+        "duringReview": "{count} bale(s) were stuffed during the review. Nothing was saved: review the pending items and apply again."
       }
     }
   },

@@ -14,4 +14,6 @@ export interface RomaneioImportConflictDTO {
   diff?: string[];
   decision?: RomaneioImportConflictDecision;
   acceptedFields?: string[];
+  isStuffed?: boolean;
+  lockedFields?: string[];
 }

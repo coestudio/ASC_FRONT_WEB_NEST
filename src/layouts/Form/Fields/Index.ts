@@ -67,6 +67,8 @@ export type LayoutField = {
   label?: string;
   placeholder?: string;
   col?: { md?: number; xl?: number; xs?: number; lg?: number };
+  /** Campo só leitura (ex.: campo travado de fardo estufado — SPEC-100 RF14). */
+  disabled?: boolean;
   config?: {
     containerClass?: string;
     className?: string;

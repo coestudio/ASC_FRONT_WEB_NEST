@@ -10,4 +10,5 @@ import type { RomaneioImportMissingDecision } from './romaneioImportMissingDecis
 export interface RomaneioImportMissingItemDTO {
   romaneio?: RomaneioDTO;
   decision?: RomaneioImportMissingDecision;
+  isStuffed?: boolean;
 }

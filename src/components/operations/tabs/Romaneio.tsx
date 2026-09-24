@@ -32,7 +32,12 @@ import { CrudBulkActions } from "@/components/crud/crud-bulk-actions";
 import { withEmptyStringsAsUndefined } from "@/components/crud/empty-strings-resolver";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ImportRomaneioModal } from "./RomaneioImportModal";
-import { buildRomaneioFields, toFormValues, type RomaneioFormValues } from "./RomaneioForm";
+import {
+  buildRomaneioFields,
+  STUFFED_LOCKED_FIELDS,
+  toFormValues,
+  type RomaneioFormValues,
+} from "./RomaneioForm";
 import { InputText } from "@/layouts/Form/Fields/Index";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useT } from "@/lib/ui-prefs";
@@ -137,7 +142,12 @@ export function Romaneio({ operationId }: { operationId: string }) {
     }
   };
 
-  const fields = buildRomaneioFields(t);
+  // SPEC-56 (Core): fardo estufado não pode ter identificador, NF, lote e
+  // pesos alterados — no editar, esses campos ficam travados na tela.
+  const fields = buildRomaneioFields(
+    t,
+    modal?.mode === "edit" && modal.record?.isStuffed ? STUFFED_LOCKED_FIELDS : undefined,
+  );
 
   const columns: CrudColumn<RomaneioDTO>[] = [
     {

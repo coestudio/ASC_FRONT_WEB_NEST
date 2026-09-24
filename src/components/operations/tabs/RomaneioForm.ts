@@ -44,11 +44,29 @@ export function toFormValues(record?: RomaneioLike): RomaneioFormValues {
   };
 }
 
-/** Campos do formulário de fardo (criar/editar/ajustar linha do import). */
+/**
+ * Campos travados de fardo **estufado** (CargoUnit ativa vinculada) — espelho
+ * de `RomaneioModel.StuffedLockedFields` do Core (SPEC-56), que é quem de fato
+ * garante a regra (PUT recusa com 409). Aqui só antecipa na tela.
+ */
+export const STUFFED_LOCKED_FIELDS: ReadonlySet<string> = new Set([
+  "itemIdentifier",
+  "notaFiscal",
+  "lote",
+  "peso",
+  "pesoTara",
+  "pesoBruto",
+]);
+
+/**
+ * Campos do formulário de fardo (criar/editar/ajustar linha do import).
+ * `locked` desabilita os campos informados, com ícone de cadeado.
+ */
 export function buildRomaneioFields(
   t: (key: TranslationKey, params?: TranslateParams) => string,
+  locked?: ReadonlySet<string>,
 ): LayoutField[] {
-  return [
+  const fields: LayoutField[] = [
     {
       type: "InputText",
       fieldName: "itemIdentifier",
@@ -116,4 +134,10 @@ export function buildRomaneioFields(
       col: { md: 6 },
     },
   ];
+  if (!locked || locked.size === 0) return fields;
+  return fields.map((field) =>
+    locked.has(field.fieldName)
+      ? { ...field, disabled: true, config: { ...field.config, icon: "bi-lock-fill" } }
+      : field,
+  );
 }

@@ -280,6 +280,13 @@
         "title": "Descartar linhas?",
         "message": "{count} item(ns) serão descartados desta importação e não poderão ser recuperados sem reenviar a planilha.",
         "confirm": "Descartar"
+      },
+      "stuffed": {
+        "badge": "Estufado",
+        "hint": "Fardo já estufado: identificador, nota fiscal, lote e pesos não podem mudar e ele não pode ser excluído.",
+        "fieldLocked": "Campo travado: fardo estufado.",
+        "cannotDelete": "Fardo estufado não pode ser excluído.",
+        "duringReview": "{count} fardo(s) foram estufados durante a revisão. Nada foi gravado: revise as pendências e aplique de novo."
       }
     }
   },

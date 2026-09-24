@@ -35,6 +35,9 @@ const RenderFields: React.FC<{
             placeholder: field.config?.placeholder ?? field.placeholder,
           }}
           {...field.col}
+          // Só repassa `disabled` quando ligado — alguns Fields espalham
+          // props restantes num elemento DOM/Bootstrap.
+          {...(field.disabled ? { disabled: true } : {})}
         />
       );
     })}
