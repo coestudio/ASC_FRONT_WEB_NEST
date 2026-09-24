@@ -187,15 +187,15 @@
         "new": "新包裹",
         "newHint": "下方勾选的包裹将被创建。",
         "missing": "表格中缺失的包裹",
-        "missingHint": "勾选以删除表格中不再出现的包裹。",
+        "missingHint": "请决定保留或删除表格中已不存在的每个棉包。",
         "conflicts": "有差异的包裹",
-        "conflictsHint": "勾选应使用表格值更新的字段。",
+        "conflictsHint": "勾选应采用表格值的字段并接受，或忽略差异。",
         "foreign": "属于其他作业",
         "foreignHint": "这些包裹已存在于其他作业中，不会被更改。",
         "invalid": "无效行",
-        "invalidHint": "这些行存在错误，不会被导入。",
+        "invalidHint": "请修正或丢弃每个有错误的行。丢弃的行不会被导入。",
         "duplicated": "表格中重复的行",
-        "duplicatedHint": "此包裹在表格中出现多次，不会被导入。",
+        "duplicatedHint": "该棉包在表格中出现多次。请丢弃重复的行以继续。",
         "unchanged": "无变化",
         "unchangedHint": "这些棉包已以相同数据存在于该作业中，不会被修改。"
       },
@@ -228,23 +228,44 @@
         "noResults": "没有符合搜索条件的项目。",
         "footerSummary": "将创建 {created} · 更新 {updated} · 删除 {deleted}"
       },
-      "confirmDelete": {
-        "title": "删除缺失的棉包？",
-        "message": "表格中缺失的 {count} 个棉包将从该作业中删除。此操作无法撤销。",
-        "confirm": "删除并应用"
-      },
       "fix": {
         "button": "修正",
         "title": "修正无效行",
-        "fixed": "已修正",
-        "toastSuccess": "已根据修正后的行创建棉包。",
-        "footerFixed": "已创建 {count} 个修正项",
         "errorsTitle": "此行发现的错误",
         "originalTitle": "原始数据（表格）",
         "adjustTitle": "修正",
         "changedCount": "已修改 {count} 个字段",
         "restore": "恢复原始数据",
         "save": "保存并创建棉包"
+      },
+      "pending": {
+        "banner": "应用前还有 {count} 项待处理。全部处理完之前不会保存任何内容。",
+        "next": "下一个待处理项",
+        "done": "所有待处理项已完成。请检查并应用。",
+        "tabTitle": "此标签页中的待处理项",
+        "footer": "{count} 项待处理",
+        "applyBlocked": "请先处理所有待处理项再应用。"
+      },
+      "decision": {
+        "keep": "保留",
+        "delete": "删除",
+        "keepAll": "全部保留 ({count})",
+        "deleteAll": "全部删除 ({count})",
+        "accept": "接受",
+        "ignore": "忽略",
+        "accepted": "已接受",
+        "ignored": "已忽略",
+        "pending": "待处理",
+        "discard": "丢弃",
+        "discardAll": "全部丢弃 ({count})",
+        "undo": "撤销",
+        "duplicatedRows": "第 {rows} 行",
+        "fixUnavailable": "行修正将在 Core 更新 (fix-row) 后可用。"
+      },
+      "confirmApply": {
+        "title": "应用导入？",
+        "message": "将创建 {created} 个、更新 {updated} 个、删除 {deleted} 个棉包。已丢弃的行：{discarded}。",
+        "confirm": "应用"
       }
     }
   },

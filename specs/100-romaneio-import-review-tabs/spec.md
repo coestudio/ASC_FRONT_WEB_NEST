@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-100
 - **Nome:** romaneio-import-review-tabs
-- **Status:** IMPLEMENTED (2026-09-24) — aprovado pelo usuário ("pode
+- **Status:** IN PROGRESS (2026-09-24) — RF13 implementado no front com decisões locais; falta ligar o "Ajustar" ao `fix-row` do Core (aguardando `just map`) — aprovado pelo usuário ("pode
   escrever essa specs e fazer numa branch separada para eu ver antes de
   migrar para main"). Branch `feat/100-romaneio-import-review-tabs`,
   aguardando revisão visual do usuário antes do merge em `main`.
@@ -96,6 +96,22 @@ fazer.
   Ajuste mostra "N campo(s) alterado(s)". Botão "Restaurar original"
   volta o formulário aos valores da planilha. Abaixo de `lg` as áreas
   empilham e o modal fica em tela cheia.
+- **RF13 — Só grava depois de resolver todas as pendências** (decisão do
+  usuário, 2026-09-24; **substitui** o "criar na hora" do RF12). Depende
+  da SPEC do Core `romaneio-import-pending-resolution` (estado de decisão
+  no snapshot do import + endpoints `fix-row`, `discard-row`,
+  `resolve-duplicate`, `decide` + gate de pendência no `apply`).
+  - Pendências: Ausentes (Manter/Excluir), Conflitos (Aceitar campos/
+    Ignorar), Inválidos (Ajustar/Descartar), Duplicados (escolher a linha
+    que vale/Descartar todas). Novos: default "criar", não é pendência.
+    De outra operação e Sem alteração: informativos.
+  - Ajustar chama `fix-row`: nada é gravado; a linha é revalidada com as
+    regras do import e **muda de aba** conforme a reclassificação do Core
+    (pode virar pendência nova — processo dinâmico).
+  - Contador geral de pendências no topo, badge por aba, botão "Próxima
+    pendência". Aplicar desabilitado enquanto `pending.total > 0`; ao
+    clicar, resumo final e OK. Um único `apply` grava tudo (Invoice
+    automática e evento de Log continuam no Core).
 - **RF11 — Layout.** Modal `size="xl"`, `fullscreen="md-down"`. Corpo com
   rolagem própria (padrão do wrapper `Modal`); header/footer fixos.
 
@@ -178,3 +194,28 @@ Chaves novas em `administrative-operations.romaneio.import` nos 4 locales
   e válida com o mesmo certificado já cai em Duplicados).
 - **Não verificado em runtime** (precisa Core local + planilha grande):
   CA1, CA4 e CA6 dependem de teste manual do usuário na branch.
+
+### RF13 — implementação no front (2026-09-24)
+
+- Decisões guardadas no front, por id: Ausentes `keep|delete`, Conflitos
+  `accept|ignore` (+ campos marcados; aceitar exige ≥1 campo), Inválidos e
+  Duplicados `descartado`. Sem decisão = pendente. Novos continuam com
+  "criar" por padrão (não é pendência).
+- Alerta no topo com o total de pendências + botão "Próxima pendência"
+  (vai para a aba e a página do primeiro item pendente, na ordem
+  Conflitos → Ausentes → Inválidos → Duplicados); selo amarelo com a
+  contagem por aba e ✓ verde quando a aba está resolvida; itens pendentes
+  destacados em amarelo.
+- "Aplicar" desabilitado com pendência; ao clicar, `ConfirmationModal` com
+  o resumo (criar/atualizar/excluir/descartadas), vermelho se houver
+  exclusão (substitui a confirmação só-de-exclusão do RF10).
+- Payload do `apply` inalterado (createNew / conflicts aceitos /
+  deleteMissing = "excluir") — funciona com o Core atual. O gate de
+  pendência é só no front até o Core validar no servidor.
+- Duplicados agrupados por certificado; hoje só "Descartar" (escolher qual
+  linha vale depende do Core reclassificar a linha).
+- "Ajustar" em Inválidos **desabilitado** com dica: o "criar na hora" do
+  RF12 foi removido (gravava sem Invoice automática nem evento de Log).
+  `RomaneioFixRowModal` (layout Original × Ajuste) fica pronto para ser
+  religado ao `fix-row` quando o endpoint existir no client gerado.
+

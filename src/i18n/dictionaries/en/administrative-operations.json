@@ -187,15 +187,15 @@
         "new": "New bales",
         "newHint": "The bales checked below will be created.",
         "missing": "Bales missing from the spreadsheet",
-        "missingHint": "Check to delete a bale that no longer appears in the spreadsheet.",
+        "missingHint": "Decide whether to keep or delete each bale that is no longer in the spreadsheet.",
         "conflicts": "Bales with divergence",
-        "conflictsHint": "Check the fields that should be updated with the spreadsheet value.",
+        "conflictsHint": "Check the fields that should take the spreadsheet value and accept, or ignore the difference.",
         "foreign": "Belong to another operation",
         "foreignHint": "These bales already exist in another operation and will not be changed.",
         "invalid": "Invalid rows",
-        "invalidHint": "These rows have errors and will not be imported.",
+        "invalidHint": "Fix or discard each row with errors. Discarded rows will not be imported.",
         "duplicated": "Duplicated rows in the spreadsheet",
-        "duplicatedHint": "This bale appears more than once in the spreadsheet and will not be imported.",
+        "duplicatedHint": "This bale appears more than once in the spreadsheet. Discard the repeated rows to continue.",
         "unchanged": "Unchanged",
         "unchangedHint": "These bales already exist unchanged in the operation and will not be modified."
       },
@@ -228,23 +228,44 @@
         "noResults": "No items match the search.",
         "footerSummary": "{created} to create · {updated} to update · {deleted} to delete"
       },
-      "confirmDelete": {
-        "title": "Delete missing bales?",
-        "message": "{count} bale(s) missing from the spreadsheet will be deleted from the operation. This cannot be undone.",
-        "confirm": "Delete and apply"
-      },
       "fix": {
         "button": "Fix",
         "title": "Fix invalid row",
-        "fixed": "Fixed",
-        "toastSuccess": "Bale created from the fixed row.",
-        "footerFixed": "{count} fixed already created",
         "errorsTitle": "Errors found in this row",
         "originalTitle": "Original (spreadsheet)",
         "adjustTitle": "Adjustment",
         "changedCount": "{count} field(s) changed",
         "restore": "Restore original",
         "save": "Save and create bale"
+      },
+      "pending": {
+        "banner": "{count} pending item(s) left before applying. Nothing is saved until all are resolved.",
+        "next": "Next pending item",
+        "done": "All pending items resolved. Review and apply.",
+        "tabTitle": "Pending items in this tab",
+        "footer": "{count} pending",
+        "applyBlocked": "Resolve all pending items before applying."
+      },
+      "decision": {
+        "keep": "Keep",
+        "delete": "Delete",
+        "keepAll": "Keep all ({count})",
+        "deleteAll": "Delete all ({count})",
+        "accept": "Accept",
+        "ignore": "Ignore",
+        "accepted": "Accepted",
+        "ignored": "Ignored",
+        "pending": "Pending",
+        "discard": "Discard",
+        "discardAll": "Discard all ({count})",
+        "undo": "Undo",
+        "duplicatedRows": "rows {rows}",
+        "fixUnavailable": "Row fixing available after the Core update (fix-row)."
+      },
+      "confirmApply": {
+        "title": "Apply import?",
+        "message": "{created} bale(s) will be created, {updated} updated and {deleted} deleted. Discarded rows: {discarded}.",
+        "confirm": "Apply"
       }
     }
   },

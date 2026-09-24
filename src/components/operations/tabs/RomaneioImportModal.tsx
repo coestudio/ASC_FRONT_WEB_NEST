@@ -1,14 +1,11 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
-import { useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Form, Nav, Row, Spinner } from "react-bootstrap";
+import { Alert, Badge, Button, ButtonGroup, Form, Nav, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
-  getGetApiOperationOperationIdRomaneioQueryKey,
-  usePostApiOperationOperationIdRomaneio,
   usePostApiOperationOperationIdRomaneioImportAnalyze,
   usePostApiOperationOperationIdRomaneioImportApply,
 } from "@/api/generated/endpoints/romaneio/romaneio";
@@ -31,8 +28,6 @@ import type { TranslationKey } from "@/i18n/translate";
 import { FilterText } from "@/layouts/Filters/Index";
 import { InputFileSingle } from "@/layouts/Form/Fields/Index";
 import { useT } from "@/lib/ui-prefs";
-import { RomaneioFixRowModal } from "./RomaneioFixRowModal";
-import type { RomaneioFormValues } from "./RomaneioForm";
 
 /** Rótulo (chave i18n) de cada campo comparável do import — RN2 do Core
  * (`RomaneioImportClassifier`), os mesmos 10 nomes usados em `diff`. */
@@ -54,6 +49,9 @@ const REVIEW_PAGE_SIZE = 50;
 
 type ReviewTab =
   "new" | "missing" | "conflicts" | "foreign" | "invalid" | "duplicated" | "unchanged";
+
+/** Abas que carregam pendência (SPEC-100 RF13). */
+type PendingTab = "missing" | "conflicts" | "invalid" | "duplicated";
 
 /** Ordem visual das abas. */
 const TAB_ORDER: ReviewTab[] = [
@@ -77,8 +75,8 @@ const TAB_PRIORITY: ReviewTab[] = [
   "unchanged",
 ];
 
-/** SPEC-100 RF4 — abas que pedem atenção quando têm itens. */
-const ATTENTION_TABS = new Set<ReviewTab>(["missing", "conflicts"]);
+/** RF13 — ordem em que "Próxima pendência" percorre as abas. */
+const PENDING_ORDER: PendingTab[] = ["conflicts", "missing", "invalid", "duplicated"];
 
 const TAB_LABELS: Record<ReviewTab, TranslationKey> = {
   new: "administrative-operations.romaneio.import.summary.new",
@@ -99,6 +97,12 @@ const TAB_HINTS: Record<ReviewTab, TranslationKey> = {
   duplicated: "administrative-operations.romaneio.import.sections.duplicatedHint",
   unchanged: "administrative-operations.romaneio.import.sections.unchangedHint",
 };
+
+type MissingDecision = "keep" | "delete";
+type ConflictDecision = "accept" | "ignore";
+
+/** Linhas duplicadas da planilha agrupadas pelo certificado repetido. */
+type DuplicatedGroup = { certificado: string; rows: RomaneioImportRowDTO[] };
 
 /** Junta os campos pesquisáveis de um item num texto só, em minúsculas. */
 function searchText(...parts: (string | number | null | undefined)[]): string {
@@ -128,23 +132,29 @@ function useFilteredPage<T>(rows: T[], toText: (row: T) => string, search: strin
   return { filtered, pageRows, page: safePage, totalPages };
 }
 
+const invalidKey = (row: RomaneioImportInvalidDTO) => String(row.sheetRow ?? "");
+const conflictKey = (row: RomaneioImportConflictDTO) => row.incoming?.itemIdentifier ?? "";
+
 type AnalyzeFormValues = z.infer<typeof PostApiOperationOperationIdRomaneioImportAnalyzeBody>;
 
 /**
  * Wizard de import: etapa 1 (`analyze`, upload real via `InputFileSingle` —
  * SPEC-SHARE-01/CA4) → etapa 2 (revisão dos grupos classificados pelo Core,
- * RF2) → `apply`. A seleção da revisão (quais fardos criar/excluir, quais
- * campos de conflito aceitar) é estado local simples — não é um campo de DTO
- * individual, e sim uma lista dinâmica montada a partir da resposta do
- * `analyze`; o payload final de fato enviado ao Core (`RomaneioImportApply`)
- * passa pelo schema gerado (`.parse`) antes do POST de `apply`, então a regra
- * "zero Zod à mão" continua valendo — nenhuma validação escrita manualmente,
- * só a montagem do array a partir das checkboxes.
+ * RF2) → `apply`. O payload final enviado ao Core (`RomaneioImportApply`)
+ * passa pelo schema gerado (`.parse`) antes do POST, então a regra "zero Zod
+ * à mão" continua valendo — só a montagem dos arrays a partir das decisões.
  *
- * SPEC-100: a etapa de revisão é uma tela só com abas por categoria, busca
- * e paginação local por aba (planilhas de até ~2.500 linhas), ações em massa
- * e rodapé com o efeito do "Aplicar". A seleção continua guardada por id em
- * `Set`, independente de quais linhas estão renderizadas na página.
+ * SPEC-100: revisão em abas por categoria, busca e paginação local por aba
+ * (planilhas de até ~2.500 linhas) e ações em massa.
+ *
+ * SPEC-100 RF13 — **nada é gravado até todas as pendências estarem
+ * resolvidas**: Ausentes (manter/excluir), Conflitos (aceitar/ignorar),
+ * Inválidos (descartar — ou ajustar, quando o Core liberar o `fix-row`) e
+ * Duplicados (descartar). Novos já vêm decididos ("criar"), De outra
+ * operação e Sem alteração são informativos. O "Aplicar" fica desabilitado
+ * enquanto houver pendência e grava tudo num único `apply` (Invoice
+ * automática e evento de Log continuam no Core). As decisões são estado
+ * local por id, independente de qual página está renderizada.
  */
 export function ImportRomaneioModal({
   operationId,
@@ -158,23 +168,18 @@ export function ImportRomaneioModal({
   const t = useT();
   const [analysis, setAnalysis] = useState<RomaneioImportAnalysisDTO | null>(null);
   const [selectedNew, setSelectedNew] = useState<Set<string>>(new Set());
-  const [selectedMissing, setSelectedMissing] = useState<Set<string>>(new Set());
+  const [missingDecisions, setMissingDecisions] = useState<Record<string, MissingDecision>>({});
   const [conflictFields, setConflictFields] = useState<Record<string, Set<string>>>({});
+  const [conflictDecisions, setConflictDecisions] = useState<Record<string, ConflictDecision>>({});
+  const [discardedInvalid, setDiscardedInvalid] = useState<Set<string>>(new Set());
+  const [discardedDuplicated, setDiscardedDuplicated] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<ReviewTab>("new");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  // Ajuste de linha inválida: a linha em edição e as já corrigidas (chave =
-  // número da linha na planilha). O fardo corrigido é criado na hora via
-  // `POST /romaneio` — o `apply` do import só aceita ids já classificados
-  // pelo Core, não linhas novas/corrigidas.
-  const [fixing, setFixing] = useState<RomaneioImportInvalidDTO | null>(null);
-  const [fixedRows, setFixedRows] = useState<Set<string>>(new Set());
+  const [confirmApply, setConfirmApply] = useState(false);
 
   const analyzeMutation = usePostApiOperationOperationIdRomaneioImportAnalyze();
   const applyMutation = usePostApiOperationOperationIdRomaneioImportApply();
-  const createMutation = usePostApiOperationOperationIdRomaneio();
-  const queryClient = useQueryClient();
 
   const analyzeMethods = useForm<AnalyzeFormValues>({
     resolver: zodResolver(PostApiOperationOperationIdRomaneioImportAnalyzeBody),
@@ -187,8 +192,16 @@ export function ImportRomaneioModal({
   const conflictRows = analysis?.conflicts ?? [];
   const foreignRows = analysis?.foreign ?? [];
   const invalidRows = analysis?.invalid ?? [];
-  const duplicatedRows = analysis?.duplicated ?? [];
   const unchangedRows = analysis?.unchangedCertificados ?? [];
+
+  const duplicatedGroups = useMemo<DuplicatedGroup[]>(() => {
+    const map = new Map<string, RomaneioImportRowDTO[]>();
+    for (const row of analysis?.duplicated ?? []) {
+      const cert = row.itemIdentifier ?? "";
+      map.set(cert, [...(map.get(cert) ?? []), row]);
+    }
+    return Array.from(map, ([certificado, rows]) => ({ certificado, rows }));
+  }, [analysis]);
 
   const counts: Record<ReviewTab, number> = {
     new: newRows.length,
@@ -196,25 +209,58 @@ export function ImportRomaneioModal({
     conflicts: conflictRows.length,
     foreign: foreignRows.length,
     invalid: invalidRows.length,
-    duplicated: duplicatedRows.length,
+    duplicated: duplicatedGroups.length,
     unchanged: unchangedRows.length,
   };
+
+  // ── Pendências (RF13) ────────────────────────────────────────────────
+  const isMissingPending = (row: RomaneioDTO) => !missingDecisions[row.itemIdentifier];
+  const isConflictPending = (row: RomaneioImportConflictDTO) => {
+    const key = conflictKey(row);
+    const decision = conflictDecisions[key];
+    if (decision === "ignore") return false;
+    return decision !== "accept" || (conflictFields[key]?.size ?? 0) === 0;
+  };
+  const isInvalidPending = (row: RomaneioImportInvalidDTO) =>
+    !discardedInvalid.has(invalidKey(row));
+  const isDuplicatedPending = (group: DuplicatedGroup) =>
+    !discardedDuplicated.has(group.certificado);
+
+  const pendingIndex: Record<PendingTab, number> = {
+    missing: missingRows.findIndex(isMissingPending),
+    conflicts: conflictRows.findIndex(isConflictPending),
+    invalid: invalidRows.findIndex(isInvalidPending),
+    duplicated: duplicatedGroups.findIndex(isDuplicatedPending),
+  };
+  const pending: Record<PendingTab, number> = {
+    missing: missingRows.filter(isMissingPending).length,
+    conflicts: conflictRows.filter(isConflictPending).length,
+    invalid: invalidRows.filter(isInvalidPending).length,
+    duplicated: duplicatedGroups.filter(isDuplicatedPending).length,
+  };
+  const pendingTotal = pending.missing + pending.conflicts + pending.invalid + pending.duplicated;
+
+  const acceptedConflicts = conflictRows.filter(
+    (c) => conflictDecisions[conflictKey(c)] === "accept" && !isConflictPending(c),
+  );
+  const deleteCount = Object.values(missingDecisions).filter((d) => d === "delete").length;
+  const discardedCount = discardedInvalid.size + discardedDuplicated.size;
 
   const handleAnalyze = analyzeMethods.handleSubmit(async (values) => {
     try {
       const result = await analyzeMutation.mutateAsync({ operationId, data: values });
       setAnalysis(result);
-      // Default: cria todo fardo novo, aceita todo campo divergente, não
-      // exclui nenhum ausente (ação destrutiva exige opt-in do usuário).
+      // Novos já decididos ("criar"); demais decisões começam pendentes.
+      // Campos divergentes vêm pré-marcados, mas o conflito só conta como
+      // resolvido depois de "Aceitar" ou "Ignorar" explícito.
       setSelectedNew(new Set((result.new ?? []).map((r) => r.itemIdentifier ?? "")));
-      setSelectedMissing(new Set());
-      setFixedRows(new Set());
+      setMissingDecisions({});
+      setConflictDecisions({});
+      setDiscardedInvalid(new Set());
+      setDiscardedDuplicated(new Set());
       setConflictFields(
         Object.fromEntries(
-          (result.conflicts ?? []).map((c) => [
-            c.incoming?.itemIdentifier ?? "",
-            new Set(c.diff ?? []),
-          ]),
+          (result.conflicts ?? []).map((c) => [conflictKey(c), new Set(c.diff ?? [])]),
         ),
       );
       // RF3 — abre na primeira aba com itens, na ordem de prioridade.
@@ -246,21 +292,39 @@ export function ImportRomaneioModal({
     setPage(1);
   };
 
-  const toggleIn = (setter: typeof setSelectedNew) => (id: string) =>
-    setter((prev) => {
+  /** RF13 — leva à aba e à página do próximo item pendente. */
+  const goToNextPending = () => {
+    const tab = PENDING_ORDER.find((candidate) => pending[candidate] > 0);
+    if (!tab) return;
+    setActiveTab(tab);
+    setSearch("");
+    setPage(Math.floor(Math.max(0, pendingIndex[tab]) / REVIEW_PAGE_SIZE) + 1);
+  };
+
+  const toggleNew = (id: string) =>
+    setSelectedNew((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
 
-  /** Marca/desmarca em massa um conjunto de ids (todos os filtrados da aba). */
-  const setManyIn = (setter: typeof setSelectedNew) => (ids: string[], checked: boolean) =>
-    setter((prev) => {
+  const setManyNew = (ids: string[], checked: boolean) =>
+    setSelectedNew((prev) => {
       const next = new Set(prev);
       for (const id of ids) {
         if (checked) next.add(id);
         else next.delete(id);
+      }
+      return next;
+    });
+
+  const decideMissing = (ids: string[], decision: MissingDecision | null) =>
+    setMissingDecisions((prev) => {
+      const next = { ...prev };
+      for (const id of ids) {
+        if (decision) next[id] = decision;
+        else delete next[id];
       }
       return next;
     });
@@ -273,29 +337,57 @@ export function ImportRomaneioModal({
       return { ...prev, [certificado]: current };
     });
 
-  const setConflictsAll = (conflicts: RomaneioImportConflictDTO[], accept: boolean) =>
-    setConflictFields((prev) => {
+  /** Aceitar marca todos os campos do diff se nenhum estiver marcado (aceite em massa). */
+  const decideConflicts = (
+    rows: RomaneioImportConflictDTO[],
+    decision: ConflictDecision | null,
+  ) => {
+    setConflictDecisions((prev) => {
       const next = { ...prev };
-      for (const c of conflicts) {
-        next[c.incoming?.itemIdentifier ?? ""] = new Set(accept ? (c.diff ?? []) : []);
+      for (const row of rows) {
+        if (decision) next[conflictKey(row)] = decision;
+        else delete next[conflictKey(row)];
+      }
+      return next;
+    });
+    if (decision === "accept") {
+      setConflictFields((prev) => {
+        const next = { ...prev };
+        for (const row of rows) {
+          const key = conflictKey(row);
+          if ((next[key]?.size ?? 0) === 0) next[key] = new Set(row.diff ?? []);
+        }
+        return next;
+      });
+    }
+  };
+
+  const setManyIn = (setter: typeof setDiscardedInvalid) => (ids: string[], discarded: boolean) =>
+    setter((prev) => {
+      const next = new Set(prev);
+      for (const id of ids) {
+        if (discarded) next.add(id);
+        else next.delete(id);
       }
       return next;
     });
 
-  const updatedCount = Object.values(conflictFields).filter((set) => set.size > 0).length;
-
   const applyImport = async () => {
     if (!analysis?.importId) return;
-    const conflicts = Object.entries(conflictFields)
-      .filter(([, set]) => set.size > 0)
-      .map(([certificado, set]) => ({ certificado, fields: Array.from(set) }));
+    const conflicts = acceptedConflicts.map((c) => ({
+      certificado: conflictKey(c),
+      fields: Array.from(conflictFields[conflictKey(c)] ?? []),
+    }));
+    const deleteMissing = Object.entries(missingDecisions)
+      .filter(([, decision]) => decision === "delete")
+      .map(([certificado]) => certificado);
 
     try {
       const payload = PostApiOperationOperationIdRomaneioImportApplyBody.parse({
         importId: analysis.importId,
         createNew: Array.from(selectedNew),
         conflicts,
-        deleteMissing: Array.from(selectedMissing),
+        deleteMissing,
       });
       const result = await applyMutation.mutateAsync({ operationId, data: payload });
       const created = Number(result.created ?? 0);
@@ -333,32 +425,9 @@ export function ImportRomaneioModal({
     }
   };
 
-  const invalidKey = (row: RomaneioImportInvalidDTO) => String(row.sheetRow ?? "");
-
-  const handleFixSubmit = async (values: RomaneioFormValues) => {
-    if (!fixing) return;
-    try {
-      await createMutation.mutateAsync({ operationId, data: values });
-      toast.success(t("administrative-operations.romaneio.import.fix.toastSuccess"));
-      setFixedRows((prev) => new Set(prev).add(invalidKey(fixing)));
-      setFixing(null);
-      void queryClient.invalidateQueries({
-        queryKey: getGetApiOperationOperationIdRomaneioQueryKey(operationId),
-      });
-    } catch {
-      // interceptor global (mutator.ts) já mostra o toast de erro; o
-      // formulário fica aberto pro usuário corrigir e tentar de novo.
-    }
-  };
-
-  // RF10 — exclusão de ausentes exige confirmação explícita.
-  const handleApply = () => {
-    if (selectedMissing.size > 0) setConfirmDelete(true);
-    else void applyImport();
-  };
-
   const step: "upload" | "review" = analysis ? "review" : "upload";
-  const tabProps = { search, page, onPageChange: setPage };
+  const tabProps = { search, page, onPageChange: setPage, onSearchChange: changeSearch };
+  const pendingOf = (tab: ReviewTab) => (tab in pending ? pending[tab as PendingTab] : 0);
 
   return (
     <Modal show onHide={onClose} centered size="xl" fullscreen="md-down">
@@ -405,6 +474,29 @@ export function ImportRomaneioModal({
           <Modal.Body>
             <ImportSummary analysis={analysis!} />
 
+            {pendingTotal > 0 ? (
+              <Alert
+                variant="warning"
+                className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2"
+              >
+                <span>
+                  <i className="bi bi-exclamation-triangle-fill me-2" aria-hidden="true" />
+                  {t("administrative-operations.romaneio.import.pending.banner", {
+                    count: String(pendingTotal),
+                  })}
+                </span>
+                <Button size="sm" variant="warning" onClick={goToNextPending}>
+                  {t("administrative-operations.romaneio.import.pending.next")}
+                  <i className="bi bi-arrow-right ms-1" aria-hidden="true" />
+                </Button>
+              </Alert>
+            ) : (
+              <Alert variant="success" className="py-2">
+                <i className="bi bi-check-circle-fill me-2" aria-hidden="true" />
+                {t("administrative-operations.romaneio.import.pending.done")}
+              </Alert>
+            )}
+
             <Nav
               variant="pills"
               className="mb-3 flex-nowrap overflow-auto"
@@ -414,13 +506,20 @@ export function ImportRomaneioModal({
               {TAB_ORDER.map((tab) => (
                 <Nav.Item key={tab}>
                   <Nav.Link eventKey={tab} disabled={counts[tab] === 0} className="text-nowrap">
-                    {ATTENTION_TABS.has(tab) && counts[tab] > 0 ? (
-                      <i
-                        className="bi bi-exclamation-triangle-fill text-warning me-1"
-                        aria-hidden="true"
-                      />
-                    ) : null}
                     {t(TAB_LABELS[tab])} ({counts[tab]})
+                    {pendingOf(tab) > 0 ? (
+                      <Badge
+                        bg="warning"
+                        text="dark"
+                        pill
+                        className="ms-1"
+                        title={t("administrative-operations.romaneio.import.pending.tabTitle")}
+                      >
+                        {pendingOf(tab)}
+                      </Badge>
+                    ) : tab in pending && counts[tab] > 0 ? (
+                      <i className="bi bi-check-circle-fill text-success ms-1" aria-hidden="true" />
+                    ) : null}
                   </Nav.Link>
                 </Nav.Item>
               ))}
@@ -429,44 +528,21 @@ export function ImportRomaneioModal({
             <p className="text-body-secondary small mb-2">{t(TAB_HINTS[activeTab])}</p>
 
             {activeTab === "new" ? (
-              <SelectableTab
+              <NewTab
                 {...tabProps}
                 rows={newRows}
-                toText={rowSearchText}
-                getId={(row) => row.itemIdentifier ?? ""}
                 selected={selectedNew}
-                onToggle={toggleIn(setSelectedNew)}
-                onSetMany={setManyIn(setSelectedNew)}
-                onSearchChange={changeSearch}
-                renderLabel={(row) => (
-                  <>
-                    <span className="fw-semibold text-break">{row.itemIdentifier}</span>
-                    <span className="text-body-secondary small">
-                      {row.itemCode} · {row.lote} · {row.peso != null ? String(row.peso) : "—"} kg
-                    </span>
-                  </>
-                )}
+                onToggle={toggleNew}
+                onSetMany={setManyNew}
               />
             ) : null}
 
             {activeTab === "missing" ? (
-              <SelectableTab
+              <MissingTab
                 {...tabProps}
                 rows={missingRows}
-                toText={missingSearchText}
-                getId={(row) => row.itemIdentifier}
-                selected={selectedMissing}
-                onToggle={toggleIn(setSelectedMissing)}
-                onSetMany={setManyIn(setSelectedMissing)}
-                onSearchChange={changeSearch}
-                renderLabel={(row) => (
-                  <>
-                    <span className="fw-semibold text-break">{row.itemIdentifier}</span>
-                    <span className="text-body-secondary small">
-                      {row.itemCode} · {row.lote}
-                    </span>
-                  </>
-                )}
+                decisions={missingDecisions}
+                onDecide={decideMissing}
               />
             ) : null}
 
@@ -475,9 +551,10 @@ export function ImportRomaneioModal({
                 {...tabProps}
                 rows={conflictRows}
                 selectedFields={conflictFields}
+                decisions={conflictDecisions}
+                isPending={isConflictPending}
                 onToggleField={toggleConflictField}
-                onSetAll={setConflictsAll}
-                onSearchChange={changeSearch}
+                onDecide={decideConflicts}
               />
             ) : null}
 
@@ -486,7 +563,6 @@ export function ImportRomaneioModal({
                 {...tabProps}
                 rows={foreignRows}
                 toText={foreignSearchText}
-                onSearchChange={changeSearch}
                 renderItem={(row) => (
                   <>
                     {row.incoming?.itemIdentifier} — {row.incoming?.itemCode}
@@ -496,49 +572,20 @@ export function ImportRomaneioModal({
             ) : null}
 
             {activeTab === "invalid" ? (
-              <ReadOnlyTab
+              <InvalidTab
                 {...tabProps}
                 rows={invalidRows}
-                toText={invalidSearchText}
-                onSearchChange={changeSearch}
-                renderItem={(row) => (
-                  <>
-                    <span className="fw-semibold">
-                      {t("administrative-operations.romaneio.import.sheetRowLabel", {
-                        row: String(row.sheetRow ?? ""),
-                      })}
-                    </span>
-                    {" — "}
-                    {(row.errors ?? []).join(", ")}
-                  </>
-                )}
-                renderAction={(row) =>
-                  fixedRows.has(invalidKey(row)) ? (
-                    <span className="badge text-bg-success">
-                      <i className="bi bi-check-lg me-1" aria-hidden="true" />
-                      {t("administrative-operations.romaneio.import.fix.fixed")}
-                    </span>
-                  ) : (
-                    <Button size="sm" variant="outline-primary" onClick={() => setFixing(row)}>
-                      <i className="bi bi-pencil me-1" aria-hidden="true" />
-                      {t("administrative-operations.romaneio.import.fix.button")}
-                    </Button>
-                  )
-                }
+                discarded={discardedInvalid}
+                onDiscard={setManyIn(setDiscardedInvalid)}
               />
             ) : null}
 
             {activeTab === "duplicated" ? (
-              <ReadOnlyTab
+              <DuplicatedTab
                 {...tabProps}
-                rows={duplicatedRows}
-                toText={rowSearchText}
-                onSearchChange={changeSearch}
-                renderItem={(row) => (
-                  <>
-                    {row.itemIdentifier} — {row.itemCode}
-                  </>
-                )}
+                groups={duplicatedGroups}
+                discarded={discardedDuplicated}
+                onDiscard={setManyIn(setDiscardedDuplicated)}
               />
             ) : null}
 
@@ -547,7 +594,6 @@ export function ImportRomaneioModal({
                 {...tabProps}
                 rows={unchangedRows}
                 toText={unchangedSearchText}
-                onSearchChange={changeSearch}
                 renderItem={(certificado) => <>{certificado}</>}
               />
             ) : null}
@@ -556,12 +602,12 @@ export function ImportRomaneioModal({
             <span className="small text-body-secondary">
               {t("administrative-operations.romaneio.import.review.footerSummary", {
                 created: String(selectedNew.size),
-                updated: String(updatedCount),
-                deleted: String(selectedMissing.size),
+                updated: String(acceptedConflicts.length),
+                deleted: String(deleteCount),
               })}
-              {fixedRows.size > 0
-                ? ` · ${t("administrative-operations.romaneio.import.fix.footerFixed", {
-                    count: String(fixedRows.size),
+              {pendingTotal > 0
+                ? ` · ${t("administrative-operations.romaneio.import.pending.footer", {
+                    count: String(pendingTotal),
                   })}`
                 : null}
             </span>
@@ -572,7 +618,16 @@ export function ImportRomaneioModal({
               <Button variant="outline-primary" onClick={onClose}>
                 {t("administrative-operations.romaneio.import.cancel")}
               </Button>
-              <Button variant="primary" onClick={handleApply} disabled={applyMutation.isPending}>
+              <Button
+                variant="primary"
+                onClick={() => setConfirmApply(true)}
+                disabled={pendingTotal > 0 || applyMutation.isPending}
+                title={
+                  pendingTotal > 0
+                    ? t("administrative-operations.romaneio.import.pending.applyBlocked")
+                    : undefined
+                }
+              >
                 {applyMutation.isPending ? (
                   <>
                     <Spinner size="sm" animation="border" className="me-2" />
@@ -587,27 +642,23 @@ export function ImportRomaneioModal({
         </>
       )}
 
-      {fixing ? (
-        <RomaneioFixRowModal
-          row={fixing}
-          onSubmit={handleFixSubmit}
-          onClose={() => setFixing(null)}
-        />
-      ) : null}
-
+      {/* RF10/RF13 — resumo final antes de gravar; vermelho quando há exclusão. */}
       <ConfirmationModal
-        show={confirmDelete}
-        variant="danger"
-        title={t("administrative-operations.romaneio.import.confirmDelete.title")}
-        message={t("administrative-operations.romaneio.import.confirmDelete.message", {
-          count: String(selectedMissing.size),
+        show={confirmApply}
+        variant={deleteCount > 0 ? "danger" : "primary"}
+        title={t("administrative-operations.romaneio.import.confirmApply.title")}
+        message={t("administrative-operations.romaneio.import.confirmApply.message", {
+          created: String(selectedNew.size),
+          updated: String(acceptedConflicts.length),
+          deleted: String(deleteCount),
+          discarded: String(discardedCount),
         })}
-        confirmLabel={t("administrative-operations.romaneio.import.confirmDelete.confirm")}
+        confirmLabel={t("administrative-operations.romaneio.import.confirmApply.confirm")}
         cancelLabel={t("administrative-operations.romaneio.import.cancel")}
-        onCancel={() => setConfirmDelete(false)}
+        onCancel={() => setConfirmApply(false)}
         onConfirm={async () => {
           await applyImport();
-          setConfirmDelete(false);
+          setConfirmApply(false);
         }}
       />
     </Modal>
@@ -630,6 +681,10 @@ function foreignSearchText(row: RomaneioImportForeignDTO): string {
 
 function invalidSearchText(row: RomaneioImportInvalidDTO): string {
   return searchText(rowSearchText(row.row), row.sheetRow, (row.errors ?? []).join(" "));
+}
+
+function duplicatedSearchText(group: DuplicatedGroup): string {
+  return searchText(group.certificado, ...group.rows.map(rowSearchText));
 }
 
 function unchangedSearchText(certificado: string): string {
@@ -712,32 +767,35 @@ function PagedList({
   );
 }
 
-/** Abas Novos/Ausentes — checkbox por item + marcar/desmarcar todos (RF7). */
-function SelectableTab<T>({
+/** Selo de estado da decisão de um item (pendente / decidido). */
+function DecisionBadge({ label, variant }: { label: string; variant: string }) {
+  return (
+    <Badge bg={variant} text={variant === "warning" ? "dark" : undefined}>
+      {label}
+    </Badge>
+  );
+}
+
+/** Aba Novos — checkbox por item + marcar/desmarcar todos (RF7). Não gera pendência. */
+function NewTab({
   rows,
-  toText,
-  getId,
   selected,
   onToggle,
   onSetMany,
-  renderLabel,
   search,
   page,
   onPageChange,
   onSearchChange,
 }: PagedTabProps & {
-  rows: T[];
-  toText: (row: T) => string;
-  getId: (row: T) => string;
+  rows: RomaneioImportRowDTO[];
   selected: Set<string>;
   onToggle: (id: string) => void;
   onSetMany: (ids: string[], checked: boolean) => void;
-  renderLabel: (row: T) => ReactNode;
 }) {
   const t = useT();
-  const view = useFilteredPage(rows, toText, search, page);
-  const filteredIds = view.filtered.map(getId);
-  const selectedCount = rows.filter((row) => selected.has(getId(row))).length;
+  const view = useFilteredPage(rows, rowSearchText, search, page);
+  const filteredIds = view.filtered.map((row) => row.itemIdentifier ?? "");
+  const selectedCount = rows.filter((row) => selected.has(row.itemIdentifier ?? "")).length;
 
   return (
     <>
@@ -766,7 +824,7 @@ function SelectableTab<T>({
       >
         <div className="list-group">
           {view.pageRows.map((row) => {
-            const id = getId(row);
+            const id = row.itemIdentifier ?? "";
             return (
               <label key={id} className="list-group-item d-flex flex-wrap align-items-center gap-2">
                 <Form.Check
@@ -774,7 +832,10 @@ function SelectableTab<T>({
                   checked={selected.has(id)}
                   onChange={() => onToggle(id)}
                 />
-                {renderLabel(row)}
+                <span className="fw-semibold text-break">{row.itemIdentifier}</span>
+                <span className="text-body-secondary small">
+                  {row.itemCode} · {row.lote} · {row.peso != null ? String(row.peso) : "—"} kg
+                </span>
               </label>
             );
           })}
@@ -784,12 +845,88 @@ function SelectableTab<T>({
   );
 }
 
-/** Aba Conflitos — checkbox por campo divergente + aceitar/ignorar todos (RF7). */
+/** Aba Ausentes — decisão explícita Manter/Excluir por fardo (RF13). */
+function MissingTab({
+  rows,
+  decisions,
+  onDecide,
+  search,
+  page,
+  onPageChange,
+  onSearchChange,
+}: PagedTabProps & {
+  rows: RomaneioDTO[];
+  decisions: Record<string, MissingDecision>;
+  onDecide: (ids: string[], decision: MissingDecision | null) => void;
+}) {
+  const t = useT();
+  const view = useFilteredPage(rows, missingSearchText, search, page);
+  const filteredIds = view.filtered.map((row) => row.itemIdentifier);
+
+  return (
+    <>
+      <TabToolbar search={search} onSearchChange={onSearchChange}>
+        <Button size="sm" variant="outline-primary" onClick={() => onDecide(filteredIds, "keep")}>
+          {t("administrative-operations.romaneio.import.decision.keepAll", {
+            count: String(filteredIds.length),
+          })}
+        </Button>
+        <Button size="sm" variant="outline-danger" onClick={() => onDecide(filteredIds, "delete")}>
+          {t("administrative-operations.romaneio.import.decision.deleteAll", {
+            count: String(filteredIds.length),
+          })}
+        </Button>
+      </TabToolbar>
+      <PagedList
+        total={rows.length}
+        filteredCount={view.filtered.length}
+        page={view.page}
+        totalPages={view.totalPages}
+        onPageChange={onPageChange}
+      >
+        <div className="list-group">
+          {view.pageRows.map((row) => {
+            const decision = decisions[row.itemIdentifier];
+            return (
+              <div
+                key={row.itemIdentifier}
+                className={`list-group-item d-flex flex-wrap align-items-center gap-2 ${decision ? "" : "list-group-item-warning"}`}
+              >
+                <span className="fw-semibold text-break">{row.itemIdentifier}</span>
+                <span className="text-body-secondary small">
+                  {row.itemCode} · {row.lote}
+                </span>
+                <ButtonGroup size="sm" className="ms-auto">
+                  <Button
+                    variant={decision === "keep" ? "primary" : "outline-primary"}
+                    onClick={() => onDecide([row.itemIdentifier], "keep")}
+                  >
+                    {t("administrative-operations.romaneio.import.decision.keep")}
+                  </Button>
+                  <Button
+                    variant={decision === "delete" ? "danger" : "outline-danger"}
+                    onClick={() => onDecide([row.itemIdentifier], "delete")}
+                  >
+                    {t("administrative-operations.romaneio.import.decision.delete")}
+                  </Button>
+                </ButtonGroup>
+              </div>
+            );
+          })}
+        </div>
+      </PagedList>
+    </>
+  );
+}
+
+/** Aba Conflitos — campos a aceitar + decisão Aceitar/Ignorar por fardo (RF7/RF13). */
 function ConflictsTab({
   rows,
   selectedFields,
+  decisions,
+  isPending,
   onToggleField,
-  onSetAll,
+  onDecide,
   search,
   page,
   onPageChange,
@@ -797,8 +934,10 @@ function ConflictsTab({
 }: PagedTabProps & {
   rows: RomaneioImportConflictDTO[];
   selectedFields: Record<string, Set<string>>;
+  decisions: Record<string, ConflictDecision>;
+  isPending: (row: RomaneioImportConflictDTO) => boolean;
   onToggleField: (certificado: string, field: string) => void;
-  onSetAll: (rows: RomaneioImportConflictDTO[], accept: boolean) => void;
+  onDecide: (rows: RomaneioImportConflictDTO[], decision: ConflictDecision | null) => void;
 }) {
   const t = useT();
   const view = useFilteredPage(rows, conflictSearchText, search, page);
@@ -806,13 +945,17 @@ function ConflictsTab({
   return (
     <>
       <TabToolbar search={search} onSearchChange={onSearchChange}>
-        <Button size="sm" variant="outline-primary" onClick={() => onSetAll(view.filtered, true)}>
+        <Button
+          size="sm"
+          variant="outline-primary"
+          onClick={() => onDecide(view.filtered, "accept")}
+        >
           {t("administrative-operations.romaneio.import.review.acceptAllFields")}
         </Button>
         <Button
           size="sm"
           variant="outline-secondary"
-          onClick={() => onSetAll(view.filtered, false)}
+          onClick={() => onDecide(view.filtered, "ignore")}
         >
           {t("administrative-operations.romaneio.import.review.ignoreAllFields")}
         </Button>
@@ -826,17 +969,55 @@ function ConflictsTab({
       >
         <div className="d-flex flex-column gap-2">
           {view.pageRows.map((conflict) => {
-            const certificado = conflict.incoming?.itemIdentifier ?? "";
+            const certificado = conflictKey(conflict);
             const selected = selectedFields[certificado] ?? new Set<string>();
+            const decision = decisions[certificado];
+            const pending = isPending(conflict);
             return (
-              <div key={certificado} className="border rounded p-2">
-                <div className="fw-semibold mb-2 text-break">{certificado}</div>
+              <div
+                key={certificado}
+                className={`border rounded p-2 ${pending ? "border-warning" : ""}`}
+              >
+                <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
+                  <span className="fw-semibold text-break">{certificado}</span>
+                  {pending ? (
+                    <DecisionBadge
+                      variant="warning"
+                      label={t("administrative-operations.romaneio.import.decision.pending")}
+                    />
+                  ) : (
+                    <DecisionBadge
+                      variant={decision === "ignore" ? "secondary" : "success"}
+                      label={t(
+                        decision === "ignore"
+                          ? "administrative-operations.romaneio.import.decision.ignored"
+                          : "administrative-operations.romaneio.import.decision.accepted",
+                      )}
+                    />
+                  )}
+                  <ButtonGroup size="sm" className="ms-auto">
+                    <Button
+                      variant={decision === "accept" ? "primary" : "outline-primary"}
+                      disabled={selected.size === 0}
+                      onClick={() => onDecide([conflict], "accept")}
+                    >
+                      {t("administrative-operations.romaneio.import.decision.accept")}
+                    </Button>
+                    <Button
+                      variant={decision === "ignore" ? "secondary" : "outline-secondary"}
+                      onClick={() => onDecide([conflict], "ignore")}
+                    >
+                      {t("administrative-operations.romaneio.import.decision.ignore")}
+                    </Button>
+                  </ButtonGroup>
+                </div>
                 <div className="d-flex flex-wrap gap-3">
                   {(conflict.diff ?? []).map((field) => (
                     <Form.Check
                       key={field}
                       id={`conflict-${certificado}-${field}`}
                       type="checkbox"
+                      disabled={decision === "ignore"}
                       label={t(
                         DIFF_FIELD_LABELS[field] ??
                           "administrative-operations.romaneio.import.fields.itemCode",
@@ -855,12 +1036,193 @@ function ConflictsTab({
   );
 }
 
-/** Abas informativas (outra operação, inválidos, duplicados, sem alteração) — RF8. */
+/**
+ * Aba Inválidos — cada linha precisa ser descartada (ou ajustada, quando o
+ * Core liberar o `fix-row`: a correção revalida e reclassifica a linha no
+ * servidor, sem gravar nada — RF13). Enquanto o endpoint não existe, o
+ * "Ajustar" fica desabilitado: criar o fardo direto pelo `POST /romaneio`
+ * furava o import (sem Invoice automática, sem evento de Log).
+ */
+function InvalidTab({
+  rows,
+  discarded,
+  onDiscard,
+  search,
+  page,
+  onPageChange,
+  onSearchChange,
+}: PagedTabProps & {
+  rows: RomaneioImportInvalidDTO[];
+  discarded: Set<string>;
+  onDiscard: (ids: string[], discarded: boolean) => void;
+}) {
+  const t = useT();
+  const view = useFilteredPage(rows, invalidSearchText, search, page);
+  const filteredIds = view.filtered.map(invalidKey);
+
+  return (
+    <>
+      <TabToolbar search={search} onSearchChange={onSearchChange}>
+        <Button size="sm" variant="outline-danger" onClick={() => onDiscard(filteredIds, true)}>
+          {t("administrative-operations.romaneio.import.decision.discardAll", {
+            count: String(filteredIds.length),
+          })}
+        </Button>
+      </TabToolbar>
+      <PagedList
+        total={rows.length}
+        filteredCount={view.filtered.length}
+        page={view.page}
+        totalPages={view.totalPages}
+        onPageChange={onPageChange}
+      >
+        <ul className="list-group">
+          {view.pageRows.map((row) => {
+            const key = invalidKey(row);
+            const isDiscarded = discarded.has(key);
+            return (
+              <li
+                key={key}
+                className={`list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2 ${isDiscarded ? "" : "list-group-item-warning"}`}
+              >
+                <span
+                  className={`text-break ${isDiscarded ? "text-decoration-line-through text-body-secondary" : ""}`}
+                >
+                  <span className="fw-semibold">
+                    {t("administrative-operations.romaneio.import.sheetRowLabel", {
+                      row: String(row.sheetRow ?? ""),
+                    })}
+                  </span>
+                  {" — "}
+                  {(row.errors ?? []).join(", ")}
+                </span>
+                <span className="d-flex flex-shrink-0 gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline-primary"
+                    disabled
+                    title={t("administrative-operations.romaneio.import.decision.fixUnavailable")}
+                  >
+                    <i className="bi bi-pencil me-1" aria-hidden="true" />
+                    {t("administrative-operations.romaneio.import.fix.button")}
+                  </Button>
+                  {isDiscarded ? (
+                    <Button
+                      size="sm"
+                      variant="outline-secondary"
+                      onClick={() => onDiscard([key], false)}
+                    >
+                      <i className="bi bi-arrow-counterclockwise me-1" aria-hidden="true" />
+                      {t("administrative-operations.romaneio.import.decision.undo")}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      onClick={() => onDiscard([key], true)}
+                    >
+                      <i className="bi bi-x-lg me-1" aria-hidden="true" />
+                      {t("administrative-operations.romaneio.import.decision.discard")}
+                    </Button>
+                  )}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </PagedList>
+    </>
+  );
+}
+
+/**
+ * Aba Duplicados — agrupada por certificado repetido. Hoje só dá pra
+ * descartar o grupo (o Core já não importa duplicados); escolher qual linha
+ * vale depende do Core reclassificar a linha escolhida.
+ */
+function DuplicatedTab({
+  groups,
+  discarded,
+  onDiscard,
+  search,
+  page,
+  onPageChange,
+  onSearchChange,
+}: PagedTabProps & {
+  groups: DuplicatedGroup[];
+  discarded: Set<string>;
+  onDiscard: (ids: string[], discarded: boolean) => void;
+}) {
+  const t = useT();
+  const view = useFilteredPage(groups, duplicatedSearchText, search, page);
+  const filteredIds = view.filtered.map((group) => group.certificado);
+
+  return (
+    <>
+      <TabToolbar search={search} onSearchChange={onSearchChange}>
+        <Button size="sm" variant="outline-danger" onClick={() => onDiscard(filteredIds, true)}>
+          {t("administrative-operations.romaneio.import.decision.discardAll", {
+            count: String(filteredIds.length),
+          })}
+        </Button>
+      </TabToolbar>
+      <PagedList
+        total={groups.length}
+        filteredCount={view.filtered.length}
+        page={view.page}
+        totalPages={view.totalPages}
+        onPageChange={onPageChange}
+      >
+        <ul className="list-group">
+          {view.pageRows.map((group) => {
+            const isDiscarded = discarded.has(group.certificado);
+            return (
+              <li
+                key={group.certificado}
+                className={`list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2 ${isDiscarded ? "" : "list-group-item-warning"}`}
+              >
+                <span
+                  className={`text-break ${isDiscarded ? "text-decoration-line-through text-body-secondary" : ""}`}
+                >
+                  <span className="fw-semibold">{group.certificado}</span>
+                  {" — "}
+                  {t("administrative-operations.romaneio.import.decision.duplicatedRows", {
+                    rows: group.rows.map((row) => String(row.sheetRow ?? "")).join(", "),
+                  })}
+                </span>
+                {isDiscarded ? (
+                  <Button
+                    size="sm"
+                    variant="outline-secondary"
+                    onClick={() => onDiscard([group.certificado], false)}
+                  >
+                    <i className="bi bi-arrow-counterclockwise me-1" aria-hidden="true" />
+                    {t("administrative-operations.romaneio.import.decision.undo")}
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline-danger"
+                    onClick={() => onDiscard([group.certificado], true)}
+                  >
+                    <i className="bi bi-x-lg me-1" aria-hidden="true" />
+                    {t("administrative-operations.romaneio.import.decision.discard")}
+                  </Button>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </PagedList>
+    </>
+  );
+}
+
+/** Abas informativas (outra operação, sem alteração) — RF8. */
 function ReadOnlyTab<T>({
   rows,
   toText,
   renderItem,
-  renderAction,
   search,
   page,
   onPageChange,
@@ -869,8 +1231,6 @@ function ReadOnlyTab<T>({
   rows: T[];
   toText: (row: T) => string;
   renderItem: (row: T) => ReactNode;
-  /** Ação opcional à direita de cada linha (ex.: "Ajustar" em Inválidos). */
-  renderAction?: (row: T) => ReactNode;
 }) {
   const view = useFilteredPage(rows, toText, search, page);
   const offset = (view.page - 1) * REVIEW_PAGE_SIZE;
@@ -887,13 +1247,8 @@ function ReadOnlyTab<T>({
       >
         <ul className="list-group">
           {view.pageRows.map((row, i) => (
-            // Duplicados repetem o mesmo certificado — índice absoluto como chave.
-            <li
-              key={offset + i}
-              className="list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2"
-            >
-              <span className="text-break">{renderItem(row)}</span>
-              {renderAction ? <span className="flex-shrink-0">{renderAction(row)}</span> : null}
+            <li key={offset + i} className="list-group-item text-break">
+              {renderItem(row)}
             </li>
           ))}
         </ul>

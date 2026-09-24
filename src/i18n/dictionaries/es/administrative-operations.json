@@ -187,15 +187,15 @@
         "new": "Fardos nuevos",
         "newHint": "Se crearán los fardos marcados abajo.",
         "missing": "Fardos ausentes en la planilla",
-        "missingHint": "Marque para eliminar el fardo que ya no aparece en la planilla.",
+        "missingHint": "Decida mantener o eliminar cada fardo que ya no aparece en la planilla.",
         "conflicts": "Fardos con divergencia",
-        "conflictsHint": "Marque los campos que deben actualizarse con el valor de la planilla.",
+        "conflictsHint": "Marque los campos que deben recibir el valor de la planilla y acepte, o ignore la divergencia.",
         "foreign": "Pertenecen a otra operación",
         "foreignHint": "Estos fardos ya existen en otra operación y no serán alterados.",
         "invalid": "Líneas inválidas",
-        "invalidHint": "Estas líneas tienen error y no serán importadas.",
+        "invalidHint": "Corrija o descarte cada línea con error. Las líneas descartadas no se importarán.",
         "duplicated": "Líneas duplicadas en la planilla",
-        "duplicatedHint": "Este fardo aparece más de una vez en la planilla y no será importado.",
+        "duplicatedHint": "Este fardo aparece más de una vez en la planilla. Descarte las líneas repetidas para continuar.",
         "unchanged": "Sin cambios",
         "unchangedHint": "Estos fardos ya existen iguales en la operación y no se modificarán."
       },
@@ -228,23 +228,44 @@
         "noResults": "Ningún elemento coincide con la búsqueda.",
         "footerSummary": "{created} se crearán · {updated} se actualizarán · {deleted} se eliminarán"
       },
-      "confirmDelete": {
-        "title": "¿Eliminar fardos ausentes?",
-        "message": "{count} fardo(s) ausente(s) en la planilla se eliminarán de la operación. Esta acción no se puede deshacer.",
-        "confirm": "Eliminar y aplicar"
-      },
       "fix": {
         "button": "Ajustar",
         "title": "Ajustar línea inválida",
-        "fixed": "Corregido",
-        "toastSuccess": "Fardo creado a partir de la línea corregida.",
-        "footerFixed": "{count} corregidos ya creados",
         "errorsTitle": "Errores encontrados en esta línea",
         "originalTitle": "Original (planilla)",
         "adjustTitle": "Ajuste",
         "changedCount": "{count} campo(s) modificado(s)",
         "restore": "Restaurar original",
         "save": "Guardar y crear fardo"
+      },
+      "pending": {
+        "banner": "Faltan {count} pendiente(s) para aplicar. No se guardará nada hasta resolverlos todos.",
+        "next": "Siguiente pendiente",
+        "done": "Todos los pendientes resueltos. Revise y aplique.",
+        "tabTitle": "Pendientes en esta pestaña",
+        "footer": "{count} pendiente(s)",
+        "applyBlocked": "Resuelva todos los pendientes antes de aplicar."
+      },
+      "decision": {
+        "keep": "Mantener",
+        "delete": "Eliminar",
+        "keepAll": "Mantener todos ({count})",
+        "deleteAll": "Eliminar todos ({count})",
+        "accept": "Aceptar",
+        "ignore": "Ignorar",
+        "accepted": "Aceptado",
+        "ignored": "Ignorado",
+        "pending": "Pendiente",
+        "discard": "Descartar",
+        "discardAll": "Descartar todos ({count})",
+        "undo": "Deshacer",
+        "duplicatedRows": "líneas {rows}",
+        "fixUnavailable": "Corrección de línea disponible tras la actualización del Core (fix-row)."
+      },
+      "confirmApply": {
+        "title": "¿Aplicar importación?",
+        "message": "Se crearán {created}, se actualizarán {updated} y se eliminarán {deleted} fardo(s). Líneas descartadas: {discarded}.",
+        "confirm": "Aplicar"
       }
     }
   },
