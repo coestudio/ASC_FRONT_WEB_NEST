@@ -5,8 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RomaneioImportConflictResolution {
+export interface RomaneioImportMissingDecisionItem {
   certificado: string;
-  /** @minItems 1 */
-  fields?: string[];
+  delete?: boolean;
 }

@@ -1,36 +1,47 @@
-import { useForm, type SubmitHandler } from "react-hook-form";
+import { useForm, type Resolver, type SubmitHandler } from "react-hook-form";
 import { Alert, Badge, Button, Card, Col, Form, Row, Spinner, Table } from "react-bootstrap";
 
-import { PostApiOperationOperationIdRomaneioBody } from "@/api/generated/zod/romaneio/romaneio.zod";
+import { PostApiOperationOperationIdRomaneioImportImportIdFixRowBody } from "@/api/generated/zod/romaneio/romaneio.zod";
 import type { RomaneioImportInvalidDTO } from "@/api/generated/model";
-import { withEmptyStringsAsNull } from "@/components/crud/empty-strings-resolver";
+import { withEmptyStringsAsUndefined } from "@/components/crud/empty-strings-resolver";
 import { Modal } from "@/components/ui/modal";
 import RenderFields from "@/layouts/Form/Fields/map";
 import { useT } from "@/lib/ui-prefs";
 import { buildRomaneioFields, toFormValues, type RomaneioFormValues } from "./RomaneioForm";
 
 /**
- * SPEC-100 RF12 — ajuste de uma linha inválida do import de romaneio, em
- * duas áreas lado a lado: à esquerda o **original** (valores lidos da
- * planilha, só leitura, com os erros apontados pelo Core) e à direita o
- * **ajuste** (formulário de fardo pré-preenchido com o original, mesmos
- * campos e schema gerado da aba Romaneio). Campo alterado em relação ao
- * original fica destacado nas duas áreas. Em telas menores as áreas
+ * SPEC-100 RF12/RF13 — ajuste de uma linha inválida do import de romaneio,
+ * em duas áreas lado a lado: à esquerda o **original** (valores lidos da
+ * planilha, só leitura) e à direita o **ajuste** (formulário pré-preenchido
+ * com o original, mesmos campos da aba Romaneio). Campo alterado em relação
+ * ao original fica destacado nas duas áreas. Em telas menores as áreas
  * empilham (original em cima).
+ *
+ * Salvar **não grava fardo**: chama o `fix-row` do Core (SPEC-55), que
+ * revalida a linha com as regras do import e a reclassifica na análise.
+ * Se continuar inválida, `errors` volta atualizado e o modal fica aberto.
+ * A validação de verdade é do Core (schema gerado do `fix-row` tem tudo
+ * opcional); campo vazio vira `undefined` e o Core devolve a mensagem.
  */
 export function RomaneioFixRowModal({
   row,
+  errors,
   onSubmit,
   onClose,
 }: {
+  /** Linha como estava ao abrir o modal (área "Original"). */
   row: RomaneioImportInvalidDTO;
+  /** Erros mais recentes devolvidos pelo Core para esta linha. */
+  errors: string[];
   onSubmit: (values: RomaneioFormValues) => Promise<void>;
   onClose: () => void;
 }) {
   const t = useT();
   const original = toFormValues(row.row);
   const methods = useForm<RomaneioFormValues>({
-    resolver: withEmptyStringsAsNull(PostApiOperationOperationIdRomaneioBody),
+    resolver: withEmptyStringsAsUndefined(
+      PostApiOperationOperationIdRomaneioImportImportIdFixRowBody,
+    ) as unknown as Resolver<RomaneioFormValues>,
     defaultValues: original,
   });
   const {
@@ -61,14 +72,18 @@ export function RomaneioFixRowModal({
       </Modal.Header>
       <Form noValidate onSubmit={handleSubmit(onSubmit as SubmitHandler<RomaneioFormValues>)}>
         <Modal.Body>
-          {(row.errors ?? []).length > 0 ? (
+          <p className="text-body-secondary small mb-2">
+            <i className="bi bi-info-circle me-1" aria-hidden="true" />
+            {t("administrative-operations.romaneio.import.fix.hint")}
+          </p>
+          {errors.length > 0 ? (
             <Alert variant="warning" className="py-2">
               <div className="fw-semibold mb-1">
                 <i className="bi bi-exclamation-triangle-fill me-1" aria-hidden="true" />
                 {t("administrative-operations.romaneio.import.fix.errorsTitle")}
               </div>
               <ul className="mb-0 ps-3 small">
-                {(row.errors ?? []).map((error, i) => (
+                {errors.map((error, i) => (
                   <li key={i}>{error}</li>
                 ))}
               </ul>

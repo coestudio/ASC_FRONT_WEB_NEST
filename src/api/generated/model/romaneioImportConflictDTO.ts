@@ -5,10 +5,13 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { RomaneioDTO } from './romaneioDTO.ts';
+import type { RomaneioImportConflictDecision } from './romaneioImportConflictDecision.ts';
 import type { RomaneioImportRowDTO } from './romaneioImportRowDTO.ts';
 
 export interface RomaneioImportConflictDTO {
   current?: RomaneioDTO;
   incoming?: RomaneioImportRowDTO;
   diff?: string[];
+  decision?: RomaneioImportConflictDecision;
+  acceptedFields?: string[];
 }

@@ -35,6 +35,10 @@ import type {
   RomaneioImportAnalysisDTO,
   RomaneioImportApply,
   RomaneioImportApplyResultDTO,
+  RomaneioImportDecide,
+  RomaneioImportDiscardRow,
+  RomaneioImportFixRow,
+  RomaneioImportResolveDuplicate,
   RomaneioLoteComparisonDTO,
   RomaneioUpdate,
   RomaneioUpdateBatch
@@ -941,6 +945,258 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getPostApiOperationOperationIdRomaneioImportApplyMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdRomaneioImportImportIdFixRow = (
+    operationId: string,
+    importId: string,
+    romaneioImportFixRow: RomaneioImportFixRow,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<RomaneioImportAnalysisDTO>(
+      {url: `/api/operation/${operationId}/romaneio/import/${importId}/fix-row`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: romaneioImportFixRow, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdFixRowMutationKey = () => ['postApiOperationOperationIdRomaneioImportImportIdFixRow'] as const;
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdFixRowMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdFixRow>>, TError,PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdFixRow>>, TError,PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdRomaneioImportImportIdFixRowMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdFixRow>>, PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationVariables> = (props) => {
+          const {operationId,importId,data} = props ?? {};
+
+          return  postApiOperationOperationIdRomaneioImportImportIdFixRow(operationId,importId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdFixRow>>>
+    export type PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationBody = RomaneioImportFixRow
+    export type PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationError = void
+    export type PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationVariables = {operationId: string;importId: string;data: RomaneioImportFixRow}
+
+    export const usePostApiOperationOperationIdRomaneioImportImportIdFixRow = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdFixRow>>, TError,PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdFixRow>>,
+        TError,
+        PostApiOperationOperationIdRomaneioImportImportIdFixRowMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdRomaneioImportImportIdFixRowMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdRomaneioImportImportIdDiscardRow = (
+    operationId: string,
+    importId: string,
+    romaneioImportDiscardRow: RomaneioImportDiscardRow,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<RomaneioImportAnalysisDTO>(
+      {url: `/api/operation/${operationId}/romaneio/import/${importId}/discard-row`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: romaneioImportDiscardRow, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationKey = () => ['postApiOperationOperationIdRomaneioImportImportIdDiscardRow'] as const;
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDiscardRow>>, TError,PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDiscardRow>>, TError,PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDiscardRow>>, PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationVariables> = (props) => {
+          const {operationId,importId,data} = props ?? {};
+
+          return  postApiOperationOperationIdRomaneioImportImportIdDiscardRow(operationId,importId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDiscardRow>>>
+    export type PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationBody = RomaneioImportDiscardRow
+    export type PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationError = void
+    export type PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationVariables = {operationId: string;importId: string;data: RomaneioImportDiscardRow}
+
+    export const usePostApiOperationOperationIdRomaneioImportImportIdDiscardRow = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDiscardRow>>, TError,PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDiscardRow>>,
+        TError,
+        PostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdRomaneioImportImportIdDiscardRowMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate = (
+    operationId: string,
+    importId: string,
+    romaneioImportResolveDuplicate: RomaneioImportResolveDuplicate,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<RomaneioImportAnalysisDTO>(
+      {url: `/api/operation/${operationId}/romaneio/import/${importId}/resolve-duplicate`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: romaneioImportResolveDuplicate, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationKey = () => ['postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate'] as const;
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate>>, TError,PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate>>, TError,PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate>>, PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationVariables> = (props) => {
+          const {operationId,importId,data} = props ?? {};
+
+          return  postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate(operationId,importId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate>>>
+    export type PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationBody = RomaneioImportResolveDuplicate
+    export type PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationError = void
+    export type PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationVariables = {operationId: string;importId: string;data: RomaneioImportResolveDuplicate}
+
+    export const usePostApiOperationOperationIdRomaneioImportImportIdResolveDuplicate = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate>>, TError,PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdResolveDuplicate>>,
+        TError,
+        PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateMutationOptions(options), queryClient);
+    }
+    export const postApiOperationOperationIdRomaneioImportImportIdDecide = (
+    operationId: string,
+    importId: string,
+    romaneioImportDecide: RomaneioImportDecide,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<RomaneioImportAnalysisDTO>(
+      {url: `/api/operation/${operationId}/romaneio/import/${importId}/decide`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: romaneioImportDecide, signal
+    },
+      );
+    }
+
+
+
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdDecideMutationKey = () => ['postApiOperationOperationIdRomaneioImportImportIdDecide'] as const;
+
+export const getPostApiOperationOperationIdRomaneioImportImportIdDecideMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDecide>>, TError,PostApiOperationOperationIdRomaneioImportImportIdDecideMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDecide>>, TError,PostApiOperationOperationIdRomaneioImportImportIdDecideMutationVariables, TContext> => {
+
+const mutationKey = getPostApiOperationOperationIdRomaneioImportImportIdDecideMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDecide>>, PostApiOperationOperationIdRomaneioImportImportIdDecideMutationVariables> = (props) => {
+          const {operationId,importId,data} = props ?? {};
+
+          return  postApiOperationOperationIdRomaneioImportImportIdDecide(operationId,importId,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiOperationOperationIdRomaneioImportImportIdDecideMutationResult = NonNullable<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDecide>>>
+    export type PostApiOperationOperationIdRomaneioImportImportIdDecideMutationBody = RomaneioImportDecide
+    export type PostApiOperationOperationIdRomaneioImportImportIdDecideMutationError = void
+    export type PostApiOperationOperationIdRomaneioImportImportIdDecideMutationVariables = {operationId: string;importId: string;data: RomaneioImportDecide}
+
+    export const usePostApiOperationOperationIdRomaneioImportImportIdDecide = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDecide>>, TError,PostApiOperationOperationIdRomaneioImportImportIdDecideMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiOperationOperationIdRomaneioImportImportIdDecide>>,
+        TError,
+        PostApiOperationOperationIdRomaneioImportImportIdDecideMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPostApiOperationOperationIdRomaneioImportImportIdDecideMutationOptions(options), queryClient);
     }
     export const getApiOperationOperationIdRomaneioImportImportId = (
     operationId: string,

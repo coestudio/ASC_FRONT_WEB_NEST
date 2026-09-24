@@ -185,7 +185,7 @@
       },
       "sections": {
         "new": "新包裹",
-        "newHint": "下方勾选的包裹将被创建。",
+        "newHint": "请决定是否创建表格中的每个新棉包。",
         "missing": "表格中缺失的包裹",
         "missingHint": "请决定保留或删除表格中已不存在的每个棉包。",
         "conflicts": "有差异的包裹",
@@ -236,7 +236,10 @@
         "adjustTitle": "修正",
         "changedCount": "已修改 {count} 个字段",
         "restore": "恢复原始数据",
-        "save": "保存并创建棉包"
+        "save": "重新验证该行",
+        "hint": "现在不会保存任何内容：该行将被重新验证并移至正确的审核标签页。棉包仅在“应用”时保存。",
+        "stillInvalid": "该行仍有错误，请检查并修正。",
+        "movedTo": "第 {row} 行已修正 → {category}。"
       },
       "pending": {
         "banner": "应用前还有 {count} 项待处理。全部处理完之前不会保存任何内容。",
@@ -258,14 +261,25 @@
         "pending": "待处理",
         "discard": "丢弃",
         "discardAll": "全部丢弃 ({count})",
-        "undo": "撤销",
         "duplicatedRows": "第 {rows} 行",
-        "fixUnavailable": "行修正将在 Core 更新 (fix-row) 后可用。"
+        "create": "创建",
+        "skip": "不创建",
+        "createAll": "全部创建 ({count})",
+        "skipAll": "全部不创建 ({count})",
+        "discarded": "已丢弃",
+        "discardAllRows": "全部丢弃",
+        "keepThisRow": "保留此行",
+        "keptRow": "已保留第 {row} 行"
       },
       "confirmApply": {
         "title": "应用导入？",
         "message": "将创建 {created} 个、更新 {updated} 个、删除 {deleted} 个棉包。已丢弃的行：{discarded}。",
         "confirm": "应用"
+      },
+      "confirmDiscard": {
+        "title": "丢弃这些行？",
+        "message": "将从本次导入中丢弃 {count} 项，除非重新上传表格，否则无法恢复。",
+        "confirm": "丢弃"
       }
     }
   },

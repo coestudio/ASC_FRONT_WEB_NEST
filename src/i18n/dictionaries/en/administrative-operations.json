@@ -185,7 +185,7 @@
       },
       "sections": {
         "new": "New bales",
-        "newHint": "The bales checked below will be created.",
+        "newHint": "Decide whether to create each new bale from the spreadsheet.",
         "missing": "Bales missing from the spreadsheet",
         "missingHint": "Decide whether to keep or delete each bale that is no longer in the spreadsheet.",
         "conflicts": "Bales with divergence",
@@ -236,7 +236,10 @@
         "adjustTitle": "Adjustment",
         "changedCount": "{count} field(s) changed",
         "restore": "Restore original",
-        "save": "Save and create bale"
+        "save": "Revalidate row",
+        "hint": "Nothing is saved now: the row is revalidated and moves to the right review tab. Bales are only saved on Apply.",
+        "stillInvalid": "The row still has errors. Check and fix it.",
+        "movedTo": "Row {row} fixed → {category}."
       },
       "pending": {
         "banner": "{count} pending item(s) left before applying. Nothing is saved until all are resolved.",
@@ -258,14 +261,25 @@
         "pending": "Pending",
         "discard": "Discard",
         "discardAll": "Discard all ({count})",
-        "undo": "Undo",
         "duplicatedRows": "rows {rows}",
-        "fixUnavailable": "Row fixing available after the Core update (fix-row)."
+        "create": "Create",
+        "skip": "Don't create",
+        "createAll": "Create all ({count})",
+        "skipAll": "Create none ({count})",
+        "discarded": "Discarded",
+        "discardAllRows": "Discard all",
+        "keepThisRow": "Keep this row",
+        "keptRow": "Row {row} kept"
       },
       "confirmApply": {
         "title": "Apply import?",
         "message": "{created} bale(s) will be created, {updated} updated and {deleted} deleted. Discarded rows: {discarded}.",
         "confirm": "Apply"
+      },
+      "confirmDiscard": {
+        "title": "Discard rows?",
+        "message": "{count} item(s) will be discarded from this import and cannot be recovered without re-uploading the spreadsheet.",
+        "confirm": "Discard"
       }
     }
   },

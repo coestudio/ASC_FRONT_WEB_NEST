@@ -38,3 +38,34 @@ export function withEmptyStringsAsNull<T extends FieldValues>(schema: ZodType<T>
   const resolver = zodResolver(schema as never) as unknown as Resolver<T>;
   return (values, context, options) => resolver(emptyStringsToNull(values), context, options);
 }
+
+/**
+ * Normaliza `""` → `undefined` (não `null`) antes de validar — diferente do
+ * `emptyStringsToNull` do `CrudRecordModal` (que usa `null` pra *limpar*
+ * explicitamente um campo opcional num registro só). Aqui campo vazio
+ * significa "não mexe" (RF4, §3.3): mandar `undefined` faz o schema
+ * `.nullish()` aceitar sem violar o `min(1)` de `lote`, e o `update-batch`
+ * do Core não recebe a chave (JSON.stringify descarta `undefined`).
+ */
+function emptyStringsToUndefined<V>(value: V): V {
+  if (value === "") return undefined as unknown as V;
+  if (Array.isArray(value)) {
+    return value.map((item) => emptyStringsToUndefined(item)) as unknown as V;
+  }
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, val]) => [
+        key,
+        emptyStringsToUndefined(val),
+      ]),
+    ) as V;
+  }
+  return value;
+}
+
+export function withEmptyStringsAsUndefined<T extends FieldValues>(
+  schema: ZodType<T>,
+): Resolver<T> {
+  const resolver = zodResolver(schema as never) as unknown as Resolver<T>;
+  return (values, context, options) => resolver(emptyStringsToUndefined(values), context, options);
+}

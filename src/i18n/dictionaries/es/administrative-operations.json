@@ -185,7 +185,7 @@
       },
       "sections": {
         "new": "Fardos nuevos",
-        "newHint": "Se crearán los fardos marcados abajo.",
+        "newHint": "Decida crear o no cada fardo nuevo de la planilla.",
         "missing": "Fardos ausentes en la planilla",
         "missingHint": "Decida mantener o eliminar cada fardo que ya no aparece en la planilla.",
         "conflicts": "Fardos con divergencia",
@@ -236,7 +236,10 @@
         "adjustTitle": "Ajuste",
         "changedCount": "{count} campo(s) modificado(s)",
         "restore": "Restaurar original",
-        "save": "Guardar y crear fardo"
+        "save": "Revalidar línea",
+        "hint": "No se guarda nada ahora: la línea se revalida y vuelve a la pestaña correcta. Los fardos solo se guardan al Aplicar.",
+        "stillInvalid": "La línea aún tiene errores. Revise y corrija.",
+        "movedTo": "Línea {row} corregida → {category}."
       },
       "pending": {
         "banner": "Faltan {count} pendiente(s) para aplicar. No se guardará nada hasta resolverlos todos.",
@@ -258,14 +261,25 @@
         "pending": "Pendiente",
         "discard": "Descartar",
         "discardAll": "Descartar todos ({count})",
-        "undo": "Deshacer",
         "duplicatedRows": "líneas {rows}",
-        "fixUnavailable": "Corrección de línea disponible tras la actualización del Core (fix-row)."
+        "create": "Crear",
+        "skip": "No crear",
+        "createAll": "Crear todos ({count})",
+        "skipAll": "No crear ninguno ({count})",
+        "discarded": "Descartado",
+        "discardAllRows": "Descartar todas",
+        "keepThisRow": "Mantener esta línea",
+        "keptRow": "Línea {row} mantenida"
       },
       "confirmApply": {
         "title": "¿Aplicar importación?",
         "message": "Se crearán {created}, se actualizarán {updated} y se eliminarán {deleted} fardo(s). Líneas descartadas: {discarded}.",
         "confirm": "Aplicar"
+      },
+      "confirmDiscard": {
+        "title": "¿Descartar líneas?",
+        "message": "{count} elemento(s) se descartarán de esta importación y no se podrán recuperar sin volver a enviar la planilla.",
+        "confirm": "Descartar"
       }
     }
   },

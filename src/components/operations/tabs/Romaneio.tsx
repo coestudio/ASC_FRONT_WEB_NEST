@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useForm, type FieldValues, type Resolver } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Card, Form, Row, Spinner } from "react-bootstrap";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
-import { z, type ZodType } from "zod";
+import { z } from "zod";
 
 import {
   getGetApiOperationOperationIdRomaneioExportQueryKey,
@@ -30,6 +29,7 @@ import {
 } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudBulkActions } from "@/components/crud/crud-bulk-actions";
+import { withEmptyStringsAsUndefined } from "@/components/crud/empty-strings-resolver";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ImportRomaneioModal } from "./RomaneioImportModal";
 import { buildRomaneioFields, toFormValues, type RomaneioFormValues } from "./RomaneioForm";
@@ -466,35 +466,6 @@ export function Romaneio({ operationId }: { operationId: string }) {
 type RomaneioBulkEditFormValues = z.infer<
   typeof PostApiOperationOperationIdRomaneioUpdateBatchBody
 >;
-
-/**
- * Normaliza `""` → `undefined` (não `null`) antes de validar — diferente do
- * `emptyStringsToNull` do `CrudRecordModal` (que usa `null` pra *limpar*
- * explicitamente um campo opcional num registro só). Aqui campo vazio
- * significa "não mexe" (RF4, §3.3): mandar `undefined` faz o schema
- * `.nullish()` aceitar sem violar o `min(1)` de `lote`, e o `update-batch`
- * do Core não recebe a chave (JSON.stringify descarta `undefined`).
- */
-function emptyStringsToUndefined<V>(value: V): V {
-  if (value === "") return undefined as unknown as V;
-  if (Array.isArray(value)) {
-    return value.map((item) => emptyStringsToUndefined(item)) as unknown as V;
-  }
-  if (value !== null && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, val]) => [
-        key,
-        emptyStringsToUndefined(val),
-      ]),
-    ) as V;
-  }
-  return value;
-}
-
-function withEmptyStringsAsUndefined<T extends FieldValues>(schema: ZodType<T>): Resolver<T> {
-  const resolver = zodResolver(schema as never) as unknown as Resolver<T>;
-  return (values, context, options) => resolver(emptyStringsToUndefined(values), context, options);
-}
 
 /**
  * Modal de edição em massa de NF/Lote (RF4, §3.3) — só os campos preenchidos

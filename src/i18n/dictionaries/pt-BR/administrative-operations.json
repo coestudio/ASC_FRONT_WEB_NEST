@@ -185,7 +185,7 @@
       },
       "sections": {
         "new": "Novos fardos",
-        "newHint": "Serão criados os fardos marcados abaixo.",
+        "newHint": "Decida criar ou não criar cada fardo novo da planilha.",
         "missing": "Fardos ausentes na planilha",
         "missingHint": "Decida manter ou excluir cada fardo que não aparece mais na planilha.",
         "conflicts": "Fardos com divergência",
@@ -236,7 +236,10 @@
         "adjustTitle": "Ajuste",
         "changedCount": "{count} campo(s) alterado(s)",
         "restore": "Restaurar original",
-        "save": "Salvar e criar fardo"
+        "save": "Revalidar linha",
+        "hint": "Nada é gravado agora: a linha é revalidada e volta para a aba certa da revisão. Os fardos só são gravados no Aplicar.",
+        "stillInvalid": "A linha ainda tem erros. Confira e corrija.",
+        "movedTo": "Linha {row} corrigida → {category}."
       },
       "pending": {
         "banner": "Faltam {count} pendência(s) para aplicar. Nada será gravado até resolver todas.",
@@ -258,14 +261,25 @@
         "pending": "Pendente",
         "discard": "Descartar",
         "discardAll": "Descartar todos ({count})",
-        "undo": "Desfazer",
         "duplicatedRows": "linhas {rows}",
-        "fixUnavailable": "Correção de linha disponível após a atualização do Core (fix-row)."
+        "create": "Criar",
+        "skip": "Não criar",
+        "createAll": "Criar todos ({count})",
+        "skipAll": "Não criar todos ({count})",
+        "discarded": "Descartado",
+        "discardAllRows": "Descartar todas",
+        "keepThisRow": "Manter esta linha",
+        "keptRow": "Linha {row} mantida"
       },
       "confirmApply": {
         "title": "Aplicar importação?",
         "message": "Serão criados {created}, atualizados {updated} e excluídos {deleted} fardo(s). Linhas descartadas: {discarded}.",
         "confirm": "Aplicar"
+      },
+      "confirmDiscard": {
+        "title": "Descartar linhas?",
+        "message": "{count} item(ns) serão descartados desta importação e não poderão ser recuperados sem reenviar a planilha.",
+        "confirm": "Descartar"
       }
     }
   },

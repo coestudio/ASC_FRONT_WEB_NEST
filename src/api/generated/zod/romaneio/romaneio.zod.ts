@@ -346,13 +346,19 @@ export const postApiOperationOperationIdRomaneioImportAnalyzeResponseSummaryFore
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseSummaryInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseSummaryDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseSummaryUnchangedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemRomaneioPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemRomaneioPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemRomaneioPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseConflictsItemCurrentPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseConflictsItemCurrentPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseConflictsItemCurrentPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
@@ -369,10 +375,11 @@ export const postApiOperationOperationIdRomaneioImportAnalyzeResponseInvalidItem
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseInvalidItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseInvalidItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const postApiOperationOperationIdRomaneioImportAnalyzeResponseInvalidItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemKeepSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
 export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.object({
@@ -389,29 +396,41 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
   "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponseSummaryDuplicatedRegExpTwo)]).optional(),
   "unchanged": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponseSummaryUnchangedRegExpTwo)]).optional()
 }).optional(),
+  "pending": zod.object({
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingDuplicatedRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingConflictsRegExpTwo)]).optional(),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponsePendingTotalRegExpTwo)]).optional()
+}).optional(),
   "new": zod.array(zod.object({
-  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemSheetRowRegExpTwo)]).optional(),
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowSheetRowRegExpTwo)]).optional(),
   "itemIdentifier": zod.string().optional(),
   "itemCode": zod.string().optional(),
   "tipo": zod.string().nullish(),
   "contrato": zod.string().nullish(),
-  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemPesoRegExpTwo)]).optional(),
-  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemPesoTaraRegExpTwo)]).optional(),
-  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemPesoBrutoRegExpTwo)]).optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseNewItemRowPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string().optional(),
   "notaFiscal": zod.string().optional(),
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
+}).optional(),
+  "decision": zod.enum(['Pending', 'Create', 'Skip']).optional()
 })).optional(),
   "missing": zod.array(zod.object({
+  "romaneio": zod.object({
   "operationId": zod.uuid(),
   "itemIdentifier": zod.string(),
   "itemCode": zod.string(),
   "tipo": zod.string().optional(),
   "contrato": zod.string().optional(),
-  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemPesoRegExpTwo)]).optional(),
-  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemPesoTaraRegExpTwo)]).optional(),
-  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemPesoBrutoRegExpTwo)]).optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemRomaneioPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemRomaneioPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseMissingItemRomaneioPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string(),
   "notaFiscal": zod.string().optional(),
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
@@ -421,6 +440,8 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -456,7 +477,9 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
 }).optional(),
-  "diff": zod.array(zod.string()).optional()
+  "diff": zod.array(zod.string()).optional(),
+  "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
+  "acceptedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({
@@ -491,21 +514,27 @@ export const PostApiOperationOperationIdRomaneioImportAnalyzeResponse = zod.obje
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
 }).optional(),
-  "errors": zod.array(zod.string()).optional()
+  "errors": zod.array(zod.string()).optional(),
+  "status": zod.enum(['Pending', 'Discarded']).optional()
 })).optional(),
   "duplicated": zod.array(zod.object({
-  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemSheetRowRegExpTwo)]).optional(),
+  "certificado": zod.string().optional(),
+  "rows": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemSheetRowRegExpTwo)]).optional(),
   "itemIdentifier": zod.string().optional(),
   "itemCode": zod.string().optional(),
   "tipo": zod.string().nullish(),
   "contrato": zod.string().nullish(),
-  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemPesoRegExpTwo)]).optional(),
-  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemPesoTaraRegExpTwo)]).optional(),
-  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemPesoBrutoRegExpTwo)]).optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string().optional(),
   "notaFiscal": zod.string().optional(),
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
+})).optional(),
+  "decision": zod.enum(['Pending', 'Resolved', 'DiscardedAll']).optional(),
+  "keepSheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportAnalyzeResponseDuplicatedItemKeepSheetRowRegExpTwo)]).nullish()
 })).optional(),
   "unchangedCertificados": zod.array(zod.string()).optional()
 })
@@ -514,17 +543,8 @@ export const PostApiOperationOperationIdRomaneioImportApplyParams = zod.object({
   "operationId": zod.uuid()
 })
 
-
-
-
 export const PostApiOperationOperationIdRomaneioImportApplyBody = zod.object({
-  "importId": zod.uuid(),
-  "createNew": zod.array(zod.string()).optional(),
-  "conflicts": zod.array(zod.object({
-  "certificado": zod.string(),
-  "fields": zod.array(zod.string()).min(1).optional()
-})).optional(),
-  "deleteMissing": zod.array(zod.string()).optional()
+  "importId": zod.uuid()
 })
 
 export const postApiOperationOperationIdRomaneioImportApplyResponseCreatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
@@ -560,6 +580,883 @@ export const PostApiOperationOperationIdRomaneioImportApplyResponse = zod.object
 })).optional()
 })
 
+export const PostApiOperationOperationIdRomaneioImportImportIdFixRowParams = zod.object({
+  "operationId": zod.uuid(),
+  "importId": zod.uuid()
+})
+
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowBodySheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowBodyPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowBodyPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowBodyPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+
+
+export const PostApiOperationOperationIdRomaneioImportImportIdFixRowBody = zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowBodySheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowBodyPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowBodyPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowBodyPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+})
+
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryTotalDataRowsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryForeignRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryUnchangedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseMissingItemRomaneioPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseMissingItemRomaneioPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseMissingItemRomaneioPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemCurrentPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemCurrentPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemCurrentPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemKeepSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const PostApiOperationOperationIdRomaneioImportImportIdFixRowResponse = zod.object({
+  "importId": zod.uuid().optional(),
+  "operationId": zod.uuid().optional(),
+  "expiresAt": zod.iso.datetime({"offset":true}).optional(),
+  "summary": zod.object({
+  "totalDataRows": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryTotalDataRowsRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryConflictsRegExpTwo)]).optional(),
+  "foreign": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryForeignRegExpTwo)]).optional(),
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryDuplicatedRegExpTwo)]).optional(),
+  "unchanged": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseSummaryUnchangedRegExpTwo)]).optional()
+}).optional(),
+  "pending": zod.object({
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingDuplicatedRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingConflictsRegExpTwo)]).optional(),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponsePendingTotalRegExpTwo)]).optional()
+}).optional(),
+  "new": zod.array(zod.object({
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseNewItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "decision": zod.enum(['Pending', 'Create', 'Skip']).optional()
+})).optional(),
+  "missing": zod.array(zod.object({
+  "romaneio": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseMissingItemRomaneioPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseMissingItemRomaneioPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseMissingItemRomaneioPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+})).optional(),
+  "conflicts": zod.array(zod.object({
+  "current": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemCurrentPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemCurrentPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemCurrentPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseConflictsItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "diff": zod.array(zod.string()).optional(),
+  "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
+  "acceptedFields": zod.array(zod.string()).optional()
+})).optional(),
+  "foreign": zod.array(zod.object({
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseForeignItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "ownerOperationId": zod.uuid().optional()
+})).optional(),
+  "invalid": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemSheetRowRegExpTwo)]).optional(),
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseInvalidItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "status": zod.enum(['Pending', 'Discarded']).optional()
+})).optional(),
+  "duplicated": zod.array(zod.object({
+  "certificado": zod.string().optional(),
+  "rows": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+})).optional(),
+  "decision": zod.enum(['Pending', 'Resolved', 'DiscardedAll']).optional(),
+  "keepSheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdFixRowResponseDuplicatedItemKeepSheetRowRegExpTwo)]).nullish()
+})).optional(),
+  "unchangedCertificados": zod.array(zod.string()).optional()
+})
+
+export const PostApiOperationOperationIdRomaneioImportImportIdDiscardRowParams = zod.object({
+  "operationId": zod.uuid(),
+  "importId": zod.uuid()
+})
+
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowBodySheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const PostApiOperationOperationIdRomaneioImportImportIdDiscardRowBody = zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowBodySheetRowRegExpTwo)])
+})
+
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryTotalDataRowsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryForeignRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryUnchangedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseMissingItemRomaneioPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseMissingItemRomaneioPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseMissingItemRomaneioPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemCurrentPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemCurrentPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemCurrentPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemKeepSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const PostApiOperationOperationIdRomaneioImportImportIdDiscardRowResponse = zod.object({
+  "importId": zod.uuid().optional(),
+  "operationId": zod.uuid().optional(),
+  "expiresAt": zod.iso.datetime({"offset":true}).optional(),
+  "summary": zod.object({
+  "totalDataRows": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryTotalDataRowsRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryConflictsRegExpTwo)]).optional(),
+  "foreign": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryForeignRegExpTwo)]).optional(),
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryDuplicatedRegExpTwo)]).optional(),
+  "unchanged": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseSummaryUnchangedRegExpTwo)]).optional()
+}).optional(),
+  "pending": zod.object({
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingDuplicatedRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingConflictsRegExpTwo)]).optional(),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponsePendingTotalRegExpTwo)]).optional()
+}).optional(),
+  "new": zod.array(zod.object({
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseNewItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "decision": zod.enum(['Pending', 'Create', 'Skip']).optional()
+})).optional(),
+  "missing": zod.array(zod.object({
+  "romaneio": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseMissingItemRomaneioPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseMissingItemRomaneioPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseMissingItemRomaneioPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+})).optional(),
+  "conflicts": zod.array(zod.object({
+  "current": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemCurrentPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemCurrentPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemCurrentPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseConflictsItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "diff": zod.array(zod.string()).optional(),
+  "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
+  "acceptedFields": zod.array(zod.string()).optional()
+})).optional(),
+  "foreign": zod.array(zod.object({
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseForeignItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "ownerOperationId": zod.uuid().optional()
+})).optional(),
+  "invalid": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemSheetRowRegExpTwo)]).optional(),
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseInvalidItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "status": zod.enum(['Pending', 'Discarded']).optional()
+})).optional(),
+  "duplicated": zod.array(zod.object({
+  "certificado": zod.string().optional(),
+  "rows": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+})).optional(),
+  "decision": zod.enum(['Pending', 'Resolved', 'DiscardedAll']).optional(),
+  "keepSheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDiscardRowResponseDuplicatedItemKeepSheetRowRegExpTwo)]).nullish()
+})).optional(),
+  "unchangedCertificados": zod.array(zod.string()).optional()
+})
+
+export const PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateParams = zod.object({
+  "operationId": zod.uuid(),
+  "importId": zod.uuid()
+})
+
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateBodyKeepSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateBody = zod.object({
+  "certificado": zod.string(),
+  "keepSheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateBodyKeepSheetRowRegExpTwo)]).nullish(),
+  "discardAll": zod.boolean().nullish()
+})
+
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryTotalDataRowsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryForeignRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryUnchangedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseMissingItemRomaneioPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseMissingItemRomaneioPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseMissingItemRomaneioPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemCurrentPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemCurrentPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemCurrentPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemKeepSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const PostApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponse = zod.object({
+  "importId": zod.uuid().optional(),
+  "operationId": zod.uuid().optional(),
+  "expiresAt": zod.iso.datetime({"offset":true}).optional(),
+  "summary": zod.object({
+  "totalDataRows": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryTotalDataRowsRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryConflictsRegExpTwo)]).optional(),
+  "foreign": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryForeignRegExpTwo)]).optional(),
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryDuplicatedRegExpTwo)]).optional(),
+  "unchanged": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseSummaryUnchangedRegExpTwo)]).optional()
+}).optional(),
+  "pending": zod.object({
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingDuplicatedRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingConflictsRegExpTwo)]).optional(),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponsePendingTotalRegExpTwo)]).optional()
+}).optional(),
+  "new": zod.array(zod.object({
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseNewItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "decision": zod.enum(['Pending', 'Create', 'Skip']).optional()
+})).optional(),
+  "missing": zod.array(zod.object({
+  "romaneio": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseMissingItemRomaneioPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseMissingItemRomaneioPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseMissingItemRomaneioPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+})).optional(),
+  "conflicts": zod.array(zod.object({
+  "current": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemCurrentPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemCurrentPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemCurrentPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseConflictsItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "diff": zod.array(zod.string()).optional(),
+  "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
+  "acceptedFields": zod.array(zod.string()).optional()
+})).optional(),
+  "foreign": zod.array(zod.object({
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseForeignItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "ownerOperationId": zod.uuid().optional()
+})).optional(),
+  "invalid": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemSheetRowRegExpTwo)]).optional(),
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseInvalidItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "status": zod.enum(['Pending', 'Discarded']).optional()
+})).optional(),
+  "duplicated": zod.array(zod.object({
+  "certificado": zod.string().optional(),
+  "rows": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+})).optional(),
+  "decision": zod.enum(['Pending', 'Resolved', 'DiscardedAll']).optional(),
+  "keepSheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdResolveDuplicateResponseDuplicatedItemKeepSheetRowRegExpTwo)]).nullish()
+})).optional(),
+  "unchangedCertificados": zod.array(zod.string()).optional()
+})
+
+export const PostApiOperationOperationIdRomaneioImportImportIdDecideParams = zod.object({
+  "operationId": zod.uuid(),
+  "importId": zod.uuid()
+})
+
+export const PostApiOperationOperationIdRomaneioImportImportIdDecideBody = zod.object({
+  "newDecisions": zod.array(zod.object({
+  "certificado": zod.string(),
+  "create": zod.boolean().optional()
+})).optional(),
+  "missingDecisions": zod.array(zod.object({
+  "certificado": zod.string(),
+  "delete": zod.boolean().optional()
+})).optional(),
+  "conflictDecisions": zod.array(zod.object({
+  "certificado": zod.string(),
+  "fields": zod.array(zod.string()).nullish(),
+  "ignore": zod.boolean().optional()
+})).optional()
+})
+
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryTotalDataRowsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryForeignRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryUnchangedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseMissingItemRomaneioPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseMissingItemRomaneioPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseMissingItemRomaneioPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemCurrentPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemCurrentPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemCurrentPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemKeepSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+
+
+export const PostApiOperationOperationIdRomaneioImportImportIdDecideResponse = zod.object({
+  "importId": zod.uuid().optional(),
+  "operationId": zod.uuid().optional(),
+  "expiresAt": zod.iso.datetime({"offset":true}).optional(),
+  "summary": zod.object({
+  "totalDataRows": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryTotalDataRowsRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryConflictsRegExpTwo)]).optional(),
+  "foreign": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryForeignRegExpTwo)]).optional(),
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryDuplicatedRegExpTwo)]).optional(),
+  "unchanged": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseSummaryUnchangedRegExpTwo)]).optional()
+}).optional(),
+  "pending": zod.object({
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingDuplicatedRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingConflictsRegExpTwo)]).optional(),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponsePendingTotalRegExpTwo)]).optional()
+}).optional(),
+  "new": zod.array(zod.object({
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseNewItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "decision": zod.enum(['Pending', 'Create', 'Skip']).optional()
+})).optional(),
+  "missing": zod.array(zod.object({
+  "romaneio": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseMissingItemRomaneioPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseMissingItemRomaneioPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseMissingItemRomaneioPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
+})).optional(),
+  "conflicts": zod.array(zod.object({
+  "current": zod.object({
+  "operationId": zod.uuid(),
+  "itemIdentifier": zod.string(),
+  "itemCode": zod.string(),
+  "tipo": zod.string().optional(),
+  "contrato": zod.string().optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemCurrentPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemCurrentPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemCurrentPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string(),
+  "notaFiscal": zod.string().optional(),
+  "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
+  "lote": zod.string(),
+  "pilha": zod.string().optional(),
+  "isStuffed": zod.boolean().optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseConflictsItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "diff": zod.array(zod.string()).optional(),
+  "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
+  "acceptedFields": zod.array(zod.string()).optional()
+})).optional(),
+  "foreign": zod.array(zod.object({
+  "incoming": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseForeignItemIncomingPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "ownerOperationId": zod.uuid().optional()
+})).optional(),
+  "invalid": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemSheetRowRegExpTwo)]).optional(),
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseInvalidItemRowPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+}).optional(),
+  "errors": zod.array(zod.string()).optional(),
+  "status": zod.enum(['Pending', 'Discarded']).optional()
+})).optional(),
+  "duplicated": zod.array(zod.object({
+  "certificado": zod.string().optional(),
+  "rows": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemSheetRowRegExpTwo)]).optional(),
+  "itemIdentifier": zod.string().optional(),
+  "itemCode": zod.string().optional(),
+  "tipo": zod.string().nullish(),
+  "contrato": zod.string().nullish(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo)]).optional(),
+  "instruction": zod.string().optional(),
+  "notaFiscal": zod.string().optional(),
+  "lote": zod.string().optional(),
+  "pilha": zod.string().nullish()
+})).optional(),
+  "decision": zod.enum(['Pending', 'Resolved', 'DiscardedAll']).optional(),
+  "keepSheetRow": zod.union([zod.int(),zod.stringFormat('int32', postApiOperationOperationIdRomaneioImportImportIdDecideResponseDuplicatedItemKeepSheetRowRegExpTwo)]).nullish()
+})).optional(),
+  "unchangedCertificados": zod.array(zod.string()).optional()
+})
+
 export const GetApiOperationOperationIdRomaneioImportImportIdParams = zod.object({
   "operationId": zod.uuid(),
   "importId": zod.uuid()
@@ -573,13 +1470,19 @@ export const getApiOperationOperationIdRomaneioImportImportIdResponseSummaryFore
 export const getApiOperationOperationIdRomaneioImportImportIdResponseSummaryInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdRomaneioImportImportIdResponseSummaryDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 export const getApiOperationOperationIdRomaneioImportImportIdResponseSummaryUnchangedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponsePendingInvalidRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponsePendingDuplicatedRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponsePendingNewRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponsePendingMissingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponsePendingConflictsRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponsePendingTotalRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemRomaneioPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemRomaneioPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemRomaneioPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdRomaneioImportImportIdResponseConflictsItemCurrentPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdRomaneioImportImportIdResponseConflictsItemCurrentPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdRomaneioImportImportIdResponseConflictsItemCurrentPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
@@ -596,10 +1499,11 @@ export const getApiOperationOperationIdRomaneioImportImportIdResponseInvalidItem
 export const getApiOperationOperationIdRomaneioImportImportIdResponseInvalidItemRowPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdRomaneioImportImportIdResponseInvalidItemRowPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 export const getApiOperationOperationIdRomaneioImportImportIdResponseInvalidItemRowPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
-export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemPesoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemPesoTaraRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
+export const getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemKeepSheetRowRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)$');
 
 
 export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.object({
@@ -616,29 +1520,41 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
   "duplicated": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponseSummaryDuplicatedRegExpTwo)]).optional(),
   "unchanged": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponseSummaryUnchangedRegExpTwo)]).optional()
 }).optional(),
+  "pending": zod.object({
+  "invalid": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponsePendingInvalidRegExpTwo)]).optional(),
+  "duplicated": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponsePendingDuplicatedRegExpTwo)]).optional(),
+  "new": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponsePendingNewRegExpTwo)]).optional(),
+  "missing": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponsePendingMissingRegExpTwo)]).optional(),
+  "conflicts": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponsePendingConflictsRegExpTwo)]).optional(),
+  "total": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponsePendingTotalRegExpTwo)]).optional()
+}).optional(),
   "new": zod.array(zod.object({
-  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemSheetRowRegExpTwo)]).optional(),
+  "row": zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowSheetRowRegExpTwo)]).optional(),
   "itemIdentifier": zod.string().optional(),
   "itemCode": zod.string().optional(),
   "tipo": zod.string().nullish(),
   "contrato": zod.string().nullish(),
-  "peso": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemPesoRegExpTwo)]).optional(),
-  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemPesoTaraRegExpTwo)]).optional(),
-  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemPesoBrutoRegExpTwo)]).optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseNewItemRowPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string().optional(),
   "notaFiscal": zod.string().optional(),
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
+}).optional(),
+  "decision": zod.enum(['Pending', 'Create', 'Skip']).optional()
 })).optional(),
   "missing": zod.array(zod.object({
+  "romaneio": zod.object({
   "operationId": zod.uuid(),
   "itemIdentifier": zod.string(),
   "itemCode": zod.string(),
   "tipo": zod.string().optional(),
   "contrato": zod.string().optional(),
-  "peso": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemPesoRegExpTwo)]).optional(),
-  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemPesoTaraRegExpTwo)]).optional(),
-  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemPesoBrutoRegExpTwo)]).optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemRomaneioPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemRomaneioPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseMissingItemRomaneioPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string(),
   "notaFiscal": zod.string().optional(),
   "source": zod.enum(['AdministrativeImport', 'ManualAdministrative', 'OperationalInvoice', 'AdministrativeCorrection']).optional(),
@@ -648,6 +1564,8 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
+}).optional(),
+  "decision": zod.enum(['Pending', 'Delete', 'Keep']).optional()
 })).optional(),
   "conflicts": zod.array(zod.object({
   "current": zod.object({
@@ -683,7 +1601,9 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
 }).optional(),
-  "diff": zod.array(zod.string()).optional()
+  "diff": zod.array(zod.string()).optional(),
+  "decision": zod.enum(['Pending', 'Apply', 'Ignore']).optional(),
+  "acceptedFields": zod.array(zod.string()).optional()
 })).optional(),
   "foreign": zod.array(zod.object({
   "incoming": zod.object({
@@ -718,21 +1638,27 @@ export const GetApiOperationOperationIdRomaneioImportImportIdResponse = zod.obje
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
 }).optional(),
-  "errors": zod.array(zod.string()).optional()
+  "errors": zod.array(zod.string()).optional(),
+  "status": zod.enum(['Pending', 'Discarded']).optional()
 })).optional(),
   "duplicated": zod.array(zod.object({
-  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemSheetRowRegExpTwo)]).optional(),
+  "certificado": zod.string().optional(),
+  "rows": zod.array(zod.object({
+  "sheetRow": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemSheetRowRegExpTwo)]).optional(),
   "itemIdentifier": zod.string().optional(),
   "itemCode": zod.string().optional(),
   "tipo": zod.string().nullish(),
   "contrato": zod.string().nullish(),
-  "peso": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemPesoRegExpTwo)]).optional(),
-  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemPesoTaraRegExpTwo)]).optional(),
-  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemPesoBrutoRegExpTwo)]).optional(),
+  "peso": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemPesoRegExpTwo)]).optional(),
+  "pesoTara": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemPesoTaraRegExpTwo)]).optional(),
+  "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemRowsItemPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string().optional(),
   "notaFiscal": zod.string().optional(),
   "lote": zod.string().optional(),
   "pilha": zod.string().nullish()
+})).optional(),
+  "decision": zod.enum(['Pending', 'Resolved', 'DiscardedAll']).optional(),
+  "keepSheetRow": zod.union([zod.int(),zod.stringFormat('int32', getApiOperationOperationIdRomaneioImportImportIdResponseDuplicatedItemKeepSheetRowRegExpTwo)]).nullish()
 })).optional(),
   "unchangedCertificados": zod.array(zod.string()).optional()
 })

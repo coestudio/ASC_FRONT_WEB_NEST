@@ -2,7 +2,7 @@
 
 - **ID:** SPEC-100
 - **Nome:** romaneio-import-review-tabs
-- **Status:** IN PROGRESS (2026-09-24) — RF13 implementado no front com decisões locais; falta ligar o "Ajustar" ao `fix-row` do Core (aguardando `just map`) — aprovado pelo usuário ("pode
+- **Status:** IMPLEMENTED (2026-09-24) — RF13 integrado ao Core SPEC-55 (`feat/55-romaneio-import-pending-resolution`); aguardando teste manual do usuário — aprovado pelo usuário ("pode
   escrever essa specs e fazer numa branch separada para eu ver antes de
   migrar para main"). Branch `feat/100-romaneio-import-review-tabs`,
   aguardando revisão visual do usuário antes do merge em `main`.
@@ -218,4 +218,26 @@ Chaves novas em `administrative-operations.romaneio.import` nos 4 locales
   RF12 foi removido (gravava sem Invoice automática nem evento de Log).
   `RomaneioFixRowModal` (layout Original × Ajuste) fica pronto para ser
   religado ao `fix-row` quando o endpoint existir no client gerado.
+
+### RF13 — integração com o Core SPEC-55 (2026-09-24)
+
+- `just map` com o Core na branch `feat/55-romaneio-import-pending-resolution`:
+  `decide`, `fix-row`, `discard-row`, `resolve-duplicate`; `apply` passou a
+  receber só `{ importId }` (contrato quebrado de propósito no Core).
+- **Estado de decisão agora vem do servidor** (substitui as decisões locais
+  da etapa anterior): cada ação chama o endpoint e a análise devolvida
+  substitui a local. Único estado local que sobrou: rascunho dos campos de
+  conflito antes de "Aceitar", aba/busca/página e modais.
+- Novos nascem **Pendente** no Core (SPEC-55 §3.1, `[NEEDS_DECISION]` em
+  aberto lá) — a aba Novos ganhou Criar/Não criar por item e em massa.
+- Ajustar → `fix-row`: continua inválida = modal fica aberto com os erros
+  novos; válida = toast dizendo para qual aba a linha foi. Nada é gravado.
+- Descartar (`discard-row`) e duplicados (`resolve-duplicate`: manter uma
+  linha ou descartar todas) **não têm desfazer** no Core → sempre pedem
+  confirmação. Em lote, chamadas **sequenciais** (todas reescrevem o mesmo
+  snapshot no servidor).
+- `withEmptyStringsAsUndefined` saiu de `Romaneio.tsx` para
+  `components/crud/empty-strings-resolver.ts` (reuso no modal de ajuste com
+  o schema gerado do `fix-row`).
+- Gates: `tsc` limpo; `bun run lint` 0 erros. **Não testado em runtime.**
 

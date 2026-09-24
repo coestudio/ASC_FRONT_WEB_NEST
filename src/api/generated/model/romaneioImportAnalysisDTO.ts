@@ -4,11 +4,13 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
-import type { RomaneioDTO } from './romaneioDTO.ts';
 import type { RomaneioImportConflictDTO } from './romaneioImportConflictDTO.ts';
+import type { RomaneioImportDuplicateGroupDTO } from './romaneioImportDuplicateGroupDTO.ts';
 import type { RomaneioImportForeignDTO } from './romaneioImportForeignDTO.ts';
 import type { RomaneioImportInvalidDTO } from './romaneioImportInvalidDTO.ts';
-import type { RomaneioImportRowDTO } from './romaneioImportRowDTO.ts';
+import type { RomaneioImportMissingItemDTO } from './romaneioImportMissingItemDTO.ts';
+import type { RomaneioImportNewItemDTO } from './romaneioImportNewItemDTO.ts';
+import type { RomaneioImportPendingDTO } from './romaneioImportPendingDTO.ts';
 import type { RomaneioImportSummaryDTO } from './romaneioImportSummaryDTO.ts';
 
 export interface RomaneioImportAnalysisDTO {
@@ -16,11 +18,12 @@ export interface RomaneioImportAnalysisDTO {
   operationId?: string;
   expiresAt?: string;
   summary?: RomaneioImportSummaryDTO;
-  new?: RomaneioImportRowDTO[];
-  missing?: RomaneioDTO[];
+  pending?: RomaneioImportPendingDTO;
+  new?: RomaneioImportNewItemDTO[];
+  missing?: RomaneioImportMissingItemDTO[];
   conflicts?: RomaneioImportConflictDTO[];
   foreign?: RomaneioImportForeignDTO[];
   invalid?: RomaneioImportInvalidDTO[];
-  duplicated?: RomaneioImportRowDTO[];
+  duplicated?: RomaneioImportDuplicateGroupDTO[];
   unchangedCertificados?: string[];
 }
