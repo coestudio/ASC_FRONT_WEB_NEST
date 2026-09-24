@@ -191,7 +191,7 @@
         "conflicts": "Fardos con divergencia",
         "conflictsHint": "Marque los campos que deben recibir el valor de la planilla y acepte, o ignore la divergencia.",
         "foreign": "Pertenecen a otra operación",
-        "foreignHint": "Estos fardos ya existen en otra operación y no serán alterados.",
+        "foreignHint": "Estos fardos ya están registrados en otra operación y no se modificarán. Vea abajo dónde está cada uno.",
         "invalid": "Líneas inválidas",
         "invalidHint": "Corrija o descarte cada línea con error. Las líneas descartadas no se importarán.",
         "duplicated": "Líneas duplicadas en la planilla",
@@ -287,6 +287,11 @@
         "fieldLocked": "Campo bloqueado: fardo estufado.",
         "cannotDelete": "Un fardo estufado no puede eliminarse.",
         "duringReview": "{count} fardo(s) fueron estufados durante la revisión. No se guardó nada: revise los pendientes y aplique de nuevo."
+      },
+      "foreign": {
+        "location": "Operación #{number} · Booking {booking} · {client}",
+        "open": "Abrir operación",
+        "unknown": "Operación no encontrada"
       }
     }
   },

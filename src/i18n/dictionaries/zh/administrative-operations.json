@@ -191,7 +191,7 @@
         "conflicts": "有差异的包裹",
         "conflictsHint": "勾选应采用表格值的字段并接受，或忽略差异。",
         "foreign": "属于其他作业",
-        "foreignHint": "这些包裹已存在于其他作业中，不会被更改。",
+        "foreignHint": "这些棉包已在其他作业中登记，不会被修改。下方显示每个棉包所在位置。",
         "invalid": "无效行",
         "invalidHint": "请修正或丢弃每个有错误的行。丢弃的行不会被导入。",
         "duplicated": "表格中重复的行",
@@ -287,6 +287,11 @@
         "fieldLocked": "字段已锁定：棉包已装箱。",
         "cannotDelete": "已装箱的棉包不可删除。",
         "duringReview": "审核期间有 {count} 个棉包被装箱。未保存任何内容：请检查待处理项后重新应用。"
+      },
+      "foreign": {
+        "location": "作业 #{number} · 订舱 {booking} · {client}",
+        "open": "打开作业",
+        "unknown": "未找到作业"
       }
     }
   },

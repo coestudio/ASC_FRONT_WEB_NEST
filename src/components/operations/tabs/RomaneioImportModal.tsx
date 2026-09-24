@@ -1,6 +1,8 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueries } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Alert, Badge, Button, ButtonGroup, Form, Nav, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -14,6 +16,7 @@ import {
   usePostApiOperationOperationIdRomaneioImportImportIdFixRow,
   usePostApiOperationOperationIdRomaneioImportImportIdResolveDuplicate,
 } from "@/api/generated/endpoints/romaneio/romaneio";
+import { getGetApiOperationIdQueryOptions } from "@/api/generated/endpoints/operation/operation";
 import {
   PostApiOperationOperationIdRomaneioImportAnalyzeBody,
   PostApiOperationOperationIdRomaneioImportApplyBody,
@@ -652,18 +655,7 @@ export function ImportRomaneioModal({
               />
             ) : null}
 
-            {activeTab === "foreign" ? (
-              <ReadOnlyTab
-                {...tabProps}
-                rows={foreignRows}
-                toText={foreignSearchText}
-                renderItem={(row) => (
-                  <>
-                    {row.incoming?.itemIdentifier} — {row.incoming?.itemCode}
-                  </>
-                )}
-              />
-            ) : null}
+            {activeTab === "foreign" ? <ForeignTab {...tabProps} rows={foreignRows} /> : null}
 
             {activeTab === "invalid" ? (
               <InvalidTab
@@ -1460,7 +1452,95 @@ function StuffedBadge() {
   );
 }
 
-/** Abas informativas (outra operação, sem alteração) — RF8. */
+/**
+ * Aba "De outra operação" — fardo que já está cadastrado em outra operação
+ * (o certificado é único no sistema; o import nunca mexe nele). Mostra
+ * **onde** ele está: número, booking e cliente da operação dona, com link
+ * que abre a operação em nova aba (sem perder a revisão do import). Cada
+ * operação é buscada uma vez só, e só quando esta aba é aberta.
+ */
+function ForeignTab({
+  rows,
+  search,
+  page,
+  onPageChange,
+  onSearchChange,
+}: PagedTabProps & { rows: RomaneioImportForeignDTO[] }) {
+  const t = useT();
+  const view = useFilteredPage(rows, foreignSearchText, search, page);
+
+  const ownerIds = useMemo(
+    () => Array.from(new Set(rows.map((row) => row.ownerOperationId).filter(Boolean))) as string[],
+    [rows],
+  );
+  const owners = useQueries({
+    queries: ownerIds.map((id) => getGetApiOperationIdQueryOptions(id)),
+  });
+  const ownerById = new Map(ownerIds.map((id, i) => [id, owners[i]]));
+
+  return (
+    <>
+      <TabToolbar search={search} onSearchChange={onSearchChange} />
+      <PagedList
+        total={rows.length}
+        filteredCount={view.filtered.length}
+        page={view.page}
+        totalPages={view.totalPages}
+        onPageChange={onPageChange}
+      >
+        <ul className="list-group">
+          {view.pageRows.map((row, i) => {
+            const ownerId = row.ownerOperationId ?? "";
+            const owner = ownerById.get(ownerId);
+            const operation = owner?.data;
+            return (
+              <li
+                key={`${row.incoming?.itemIdentifier ?? ""}-${i}`}
+                className="list-group-item d-flex flex-wrap align-items-center gap-2"
+              >
+                <span className="fw-semibold text-break">{row.incoming?.itemIdentifier}</span>
+                <span className="text-body-secondary small">
+                  {row.incoming?.itemCode} · {row.incoming?.lote}
+                </span>
+                <span className="small ms-auto d-flex flex-wrap align-items-center gap-2">
+                  <i className="bi bi-geo-alt-fill text-body-secondary" aria-hidden="true" />
+                  {owner?.isLoading ? (
+                    <Spinner size="sm" animation="border" />
+                  ) : operation ? (
+                    <>
+                      <span>
+                        {t("administrative-operations.romaneio.import.foreign.location", {
+                          number: String(operation.number),
+                          booking: operation.booking || "—",
+                          client: operation.client?.shortName || operation.client?.fullName || "—",
+                        })}
+                      </span>
+                      <Link
+                        to="/administrative/operations/$id"
+                        params={{ id: ownerId }}
+                        target="_blank"
+                        className="btn btn-sm btn-outline-primary"
+                      >
+                        {t("administrative-operations.romaneio.import.foreign.open")}
+                        <i className="bi bi-box-arrow-up-right ms-1" aria-hidden="true" />
+                      </Link>
+                    </>
+                  ) : (
+                    <span className="text-body-secondary">
+                      {t("administrative-operations.romaneio.import.foreign.unknown")}
+                    </span>
+                  )}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </PagedList>
+    </>
+  );
+}
+
+/** Abas informativas (sem alteração) — RF8. */
 function ReadOnlyTab<T>({
   rows,
   toText,

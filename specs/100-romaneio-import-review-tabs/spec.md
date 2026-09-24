@@ -267,3 +267,13 @@ garante é o Core (`feat/56-romaneio-stuffed-lock`); o front só antecipa.
   decisões afetadas voltam como pendência.
 - Gates: `tsc` limpo; `bun run lint` 0 erros. **Não testado em runtime.**
 
+### RF15 — "De outra operação" mostra onde o fardo está (2026-09-24)
+
+- Pedido do usuário: quando o fardo já está cadastrado, mostrar onde.
+- A aba lista, por fardo, a operação dona (`ownerOperationId` do Core):
+  "Operação #número · Booking · Cliente" + botão "Abrir operação" (nova
+  aba do navegador, pra não perder a revisão do import).
+- Cada operação dona é buscada uma única vez (`useQueries` com a mesma
+  queryKey do hook gerado `GET /api/operation/{id}`) e só quando a aba é
+  aberta. Sem mudança no Core.
+

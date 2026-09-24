@@ -191,7 +191,7 @@
         "conflicts": "Bales with divergence",
         "conflictsHint": "Check the fields that should take the spreadsheet value and accept, or ignore the difference.",
         "foreign": "Belong to another operation",
-        "foreignHint": "These bales already exist in another operation and will not be changed.",
+        "foreignHint": "These bales are already registered in another operation and will not be changed. See below where each one is.",
         "invalid": "Invalid rows",
         "invalidHint": "Fix or discard each row with errors. Discarded rows will not be imported.",
         "duplicated": "Duplicated rows in the spreadsheet",
@@ -287,6 +287,11 @@
         "fieldLocked": "Locked field: bale is stuffed.",
         "cannotDelete": "A stuffed bale cannot be deleted.",
         "duringReview": "{count} bale(s) were stuffed during the review. Nothing was saved: review the pending items and apply again."
+      },
+      "foreign": {
+        "location": "Operation #{number} · Booking {booking} · {client}",
+        "open": "Open operation",
+        "unknown": "Operation not found"
       }
     }
   },
