@@ -195,7 +195,9 @@
         "invalid": "无效行",
         "invalidHint": "这些行存在错误，不会被导入。",
         "duplicated": "表格中重复的行",
-        "duplicatedHint": "此包裹在表格中出现多次，不会被导入。"
+        "duplicatedHint": "此包裹在表格中出现多次，不会被导入。",
+        "unchanged": "无变化",
+        "unchangedHint": "这些棉包已以相同数据存在于该作业中，不会被修改。"
       },
       "toast": {
         "analyzeError": "无法分析表格，请重试。",
@@ -214,6 +216,22 @@
         "notaFiscal": "发票",
         "lote": "批次",
         "pilha": "堆垛"
+      },
+      "review": {
+        "searchPlaceholder": "搜索棉包、代码、批次或发票",
+        "selectAll": "全选 ({count})",
+        "clearAll": "取消全选",
+        "acceptAllFields": "接受所有字段",
+        "ignoreAllFields": "全部忽略",
+        "selectedCount": "已选 {selected} / {total}",
+        "empty": "此类别中没有项目。",
+        "noResults": "没有符合搜索条件的项目。",
+        "footerSummary": "将创建 {created} · 更新 {updated} · 删除 {deleted}"
+      },
+      "confirmDelete": {
+        "title": "删除缺失的棉包？",
+        "message": "表格中缺失的 {count} 个棉包将从该作业中删除。此操作无法撤销。",
+        "confirm": "删除并应用"
       }
     }
   },

@@ -195,7 +195,9 @@
         "invalid": "Invalid rows",
         "invalidHint": "These rows have errors and will not be imported.",
         "duplicated": "Duplicated rows in the spreadsheet",
-        "duplicatedHint": "This bale appears more than once in the spreadsheet and will not be imported."
+        "duplicatedHint": "This bale appears more than once in the spreadsheet and will not be imported.",
+        "unchanged": "Unchanged",
+        "unchangedHint": "These bales already exist unchanged in the operation and will not be modified."
       },
       "toast": {
         "analyzeError": "Could not analyze the spreadsheet. Please try again.",
@@ -214,6 +216,22 @@
         "notaFiscal": "Invoice",
         "lote": "Batch",
         "pilha": "Stack"
+      },
+      "review": {
+        "searchPlaceholder": "Search bale, code, lot or invoice",
+        "selectAll": "Select all ({count})",
+        "clearAll": "Clear all",
+        "acceptAllFields": "Accept all fields",
+        "ignoreAllFields": "Ignore all",
+        "selectedCount": "{selected} of {total} selected",
+        "empty": "No items in this category.",
+        "noResults": "No items match the search.",
+        "footerSummary": "{created} to create · {updated} to update · {deleted} to delete"
+      },
+      "confirmDelete": {
+        "title": "Delete missing bales?",
+        "message": "{count} bale(s) missing from the spreadsheet will be deleted from the operation. This cannot be undone.",
+        "confirm": "Delete and apply"
       }
     }
   },

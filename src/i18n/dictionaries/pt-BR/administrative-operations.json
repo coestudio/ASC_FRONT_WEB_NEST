@@ -195,7 +195,9 @@
         "invalid": "Linhas inválidas",
         "invalidHint": "Estas linhas têm erro e não serão importadas.",
         "duplicated": "Linhas duplicadas na planilha",
-        "duplicatedHint": "Este fardo aparece mais de uma vez na planilha e não será importado."
+        "duplicatedHint": "Este fardo aparece mais de uma vez na planilha e não será importado.",
+        "unchanged": "Sem alteração",
+        "unchangedHint": "Estes fardos já existem iguais na operação e não serão alterados."
       },
       "toast": {
         "analyzeError": "Não foi possível analisar a planilha. Tente novamente.",
@@ -214,6 +216,22 @@
         "notaFiscal": "Nota fiscal",
         "lote": "Lote",
         "pilha": "Pilha"
+      },
+      "review": {
+        "searchPlaceholder": "Buscar fardo, código, lote ou NF",
+        "selectAll": "Marcar todos ({count})",
+        "clearAll": "Desmarcar todos",
+        "acceptAllFields": "Aceitar todos os campos",
+        "ignoreAllFields": "Ignorar todos",
+        "selectedCount": "{selected} de {total} marcados",
+        "empty": "Nenhum item nesta categoria.",
+        "noResults": "Nenhum item encontrado para a busca.",
+        "footerSummary": "{created} serão criados · {updated} atualizados · {deleted} excluídos"
+      },
+      "confirmDelete": {
+        "title": "Excluir fardos ausentes?",
+        "message": "{count} fardo(s) ausente(s) na planilha serão excluídos da operação. Esta ação não pode ser desfeita.",
+        "confirm": "Excluir e aplicar"
       }
     }
   },
