@@ -13,7 +13,6 @@ import {
   usePostApiOperationOperationIdRomaneioImportApply,
 } from "@/api/generated/endpoints/romaneio/romaneio";
 import {
-  PostApiOperationOperationIdRomaneioBody,
   PostApiOperationOperationIdRomaneioImportAnalyzeBody,
   PostApiOperationOperationIdRomaneioImportApplyBody,
 } from "@/api/generated/zod/romaneio/romaneio.zod";
@@ -25,7 +24,6 @@ import type {
   RomaneioImportInvalidDTO,
   RomaneioImportRowDTO,
 } from "@/api/generated/model";
-import { CrudRecordModal } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { Modal } from "@/components/ui/modal";
@@ -33,7 +31,8 @@ import type { TranslationKey } from "@/i18n/translate";
 import { FilterText } from "@/layouts/Filters/Index";
 import { InputFileSingle } from "@/layouts/Form/Fields/Index";
 import { useT } from "@/lib/ui-prefs";
-import { buildRomaneioFields, toFormValues, type RomaneioFormValues } from "./RomaneioForm";
+import { RomaneioFixRowModal } from "./RomaneioFixRowModal";
+import type { RomaneioFormValues } from "./RomaneioForm";
 
 /** Rótulo (chave i18n) de cada campo comparável do import — RN2 do Core
  * (`RomaneioImportClassifier`), os mesmos 10 nomes usados em `diff`. */
@@ -589,17 +588,8 @@ export function ImportRomaneioModal({
       )}
 
       {fixing ? (
-        <CrudRecordModal<RomaneioFormValues>
-          show
-          mode="create"
-          titleKeys={{
-            create: "administrative-operations.romaneio.import.fix.title",
-            edit: "administrative-operations.romaneio.import.fix.title",
-            view: "administrative-operations.romaneio.import.fix.title",
-          }}
-          schema={PostApiOperationOperationIdRomaneioBody}
-          fields={buildRomaneioFields(t)}
-          defaultValues={toFormValues(fixing.row)}
+        <RomaneioFixRowModal
+          row={fixing}
           onSubmit={handleFixSubmit}
           onClose={() => setFixing(null)}
         />

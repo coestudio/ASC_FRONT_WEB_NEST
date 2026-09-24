@@ -238,7 +238,13 @@
         "title": "Fix invalid row",
         "fixed": "Fixed",
         "toastSuccess": "Bale created from the fixed row.",
-        "footerFixed": "{count} fixed already created"
+        "footerFixed": "{count} fixed already created",
+        "errorsTitle": "Errors found in this row",
+        "originalTitle": "Original (spreadsheet)",
+        "adjustTitle": "Adjustment",
+        "changedCount": "{count} field(s) changed",
+        "restore": "Restore original",
+        "save": "Save and create bale"
       }
     }
   },

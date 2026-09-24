@@ -238,7 +238,13 @@
         "title": "修正无效行",
         "fixed": "已修正",
         "toastSuccess": "已根据修正后的行创建棉包。",
-        "footerFixed": "已创建 {count} 个修正项"
+        "footerFixed": "已创建 {count} 个修正项",
+        "errorsTitle": "此行发现的错误",
+        "originalTitle": "原始数据（表格）",
+        "adjustTitle": "修正",
+        "changedCount": "已修改 {count} 个字段",
+        "restore": "恢复原始数据",
+        "save": "保存并创建棉包"
       }
     }
   },

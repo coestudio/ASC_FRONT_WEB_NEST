@@ -87,6 +87,15 @@ fazer.
   ids já classificados pelo Core, não linhas corrigidas. A linha fica com
   selo "Corrigido" (sem botão) e o rodapé soma "N corrigidos já criados".
   Erro de validação/duplicidade do Core mantém o formulário aberto.
+  **Layout do ajuste (pedido do usuário):** modal próprio
+  (`RomaneioFixRowModal`) com duas áreas lado a lado — **Original**
+  (valores da planilha, só leitura, "—" vermelho em campo vazio) e
+  **Ajuste** (formulário editável, mesmos campos/schema). Os erros da
+  linha aparecem num alerta acima das duas áreas. Campo alterado fica
+  destacado no Original (linha amarela, valor riscado) e o cabeçalho do
+  Ajuste mostra "N campo(s) alterado(s)". Botão "Restaurar original"
+  volta o formulário aos valores da planilha. Abaixo de `lg` as áreas
+  empilham e o modal fica em tela cheia.
 - **RF11 — Layout.** Modal `size="xl"`, `fullscreen="md-down"`. Corpo com
   rolagem própria (padrão do wrapper `Modal`); header/footer fixos.
 
@@ -117,6 +126,11 @@ Chaves novas em `administrative-operations.romaneio.import` nos 4 locales
   `ImportRomaneioModal` extraído de `Romaneio.tsx` (que tinha ~1.150
   linhas) e reescrito.
 - `src/components/operations/tabs/Romaneio.tsx` — só importa o modal.
+- `src/components/operations/tabs/RomaneioFixRowModal.tsx` (novo) — modal
+  de ajuste em duas áreas (RF12).
+- `src/components/crud/empty-strings-resolver.ts` (novo) —
+  `withEmptyStringsAsNull` extraído de `crud-record-modal.tsx` (sem mudança
+  de comportamento) pra ser reusado pelo modal de ajuste.
 - `src/components/operations/tabs/RomaneioForm.ts` (novo) —
   `RomaneioFormValues`, `toFormValues` e `buildRomaneioFields` extraídos
   de `Romaneio.tsx`, compartilhados com o ajuste de linha inválida (RF12).

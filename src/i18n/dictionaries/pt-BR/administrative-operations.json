@@ -238,7 +238,13 @@
         "title": "Ajustar linha inválida",
         "fixed": "Corrigido",
         "toastSuccess": "Fardo criado a partir da linha corrigida.",
-        "footerFixed": "{count} corrigidos já criados"
+        "footerFixed": "{count} corrigidos já criados",
+        "errorsTitle": "Erros encontrados nesta linha",
+        "originalTitle": "Original (planilha)",
+        "adjustTitle": "Ajuste",
+        "changedCount": "{count} campo(s) alterado(s)",
+        "restore": "Restaurar original",
+        "save": "Salvar e criar fardo"
       }
     }
   },
