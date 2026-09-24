@@ -291,3 +291,22 @@ garante é o Core (`feat/56-romaneio-stuffed-lock`); o front só antecipa.
   visualizar), com os campos travados da SPEC-56 — os demais seguem
   editáveis.
 
+### RF17 — Revisão como passos (usabilidade, 2026-09-24)
+
+Pedido do usuário: melhorar as abas para guiar o usuário por passos.
+
+- **Progresso geral** no topo: "Planilha: N linha(s) · X de Y decisões
+  tomadas" + barra (amarela com pendência, verde sem) + "Próxima
+  pendência" (ou "Tudo resolvido — confira e clique em Aplicar").
+  Substitui o alerta de pendências e as badges de resumo (redundantes).
+- **Abas vazias somem** (antes ficavam desabilitadas, "Novos (0)" etc.).
+- **Passos numerados** só para abas que pedem decisão, na ordem Conflitos
+  → Ausentes → Novos → Inválidos → Duplicados; cada passo mostra
+  "resolvidos/total" e o número vira ✓ quando zera.
+- **Informativos** (De outra operação, Sem alteração) depois de um
+  separador, com ícone ℹ e só a contagem.
+- **Cabeçalho do passo**: "Passo 2 de 3 — Ausentes · 0 de 13 resolvidos",
+  texto de ajuda da aba e botões Anterior / Próximo.
+- Aba ativa que esvazia (ex.: última linha inválida corrigida mudou de
+  aba) cai automaticamente no primeiro passo disponível.
+

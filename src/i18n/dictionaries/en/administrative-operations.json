@@ -242,10 +242,7 @@
         "movedTo": "Row {row} fixed → {category}."
       },
       "pending": {
-        "banner": "{count} pending item(s) left before applying. Nothing is saved until all are resolved.",
         "next": "Next pending item",
-        "done": "All pending items resolved. Review and apply.",
-        "tabTitle": "Pending items in this tab",
         "footer": "{count} pending",
         "applyBlocked": "Resolve all pending items before applying."
       },
@@ -292,6 +289,16 @@
         "location": "Operation #{number} · Booking {booking} · {client}",
         "open": "Open operation",
         "unknown": "Operation not found"
+      },
+      "steps": {
+        "sheetRows": "Spreadsheet: {count} row(s)",
+        "progress": "{done} of {total} decisions made",
+        "allDone": "All resolved — review and click Apply",
+        "stepOf": "Step {step} of {total} — {name}",
+        "informative": "Informational — {name}",
+        "decided": "{done} of {total} resolved",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "stuffedNotSelectable": "Stuffed bale: it cannot be deleted or have its invoice or lot changed. Unstuff it first."

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Alert, Badge, Button, ButtonGroup, Form, Nav, Row, Spinner } from "react-bootstrap";
+import { Badge, Button, ButtonGroup, Form, Nav, ProgressBar, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -74,19 +74,11 @@ type ReviewTab =
 /** Abas que carregam pendência (SPEC-100 RF13 / Core SPEC-55). */
 type PendingTab = "new" | "missing" | "conflicts" | "invalid" | "duplicated";
 
-/** Ordem visual das abas. */
-const TAB_ORDER: ReviewTab[] = [
-  "new",
-  "missing",
-  "conflicts",
-  "foreign",
-  "invalid",
-  "duplicated",
-  "unchanged",
-];
-
-/** RF3 — prioridade da aba inicial e ordem da "Próxima pendência". */
+/** RF3 — ordem dos passos (abas que pedem decisão) e da "Próxima pendência". */
 const PENDING_ORDER: PendingTab[] = ["conflicts", "missing", "new", "invalid", "duplicated"];
+
+/** RF17 — abas só informativas, mostradas depois dos passos. */
+const INFO_TABS: ReviewTab[] = ["foreign", "unchanged"];
 
 const TAB_LABELS: Record<ReviewTab, TranslationKey> = {
   new: "administrative-operations.romaneio.import.summary.new",
@@ -305,7 +297,13 @@ export function ImportRomaneioModal({
         duplicated: result.duplicated ?? [],
       };
       const firstPending = PENDING_ORDER.find((tab) => lists[tab].length > 0);
-      setActiveTab(firstPending ?? "new");
+      const firstInfo =
+        (result.foreign ?? []).length > 0
+          ? "foreign"
+          : (result.unchangedCertificados ?? []).length > 0
+            ? "unchanged"
+            : undefined;
+      setActiveTab(firstPending ?? firstInfo ?? "new");
       setSearch("");
       setPage(1);
     } catch {
@@ -537,7 +535,18 @@ export function ImportRomaneioModal({
 
   const step: "upload" | "review" = analysis ? "review" : "upload";
   const tabProps = { search, page, busy, onPageChange: setPage, onSearchChange: changeSearch };
-  const pendingOf = (tab: ReviewTab) => (tab in pending ? pending[tab as PendingTab] : 0);
+
+  // RF17 — passos = abas com itens que pedem decisão; informativas à parte.
+  // Abas vazias não aparecem. Se a aba ativa esvaziou (ex.: última linha
+  // inválida corrigida mudou de aba), cai no primeiro passo disponível.
+  const steps = PENDING_ORDER.filter((tab) => counts[tab] > 0);
+  const infoTabs = INFO_TABS.filter((tab) => counts[tab] > 0);
+  const currentTab: ReviewTab =
+    counts[activeTab] > 0 ? activeTab : (steps[0] ?? infoTabs[0] ?? activeTab);
+  const stepIndex = steps.indexOf(currentTab as PendingTab);
+  const decisionsTotal = steps.reduce((sum, tab) => sum + counts[tab], 0);
+  const decisionsDone = decisionsTotal - pendingTotal;
+  const progress = decisionsTotal > 0 ? Math.round((decisionsDone / decisionsTotal) * 100) : 100;
 
   return (
     <Modal show onHide={onClose} centered size="xl" fullscreen="md-down">
@@ -582,70 +591,149 @@ export function ImportRomaneioModal({
       ) : (
         <>
           <Modal.Body>
-            <ImportSummary analysis={analysis!} />
-
-            {pendingTotal > 0 ? (
-              <Alert
-                variant="warning"
-                className="d-flex flex-wrap align-items-center justify-content-between gap-2 py-2"
-              >
-                <span>
-                  <i className="bi bi-exclamation-triangle-fill me-2" aria-hidden="true" />
-                  {t("administrative-operations.romaneio.import.pending.banner", {
-                    count: String(pendingTotal),
+            {/* RF17 — progresso geral da revisão */}
+            <div className="border rounded p-3 mb-3">
+              <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span className="small text-body-secondary">
+                  <i className="bi bi-file-earmark-spreadsheet me-1" aria-hidden="true" />
+                  {t("administrative-operations.romaneio.import.steps.sheetRows", {
+                    count: String(analysis?.summary?.totalDataRows ?? 0),
                   })}
+                  {decisionsTotal > 0
+                    ? ` · ${t("administrative-operations.romaneio.import.steps.progress", {
+                        done: String(decisionsDone),
+                        total: String(decisionsTotal),
+                      })}`
+                    : null}
                 </span>
-                <Button size="sm" variant="warning" onClick={goToNextPending}>
-                  {t("administrative-operations.romaneio.import.pending.next")}
-                  <i className="bi bi-arrow-right ms-1" aria-hidden="true" />
-                </Button>
-              </Alert>
-            ) : (
-              <Alert variant="success" className="py-2">
-                <i className="bi bi-check-circle-fill me-2" aria-hidden="true" />
-                {t("administrative-operations.romaneio.import.pending.done")}
-              </Alert>
-            )}
+                {pendingTotal > 0 ? (
+                  <Button size="sm" variant="warning" onClick={goToNextPending}>
+                    {t("administrative-operations.romaneio.import.pending.next")}
+                    <i className="bi bi-arrow-right ms-1" aria-hidden="true" />
+                  </Button>
+                ) : (
+                  <span className="small fw-semibold text-success">
+                    <i className="bi bi-check-circle-fill me-1" aria-hidden="true" />
+                    {t("administrative-operations.romaneio.import.steps.allDone")}
+                  </span>
+                )}
+              </div>
+              {decisionsTotal > 0 ? (
+                <ProgressBar
+                  now={progress}
+                  variant={pendingTotal > 0 ? "warning" : "success"}
+                  className="mt-2"
+                  style={{ height: "0.5rem" }}
+                  aria-label={t("administrative-operations.romaneio.import.steps.progress", {
+                    done: String(decisionsDone),
+                    total: String(decisionsTotal),
+                  })}
+                />
+              ) : null}
+            </div>
 
+            {/* RF17 — passos numerados (decisão) | informativos */}
             <Nav
               variant="pills"
-              className="mb-3 flex-nowrap overflow-auto"
-              activeKey={activeTab}
+              className="mb-3 flex-nowrap overflow-auto align-items-center gap-1 pb-1"
+              activeKey={currentTab}
               onSelect={(key) => key && changeTab(key as ReviewTab)}
             >
-              {TAB_ORDER.map((tab) => (
-                <Nav.Item key={tab}>
-                  <Nav.Link eventKey={tab} disabled={counts[tab] === 0} className="text-nowrap">
-                    {t(TAB_LABELS[tab])} ({counts[tab]})
-                    {pendingOf(tab) > 0 ? (
-                      <Badge
-                        bg="warning"
-                        text="dark"
-                        pill
-                        className="ms-1"
-                        title={t("administrative-operations.romaneio.import.pending.tabTitle")}
+              {steps.map((tab, i) => {
+                const left = pending[tab];
+                return (
+                  <Nav.Item key={tab}>
+                    <Nav.Link
+                      eventKey={tab}
+                      className="text-nowrap d-flex align-items-center gap-2"
+                      title={t(TAB_HINTS[tab])}
+                    >
+                      <span
+                        className={`badge rounded-pill ${left > 0 ? "text-bg-warning" : "text-bg-success"}`}
                       >
-                        {pendingOf(tab)}
-                      </Badge>
-                    ) : tab in pending && counts[tab] > 0 ? (
-                      <i className="bi bi-check-circle-fill text-success ms-1" aria-hidden="true" />
-                    ) : null}
+                        {left > 0 ? i + 1 : <i className="bi bi-check-lg" aria-hidden="true" />}
+                      </span>
+                      {t(TAB_LABELS[tab])}
+                      <span className="small opacity-75">
+                        {counts[tab] - left}/{counts[tab]}
+                      </span>
+                    </Nav.Link>
+                  </Nav.Item>
+                );
+              })}
+              {infoTabs.length > 0 && steps.length > 0 ? (
+                <span className="vr mx-2 flex-shrink-0" aria-hidden="true" />
+              ) : null}
+              {infoTabs.map((tab) => (
+                <Nav.Item key={tab}>
+                  <Nav.Link
+                    eventKey={tab}
+                    className="text-nowrap d-flex align-items-center gap-2"
+                    title={t(TAB_HINTS[tab])}
+                  >
+                    <i className="bi bi-info-circle" aria-hidden="true" />
+                    {t(TAB_LABELS[tab])}
+                    <span className="small opacity-75">{counts[tab]}</span>
                   </Nav.Link>
                 </Nav.Item>
               ))}
             </Nav>
 
-            <p className="text-body-secondary small mb-2">{t(TAB_HINTS[activeTab])}</p>
+            {/* RF17 — cabeçalho do passo atual + navegação Anterior / Próximo */}
+            <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
+              <div className="me-auto">
+                <div className="fw-semibold">
+                  {stepIndex >= 0
+                    ? t("administrative-operations.romaneio.import.steps.stepOf", {
+                        step: String(stepIndex + 1),
+                        total: String(steps.length),
+                        name: t(TAB_LABELS[currentTab]),
+                      })
+                    : t("administrative-operations.romaneio.import.steps.informative", {
+                        name: t(TAB_LABELS[currentTab]),
+                      })}
+                  {stepIndex >= 0 ? (
+                    <span className="fw-normal small text-body-secondary ms-2">
+                      {t("administrative-operations.romaneio.import.steps.decided", {
+                        done: String(counts[currentTab] - pending[currentTab as PendingTab]),
+                        total: String(counts[currentTab]),
+                      })}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="small text-body-secondary">{t(TAB_HINTS[currentTab])}</div>
+              </div>
+              {stepIndex >= 0 && steps.length > 1 ? (
+                <ButtonGroup size="sm">
+                  <Button
+                    variant="outline-secondary"
+                    disabled={stepIndex <= 0}
+                    onClick={() => changeTab(steps[stepIndex - 1])}
+                  >
+                    <i className="bi bi-arrow-left me-1" aria-hidden="true" />
+                    {t("administrative-operations.romaneio.import.steps.previous")}
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    disabled={stepIndex >= steps.length - 1}
+                    onClick={() => changeTab(steps[stepIndex + 1])}
+                  >
+                    {t("administrative-operations.romaneio.import.steps.next")}
+                    <i className="bi bi-arrow-right ms-1" aria-hidden="true" />
+                  </Button>
+                </ButtonGroup>
+              ) : null}
+            </div>
 
-            {activeTab === "new" ? (
+            {currentTab === "new" ? (
               <NewTab {...tabProps} rows={newRows} onDecide={decideNew} />
             ) : null}
 
-            {activeTab === "missing" ? (
+            {currentTab === "missing" ? (
               <MissingTab {...tabProps} rows={missingRows} onDecide={decideMissing} />
             ) : null}
 
-            {activeTab === "conflicts" ? (
+            {currentTab === "conflicts" ? (
               <ConflictsTab
                 {...tabProps}
                 rows={conflictRows}
@@ -655,9 +743,9 @@ export function ImportRomaneioModal({
               />
             ) : null}
 
-            {activeTab === "foreign" ? <ForeignTab {...tabProps} rows={foreignRows} /> : null}
+            {currentTab === "foreign" ? <ForeignTab {...tabProps} rows={foreignRows} /> : null}
 
-            {activeTab === "invalid" ? (
+            {currentTab === "invalid" ? (
               <InvalidTab
                 {...tabProps}
                 rows={invalidRows}
@@ -666,7 +754,7 @@ export function ImportRomaneioModal({
               />
             ) : null}
 
-            {activeTab === "duplicated" ? (
+            {currentTab === "duplicated" ? (
               <DuplicatedTab
                 {...tabProps}
                 groups={duplicatedRows}
@@ -675,7 +763,7 @@ export function ImportRomaneioModal({
               />
             ) : null}
 
-            {activeTab === "unchanged" ? (
+            {currentTab === "unchanged" ? (
               <ReadOnlyTab
                 {...tabProps}
                 rows={unchangedRows}
@@ -1576,44 +1664,5 @@ function ReadOnlyTab<T>({
         </ul>
       </PagedList>
     </>
-  );
-}
-
-function ImportSummary({ analysis }: { analysis: RomaneioImportAnalysisDTO }) {
-  const t = useT();
-  const summary = analysis.summary;
-  if (!summary) return null;
-
-  const items: { key: TranslationKey; value: number | string | undefined }[] = [
-    {
-      key: "administrative-operations.romaneio.import.summary.totalDataRows",
-      value: summary.totalDataRows,
-    },
-    { key: "administrative-operations.romaneio.import.summary.new", value: summary.new },
-    { key: "administrative-operations.romaneio.import.summary.missing", value: summary.missing },
-    {
-      key: "administrative-operations.romaneio.import.summary.conflicts",
-      value: summary.conflicts,
-    },
-    { key: "administrative-operations.romaneio.import.summary.foreign", value: summary.foreign },
-    { key: "administrative-operations.romaneio.import.summary.invalid", value: summary.invalid },
-    {
-      key: "administrative-operations.romaneio.import.summary.duplicated",
-      value: summary.duplicated,
-    },
-    {
-      key: "administrative-operations.romaneio.import.summary.unchanged",
-      value: summary.unchanged,
-    },
-  ];
-
-  return (
-    <div className="d-flex flex-wrap gap-2 mb-3">
-      {items.map((item) => (
-        <span key={item.key} className="badge text-bg-secondary">
-          {t(item.key)}: {String(item.value ?? 0)}
-        </span>
-      ))}
-    </div>
   );
 }

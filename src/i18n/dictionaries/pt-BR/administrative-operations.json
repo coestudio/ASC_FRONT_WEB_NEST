@@ -242,10 +242,7 @@
         "movedTo": "Linha {row} corrigida → {category}."
       },
       "pending": {
-        "banner": "Faltam {count} pendência(s) para aplicar. Nada será gravado até resolver todas.",
         "next": "Próxima pendência",
-        "done": "Todas as pendências resolvidas. Revise e aplique.",
-        "tabTitle": "Pendências nesta aba",
         "footer": "{count} pendência(s)",
         "applyBlocked": "Resolva todas as pendências antes de aplicar."
       },
@@ -292,6 +289,16 @@
         "location": "Operação #{number} · Booking {booking} · {client}",
         "open": "Abrir operação",
         "unknown": "Operação não encontrada"
+      },
+      "steps": {
+        "sheetRows": "Planilha: {count} linha(s)",
+        "progress": "{done} de {total} decisões tomadas",
+        "allDone": "Tudo resolvido — confira e clique em Aplicar",
+        "stepOf": "Passo {step} de {total} — {name}",
+        "informative": "Informativo — {name}",
+        "decided": "{done} de {total} resolvidos",
+        "previous": "Anterior",
+        "next": "Próximo"
       }
     },
     "stuffedNotSelectable": "Fardo estufado: não pode ser excluído nem ter nota fiscal ou lote alterados. Para isso, desestufe-o antes."
