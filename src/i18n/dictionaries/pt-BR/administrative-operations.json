@@ -232,6 +232,13 @@
         "title": "Excluir fardos ausentes?",
         "message": "{count} fardo(s) ausente(s) na planilha serão excluídos da operação. Esta ação não pode ser desfeita.",
         "confirm": "Excluir e aplicar"
+      },
+      "fix": {
+        "button": "Ajustar",
+        "title": "Ajustar linha inválida",
+        "fixed": "Corrigido",
+        "toastSuccess": "Fardo criado a partir da linha corrigida.",
+        "footerFixed": "{count} corrigidos já criados"
       }
     }
   },

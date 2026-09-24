@@ -232,6 +232,13 @@
         "title": "Delete missing bales?",
         "message": "{count} bale(s) missing from the spreadsheet will be deleted from the operation. This cannot be undone.",
         "confirm": "Delete and apply"
+      },
+      "fix": {
+        "button": "Fix",
+        "title": "Fix invalid row",
+        "fixed": "Fixed",
+        "toastSuccess": "Bale created from the fixed row.",
+        "footerFixed": "{count} fixed already created"
       }
     }
   },

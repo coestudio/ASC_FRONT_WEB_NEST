@@ -31,36 +31,13 @@ import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-rec
 import { CrudBulkActions } from "@/components/crud/crud-bulk-actions";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ImportRomaneioModal } from "./RomaneioImportModal";
+import { buildRomaneioFields, toFormValues, type RomaneioFormValues } from "./RomaneioForm";
 import { InputText } from "@/layouts/Form/Fields/Index";
-import type { LayoutField } from "@/layouts/Form/Fields/Index";
 import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useT } from "@/lib/ui-prefs";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
-
-/**
- * Create/Update do Core têm o mesmo shape — reusa o schema do POST nos dois
- * modos do `CrudRecordModal` (regra 2 do AGENTS.md: zero Zod escrito à mão),
- * mesmo padrão de `VesselPage`/`ContainerPage`.
- */
-type RomaneioFormValues = z.infer<typeof PostApiOperationOperationIdRomaneioBody>;
-
-function toFormValues(record?: RomaneioDTO): RomaneioFormValues {
-  return {
-    itemIdentifier: record?.itemIdentifier ?? "",
-    itemCode: record?.itemCode ?? "",
-    tipo: record?.tipo ?? "",
-    contrato: record?.contrato ?? "",
-    peso: record?.peso != null ? String(record.peso) : "",
-    pesoTara: record?.pesoTara != null ? String(record.pesoTara) : "",
-    pesoBruto: record?.pesoBruto != null ? String(record.pesoBruto) : "",
-    instruction: record?.instruction ?? "",
-    notaFiscal: record?.notaFiscal ?? "",
-    lote: record?.lote ?? "",
-    pilha: record?.pilha ?? "",
-  };
-}
 
 /**
  * Aba Romaneio (SPEC-07-04) — CRUD de fardos da operação + import de
@@ -159,74 +136,7 @@ export function Romaneio({ operationId }: { operationId: string }) {
     }
   };
 
-  const fields: LayoutField[] = [
-    {
-      type: "InputText",
-      fieldName: "itemIdentifier",
-      label: t("administrative-operations.romaneio.form.itemIdentifier"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputText",
-      fieldName: "itemCode",
-      label: t("administrative-operations.romaneio.form.itemCode"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputText",
-      fieldName: "lote",
-      label: t("administrative-operations.romaneio.form.lote"),
-      col: { md: 4 },
-    },
-    {
-      type: "InputText",
-      fieldName: "tipo",
-      label: t("administrative-operations.romaneio.form.tipo"),
-      col: { md: 4 },
-    },
-    {
-      type: "InputText",
-      fieldName: "contrato",
-      label: t("administrative-operations.romaneio.form.contrato"),
-      col: { md: 4 },
-    },
-    {
-      type: "InputText",
-      fieldName: "peso",
-      label: t("administrative-operations.romaneio.form.peso"),
-      col: { md: 4 },
-    },
-    {
-      type: "InputText",
-      fieldName: "pesoTara",
-      label: t("administrative-operations.romaneio.form.pesoTara"),
-      col: { md: 4 },
-    },
-    {
-      type: "InputText",
-      fieldName: "pesoBruto",
-      label: t("administrative-operations.romaneio.form.pesoBruto"),
-      col: { md: 4 },
-    },
-    {
-      type: "InputText",
-      fieldName: "instruction",
-      label: t("administrative-operations.romaneio.form.instruction"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputText",
-      fieldName: "notaFiscal",
-      label: t("administrative-operations.romaneio.form.notaFiscal"),
-      col: { md: 6 },
-    },
-    {
-      type: "InputText",
-      fieldName: "pilha",
-      label: t("administrative-operations.romaneio.form.pilha"),
-      col: { md: 6 },
-    },
-  ];
+  const fields = buildRomaneioFields(t);
 
   const columns: CrudColumn<RomaneioDTO>[] = [
     {

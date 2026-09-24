@@ -232,6 +232,13 @@
         "title": "删除缺失的棉包？",
         "message": "表格中缺失的 {count} 个棉包将从该作业中删除。此操作无法撤销。",
         "confirm": "删除并应用"
+      },
+      "fix": {
+        "button": "修正",
+        "title": "修正无效行",
+        "fixed": "已修正",
+        "toastSuccess": "已根据修正后的行创建棉包。",
+        "footerFixed": "已创建 {count} 个修正项"
       }
     }
   },

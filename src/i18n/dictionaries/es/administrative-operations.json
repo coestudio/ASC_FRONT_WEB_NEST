@@ -232,6 +232,13 @@
         "title": "¿Eliminar fardos ausentes?",
         "message": "{count} fardo(s) ausente(s) en la planilla se eliminarán de la operación. Esta acción no se puede deshacer.",
         "confirm": "Eliminar y aplicar"
+      },
+      "fix": {
+        "button": "Ajustar",
+        "title": "Ajustar línea inválida",
+        "fixed": "Corregido",
+        "toastSuccess": "Fardo creado a partir de la línea corregida.",
+        "footerFixed": "{count} corregidos ya creados"
       }
     }
   },

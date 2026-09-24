@@ -78,6 +78,15 @@ fazer.
   "Aplicar" abre `ConfirmationModal` (`variant="danger"`) informando
   quantos fardos serão excluídos. Sem Ausente marcado, aplica direto
   (comportamento atual).
+- **RF12 — Ajustar linha inválida** (pedido do usuário, 2026-09-24).
+  Cada linha da aba Inválidos tem botão "Ajustar", que abre o formulário
+  de fardo (`CrudRecordModal`, modo criar, mesmos campos/schema gerado da
+  aba Romaneio) pré-preenchido com os dados da linha. Ao salvar, o fardo é
+  **criado na hora** via `POST /operation/{id}/romaneio` (endpoint já
+  existente) — decisão do usuário, porque o `apply` do import só aceita
+  ids já classificados pelo Core, não linhas corrigidas. A linha fica com
+  selo "Corrigido" (sem botão) e o rodapé soma "N corrigidos já criados".
+  Erro de validação/duplicidade do Core mantém o formulário aberto.
 - **RF11 — Layout.** Modal `size="xl"`, `fullscreen="md-down"`. Corpo com
   rolagem própria (padrão do wrapper `Modal`); header/footer fixos.
 
@@ -108,6 +117,9 @@ Chaves novas em `administrative-operations.romaneio.import` nos 4 locales
   `ImportRomaneioModal` extraído de `Romaneio.tsx` (que tinha ~1.150
   linhas) e reescrito.
 - `src/components/operations/tabs/Romaneio.tsx` — só importa o modal.
+- `src/components/operations/tabs/RomaneioForm.ts` (novo) —
+  `RomaneioFormValues`, `toFormValues` e `buildRomaneioFields` extraídos
+  de `Romaneio.tsx`, compartilhados com o ajuste de linha inválida (RF12).
 - `src/i18n/dictionaries/{pt-BR,en,es,zh}/administrative-operations.json`.
 
 ## 6. Riscos
@@ -146,5 +158,9 @@ Chaves novas em `administrative-operations.romaneio.import` nos 4 locales
   existia o contador).
 - Gates: `bun run check` limpo; `bun run lint` 0 erros, nenhum warning nos
   arquivos tocados.
+- RF12: fardo criado pelo "Ajustar" não entra no payload do `apply`; se o
+  mesmo certificado também estiver em Novos, o `apply` pode acusar
+  conflito/duplicidade no Core — risco aceito (caso raro: linha inválida
+  e válida com o mesmo certificado já cai em Duplicados).
 - **Não verificado em runtime** (precisa Core local + planilha grande):
   CA1, CA4 e CA6 dependem de teste manual do usuário na branch.

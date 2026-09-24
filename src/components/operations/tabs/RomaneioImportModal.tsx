@@ -1,15 +1,19 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
+import { useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Form, Nav, Row, Spinner } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
 import {
+  getGetApiOperationOperationIdRomaneioQueryKey,
+  usePostApiOperationOperationIdRomaneio,
   usePostApiOperationOperationIdRomaneioImportAnalyze,
   usePostApiOperationOperationIdRomaneioImportApply,
 } from "@/api/generated/endpoints/romaneio/romaneio";
 import {
+  PostApiOperationOperationIdRomaneioBody,
   PostApiOperationOperationIdRomaneioImportAnalyzeBody,
   PostApiOperationOperationIdRomaneioImportApplyBody,
 } from "@/api/generated/zod/romaneio/romaneio.zod";
@@ -21,6 +25,7 @@ import type {
   RomaneioImportInvalidDTO,
   RomaneioImportRowDTO,
 } from "@/api/generated/model";
+import { CrudRecordModal } from "@/components/crud/crud-record-modal";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { ListPagination } from "@/components/ui/list-pagination";
 import { Modal } from "@/components/ui/modal";
@@ -28,6 +33,7 @@ import type { TranslationKey } from "@/i18n/translate";
 import { FilterText } from "@/layouts/Filters/Index";
 import { InputFileSingle } from "@/layouts/Form/Fields/Index";
 import { useT } from "@/lib/ui-prefs";
+import { buildRomaneioFields, toFormValues, type RomaneioFormValues } from "./RomaneioForm";
 
 /** Rótulo (chave i18n) de cada campo comparável do import — RN2 do Core
  * (`RomaneioImportClassifier`), os mesmos 10 nomes usados em `diff`. */
@@ -159,9 +165,17 @@ export function ImportRomaneioModal({
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // Ajuste de linha inválida: a linha em edição e as já corrigidas (chave =
+  // número da linha na planilha). O fardo corrigido é criado na hora via
+  // `POST /romaneio` — o `apply` do import só aceita ids já classificados
+  // pelo Core, não linhas novas/corrigidas.
+  const [fixing, setFixing] = useState<RomaneioImportInvalidDTO | null>(null);
+  const [fixedRows, setFixedRows] = useState<Set<string>>(new Set());
 
   const analyzeMutation = usePostApiOperationOperationIdRomaneioImportAnalyze();
   const applyMutation = usePostApiOperationOperationIdRomaneioImportApply();
+  const createMutation = usePostApiOperationOperationIdRomaneio();
+  const queryClient = useQueryClient();
 
   const analyzeMethods = useForm<AnalyzeFormValues>({
     resolver: zodResolver(PostApiOperationOperationIdRomaneioImportAnalyzeBody),
@@ -195,6 +209,7 @@ export function ImportRomaneioModal({
       // exclui nenhum ausente (ação destrutiva exige opt-in do usuário).
       setSelectedNew(new Set((result.new ?? []).map((r) => r.itemIdentifier ?? "")));
       setSelectedMissing(new Set());
+      setFixedRows(new Set());
       setConflictFields(
         Object.fromEntries(
           (result.conflicts ?? []).map((c) => [
@@ -316,6 +331,24 @@ export function ImportRomaneioModal({
       if (err instanceof z.ZodError) {
         toast.error(t("administrative-operations.romaneio.import.toast.applyError"));
       }
+    }
+  };
+
+  const invalidKey = (row: RomaneioImportInvalidDTO) => String(row.sheetRow ?? "");
+
+  const handleFixSubmit = async (values: RomaneioFormValues) => {
+    if (!fixing) return;
+    try {
+      await createMutation.mutateAsync({ operationId, data: values });
+      toast.success(t("administrative-operations.romaneio.import.fix.toastSuccess"));
+      setFixedRows((prev) => new Set(prev).add(invalidKey(fixing)));
+      setFixing(null);
+      void queryClient.invalidateQueries({
+        queryKey: getGetApiOperationOperationIdRomaneioQueryKey(operationId),
+      });
+    } catch {
+      // interceptor global (mutator.ts) já mostra o toast de erro; o
+      // formulário fica aberto pro usuário corrigir e tentar de novo.
     }
   };
 
@@ -480,6 +513,19 @@ export function ImportRomaneioModal({
                     {(row.errors ?? []).join(", ")}
                   </>
                 )}
+                renderAction={(row) =>
+                  fixedRows.has(invalidKey(row)) ? (
+                    <span className="badge text-bg-success">
+                      <i className="bi bi-check-lg me-1" aria-hidden="true" />
+                      {t("administrative-operations.romaneio.import.fix.fixed")}
+                    </span>
+                  ) : (
+                    <Button size="sm" variant="outline-primary" onClick={() => setFixing(row)}>
+                      <i className="bi bi-pencil me-1" aria-hidden="true" />
+                      {t("administrative-operations.romaneio.import.fix.button")}
+                    </Button>
+                  )
+                }
               />
             ) : null}
 
@@ -514,6 +560,11 @@ export function ImportRomaneioModal({
                 updated: String(updatedCount),
                 deleted: String(selectedMissing.size),
               })}
+              {fixedRows.size > 0
+                ? ` · ${t("administrative-operations.romaneio.import.fix.footerFixed", {
+                    count: String(fixedRows.size),
+                  })}`
+                : null}
             </span>
             <div className="d-flex flex-wrap gap-2 ms-auto">
               <Button variant="outline-primary" onClick={() => setAnalysis(null)}>
@@ -536,6 +587,23 @@ export function ImportRomaneioModal({
           </Modal.Footer>
         </>
       )}
+
+      {fixing ? (
+        <CrudRecordModal<RomaneioFormValues>
+          show
+          mode="create"
+          titleKeys={{
+            create: "administrative-operations.romaneio.import.fix.title",
+            edit: "administrative-operations.romaneio.import.fix.title",
+            view: "administrative-operations.romaneio.import.fix.title",
+          }}
+          schema={PostApiOperationOperationIdRomaneioBody}
+          fields={buildRomaneioFields(t)}
+          defaultValues={toFormValues(fixing.row)}
+          onSubmit={handleFixSubmit}
+          onClose={() => setFixing(null)}
+        />
+      ) : null}
 
       <ConfirmationModal
         show={confirmDelete}
@@ -802,6 +870,7 @@ function ReadOnlyTab<T>({
   rows,
   toText,
   renderItem,
+  renderAction,
   search,
   page,
   onPageChange,
@@ -810,6 +879,8 @@ function ReadOnlyTab<T>({
   rows: T[];
   toText: (row: T) => string;
   renderItem: (row: T) => ReactNode;
+  /** Ação opcional à direita de cada linha (ex.: "Ajustar" em Inválidos). */
+  renderAction?: (row: T) => ReactNode;
 }) {
   const view = useFilteredPage(rows, toText, search, page);
   const offset = (view.page - 1) * REVIEW_PAGE_SIZE;
@@ -827,8 +898,12 @@ function ReadOnlyTab<T>({
         <ul className="list-group">
           {view.pageRows.map((row, i) => (
             // Duplicados repetem o mesmo certificado — índice absoluto como chave.
-            <li key={offset + i} className="list-group-item text-break">
-              {renderItem(row)}
+            <li
+              key={offset + i}
+              className="list-group-item d-flex flex-wrap align-items-center justify-content-between gap-2"
+            >
+              <span className="text-break">{renderItem(row)}</span>
+              {renderAction ? <span className="flex-shrink-0">{renderAction(row)}</span> : null}
             </li>
           ))}
         </ul>
