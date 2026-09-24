@@ -293,7 +293,8 @@
         "open": "Abrir operação",
         "unknown": "Operação não encontrada"
       }
-    }
+    },
+    "stuffedNotSelectable": "Fardo estufado: não pode ser excluído nem ter nota fiscal ou lote alterados. Para isso, desestufe-o antes."
   },
   "shell": {
     "pageTitle": "Operação {number} — ASC",

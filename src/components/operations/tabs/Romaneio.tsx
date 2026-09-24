@@ -123,7 +123,12 @@ export function Romaneio({ operationId }: { operationId: string }) {
         return next;
       });
     },
+    // Fardo estufado não pode ser excluído nem ter NF/Lote alterados em massa
+    // (Core recusa com 409) — por isso não é selecionável; o motivo aparece
+    // na dica do checkbox e num aviso ao clicar na linha.
     isDisabled: (r) => r.isStuffed === true,
+    disabledReason: (r) =>
+      r.isStuffed ? t("administrative-operations.romaneio.stuffedNotSelectable") : undefined,
   };
 
   const handleBulkDelete = async () => {
@@ -359,11 +364,18 @@ export function Romaneio({ operationId }: { operationId: string }) {
           />
         )}
         onRowSingleClick={(r) => {
-          if (!selection.isDisabled?.(r)) selection.onToggle(r.id);
+          if (selection.isDisabled?.(r)) {
+            toast.info(t("administrative-operations.romaneio.stuffedNotSelectable"), {
+              toastId: "romaneio-stuffed-not-selectable",
+            });
+            return;
+          }
+          selection.onToggle(r.id);
         }}
         onRowDoubleClick={(r) => {
-          // Fardo estufado não edita — abre só a visualização (somente leitura).
-          setModal({ mode: r.isStuffed ? "view" : "edit", record: r });
+          // Core SPEC-56: fardo estufado edita, mas com identificador, NF,
+          // lote e pesos travados (ver `buildRomaneioFields`).
+          setModal({ mode: "edit", record: r });
         }}
         sort={sort}
         onSortChange={setSort}
@@ -374,6 +386,15 @@ export function Romaneio({ operationId }: { operationId: string }) {
               <Card.Subtitle className="text-body-secondary small mt-1">
                 {r.itemCode} · {r.lote}
               </Card.Subtitle>
+              {r.isStuffed ? (
+                <span
+                  className="badge text-bg-info mt-2"
+                  title={t("administrative-operations.romaneio.stuffedNotSelectable")}
+                >
+                  <i className="bi bi-box-seam me-1" aria-hidden="true" />
+                  {t("administrative-operations.romaneio.import.stuffed.badge")}
+                </span>
+              ) : null}
             </Card.Body>
           </Card>
         )}

@@ -54,6 +54,11 @@ export type CrudSelection<T> = {
   onToggleAll: (ids: string[], checked: boolean) => void;
   /** Linha não pode ser selecionada — checkbox desabilitado, sem `onClick`. */
   isDisabled?: (item: T) => boolean;
+  /**
+   * Motivo de a linha não ser selecionável — vira dica (tooltip) no checkbox
+   * desabilitado, pra não deixar o usuário sem saber por quê.
+   */
+  disabledReason?: (item: T) => string | undefined;
 };
 
 /** Shape mínimo que toda resposta paginada do Core segue (`PagedDTOOfXxxDTO` gerado pelo Orval). */
@@ -533,13 +538,20 @@ function CrudListPageBody<T, TQueryData extends CrudPagedResult<T>, TError>({
                     }
                   >
                     {selection ? (
-                      <td>
+                      // `title` no <td>: input desabilitado não dispara hover em
+                      // todos os navegadores, então a dica fica na célula.
+                      <td
+                        title={disabledForSelection ? selection.disabledReason?.(item) : undefined}
+                      >
                         <Form.Check
                           type="checkbox"
                           checked={selection.selectedIds.has(id)}
                           disabled={disabledForSelection}
                           onChange={() => selection.onToggle(id)}
-                          aria-label={t("crud.list.selectRow")}
+                          aria-label={
+                            (disabledForSelection && selection.disabledReason?.(item)) ||
+                            t("crud.list.selectRow")
+                          }
                         />
                       </td>
                     ) : null}

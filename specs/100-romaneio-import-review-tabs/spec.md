@@ -277,3 +277,17 @@ garante é o Core (`feat/56-romaneio-stuffed-lock`); o front só antecipa.
   queryKey do hook gerado `GET /api/operation/{id}`) e só quando a aba é
   aberta. Sem mudança no Core.
 
+### RF16 — Aba Romaneio: fardo estufado explica por que não pode ser excluído (2026-09-24)
+
+- O Core já bloqueia (409 `RomaneioCannotDeleteWithLinkedCargoUnit` em
+  delete/delete-batch; `RomaneioBatchStuffedCannotUpdate` no update-batch).
+  O front escondia o motivo: checkbox desabilitado sem explicação.
+- `CrudSelection` ganhou `disabledReason` (dica no checkbox desabilitado,
+  também no `aria-label`) — genérico, qualquer lista pode usar.
+- Romaneio: dica "Fardo estufado: não pode ser excluído nem ter nota
+  fiscal ou lote alterados…" no checkbox; clicar na linha estufada mostra
+  o mesmo aviso (toast, sem repetir); selo "Estufado" no cartão (celular).
+- Duplo clique em fardo estufado passa a abrir o **editar** (antes: só
+  visualizar), com os campos travados da SPEC-56 — os demais seguem
+  editáveis.
+

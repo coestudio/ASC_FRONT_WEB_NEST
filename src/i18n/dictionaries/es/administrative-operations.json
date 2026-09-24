@@ -293,7 +293,8 @@
         "open": "Abrir operación",
         "unknown": "Operación no encontrada"
       }
-    }
+    },
+    "stuffedNotSelectable": "Fardo estufado: no puede eliminarse ni cambiar su nota fiscal o lote. Primero desestúfelo."
   },
   "shell": {
     "pageTitle": "Operación {number} — ASC",

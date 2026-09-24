@@ -293,7 +293,8 @@
         "open": "Open operation",
         "unknown": "Operation not found"
       }
-    }
+    },
+    "stuffedNotSelectable": "Stuffed bale: it cannot be deleted or have its invoice or lot changed. Unstuff it first."
   },
   "shell": {
     "pageTitle": "Operation {number} — ASC",

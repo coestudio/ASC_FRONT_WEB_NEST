@@ -293,7 +293,8 @@
         "open": "打开作业",
         "unknown": "未找到作业"
       }
-    }
+    },
+    "stuffedNotSelectable": "棉包已装箱：不可删除，也不可更改发票或批次。请先拆箱。"
   },
   "shell": {
     "pageTitle": "作业 {number} — ASC",
