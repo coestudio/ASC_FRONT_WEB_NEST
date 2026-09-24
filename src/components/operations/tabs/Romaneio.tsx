@@ -19,6 +19,7 @@ import {
 import { axiosInstance } from "@/api/mutator";
 import {
   PostApiOperationOperationIdRomaneioBody,
+  PutApiOperationOperationIdRomaneioIdBody,
   PostApiOperationOperationIdRomaneioUpdateBatchBody,
 } from "@/api/generated/zod/romaneio/romaneio.zod";
 import type { RomaneioDTO } from "@/api/generated/model";
@@ -411,7 +412,13 @@ export function Romaneio({ operationId }: { operationId: string }) {
             edit: "administrative-operations.romaneio.editTitle",
             view: "administrative-operations.romaneio.viewTitle",
           }}
-          schema={PostApiOperationOperationIdRomaneioBody}
+          // Core SPEC-53: Nota fiscal é obrigatória só no Create — editar fardo
+          // antigo sem NF usa o schema do PUT (NF opcional).
+          schema={
+            modal.mode === "create"
+              ? PostApiOperationOperationIdRomaneioBody
+              : (PutApiOperationOperationIdRomaneioIdBody as unknown as typeof PostApiOperationOperationIdRomaneioBody)
+          }
           fields={fields}
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}

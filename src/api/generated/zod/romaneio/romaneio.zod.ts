@@ -110,6 +110,8 @@ export const PostApiOperationOperationIdRomaneioParams = zod.object({
   "operationId": zod.uuid()
 })
 
+export const postApiOperationOperationIdRomaneioBodyNotaFiscalMax = 50;
+
 export const postApiOperationOperationIdRomaneioBodyItemIdentifierMax = 100;
 
 export const postApiOperationOperationIdRomaneioBodyItemCodeMax = 100;
@@ -124,8 +126,6 @@ export const postApiOperationOperationIdRomaneioBodyPesoBrutoRegExpTwo = new Reg
 export const postApiOperationOperationIdRomaneioBodyInstructionMin = 3;
 export const postApiOperationOperationIdRomaneioBodyInstructionMax = 50;
 
-export const postApiOperationOperationIdRomaneioBodyNotaFiscalMax = 50;
-
 export const postApiOperationOperationIdRomaneioBodyLoteMax = 50;
 
 export const postApiOperationOperationIdRomaneioBodyPilhaMax = 50;
@@ -133,6 +133,7 @@ export const postApiOperationOperationIdRomaneioBodyPilhaMax = 50;
 
 
 export const PostApiOperationOperationIdRomaneioBody = zod.object({
+  "notaFiscal": zod.string().max(postApiOperationOperationIdRomaneioBodyNotaFiscalMax),
   "itemIdentifier": zod.string().max(postApiOperationOperationIdRomaneioBodyItemIdentifierMax),
   "itemCode": zod.string().max(postApiOperationOperationIdRomaneioBodyItemCodeMax),
   "tipo": zod.string().max(postApiOperationOperationIdRomaneioBodyTipoMax).nullish(),
@@ -141,7 +142,6 @@ export const PostApiOperationOperationIdRomaneioBody = zod.object({
   "pesoTara": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioBodyPesoTaraRegExpTwo)]).optional(),
   "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', postApiOperationOperationIdRomaneioBodyPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string().min(postApiOperationOperationIdRomaneioBodyInstructionMin).max(postApiOperationOperationIdRomaneioBodyInstructionMax),
-  "notaFiscal": zod.string().max(postApiOperationOperationIdRomaneioBodyNotaFiscalMax).optional(),
   "lote": zod.string().max(postApiOperationOperationIdRomaneioBodyLoteMax),
   "pilha": zod.string().max(postApiOperationOperationIdRomaneioBodyPilhaMax).nullish()
 })
@@ -206,6 +206,8 @@ export const PutApiOperationOperationIdRomaneioIdParams = zod.object({
   "id": zod.uuid()
 })
 
+export const putApiOperationOperationIdRomaneioIdBodyNotaFiscalMax = 50;
+
 export const putApiOperationOperationIdRomaneioIdBodyItemIdentifierMax = 100;
 
 export const putApiOperationOperationIdRomaneioIdBodyItemCodeMax = 100;
@@ -220,8 +222,6 @@ export const putApiOperationOperationIdRomaneioIdBodyPesoBrutoRegExpTwo = new Re
 export const putApiOperationOperationIdRomaneioIdBodyInstructionMin = 3;
 export const putApiOperationOperationIdRomaneioIdBodyInstructionMax = 50;
 
-export const putApiOperationOperationIdRomaneioIdBodyNotaFiscalMax = 50;
-
 export const putApiOperationOperationIdRomaneioIdBodyLoteMax = 50;
 
 export const putApiOperationOperationIdRomaneioIdBodyPilhaMax = 50;
@@ -229,6 +229,7 @@ export const putApiOperationOperationIdRomaneioIdBodyPilhaMax = 50;
 
 
 export const PutApiOperationOperationIdRomaneioIdBody = zod.object({
+  "notaFiscal": zod.string().max(putApiOperationOperationIdRomaneioIdBodyNotaFiscalMax).optional(),
   "itemIdentifier": zod.string().max(putApiOperationOperationIdRomaneioIdBodyItemIdentifierMax),
   "itemCode": zod.string().max(putApiOperationOperationIdRomaneioIdBodyItemCodeMax),
   "tipo": zod.string().max(putApiOperationOperationIdRomaneioIdBodyTipoMax).nullish(),
@@ -237,7 +238,6 @@ export const PutApiOperationOperationIdRomaneioIdBody = zod.object({
   "pesoTara": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdRomaneioIdBodyPesoTaraRegExpTwo)]).optional(),
   "pesoBruto": zod.union([zod.number(),zod.stringFormat('double', putApiOperationOperationIdRomaneioIdBodyPesoBrutoRegExpTwo)]).optional(),
   "instruction": zod.string().min(putApiOperationOperationIdRomaneioIdBodyInstructionMin).max(putApiOperationOperationIdRomaneioIdBodyInstructionMax),
-  "notaFiscal": zod.string().max(putApiOperationOperationIdRomaneioIdBodyNotaFiscalMax).optional(),
   "lote": zod.string().max(putApiOperationOperationIdRomaneioIdBodyLoteMax),
   "pilha": zod.string().max(putApiOperationOperationIdRomaneioIdBodyPilhaMax).nullish()
 })

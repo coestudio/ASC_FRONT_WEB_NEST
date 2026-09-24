@@ -6,6 +6,8 @@
  */
 
 export interface RomaneioCreate {
+  /** @maxLength 50 */
+  notaFiscal: string;
   /** @maxLength 100 */
   itemIdentifier: string;
   /** @maxLength 100 */
@@ -31,8 +33,6 @@ export interface RomaneioCreate {
      * @maxLength 50
      */
   instruction: string;
-  /** @maxLength 50 */
-  notaFiscal?: string;
   /** @maxLength 50 */
   lote: string;
   /**
