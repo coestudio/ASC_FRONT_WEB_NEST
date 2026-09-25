@@ -150,7 +150,19 @@ function SidebarSection({
                         {t(item.labelKey)}
                       </Nav.Link>
                     ) : (
-                      <Nav.Link as={Link} to={item.to} active={itemActive}>
+                      // `activeOptions={{ exact: true }}`: por padrão o `<Link>`
+                      // do TanStack se marca ativo por prefixo de rota (classe
+                      // `.active` + `aria-current`) — `/administrative` casava com
+                      // `/administrative/operations` e "Início" acendia junto com
+                      // o item certo, em todas as seções. Exato, ele só marca a
+                      // própria rota; o destaque em rota de detalhe continua vindo
+                      // de `active={itemActive}` (`getActiveItemTo`, SPEC-105).
+                      <Nav.Link
+                        as={Link}
+                        to={item.to}
+                        active={itemActive}
+                        activeOptions={{ exact: true }}
+                      >
                         {item.icon ? <i className={`bi ${item.icon} me-2`} aria-hidden /> : null}
                         {t(item.labelKey)}
                       </Nav.Link>
