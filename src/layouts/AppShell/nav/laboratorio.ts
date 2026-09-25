@@ -7,6 +7,13 @@ const fragment: NavFragment = {
   icon: "bi-flask",
   items: [
     { labelKey: "navigation.laboratorio", to: "/laboratory", icon: "bi-flask-fill", order: 1 },
+    {
+      labelKey: "navigation.laboratorioAccess",
+      to: "/laboratory/access",
+      icon: "bi-shield-lock",
+      order: 2,
+      requiresAdmin: true,
+    },
   ],
 };
 

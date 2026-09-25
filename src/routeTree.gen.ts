@@ -42,6 +42,8 @@ import { Route as DashboardClientTrackingIndexRouteImport } from './routes/_dash
 import { Route as DashboardInternalAdministrativeClientsIndexRouteImport } from './routes/_dashboard/_internal/administrative/clients/index'
 import { Route as DashboardInternalAdministrativeCollaboratorsIndexRouteImport } from './routes/_dashboard/_internal/administrative/collaborators/index'
 import { Route as DashboardInternalAdministrativeOperationsIndexRouteImport } from './routes/_dashboard/_internal/administrative/operations/index'
+import { Route as DashboardInternalLaboratoryAccessIndexRouteImport } from './routes/_dashboard/_internal/laboratory/access/index'
+import { Route as DashboardInternalOperationalAccessIndexRouteImport } from './routes/_dashboard/_internal/operational/access/index'
 import { Route as DashboardInternalOperationalOperationsIndexRouteImport } from './routes/_dashboard/_internal/operational/operations/index'
 import { Route as DashboardInternalAdministrativeOperationsIdIndexRouteImport } from './routes/_dashboard/_internal/administrative/operations/$id/index'
 import { Route as DashboardInternalAdministrativeRegistryContainerIndexRouteImport } from './routes/_dashboard/_internal/administrative/registry/container/index'
@@ -229,6 +231,18 @@ const DashboardInternalAdministrativeOperationsIndexRoute =
     path: '/operations/',
     getParentRoute: () => DashboardInternalAdministrativeRouteRoute,
   } as any)
+const DashboardInternalLaboratoryAccessIndexRoute =
+  DashboardInternalLaboratoryAccessIndexRouteImport.update({
+    id: '/access/',
+    path: '/access/',
+    getParentRoute: () => DashboardInternalLaboratoryRouteRoute,
+  } as any)
+const DashboardInternalOperationalAccessIndexRoute =
+  DashboardInternalOperationalAccessIndexRouteImport.update({
+    id: '/access/',
+    path: '/access/',
+    getParentRoute: () => DashboardInternalOperationalRouteRoute,
+  } as any)
 const DashboardInternalOperationalOperationsIndexRoute =
   DashboardInternalOperationalOperationsIndexRouteImport.update({
     id: '/operations/',
@@ -308,6 +322,8 @@ export interface FileRoutesByFullPath {
   '/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
   '/administrative/collaborators/': typeof DashboardInternalAdministrativeCollaboratorsIndexRoute
   '/administrative/operations/': typeof DashboardInternalAdministrativeOperationsIndexRoute
+  '/laboratory/access/': typeof DashboardInternalLaboratoryAccessIndexRoute
+  '/operational/access/': typeof DashboardInternalOperationalAccessIndexRoute
   '/operational/operations/': typeof DashboardInternalOperationalOperationsIndexRoute
   '/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   '/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
@@ -342,6 +358,8 @@ export interface FileRoutesByTo {
   '/administrative/clients': typeof DashboardInternalAdministrativeClientsIndexRoute
   '/administrative/collaborators': typeof DashboardInternalAdministrativeCollaboratorsIndexRoute
   '/administrative/operations': typeof DashboardInternalAdministrativeOperationsIndexRoute
+  '/laboratory/access': typeof DashboardInternalLaboratoryAccessIndexRoute
+  '/operational/access': typeof DashboardInternalOperationalAccessIndexRoute
   '/operational/operations': typeof DashboardInternalOperationalOperationsIndexRoute
   '/administrative/operations/$id': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   '/administrative/registry/container': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
@@ -386,6 +404,8 @@ export interface FileRoutesById {
   '/_dashboard/_internal/administrative/clients/': typeof DashboardInternalAdministrativeClientsIndexRoute
   '/_dashboard/_internal/administrative/collaborators/': typeof DashboardInternalAdministrativeCollaboratorsIndexRoute
   '/_dashboard/_internal/administrative/operations/': typeof DashboardInternalAdministrativeOperationsIndexRoute
+  '/_dashboard/_internal/laboratory/access/': typeof DashboardInternalLaboratoryAccessIndexRoute
+  '/_dashboard/_internal/operational/access/': typeof DashboardInternalOperationalAccessIndexRoute
   '/_dashboard/_internal/operational/operations/': typeof DashboardInternalOperationalOperationsIndexRoute
   '/_dashboard/_internal/administrative/operations/$id/': typeof DashboardInternalAdministrativeOperationsIdIndexRoute
   '/_dashboard/_internal/administrative/registry/container/': typeof DashboardInternalAdministrativeRegistryContainerIndexRoute
@@ -427,6 +447,8 @@ export interface FileRouteTypes {
     | '/administrative/clients/'
     | '/administrative/collaborators/'
     | '/administrative/operations/'
+    | '/laboratory/access/'
+    | '/operational/access/'
     | '/operational/operations/'
     | '/administrative/operations/$id/'
     | '/administrative/registry/container/'
@@ -461,6 +483,8 @@ export interface FileRouteTypes {
     | '/administrative/clients'
     | '/administrative/collaborators'
     | '/administrative/operations'
+    | '/laboratory/access'
+    | '/operational/access'
     | '/operational/operations'
     | '/administrative/operations/$id'
     | '/administrative/registry/container'
@@ -504,6 +528,8 @@ export interface FileRouteTypes {
     | '/_dashboard/_internal/administrative/clients/'
     | '/_dashboard/_internal/administrative/collaborators/'
     | '/_dashboard/_internal/administrative/operations/'
+    | '/_dashboard/_internal/laboratory/access/'
+    | '/_dashboard/_internal/operational/access/'
     | '/_dashboard/_internal/operational/operations/'
     | '/_dashboard/_internal/administrative/operations/$id/'
     | '/_dashboard/_internal/administrative/registry/container/'
@@ -755,6 +781,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInternalAdministrativeOperationsIndexRouteImport
       parentRoute: typeof DashboardInternalAdministrativeRouteRoute
     }
+    '/_dashboard/_internal/laboratory/access/': {
+      id: '/_dashboard/_internal/laboratory/access/'
+      path: '/access'
+      fullPath: '/laboratory/access/'
+      preLoaderRoute: typeof DashboardInternalLaboratoryAccessIndexRouteImport
+      parentRoute: typeof DashboardInternalLaboratoryRouteRoute
+    }
+    '/_dashboard/_internal/operational/access/': {
+      id: '/_dashboard/_internal/operational/access/'
+      path: '/access'
+      fullPath: '/operational/access/'
+      preLoaderRoute: typeof DashboardInternalOperationalAccessIndexRouteImport
+      parentRoute: typeof DashboardInternalOperationalRouteRoute
+    }
     '/_dashboard/_internal/operational/operations/': {
       id: '/_dashboard/_internal/operational/operations/'
       path: '/operations'
@@ -913,12 +953,15 @@ const DashboardInternalAdministrativeRouteRouteWithChildren =
 
 interface DashboardInternalLaboratoryRouteRouteChildren {
   DashboardInternalLaboratoryIndexRoute: typeof DashboardInternalLaboratoryIndexRoute
+  DashboardInternalLaboratoryAccessIndexRoute: typeof DashboardInternalLaboratoryAccessIndexRoute
 }
 
 const DashboardInternalLaboratoryRouteRouteChildren: DashboardInternalLaboratoryRouteRouteChildren =
   {
     DashboardInternalLaboratoryIndexRoute:
       DashboardInternalLaboratoryIndexRoute,
+    DashboardInternalLaboratoryAccessIndexRoute:
+      DashboardInternalLaboratoryAccessIndexRoute,
   }
 
 const DashboardInternalLaboratoryRouteRouteWithChildren =
@@ -928,6 +971,7 @@ const DashboardInternalLaboratoryRouteRouteWithChildren =
 
 interface DashboardInternalOperationalRouteRouteChildren {
   DashboardInternalOperationalIndexRoute: typeof DashboardInternalOperationalIndexRoute
+  DashboardInternalOperationalAccessIndexRoute: typeof DashboardInternalOperationalAccessIndexRoute
   DashboardInternalOperationalOperationsIndexRoute: typeof DashboardInternalOperationalOperationsIndexRoute
   DashboardInternalOperationalOperationsIdIndexRoute: typeof DashboardInternalOperationalOperationsIdIndexRoute
 }
@@ -936,6 +980,8 @@ const DashboardInternalOperationalRouteRouteChildren: DashboardInternalOperation
   {
     DashboardInternalOperationalIndexRoute:
       DashboardInternalOperationalIndexRoute,
+    DashboardInternalOperationalAccessIndexRoute:
+      DashboardInternalOperationalAccessIndexRoute,
     DashboardInternalOperationalOperationsIndexRoute:
       DashboardInternalOperationalOperationsIndexRoute,
     DashboardInternalOperationalOperationsIdIndexRoute:

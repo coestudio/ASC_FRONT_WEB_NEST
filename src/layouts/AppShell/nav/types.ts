@@ -23,6 +23,12 @@ export type NavItem = {
    * de Operação) — mecanismo mantido pro próximo item órfão que aparecer.
    */
   legacyOrphanRoute?: boolean;
+  /**
+   * Item só pra usuário `isAdmin` dentro da seção (SPEC-102 — Acessos de
+   * Laboratório/Operacional, que batem em `/user`, `[RequireAdmin]` no Core).
+   * Só esconde na sidebar; a rota tem o próprio guard.
+   */
+  requiresAdmin?: boolean;
 };
 
 /**

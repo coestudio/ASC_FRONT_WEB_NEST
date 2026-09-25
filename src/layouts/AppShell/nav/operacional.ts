@@ -18,6 +18,13 @@ const fragment: NavFragment = {
       icon: "bi-list-check",
       order: 2,
     },
+    {
+      labelKey: "navigation.operacionalAccess",
+      to: "/operational/access",
+      icon: "bi-shield-lock",
+      order: 3,
+      requiresAdmin: true,
+    },
   ],
 };
 

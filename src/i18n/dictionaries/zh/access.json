@@ -76,5 +76,13 @@
   "rolesDescription": "各权限配置的参考说明，展示每种配置在系统中可以查看的内容。",
   "rolesEmpty": "内容尚未录入——权限说明待确认。",
   "laboratoryTitle": "实验室人员",
-  "laboratoryDescription": "有权访问系统的实验室用户。"
+  "laboratoryDescription": "有权访问系统的实验室用户。",
+  "laboratory": {
+    "title": "实验室访问权限",
+    "description": "具有实验室角色的用户。"
+  },
+  "operational": {
+    "title": "运营访问权限",
+    "description": "具有代理和主管角色的用户。"
+  }
 }

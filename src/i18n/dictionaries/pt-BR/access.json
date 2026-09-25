@@ -76,5 +76,13 @@
   "rolesDescription": "Referência dos perfis de acesso e o que cada um pode ver no sistema.",
   "rolesEmpty": "Conteúdo ainda não cadastrado — descrição dos perfis pendente de confirmação.",
   "laboratoryTitle": "Pessoal do laboratório",
-  "laboratoryDescription": "Usuários do laboratório com acesso ao sistema."
+  "laboratoryDescription": "Usuários do laboratório com acesso ao sistema.",
+  "laboratory": {
+    "title": "Acessos do Laboratório",
+    "description": "Usuários com o perfil Laboratório."
+  },
+  "operational": {
+    "title": "Acessos do Operacional",
+    "description": "Usuários com os perfis Agente e Supervisor."
+  }
 }

@@ -182,7 +182,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   // altura de `.sidebarNav` (`overflow-y: auto`), forçando barra de rolagem.
   const [expandedArea, setExpandedArea] = useState<string | null>(null);
 
-  const sections = getNavSections(getUserAreas(user as PermissionUser | null));
+  // Itens `requiresAdmin` (SPEC-102) só pra quem é admin — seção que
+  // ficaria vazia some junto.
+  const isAdmin = !!(user as PermissionUser | null)?.isAdmin;
+  const sections = getNavSections(getUserAreas(user as PermissionUser | null))
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => !item.requiresAdmin || isAdmin),
+    }))
+    .filter((section) => section.items.length > 0);
   const breadcrumb = getBreadcrumb(sections, pathname);
 
   // fecha o menu mobile ao navegar
