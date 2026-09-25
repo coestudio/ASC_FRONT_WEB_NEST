@@ -2,11 +2,12 @@
 
 - **ID:** SPEC-103
 - **Nome:** client-operations-readonly
-- **Status:** IN_PROGRESS (2026-09-25) — parte de front independente do
-  Core **feita e mergeada em `main`** a pedido do usuário ("faz o merge de
-  tudo e ir para main"). Sem regressão: antes já dava 403 pro colaborador.
-  Faltam `just map`, RF5 e os testes como colaborador — dependem do Core
-  SPEC-58 no ar (§4 e §6).
+- **Status:** IMPLEMENTED (2026-09-25) — fechada pelo usuário ("pode
+  fechar essa pendência, pois só vai funcionar o e-mail em prod"). Front em
+  `main`; Core SPEC-58 em `main` do Core (`6a06de0`). `just map` não é
+  necessário (a SPEC-58 não mudou rotas nem DTOs). O teste como
+  colaborador (§6) fica para **prod**, onde o e-mail com a senha do
+  colaborador funciona — localmente o e-mail não sai.
 - **Autor:** claude (2026-09-25)
 - **Ticket:** ASCS-73 — "Adicionar tela de operação para o cliente"
 - **Área:** `src/components/operations/operations-list.tsx`,
@@ -88,6 +89,8 @@ corrigir no mutator e registrar aqui.
 - [x] Área Operacional e Administrativo > Operações sem mudança de
       comportamento.
 - [x] `bun run check` e `bun run lint` limpos.
+Pendentes para validar em prod (não bloqueiam o fechamento):
+
 - [ ] (Core SPEC-58) Login como colaborador externo → `/client/operations`
       lista só as operações do cliente dele.
 - [ ] (Core SPEC-58) Nomes de cliente/produto aparecem nas linhas (RF5).
