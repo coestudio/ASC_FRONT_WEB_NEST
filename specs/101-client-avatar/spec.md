@@ -2,10 +2,12 @@
 
 - **ID:** SPEC-101
 - **Nome:** client-avatar
-- **Status:** DRAFT (2026-09-25) — **BLOCKED** pelo Core SPEC-57
-  (`pending-core-spec-57-client-avatar.md`, na raiz de `ASC/`, enviado ao
-  backend). Branch `feat/101-client-avatar`, revisão do usuário antes do
-  merge em `main`.
+- **Status:** IN_PROGRESS (2026-09-25) — aprovada pelo usuário ("pode ja
+  comecar a fazer a specs do front pois ja iniciei o backend"). UI pronta
+  sobre adaptador temporário (`src/lib/queries/client-avatar.ts`); falta
+  RF1 (`just map` quando o Core SPEC-57 estiver no ar) e teste manual.
+  Branch `feat/101-client-avatar`, revisão do usuário antes do merge em
+  `main`.
 - **Autor:** claude (pedido do usuário, 2026-09-25)
 - **Área:**
   - `src/routes/_dashboard/_internal/administrative/clients/index.tsx`
@@ -123,3 +125,27 @@ Cliente passa a ter foto de avatar/logo:
 - [ ] Arquivo > 5 MB ou tipo inválido barrado no front com toast.
 - [ ] 4 locales com as mesmas chaves.
 - [ ] `bun run check` e `bun run lint` limpos.
+
+## 7. Implementação (2026-09-25)
+
+Core SPEC-57 ainda não está no ar → sem `just map`. Para não travar a UI:
+
+- **`src/lib/queries/client-avatar.ts` (TEMPORÁRIO)** — `patchClientAvatar`,
+  `deleteClientAvatar`, `clientMeQueryOptions` via `apiRequest` do
+  `mutator.ts` (mesmo transporte e mesmas queryKeys dos hooks gerados) +
+  `clientAvatarOf()` pra ler `avatarFile` de um `ClientDTO` que ainda não
+  tem o campo no tipo. Nenhum schema Zod criado (regra 2).
+- `src/components/clients/client-avatar-field.tsx` — bloco reutilizado
+  pelas duas telas (upload/remoção imediatos, confirmação, 403 → só
+  leitura, modo pendente pra criar). Utilitários em `client-avatar-utils.ts`.
+- `InputAvatar` ganhou `accept` e `readOnly`; `CrudRecordModal` ganhou
+  `headerContent`.
+- i18n: `clientAvatar.*` no `common.json` dos 4 locales.
+
+**Ao chegar o Core (RF1):** `just map` → trocar o adaptador pelos hooks
+gerados (`usePatchApiClientIdAvatar`, `useDeleteApiClientIdAvatar`,
+`getGetApiClientMeQueryOptions`), trocar `clientAvatarOf(x)` por
+`x.avatarFile`, apagar `client-avatar.ts` (manter só
+`invalidateClientQueries` se ainda fizer sentido) e conferir se o nome/
+shape das rotas bate com o que o backend entregou.
+

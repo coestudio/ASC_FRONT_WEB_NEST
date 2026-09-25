@@ -24,6 +24,10 @@ interface InputAvatarProps<T extends FieldValues> extends InputDTO<T> {
   maxSizeBytes?: number;
   /** Mensagem exibida quando `maxSizeBytes` é excedido. */
   maxSizeMessage?: string;
+  /** Tipos aceitos pelo seletor de arquivo (atributo `accept`, padrão `image/*`). */
+  accept?: string;
+  /** Só exibe a imagem/iniciais — sem overlay de troca nem botão de remover. */
+  readOnly?: boolean;
 }
 
 /**
@@ -44,6 +48,8 @@ function InputAvatar<T extends FieldValues>({
   onRemove,
   maxSizeBytes,
   maxSizeMessage = "Arquivo muito grande.",
+  accept = "image/*",
+  readOnly = false,
   ...colProps
 }: InputAvatarProps<T>) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -92,16 +98,18 @@ function InputAvatar<T extends FieldValues>({
                     <span>{initials || "?"}</span>
                   )}
                 </div>
-                <button
-                  type="button"
-                  aria-label={config.label || "Trocar avatar"}
-                  className={`position-absolute top-0 start-0 w-100 h-100 rounded-circle border-0 d-flex flex-column align-items-center justify-content-center text-white p-0 ${styles.overlay}`}
-                  onClick={() => inputRef.current?.click()}
-                >
-                  <i className="bi bi-camera" />
-                  <span className="small">{src ? changeLabel : selectLabel}</span>
-                </button>
-                {hasValue && onRemove ? (
+                {readOnly ? null : (
+                  <button
+                    type="button"
+                    aria-label={config.label || "Trocar avatar"}
+                    className={`position-absolute top-0 start-0 w-100 h-100 rounded-circle border-0 d-flex flex-column align-items-center justify-content-center text-white p-0 ${styles.overlay}`}
+                    onClick={() => inputRef.current?.click()}
+                  >
+                    <i className="bi bi-camera" />
+                    <span className="small">{src ? changeLabel : selectLabel}</span>
+                  </button>
+                )}
+                {hasValue && onRemove && !readOnly ? (
                   <button
                     type="button"
                     aria-label="Remover imagem"
@@ -116,7 +124,7 @@ function InputAvatar<T extends FieldValues>({
               <input
                 ref={inputRef}
                 type="file"
-                accept="image/*"
+                accept={accept}
                 className="d-none"
                 name={name}
                 onChange={(e) => handleSelect(e.target.files?.[0] ?? null)}

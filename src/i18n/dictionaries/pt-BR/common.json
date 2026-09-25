@@ -72,5 +72,18 @@
     "next": "Próxima página",
     "last": "Última página",
     "position": "{page} de {totalPages}"
+  },
+  "clientAvatar": {
+    "label": "Foto do cliente",
+    "change": "Trocar",
+    "select": "Selecionar",
+    "hint": "Passe o mouse na foto para trocar. JPG, PNG ou WebP até 5 MB.",
+    "uploading": "Enviando foto...",
+    "saved": "Foto do cliente atualizada.",
+    "removed": "Foto do cliente removida.",
+    "tooLarge": "Arquivo muito grande. Máximo 5 MB.",
+    "removeTitle": "Remover foto",
+    "removeMessage": "Deseja remover a foto de \"{name}\"?",
+    "createdWithoutPhoto": "Cliente criado, mas a foto não foi enviada. Tente novamente pela edição."
   }
 }

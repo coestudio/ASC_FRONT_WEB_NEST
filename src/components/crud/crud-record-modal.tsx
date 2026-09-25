@@ -26,6 +26,12 @@ export type CrudRecordModalProps<T extends FieldValues> = {
   /** Conteúdo extra no modo `view` (ex.: seção mock de relatórios do Cliente, SPEC-05). */
   extraContent?: ReactNode;
   /**
+   * Conteúdo acima dos campos, em todos os modos e fora do `fieldset
+   * disabled` do `view` (ex.: avatar do Cliente, SPEC-101) — quem passa
+   * decide se fica só leitura.
+   */
+  headerContent?: ReactNode;
+  /**
    * Botão "Excluir" no rodapé, em `view`/`edit` (nunca em `create` — registro
    * ainda não existe) — SPEC-79. Opcional: sem a prop, nenhum botão aparece
    * (consumidor sem exclusão disponível, ex. `Collaborator`). Não muda o
@@ -53,6 +59,7 @@ export function CrudRecordModal<T extends FieldValues>({
   onSubmit,
   onClose,
   extraContent,
+  headerContent,
   onDelete,
 }: CrudRecordModalProps<T>) {
   const t = useT();
@@ -93,6 +100,7 @@ export function CrudRecordModal<T extends FieldValues>({
       </Modal.Header>
       <Form noValidate onSubmit={readOnly ? undefined : handleSubmit(onSubmit as SubmitHandler<T>)}>
         <Modal.Body>
+          {headerContent}
           <fieldset disabled={readOnly} className="border-0 p-0 m-0">
             <RenderFields fields={fields} methods={methods} />
           </fieldset>

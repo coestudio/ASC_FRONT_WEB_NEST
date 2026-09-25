@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -14,7 +15,9 @@ import {
   getApiClient,
 } from "@/api/generated/endpoints/client/client";
 import { PostApiClientBody } from "@/api/generated/zod/client/client.zod";
-import type { ClientDTO, ClientDetailDTO } from "@/api/generated/model";
+import type { ClientDTO, ClientDetailDTO, FileDTO } from "@/api/generated/model";
+import { ClientAvatarField } from "@/components/clients/client-avatar-field";
+import { clientInitials } from "@/components/clients/client-avatar-utils";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
@@ -26,6 +29,12 @@ import { useCrudMutations } from "@/hooks/useCrudMutations";
 import { useMounted } from "@/hooks/useMounted";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
+import { resolveAvatarUrl } from "@/lib/avatar-url";
+import {
+  clientAvatarOf,
+  invalidateClientQueries,
+  patchClientAvatar,
+} from "@/lib/queries/client-avatar";
 import styles from "./index.module.css";
 import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -49,16 +58,6 @@ function documentType(doc: string | null | undefined): "cpf" | "cnpj" | null {
   if (d.length === 11) return "cpf";
   if (d.length === 14) return "cnpj";
   return null;
-}
-
-// Iniciais do nome pro avatar do card — mesma ideia do `ClientCards.tsx`
-// legado (primeira letra do primeiro + último nome).
-function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  const first = parts[0]?.[0] ?? "";
-  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? "") : "";
-  return (first + last).toUpperCase();
 }
 
 export const Route = createFileRoute("/_dashboard/_internal/administrative/clients/")({
@@ -130,9 +129,16 @@ function ClientsPageBody() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<string | undefined>(undefined);
-  const [modal, setModal] = useState<{ mode: CrudRecordMode; record?: ClientDetailDTO } | null>(
-    null,
-  );
+  const [modal, setModal] = useState<{
+    mode: CrudRecordMode;
+    record?: ClientDetailDTO;
+    // Avatar atual do registro aberto (SPEC-101) — separado do `record`
+    // porque troca na hora, sem passar pelo "Salvar" do formulário.
+    avatarFile?: FileDTO | null;
+  } | null>(null);
+  // Arquivo escolhido no modo criar — só sobe depois do `POST` (SPEC-101 RF5).
+  const [pendingAvatar, setPendingAvatar] = useState<File | null>(null);
+  const queryClient = useQueryClient();
   const [pendingDelete, setPendingDelete] = useState<ClientDTO | null>(null);
   // Requisição de detalhe (`GET /api/client/{id}`) em andamento — só depois
   // dela resolver é que o modal `edit`/`view` abre, já com o cadastro
@@ -163,7 +169,20 @@ function ClientsPageBody() {
   const deleteMutation = useDeleteApiClientId();
 
   const { submit, remove } = useCrudMutations<ClientFormValues, ClientDetailDTO, ClientDTO>({
-    onCreate: (values) => createMutation.mutateAsync({ data: values }),
+    onCreate: async (values) => {
+      const created = await createMutation.mutateAsync({ data: values });
+      if (pendingAvatar) {
+        // Falha no upload não desfaz o cadastro (SPEC-101 RF5) — o
+        // interceptor já avisa o erro do Core; aqui só explica o estado.
+        try {
+          await patchClientAvatar(created.id, pendingAvatar);
+          await invalidateClientQueries(queryClient);
+        } catch {
+          toast.warning(t("clientAvatar.createdWithoutPhoto"));
+        }
+      }
+      return created;
+    },
     onUpdate: (values, record) => updateMutation.mutateAsync({ id: record.id, data: values }),
     onDelete: (record) => deleteMutation.mutateAsync({ id: record.id }),
     invalidateKey: getGetApiClientQueryKey(),
@@ -183,7 +202,11 @@ function ClientsPageBody() {
 
   useEffect(() => {
     if (detailRequest && detailQuery.data && detailQuery.data.id === detailRequest.id) {
-      setModal({ mode: detailRequest.mode, record: detailQuery.data });
+      setModal({
+        mode: detailRequest.mode,
+        record: detailQuery.data,
+        avatarFile: clientAvatarOf(detailQuery.data),
+      });
       setDetailRequest(null);
     }
   }, [detailRequest, detailQuery.data]);
@@ -316,7 +339,13 @@ function ClientsPageBody() {
               <Card className={styles.card}>
                 <Card.Body>
                   <div className={styles.top}>
-                    <div className={styles.avatar}>{initials(c.fullName)}</div>
+                    <div className={styles.avatar}>
+                      {clientAvatarOf(c) ? (
+                        <img src={resolveAvatarUrl(clientAvatarOf(c)) ?? undefined} alt="" />
+                      ) : (
+                        clientInitials(c.fullName)
+                      )}
+                    </div>
                     {docType ? (
                       <span className={styles.chip}>
                         {t(
@@ -366,7 +395,10 @@ function ClientsPageBody() {
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
-          onCreate={() => setModal({ mode: "create" })}
+          onCreate={() => {
+            setPendingAvatar(null);
+            setModal({ mode: "create" });
+          }}
           emptyMessageKey="administrative-clients.emptyState"
         />
       </PageLayout>
@@ -385,6 +417,18 @@ function ClientsPageBody() {
           defaultValues={toFormValues(modal.record)}
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          headerContent={
+            <ClientAvatarField
+              clientId={modal.record?.id}
+              name={modal.record?.fullName ?? ""}
+              avatarFile={modal.avatarFile ?? null}
+              readOnly={modal.mode === "view"}
+              onPendingFileChange={setPendingAvatar}
+              onAvatarChange={(avatarFile) =>
+                setModal((prev) => (prev ? { ...prev, avatarFile } : prev))
+              }
+            />
+          }
           onDelete={modal.record ? () => setPendingDelete(modal.record as ClientDTO) : undefined}
         />
       ) : null}
