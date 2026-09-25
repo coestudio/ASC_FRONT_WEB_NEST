@@ -6,6 +6,7 @@
  */
 import type { AddressDTO } from './addressDTO.ts';
 import type { CollaboratorDTO } from './collaboratorDTO.ts';
+import type { FileDTO } from './fileDTO.ts';
 
 export interface ClientDetailDTO {
   razaoSocial?: string;
@@ -19,6 +20,7 @@ export interface ClientDetailDTO {
   document?: string | null;
   phone?: string;
   email?: string;
+  avatarFile?: null | FileDTO;
   id: string;
   createdAt: string;
   updatedAt: string;

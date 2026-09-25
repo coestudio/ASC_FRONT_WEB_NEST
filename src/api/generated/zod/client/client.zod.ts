@@ -30,6 +30,15 @@ export const GetApiClientResponse = zod.object({
   "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -176,6 +185,15 @@ export const PostApiClientResponse = zod.object({
   "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -260,6 +278,15 @@ export const GetApiClientIdResponse = zod.object({
   "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -404,6 +431,15 @@ export const PutApiClientIdResponse = zod.object({
   "document": zod.string().nullish(),
   "phone": zod.string().optional(),
   "email": zod.string().optional(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
   "id": zod.uuid(),
   "createdAt": zod.iso.datetime({"offset":true}),
   "updatedAt": zod.iso.datetime({"offset":true})
@@ -414,4 +450,119 @@ export const DeleteApiClientIdParams = zod.object({
 })
 
 export const DeleteApiClientIdResponse = zod.unknown()
+
+export const getApiClientMeResponseAddressCountryMax = 2;
+
+
+export const getApiClientMeResponseAddressCountryRegExp = new RegExp('^[A-Z]{2}$');
+export const getApiClientMeResponseAddressPostalCodeMax = 20;
+
+export const getApiClientMeResponseAddressStateMax = 100;
+
+export const getApiClientMeResponseAddressNeighborhoodMax = 100;
+
+export const getApiClientMeResponseAddressStreetMax = 200;
+
+export const getApiClientMeResponseAddressNumberMax = 20;
+
+export const getApiClientMeResponseAddressComplementMax = 100;
+
+export const getApiClientMeResponseAddressCityMax = 100;
+
+
+
+export const GetApiClientMeResponse = zod.object({
+  "razaoSocial": zod.string().optional(),
+  "ie": zod.string().optional(),
+  "observations": zod.string().optional(),
+  "address": zod.object({
+  "country": zod.string().max(getApiClientMeResponseAddressCountryMax).regex(getApiClientMeResponseAddressCountryRegExp).nullish(),
+  "postalCode": zod.string().max(getApiClientMeResponseAddressPostalCodeMax).nullish(),
+  "state": zod.string().max(getApiClientMeResponseAddressStateMax).nullish(),
+  "neighborhood": zod.string().max(getApiClientMeResponseAddressNeighborhoodMax).nullish(),
+  "street": zod.string().max(getApiClientMeResponseAddressStreetMax).nullish(),
+  "number": zod.string().max(getApiClientMeResponseAddressNumberMax).nullish(),
+  "complement": zod.string().max(getApiClientMeResponseAddressComplementMax).nullish(),
+  "city": zod.string().max(getApiClientMeResponseAddressCityMax).nullish(),
+  "fullAddress": zod.string().optional()
+}),
+  "collaborations": zod.array(zod.object({
+  "clientId": zod.uuid(),
+  "userId": zod.uuid(),
+  "user": zod.object({
+  "userName": zod.string(),
+  "profile": zod.object({
+  "fullName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "email": zod.string(),
+  "phone": zod.string().nullish(),
+  "birthDate": zod.iso.date().nullish(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional()
+}),
+  "isActive": zod.boolean(),
+  "isAdmin": zod.boolean(),
+  "type": zod.enum(['Internal', 'External']),
+  "roles": zod.array(zod.enum(['Agent', 'Supervisor', 'Laboratory'])),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+}),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})).optional(),
+  "fullName": zod.string(),
+  "shortName": zod.string().optional(),
+  "document": zod.string().nullish(),
+  "phone": zod.string().optional(),
+  "email": zod.string().optional(),
+  "avatarFile": zod.union([zod.null(),zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})]).optional(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+
+export const PatchApiClientIdAvatarParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const PatchApiClientIdAvatarBody = zod.object({
+  "avatarFile": zod.instanceof(Blob).optional()
+})
+
+export const PatchApiClientIdAvatarResponse = zod.object({
+  "name": zod.string().optional(),
+  "extension": zod.string().optional(),
+  "url": zod.string().optional(),
+  "contentType": zod.string().nullish(),
+  "id": zod.uuid(),
+  "createdAt": zod.iso.datetime({"offset":true}),
+  "updatedAt": zod.iso.datetime({"offset":true})
+})
+
+export const DeleteApiClientIdAvatarParams = zod.object({
+  "id": zod.uuid()
+})
+
+export const DeleteApiClientIdAvatarResponse = zod.object({
+  "message": zod.string().optional()
+})
 

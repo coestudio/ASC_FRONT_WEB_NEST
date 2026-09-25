@@ -4,6 +4,7 @@
  * Core | v1
  * OpenAPI spec version: 1.0.0
  */
+import type { FileDTO } from './fileDTO.ts';
 
 export interface ClientDTO {
   fullName: string;
@@ -12,6 +13,7 @@ export interface ClientDTO {
   document?: string | null;
   phone?: string;
   email?: string;
+  avatarFile?: null | FileDTO;
   id: string;
   createdAt: string;
   updatedAt: string;

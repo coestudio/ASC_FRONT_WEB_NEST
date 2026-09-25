@@ -2,12 +2,10 @@
 
 - **ID:** SPEC-101
 - **Nome:** client-avatar
-- **Status:** IN_PROGRESS (2026-09-25) — aprovada pelo usuário ("pode ja
-  comecar a fazer a specs do front pois ja iniciei o backend"). UI pronta
-  sobre adaptador temporário (`src/lib/queries/client-avatar.ts`); falta
-  RF1 (`just map` quando o Core SPEC-57 estiver no ar) e teste manual.
-  Branch `feat/101-client-avatar`, revisão do usuário antes do merge em
-  `main`.
+- **Status:** IN_PROGRESS (2026-09-25) — UI completa e RF1 feito
+  (`just map` contra o Core local na `feat/57-client-avatar`, commit
+  `84ff8c6`); aguardando teste manual local do usuário. Branch
+  `feat/101-client-avatar`, revisão do usuário antes do merge em `main`.
 - **Autor:** claude (pedido do usuário, 2026-09-25)
 - **Área:**
   - `src/routes/_dashboard/_internal/administrative/clients/index.tsx`
@@ -148,4 +146,10 @@ gerados (`usePatchApiClientIdAvatar`, `useDeleteApiClientIdAvatar`,
 `x.avatarFile`, apagar `client-avatar.ts` (manter só
 `invalidateClientQueries` se ainda fizer sentido) e conferir se o nome/
 shape das rotas bate com o que o backend entregou.
+
+**RF1 concluído (2026-09-25):** `just map` contra o Core local (`84ff8c6`).
+Adaptador removido — telas usam `usePatchApiClientIdAvatar`,
+`useDeleteApiClientIdAvatar`, `patchApiClientIdAvatar` (upload pós-criação)
+e `getGetApiClientMeQueryOptions`, e leem `avatarFile` direto do DTO.
+`src/lib/queries/client-avatar.ts` ficou só com `invalidateClientQueries`.
 

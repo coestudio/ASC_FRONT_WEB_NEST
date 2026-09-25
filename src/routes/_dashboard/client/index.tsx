@@ -5,7 +5,7 @@ import { Card, Placeholder } from "react-bootstrap";
 import { ClientAvatarField } from "@/components/clients/client-avatar-field";
 import { useMounted } from "@/hooks/useMounted";
 import { PageLayout } from "@/layouts/PageLayout";
-import { clientAvatarOf, clientMeQueryOptions } from "@/lib/queries/client-avatar";
+import { getGetApiClientMeQueryOptions } from "@/api/generated/endpoints/client/client";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { useT } from "@/lib/ui-prefs";
 import type { TranslationKey } from "@/i18n/translate";
@@ -52,7 +52,7 @@ const CARDS: HomeCard[] = [
  * 403 (colaborador sem permissão), o avatar vira só leitura.
  */
 function ClientHeader() {
-  const query = useSsrSafeQuery(clientMeQueryOptions());
+  const query = useSsrSafeQuery(getGetApiClientMeQueryOptions());
   const [forbidden, setForbidden] = useState(false);
 
   if (query.isPending) {
@@ -70,7 +70,7 @@ function ClientHeader() {
         <ClientAvatarField
           clientId={query.data.id}
           name={query.data.fullName}
-          avatarFile={clientAvatarOf(query.data)}
+          avatarFile={query.data.avatarFile ?? null}
           readOnly={forbidden}
           onForbidden={() => setForbidden(true)}
         />

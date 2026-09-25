@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Spinner } from "react-bootstrap";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 
+import {
+  useDeleteApiClientIdAvatar,
+  usePatchApiClientIdAvatar,
+} from "@/api/generated/endpoints/client/client";
 import type { FileDTO } from "@/api/generated/model";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { InputAvatar } from "@/layouts/Form/Fields/Index";
 import { resolveAvatarUrl } from "@/lib/avatar-url";
-import {
-  deleteClientAvatar,
-  invalidateClientQueries,
-  patchClientAvatar,
-} from "@/lib/queries/client-avatar";
+import { invalidateClientQueries } from "@/lib/queries/client-avatar";
 import { useT } from "@/lib/ui-prefs";
 import {
   CLIENT_AVATAR_ACCEPT,
@@ -62,25 +62,27 @@ export function ClientAvatarField({
     if (isAxiosError(error) && error.response?.status === 403) onForbidden?.();
   };
 
-  const upload = useMutation({
-    mutationFn: (file: File) => patchClientAvatar(clientId as string, file),
-    onSuccess: async (saved) => {
-      form.setValue("avatarFile", null);
-      onAvatarChange?.(saved);
-      toast.success(t("clientAvatar.saved"));
-      await invalidateClientQueries(queryClient);
+  const upload = usePatchApiClientIdAvatar({
+    mutation: {
+      onSuccess: async (saved) => {
+        form.setValue("avatarFile", null);
+        onAvatarChange?.(saved);
+        toast.success(t("clientAvatar.saved"));
+        await invalidateClientQueries(queryClient);
+      },
+      onError: handleError,
     },
-    onError: handleError,
   });
 
-  const remove = useMutation({
-    mutationFn: () => deleteClientAvatar(clientId as string),
-    onSuccess: async () => {
-      onAvatarChange?.(null);
-      toast.success(t("clientAvatar.removed"));
-      await invalidateClientQueries(queryClient);
+  const remove = useDeleteApiClientIdAvatar({
+    mutation: {
+      onSuccess: async () => {
+        onAvatarChange?.(null);
+        toast.success(t("clientAvatar.removed"));
+        await invalidateClientQueries(queryClient);
+      },
+      onError: handleError,
     },
-    onError: handleError,
   });
 
   const handleSelected = (file: File) => {
@@ -88,7 +90,7 @@ export function ClientAvatarField({
       onPendingFileChange?.(file);
       return;
     }
-    upload.mutate(file);
+    upload.mutate({ id: clientId, data: { avatarFile: file } });
   };
 
   const handleRemove = () => {
@@ -145,7 +147,7 @@ export function ClientAvatarField({
           variant="danger"
           onConfirm={async () => {
             setConfirmRemove(false);
-            await remove.mutateAsync().catch(() => undefined);
+            if (clientId) await remove.mutateAsync({ id: clientId }).catch(() => undefined);
           }}
           onCancel={() => setConfirmRemove(false)}
         />

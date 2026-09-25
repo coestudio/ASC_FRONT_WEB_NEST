@@ -110,6 +110,7 @@ export * from './pagedDTOOfRomaneioDTO.ts';
 export * from './pagedDTOOfTerminalDTO.ts';
 export * from './pagedDTOOfUserDTO.ts';
 export * from './pagedDTOOfVesselDTO.ts';
+export * from './patchApiClientIdAvatarBody.ts';
 export * from './patchApiProfileAvatarBody.ts';
 export * from './patchApiUserIdAvatarBody.ts';
 export * from './postApiOperationOperationIdCargoIdPhotosBody.ts';

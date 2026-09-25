@@ -27,8 +27,11 @@ import type {
   ClientCreate,
   ClientDetailDTO,
   ClientUpdate,
+  FileDTO,
   GetApiClientParams,
-  PagedDTOOfClientDTO
+  MessageDTO,
+  PagedDTOOfClientDTO,
+  PatchApiClientIdAvatarBody
 } from '../../model';
 
 import { apiRequest } from '../../../mutator.ts';
@@ -405,4 +408,215 @@ const {mutation: mutationOptions} = options ?
         TContext
       > => {
       return useMutation(getDeleteApiClientIdMutationOptions(options), queryClient);
+    }
+    export const getApiClientMe = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<ClientDetailDTO>(
+      {url: `/api/client/me`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getGetApiClientMeQueryKey = () => {
+    return [
+    `/api/client/me`
+    ] as const;
+    }
+
+
+export const getGetApiClientMeQueryOptions = <TData = Awaited<ReturnType<typeof getApiClientMe>>, TError = void>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientMe>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiClientMeQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiClientMe>>> = ({ signal }) => getApiClientMe(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiClientMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiClientMeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiClientMe>>>
+export type GetApiClientMeQueryError = void
+
+
+export function useGetApiClientMe<TData = Awaited<ReturnType<typeof getApiClientMe>>, TError = void>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientMe>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiClientMe>>,
+          TError,
+          Awaited<ReturnType<typeof getApiClientMe>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiClientMe<TData = Awaited<ReturnType<typeof getApiClientMe>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientMe>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiClientMe>>,
+          TError,
+          Awaited<ReturnType<typeof getApiClientMe>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiClientMe<TData = Awaited<ReturnType<typeof getApiClientMe>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientMe>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiClientMe<TData = Awaited<ReturnType<typeof getApiClientMe>>, TError = void>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiClientMe>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiClientMeQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+export const patchApiClientIdAvatar = (
+    id: string,
+    patchApiClientIdAvatarBody: PatchApiClientIdAvatarBody,
+ signal?: AbortSignal
+) => {
+
+      const formData = new FormData();
+if(patchApiClientIdAvatarBody.avatarFile !== undefined) {
+ formData.append(`avatarFile`, patchApiClientIdAvatarBody.avatarFile);
+ }
+
+      return apiRequest<FileDTO>(
+      {url: `/api/client/${id}/avatar`, method: 'PATCH',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      );
+    }
+
+
+
+
+export const getPatchApiClientIdAvatarMutationKey = () => ['patchApiClientIdAvatar'] as const;
+
+export const getPatchApiClientIdAvatarMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiClientIdAvatar>>, TError,PatchApiClientIdAvatarMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchApiClientIdAvatar>>, TError,PatchApiClientIdAvatarMutationVariables, TContext> => {
+
+const mutationKey = getPatchApiClientIdAvatarMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiClientIdAvatar>>, PatchApiClientIdAvatarMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  patchApiClientIdAvatar(id,data,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchApiClientIdAvatarMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiClientIdAvatar>>>
+    export type PatchApiClientIdAvatarMutationBody = PatchApiClientIdAvatarBody
+    export type PatchApiClientIdAvatarMutationError = void
+    export type PatchApiClientIdAvatarMutationVariables = {id: string;data: PatchApiClientIdAvatarBody}
+
+    export const usePatchApiClientIdAvatar = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiClientIdAvatar>>, TError,PatchApiClientIdAvatarMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchApiClientIdAvatar>>,
+        TError,
+        PatchApiClientIdAvatarMutationVariables,
+        TContext
+      > => {
+      return useMutation(getPatchApiClientIdAvatarMutationOptions(options), queryClient);
+    }
+    export const deleteApiClientIdAvatar = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return apiRequest<MessageDTO>(
+      {url: `/api/client/${id}/avatar`, method: 'DELETE', signal
+    },
+      );
+    }
+
+
+
+
+export const getDeleteApiClientIdAvatarMutationKey = () => ['deleteApiClientIdAvatar'] as const;
+
+export const getDeleteApiClientIdAvatarMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiClientIdAvatar>>, TError,DeleteApiClientIdAvatarMutationVariables, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteApiClientIdAvatar>>, TError,DeleteApiClientIdAvatarMutationVariables, TContext> => {
+
+const mutationKey = getDeleteApiClientIdAvatarMutationKey();
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiClientIdAvatar>>, DeleteApiClientIdAvatarMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteApiClientIdAvatar(id,)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteApiClientIdAvatarMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiClientIdAvatar>>>
+
+    export type DeleteApiClientIdAvatarMutationError = void
+    export type DeleteApiClientIdAvatarMutationVariables = {id: string}
+
+    export const useDeleteApiClientIdAvatar = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiClientIdAvatar>>, TError,DeleteApiClientIdAvatarMutationVariables, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteApiClientIdAvatar>>,
+        TError,
+        DeleteApiClientIdAvatarMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteApiClientIdAvatarMutationOptions(options), queryClient);
     }

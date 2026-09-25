@@ -13,6 +13,7 @@ import {
   usePostApiClient,
   usePutApiClientId,
   getApiClient,
+  patchApiClientIdAvatar,
 } from "@/api/generated/endpoints/client/client";
 import { PostApiClientBody } from "@/api/generated/zod/client/client.zod";
 import type { ClientDTO, ClientDetailDTO, FileDTO } from "@/api/generated/model";
@@ -30,11 +31,7 @@ import { useMounted } from "@/hooks/useMounted";
 import { useLocale, useT } from "@/lib/ui-prefs";
 import { useSsrSafeQuery } from "@/lib/queries/use-ssr-safe-query";
 import { resolveAvatarUrl } from "@/lib/avatar-url";
-import {
-  clientAvatarOf,
-  invalidateClientQueries,
-  patchClientAvatar,
-} from "@/lib/queries/client-avatar";
+import { invalidateClientQueries } from "@/lib/queries/client-avatar";
 import styles from "./index.module.css";
 import { useFuzzyListQuery } from "@/lib/queries/fuzzy-list-query";
 import { DEFAULT_PAGE_SIZE } from "@/lib/page-size";
@@ -175,7 +172,7 @@ function ClientsPageBody() {
         // Falha no upload não desfaz o cadastro (SPEC-101 RF5) — o
         // interceptor já avisa o erro do Core; aqui só explica o estado.
         try {
-          await patchClientAvatar(created.id, pendingAvatar);
+          await patchApiClientIdAvatar(created.id, { avatarFile: pendingAvatar });
           await invalidateClientQueries(queryClient);
         } catch {
           toast.warning(t("clientAvatar.createdWithoutPhoto"));
@@ -205,7 +202,7 @@ function ClientsPageBody() {
       setModal({
         mode: detailRequest.mode,
         record: detailQuery.data,
-        avatarFile: clientAvatarOf(detailQuery.data),
+        avatarFile: detailQuery.data.avatarFile ?? null,
       });
       setDetailRequest(null);
     }
@@ -340,8 +337,8 @@ function ClientsPageBody() {
                 <Card.Body>
                   <div className={styles.top}>
                     <div className={styles.avatar}>
-                      {clientAvatarOf(c) ? (
-                        <img src={resolveAvatarUrl(clientAvatarOf(c)) ?? undefined} alt="" />
+                      {c.avatarFile ? (
+                        <img src={resolveAvatarUrl(c.avatarFile) ?? undefined} alt="" />
                       ) : (
                         clientInitials(c.fullName)
                       )}
