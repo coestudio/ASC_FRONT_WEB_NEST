@@ -4,9 +4,8 @@
 - **Nome:** area-access
 - **Status:** IMPLEMENTED (2026-09-25) — pedido do usuário ("Laboratorio ->
   Acessos / Operacional -> Acessos. Aqui é onde cada área vai cadastrar um
-  novo acesso de usuário"), "fazer só no front". Branch
-  `feat/102-area-access`, aguardando revisão/teste do usuário antes do
-  merge em `main`.
+  novo acesso de usuário"), "fazer só no front". Mergeada em `main` a
+  pedido do usuário ("faz o merge na main"), sem teste manual registrado.
 - **Autor:** claude (2026-09-25)
 - **Área:** `src/components/access/access-crud.tsx` (novo, extraído de
   `src/routes/_dashboard/admin/access/index.tsx`),
