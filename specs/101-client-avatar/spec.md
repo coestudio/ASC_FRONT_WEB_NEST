@@ -2,10 +2,12 @@
 
 - **ID:** SPEC-101
 - **Nome:** client-avatar
-- **Status:** IN_PROGRESS (2026-09-25) — UI completa e RF1 feito
-  (`just map` contra o Core local na `feat/57-client-avatar`, commit
-  `84ff8c6`); aguardando teste manual local do usuário. Branch
-  `feat/101-client-avatar`, revisão do usuário antes do merge em `main`.
+- **Status:** IMPLEMENTED (2026-09-25) — mergeada em `main` a pedido do
+  usuário ("faz o merge das duas branches na main"). Depende do Core
+  SPEC-57 (`feat/57-client-avatar`) estar em `main` do Core. Teste local
+  parcial: upload/remoção não validados localmente (Core local sem SAS do
+  Azure Blob → 401 `NoAuthenticationInformation`, usuário optou por não
+  mexer em config) — validar em dev.
 - **Autor:** claude (pedido do usuário, 2026-09-25)
 - **Área:**
   - `src/routes/_dashboard/_internal/administrative/clients/index.tsx`
