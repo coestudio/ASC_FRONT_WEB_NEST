@@ -203,9 +203,10 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
       label: t("access.form.birthDate"),
       col: { md: 6 },
     },
-    // Área com um papel só (Laboratório): não há o que escolher — o campo
-    // some e o papel vem de `defaultRole` (SPEC-102 RF9).
-    ...(scopeRoles && scopeRoles.length === 1
+    // Tela de área não escolhe papel: o campo some e o cadastro nasce com
+    // `defaultRole` (papel do filtro atual); na edição os papéis do usuário
+    // seguem os do `defaultValues` (SPEC-102 RF9).
+    ...(scopeRoles
       ? []
       : [
           {

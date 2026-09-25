@@ -60,11 +60,12 @@ mesmo CRUD de usuários do Admin > Acesso, restrito aos papéis da área:
   `NavItem`, filtrada no `AppShell`); rota com guard que manda não-admin
   pra home da área.
 - **RF9 — Papel default no cadastro** (pedido do usuário: "quando o usuário
-  se cadastra em alguma dessas telas a role já vem default", 2026-09-25).
-  Laboratório: campo Papéis some, todo cadastro nasce `Laboratory` (edição
-  preserva os papéis). Operacional: vem marcado o papel do filtro atual
-  (Agente ou Supervisor); se desmarcarem tudo no cadastro novo, salva com
-  esse papel mesmo assim.
+  se cadastra em alguma dessas telas a role já vem default" e "ainda o
+  modal está me dando a opção de escolher perfil", 2026-09-25). Nas telas
+  de área o campo Papéis **some**: Laboratório cria sempre `Laboratory`;
+  Operacional cria com o papel do filtro atual (Agente ou Supervisor).
+  Edição preserva os papéis que o usuário já tem. Trocar papel de usuário
+  existente continua sendo no Admin > Acesso.
 - **RF7 — i18n.** `navigation.laboratorioAccess`,
   `navigation.operacionalAccess`, `access.laboratory.*`,
   `access.operational.*` nos 4 locales.
@@ -100,6 +101,6 @@ mesmo CRUD de usuários do Admin > Acesso, restrito aos papéis da área:
       → continua com `Agent`.
 - [ ] Admin > Acesso: filtro de papel passa a filtrar de verdade.
 - [ ] Laboratório > Novo: sem campo Papéis, usuário criado com Laboratório.
-- [ ] Operacional com filtro Supervisor > Novo: vem Supervisor marcado;
-      desmarcar tudo e salvar → criado como Supervisor.
+- [ ] Operacional > Novo: sem campo Papéis; com filtro Supervisor, criado
+      como Supervisor; com filtro Agente, criado como Agente.
 - [ ] `bun run check` e `bun run lint` limpos.
