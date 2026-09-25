@@ -2,12 +2,11 @@
 
 - **ID:** SPEC-103
 - **Nome:** client-operations-readonly
-- **Status:** IN_PROGRESS (2026-09-25) — aprovada pelo usuário ("pode
-  adiantar a parte do front, o backend já está fazendo o dele"). Parte de
-  front independente do Core **feita**; faltam `just map`, RF5 e os testes
-  como colaborador, que dependem do Core SPEC-58 no ar. Branch
-  `feat/103-client-operations-readonly`, revisão do usuário antes do merge
-  em `main`.
+- **Status:** IN_PROGRESS (2026-09-25) — parte de front independente do
+  Core **feita e mergeada em `main`** a pedido do usuário ("faz o merge de
+  tudo e ir para main"). Sem regressão: antes já dava 403 pro colaborador.
+  Faltam `just map`, RF5 e os testes como colaborador — dependem do Core
+  SPEC-58 no ar (§4 e §6).
 - **Autor:** claude (2026-09-25)
 - **Ticket:** ASCS-73 — "Adicionar tela de operação para o cliente"
 - **Área:** `src/components/operations/operations-list.tsx`,
