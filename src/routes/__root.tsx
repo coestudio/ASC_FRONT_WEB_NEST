@@ -18,7 +18,7 @@ import { isAuthedFn, fetchMeFn } from "@/lib/auth-fns";
 import { profileMeQueryOptions } from "@/lib/queries/profile";
 import { readUiPrefs, UiPrefsProvider } from "@/lib/ui-prefs";
 import { resolveTheme, THEME_NO_FLASH_SCRIPT } from "@/styles/globals/theme-store";
-import { DevClearCacheButton } from "@/components/ui/dev-clear-cache-button";
+import { DevToolsFab } from "@/components/dev-tools/dev-tools-fab";
 
 const DESCRIPTION = "Sistema interno de gestão para laboratório, indústria, porto e transbordo.";
 const PREVIEW_IMAGE = "/share.jpg";
@@ -156,7 +156,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <ToastContainer position="top-right" autoClose={4000} theme="colored" />
-      <DevClearCacheButton />
+      <DevToolsFab />
     </UiPrefsProvider>
   );
 }

@@ -8,6 +8,7 @@ import type { ThemeMode } from "@/styles/globals/color-modes";
 import { locales, LOCALE_LABELS } from "@/i18n/config";
 import { useViewMode } from "@/lib/view-mode";
 import { ProfileModal } from "@/components/profile/profile-modal";
+import { useDevTools } from "@/components/dev-tools/use-dev-tools";
 import styles from "./index.module.css";
 
 function getInitials(name: string): string {
@@ -36,6 +37,10 @@ export function UserMenu() {
   const t = useT();
   const [showProfile, setShowProfile] = useState(false);
   const [prefOpen, setPrefOpen] = useState(false);
+  const [devOpen, setDevOpen] = useState(false);
+  // Submenu "Dev mode" (SPEC-104) — mesmas ações do botão flutuante; só
+  // existe com `VITE_DEVELOPMENT=true`.
+  const devTools = useDevTools();
   const [openSection, setOpenSection] = useState<SectionKey | null>(null);
   // Se a URL do avatar falhar ao carregar (SAS expirada, rede), cai pras
   // iniciais em vez de ícone de imagem quebrada — achado da revisão manual
@@ -218,6 +223,44 @@ export function UserMenu() {
             </div>
           </div>
 
+          {devTools.enabled ? (
+            <div className={styles.submenu} onClick={(e) => e.stopPropagation()}>
+              <div
+                className={`dropdown-item ${styles.submenuToggle}`}
+                onClick={() => setDevOpen((v) => !v)}
+                role="button"
+                aria-expanded={devOpen}
+              >
+                <span>
+                  <i className="bi bi-tools me-2" aria-hidden />
+                  {t("devTools.devMode")}
+                </span>
+                <i
+                  className={`bi bi-chevron-right ${styles.submenuCaret} ${devOpen ? styles.submenuCaretOpen : ""}`}
+                />
+              </div>
+              <div
+                className={`${styles.accordionOuter} ${devOpen ? styles.accordionOuterOpen : ""}`}
+              >
+                <div className={styles.accordionInner}>
+                  <div className={styles.accordionBody}>
+                    {devTools.actions.map((action) => (
+                      <button
+                        key={action.key}
+                        type="button"
+                        className="dropdown-item d-flex align-items-center gap-2"
+                        onClick={action.onSelect}
+                      >
+                        <i className={`bi ${action.icon}`} aria-hidden />
+                        <span className="flex-grow-1 text-start">{t(action.labelKey)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           <Dropdown.Divider />
           <Dropdown.Item href="/auth/logout">
             <i className="bi bi-box-arrow-right me-2" aria-hidden />
@@ -226,6 +269,7 @@ export function UserMenu() {
         </Dropdown.Menu>
       </Dropdown>
       <ProfileModal show={showProfile} onClose={() => setShowProfile(false)} />
+      {devTools.modal}
     </>
   );
 }

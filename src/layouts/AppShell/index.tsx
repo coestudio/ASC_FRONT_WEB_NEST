@@ -5,6 +5,7 @@ import { Nav } from "react-bootstrap";
 import { useCan, useUser } from "@/hooks";
 import { useT } from "@/lib/ui-prefs";
 import { APP_VERSION } from "@/lib/app-version";
+import { isDevToolsEnabled } from "@/lib/dev-tools";
 import { getUserAreas, type AreaId, type PermissionUser } from "@/lib/permissions";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
@@ -238,7 +239,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           <UserMenu />
           {/* Versão do app — SPEC-11 item 7 (decisão do usuário: só a
               string da versão, sem duplicar dado que já existe no UserMenu). */}
-          <div className={styles.appVersion}>v{APP_VERSION}</div>
+          <div className={styles.appVersion}>
+            v{APP_VERSION}
+            {/* Selo de ambiente de desenvolvimento (SPEC-104) — só com
+                `VITE_DEVELOPMENT=true`; as ações ficam no submenu "Dev mode"
+                do UserMenu e no botão flutuante. */}
+            {isDevToolsEnabled ? <span className={styles.devBadge}>dev-mode</span> : null}
+          </div>
         </div>
       </aside>
 

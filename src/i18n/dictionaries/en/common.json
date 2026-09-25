@@ -64,7 +64,11 @@
     "clearCacheButton": "Clear local cache (dev)",
     "clearCacheTitle": "Clear local cache",
     "clearCacheMessage": "This clears localStorage, sessionStorage, cookies and the React Query cache, and signs you out. Continue?",
-    "clearCacheSuccess": "Local cache cleared."
+    "clearCacheSuccess": "Local cache cleared.",
+    "menuLabel": "Developer tools",
+    "devMode": "Dev mode",
+    "goToDebug": "Debug page",
+    "openFiles": "Back-end files (/files)"
   },
   "pagination": {
     "first": "First page",

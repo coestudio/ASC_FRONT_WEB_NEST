@@ -64,7 +64,11 @@
     "clearCacheButton": "清除本地缓存（开发）",
     "clearCacheTitle": "清除本地缓存",
     "clearCacheMessage": "此操作将清除 localStorage、sessionStorage、Cookie 和 React Query 缓存，并退出登录。是否继续？",
-    "clearCacheSuccess": "本地缓存已清除。"
+    "clearCacheSuccess": "本地缓存已清除。",
+    "menuLabel": "开发者工具",
+    "devMode": "开发模式",
+    "goToDebug": "调试页面",
+    "openFiles": "后端文件 (/files)"
   },
   "pagination": {
     "first": "第一页",
