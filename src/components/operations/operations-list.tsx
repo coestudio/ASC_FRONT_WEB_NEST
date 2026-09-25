@@ -127,9 +127,12 @@ type OperationFiltersValues = {
 function OperationsFilters({
   value,
   onChange,
+  showClient = true,
 }: {
   value: OperationFiltersValues;
   onChange: (value: OperationFiltersValues) => void;
+  /** `false` na área do cliente (SPEC-103 RF1) — ver `OperationsListProps.clientArea`. */
+  showClient?: boolean;
 }) {
   const t = useT();
   const methods = useForm<OperationFiltersValues>({ defaultValues: value });
@@ -182,20 +185,22 @@ function OperationsFilters({
         }}
         md={3}
       />
-      <SelectAsync
-        methods={methods}
-        fieldName="clientId"
-        label={t("administrative-operations.filters.client")}
-        config={{
-          placeholder: t("administrative-operations.filters.clientPlaceholder"),
-          containerClass: "mb-0",
-          fetchOptions: (search) =>
-            getApiClient({ Search: search, Limit: 20 }).then((res) =>
-              res.items.map((c) => ({ value: c.id, label: c.fullName })),
-            ),
-        }}
-        md={4}
-      />
+      {showClient ? (
+        <SelectAsync
+          methods={methods}
+          fieldName="clientId"
+          label={t("administrative-operations.filters.client")}
+          config={{
+            placeholder: t("administrative-operations.filters.clientPlaceholder"),
+            containerClass: "mb-0",
+            fetchOptions: (search) =>
+              getApiClient({ Search: search, Limit: 20 }).then((res) =>
+                res.items.map((c) => ({ value: c.id, label: c.fullName })),
+              ),
+          }}
+          md={4}
+        />
+      ) : null}
     </Row>
   );
 }
@@ -272,6 +277,14 @@ export type OperationsListProps = {
    * modo que a SPEC-08 (`operacional`) consome, sem editar este arquivo.
    */
   readOnly?: boolean;
+  /**
+   * Área do cliente (SPEC-103, ASCS-73): colaborador externo. Implica
+   * `readOnly` e ainda esconde o filtro "Cliente" — ele carrega
+   * `GET /api/client` (só interno, 403 pro externo) e não faz sentido: o
+   * Core já filtra pelo cliente do token (Core SPEC-58). Prop separada pra
+   * não mudar o `readOnly` que a área Operacional (SPEC-08) consome.
+   */
+  clientArea?: boolean;
 };
 
 /**
@@ -281,7 +294,11 @@ export type OperationsListProps = {
  * de cliente/produto/navio por item são mais complexos do que o molde
  * genérico cobre (§9 da SPEC-07-01).
  */
-export function OperationsList({ readOnly = false }: OperationsListProps) {
+export function OperationsList({
+  readOnly: readOnlyProp = false,
+  clientArea = false,
+}: OperationsListProps) {
+  const readOnly = readOnlyProp || clientArea;
   const t = useT();
   const locale = useLocale();
   const navigate = useNavigate();
@@ -324,7 +341,8 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
     Search: search || undefined,
     OpType: (filters.opType || undefined) as OperationDTO["opType"] | undefined,
     Status: (filters.status || undefined) as OperationDTO["status"] | undefined,
-    ClientId: filters.clientId || undefined,
+    // Externo nunca manda `ClientId`: o Core ignora e filtra pelo token.
+    ClientId: clientArea ? undefined : filters.clientId || undefined,
     Offset: (page - 1) * PAGE_SIZE,
     Limit: PAGE_SIZE,
     Sort: sort,
@@ -538,6 +556,7 @@ export function OperationsList({ readOnly = false }: OperationsListProps) {
           />
         </div>
         <OperationsFilters
+          showClient={!clientArea}
           value={filters}
           onChange={(next) => {
             setFilters(next);
