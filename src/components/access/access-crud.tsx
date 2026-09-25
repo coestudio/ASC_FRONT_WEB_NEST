@@ -104,6 +104,12 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
   const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
+  // Papel default do cadastro numa área = o que está no filtro (quem está
+  // olhando Supervisores cria Supervisor), senão o primeiro da área.
+  const defaultRole: InternalRole | undefined = scopeRoles
+    ? roleFilter || scopeRoles[0]
+    : undefined;
+
   const isAdminParam =
     isAdminFilter === "admin" ? true : isAdminFilter === "nonAdmin" ? false : undefined;
   // O Core só aplica `Role` quando `Type` também vem (`User.Cruid.cs`
@@ -197,13 +203,19 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
       label: t("access.form.birthDate"),
       col: { md: 6 },
     },
-    {
-      type: "InputMultiSelect",
-      fieldName: "roles",
-      label: t("access.form.roles"),
-      col: { md: 8 },
-      config: { options: roleFieldOptions },
-    },
+    // Área com um papel só (Laboratório): não há o que escolher — o campo
+    // some e o papel vem de `defaultRole` (SPEC-102 RF9).
+    ...(scopeRoles && scopeRoles.length === 1
+      ? []
+      : [
+          {
+            type: "InputMultiSelect",
+            fieldName: "roles",
+            label: t("access.form.roles"),
+            col: { md: 8 },
+            config: { options: roleFieldOptions },
+          } as LayoutField,
+        ]),
     // Conceder admin é só do Admin > Acesso — na tela de área o switch some
     // e o valor atual do usuário é preservado (vem do `defaultValues`).
     ...(scopeRoles
@@ -228,7 +240,11 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
     const picked = selected ?? [];
     if (!scopeRoles) return picked;
     const outside = (current?.roles ?? []).filter((r) => !scopeRoles.includes(r));
-    return [...outside, ...picked.filter((r) => scopeRoles.includes(r))];
+    const inScope = picked.filter((r) => scopeRoles.includes(r));
+    // Cadastro novo numa área sempre nasce com papel da área, mesmo que
+    // desmarquem tudo (SPEC-102 RF9).
+    if (!current && inScope.length === 0 && defaultRole) inScope.push(defaultRole);
+    return [...outside, ...inScope];
   };
 
   const columns: CrudColumn<UserDTO>[] = [
@@ -497,8 +513,8 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
           defaultValues={
             modal.user
               ? toFormValues(modal.user)
-              : // Novo acesso numa área já nasce com o primeiro papel dela.
-                { ...toFormValues(), roles: scopeRoles?.slice(0, 1) ?? [] }
+              : // Novo acesso numa área já nasce com o papel default (RF9).
+                { ...toFormValues(), roles: defaultRole ? [defaultRole] : [] }
           }
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
