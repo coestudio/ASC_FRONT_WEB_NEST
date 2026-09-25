@@ -60,6 +60,14 @@ mesmo CRUD de usuários do Admin > Acesso, restrito aos papéis da área:
 - **RF6 — Só admin.** Item da sidebar com `requiresAdmin` (flag nova em
   `NavItem`, filtrada no `AppShell`); rota com guard que manda não-admin
   pra home da área.
+- **RF8 — Foto do usuário** (pedido do usuário: "implementar o upload de
+  imagem como você fez no perfil"). `UserAvatarField` no topo do modal
+  (`headerContent`), nas 3 telas de Acesso: upload imediato em
+  `PATCH /api/user/{id}/avatar` (já existe no Core), limite 2 MB (igual ao
+  perfil), só leitura em "visualizar". Modo criar: foto pendente, enviada
+  depois do `POST`; falha no upload não desfaz o cadastro. **Sem remover
+  foto salva** — o Core não tem rota de remover avatar de usuário (o "x"
+  só descarta arquivo pendente).
 - **RF7 — i18n.** `navigation.laboratorioAccess`,
   `navigation.operacionalAccess`, `access.laboratory.*`,
   `access.operational.*` nos 4 locales.
@@ -90,4 +98,6 @@ mesmo CRUD de usuários do Admin > Acesso, restrito aos papéis da área:
 - [ ] Editar em Laboratório um usuário com `Agent` + `Laboratory` e salvar
       → continua com `Agent`.
 - [ ] Admin > Acesso: filtro de papel passa a filtrar de verdade.
+- [ ] Editar usuário → trocar foto sobe na hora; criar usuário com foto →
+      foto enviada após o cadastro.
 - [ ] `bun run check` e `bun run lint` limpos.

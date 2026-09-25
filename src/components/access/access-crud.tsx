@@ -13,9 +13,11 @@ import {
   usePutApiUserId,
   getApiUser,
   getGetApiUserQueryKey,
+  patchApiUserIdAvatar,
 } from "@/api/generated/endpoints/user/user";
 import { PostApiUserBody } from "@/api/generated/zod/user/user.zod";
-import { UserType, type InternalRole, type UserDTO } from "@/api/generated/model";
+import { UserType, type FileDTO, type InternalRole, type UserDTO } from "@/api/generated/model";
+import { UserAvatarField } from "./user-avatar-field";
 import { CrudListPage, type CrudColumn } from "@/components/crud/crud-list-page";
 import { CrudRecordModal, type CrudRecordMode } from "@/components/crud/crud-record-modal";
 import { CrudRowActions } from "@/components/crud/crud-row-actions";
@@ -101,7 +103,15 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
   // vez, e "sem filtro" traria usuários de outras áreas (SPEC-102).
   const [roleFilter, setRoleFilter] = useState<InternalRole | "">(scopeRoles?.[0] ?? "");
   const [isAdminFilter, setIsAdminFilter] = useState<IsAdminFilter>("all");
-  const [modal, setModal] = useState<{ mode: CrudRecordMode; user?: UserDTO } | null>(null);
+  const [modal, setModal] = useState<{
+    mode: CrudRecordMode;
+    user?: UserDTO;
+    // Avatar atual do usuário aberto — troca na hora, sem passar pelo
+    // "Salvar" do formulário (mesmo padrão do `profile-modal`).
+    avatarFile?: FileDTO | null;
+  } | null>(null);
+  // Foto escolhida no modo criar — só sobe depois do `POST` devolver o id.
+  const [pendingAvatar, setPendingAvatar] = useState<File | null>(null);
   const [pending, setPending] = useState<PendingAction | null>(null);
 
   const isAdminParam =
@@ -282,7 +292,7 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
   const handleSubmit = async (values: UserFormValues) => {
     try {
       if (modal?.mode === "create") {
-        await createMutation.mutateAsync({
+        const created = await createMutation.mutateAsync({
           data: {
             userName: values.userName,
             profile: {
@@ -297,6 +307,13 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
           },
         });
         toast.success(t("access.toast.created"));
+        if (pendingAvatar) {
+          // Falha no upload não desfaz o cadastro — o interceptor já mostra o
+          // erro do Core; a foto pode ser enviada depois pela edição.
+          await patchApiUserIdAvatar(created.id, { avatarFile: pendingAvatar }).catch(
+            () => undefined,
+          );
+        }
       } else if (modal?.mode === "edit" && modal.user) {
         await updateMutation.mutateAsync({
           id: modal.user.id,
@@ -412,8 +429,12 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
               show={ctl.show}
               position={ctl.position}
               onToggle={ctl.onToggle}
-              onView={() => setModal({ mode: "view", user: u })}
-              onEdit={() => setModal({ mode: "edit", user: u })}
+              onView={() =>
+                setModal({ mode: "view", user: u, avatarFile: u.profile.avatarFile ?? null })
+              }
+              onEdit={() =>
+                setModal({ mode: "edit", user: u, avatarFile: u.profile.avatarFile ?? null })
+              }
               onDelete={() => setPending({ kind: "delete", user: u })}
               extraActions={[
                 {
@@ -433,8 +454,12 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
               ]}
             />
           )}
-          onRowOpen={(u) => setModal({ mode: "view", user: u })}
-          onRowEdit={(u) => setModal({ mode: "edit", user: u })}
+          onRowOpen={(u) =>
+            setModal({ mode: "view", user: u, avatarFile: u.profile.avatarFile ?? null })
+          }
+          onRowEdit={(u) =>
+            setModal({ mode: "edit", user: u, avatarFile: u.profile.avatarFile ?? null })
+          }
           search={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -482,7 +507,10 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
           page={page}
           pageSize={PAGE_SIZE}
           onPageChange={setPage}
-          onCreate={() => setModal({ mode: "create" })}
+          onCreate={() => {
+            setPendingAvatar(null);
+            setModal({ mode: "create" });
+          }}
           emptyMessageKey="access.emptyState"
         />
       </PageLayout>
@@ -502,6 +530,19 @@ export function AccessCrud({ titleKey, descriptionKey, scopeRoles }: AccessCrudP
           }
           onSubmit={handleSubmit}
           onClose={() => setModal(null)}
+          headerContent={
+            <UserAvatarField
+              userId={modal.user?.id}
+              name={modal.user?.profile.fullName ?? modal.user?.userName ?? ""}
+              email={modal.user?.profile.email}
+              avatarFile={modal.avatarFile ?? null}
+              readOnly={modal.mode === "view"}
+              onPendingFileChange={setPendingAvatar}
+              onAvatarChange={(avatarFile) =>
+                setModal((prev) => (prev ? { ...prev, avatarFile } : prev))
+              }
+            />
+          }
         />
       ) : null}
 
